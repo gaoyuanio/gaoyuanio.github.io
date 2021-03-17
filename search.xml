@@ -4,14 +4,14 @@
     <title>vuex笔记</title>
     <url>/2021/03/16/vuex%E7%AC%94%E8%AE%B0/</url>
     <content><![CDATA[<h1 id="Vuex笔记"><a href="#Vuex笔记" class="headerlink" title="Vuex笔记"></a>Vuex笔记</h1><h3 id="Vuex概述"><a href="#Vuex概述" class="headerlink" title="Vuex概述"></a>Vuex概述</h3><h4 id="vuex是什么"><a href="#vuex是什么" class="headerlink" title="vuex是什么"></a>vuex是什么</h4><p>​    vuex是实现组件全局状态（数据）管理的一种机制，可以方便实现组件之间数据的共享<br><img src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/image-20201221091304337.png"></p>
+<span id="more"></span>
+
 <h4 id="使用Vuex统一管理状态的好处"><a href="#使用Vuex统一管理状态的好处" class="headerlink" title="使用Vuex统一管理状态的好处"></a>使用Vuex统一管理状态的好处</h4><ul>
 <li>能够在vuex中集中管理共享的数据，易于开发和后期维护</li>
 <li>能够高效地实现组件之间的数据共享，提高开发效率</li>
 <li>存储在Vuex中的数据都是响应式的，能够实施保持数据与页面的同步</li>
 </ul>
 <h4 id="什么样的数据适合存储到Vuex中"><a href="#什么样的数据适合存储到Vuex中" class="headerlink" title="什么样的数据适合存储到Vuex中"></a>什么样的数据适合存储到Vuex中</h4><p>​    一般情况下，只有组件之间共享的数据，才有必要存储到vuex中；对于组件中的私有数据，依旧存储在组件自身的data中即可</p>
-<span id="more"></span>
-
 <h3 id="vuex的基本使用"><a href="#vuex的基本使用" class="headerlink" title="vuex的基本使用"></a>vuex的基本使用</h3><h4 id="安装vuex依赖"><a href="#安装vuex依赖" class="headerlink" title="安装vuex依赖"></a>安装vuex依赖</h4><figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="attribute">npm</span> install vex --save</span><br></pre></td></tr></table></figure>
 
 <h4 id="导入vuex包"><a href="#导入vuex包" class="headerlink" title="导入vuex包"></a>导入vuex包</h4><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> Vuex <span class="keyword">from</span> <span class="string">&#x27;vuex&#x27;</span></span><br><span class="line">Vue.use(Vuex)</span><br></pre></td></tr></table></figure>
