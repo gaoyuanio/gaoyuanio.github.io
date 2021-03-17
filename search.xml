@@ -10,6 +10,8 @@
 <li>存储在Vuex中的数据都是响应式的，能够实施保持数据与页面的同步</li>
 </ul>
 <h4 id="什么样的数据适合存储到Vuex中"><a href="#什么样的数据适合存储到Vuex中" class="headerlink" title="什么样的数据适合存储到Vuex中"></a>什么样的数据适合存储到Vuex中</h4><p>​    一般情况下，只有组件之间共享的数据，才有必要存储到vuex中；对于组件中的私有数据，依旧存储在组件自身的data中即可</p>
+<span id="more"></span>
+
 <h3 id="vuex的基本使用"><a href="#vuex的基本使用" class="headerlink" title="vuex的基本使用"></a>vuex的基本使用</h3><h4 id="安装vuex依赖"><a href="#安装vuex依赖" class="headerlink" title="安装vuex依赖"></a>安装vuex依赖</h4><figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="attribute">npm</span> install vex --save</span><br></pre></td></tr></table></figure>
 
 <h4 id="导入vuex包"><a href="#导入vuex包" class="headerlink" title="导入vuex包"></a>导入vuex包</h4><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> Vuex <span class="keyword">from</span> <span class="string">&#x27;vuex&#x27;</span></span><br><span class="line">Vue.use(Vuex)</span><br></pre></td></tr></table></figure>
@@ -115,6 +117,9 @@
     <content><![CDATA[<h2 id="阻止单击事件冒泡"><a href="#阻止单击事件冒泡" class="headerlink" title="阻止单击事件冒泡"></a>阻止单击事件冒泡</h2><p><code>&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;</code></p>
 <h2 id="提交事件不再重载页面"><a href="#提交事件不再重载页面" class="headerlink" title="提交事件不再重载页面"></a>提交事件不再重载页面</h2><p><code>&lt;form v-on:submit.prevent=&quot;onSubmit&quot;&gt;&lt;/form&gt;</code></p>
 <h2 id="修饰符可以串联"><a href="#修饰符可以串联" class="headerlink" title="修饰符可以串联"></a>修饰符可以串联</h2><p><code>&lt;a v-on:click.stop.prevent=&quot;doThat&quot;&gt;</code></p>
+<span id="more"></span>
+
+
 <h2 id="只有修饰符"><a href="#只有修饰符" class="headerlink" title="只有修饰符"></a>只有修饰符</h2><p><code>&lt;form v-on:submit.prevent&gt;&lt;/form&gt;</code></p>
 <br>
 <br>
