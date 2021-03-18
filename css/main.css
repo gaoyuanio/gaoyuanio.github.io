@@ -1839,7 +1839,7 @@ pre code {
   position: fixed;
   width: 0;
   z-index: 1500;
-  top: 0;
+  bottom: 0;
 }
 .rtl.post-body p,
 .rtl.post-body a,
