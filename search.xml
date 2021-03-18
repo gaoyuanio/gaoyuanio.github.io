@@ -91,6 +91,51 @@
       </tags>
   </entry>
   <entry>
+    <title>MySQL列类型和列上约束</title>
+    <url>/2021/03/18/MySQL%E5%88%97%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%88%97%E4%B8%8A%E7%BA%A6%E6%9D%9F/</url>
+    <content><![CDATA[<h2 id="1-常用SQL命令"><a href="#1-常用SQL命令" class="headerlink" title="1.常用SQL命令"></a>1.常用SQL命令</h2><h3 id="（1）添加数据："><a href="#（1）添加数据：" class="headerlink" title="（1）添加数据："></a>（1）添加数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">INSERT</span>  <span class="keyword">INTO</span> 表名 <span class="keyword">VALUES</span>(….);</span><br></pre></td></tr></table></figure>
+
+<h3 id="（2）删除数据："><a href="#（2）删除数据：" class="headerlink" title="（2）删除数据："></a>（2）删除数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DELETE</span>  <span class="keyword">FROM</span> 表名;		#删除所有的记录行，慎用！</span><br><span class="line"><span class="keyword">DELETE</span>	<span class="keyword">FROM</span>	表名	<span class="keyword">WHERE</span>	列<span class="operator">=</span>值;		#删除满足条件的行</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+
+<h3 id="（3）修改数据："><a href="#（3）修改数据：" class="headerlink" title="（3）修改数据："></a>（3）修改数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">UPDATE 	表名	<span class="keyword">SET</span>  列<span class="operator">=</span>值，列<span class="operator">=</span>值；		#删除所有记录行，慎用</span><br><span class="line">UPDATE	表名	<span class="keyword">SET</span>	 列<span class="operator">=</span>值，列<span class="operator">=</span>值  <span class="keyword">WHERE</span>   列<span class="operator">=</span>值；</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-MySQL中的列类型"><a href="#2-MySQL中的列类型" class="headerlink" title="2.MySQL中的列类型"></a>2.MySQL中的列类型</h2><h3 id="（1）数字类型"><a href="#（1）数字类型" class="headerlink" title="（1）数字类型"></a>（1）数字类型</h3><h4 id="整型："><a href="#整型：" class="headerlink" title="整型："></a>整型：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">TINYINT: 占1个字节 -128~127。</span><br><span class="line">SMALLINT: 占2个字节 -32768~32767。</span><br><span class="line">INT: 占4个字节 -2147483648~2147483647。</span><br><span class="line">BIGINT: 占4/8个字节。</span><br></pre></td></tr></table></figure>
+
+<h4 id="小数型："><a href="#小数型：" class="headerlink" title="小数型："></a>小数型：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">FLOAT(M-M位有效数字,D-小数点后面D位小数):单精度浮点型，占4个字节。</span><br><span class="line">DOUBLE(M,D):双精度浮点型，占8个字节。</span><br><span class="line">DECIMAL(M,D):严格定点数，用于精确运算，如货币金额。</span><br></pre></td></tr></table></figure>
+
+<h3 id="（2）字符串类型"><a href="#（2）字符串类型" class="headerlink" title="（2）字符串类型"></a>（2）字符串类型</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">CHAR(M) : M不能超过255。</span><br><span class="line">VARCHAR(M) : M不能超过65535。</span><br><span class="line">TEXT(M) : M不能超过2^32,即40亿个字符。</span><br></pre></td></tr></table></figure>
+
+<p><strong>面试问题</strong>：CHAR(8)和VARCHAR(8)的区别?<br>user_name  CHAR(8)：定长字符串，可能产生空间浪费，但读取速度快</p>
+<blockquote>
+<p>‘a’  实际存储为： ‘a\0\0\0\0\0\0\0’<br>‘ab’实际存储为： ‘ab\0\0\0\0\0\0’<br>‘abc’实际存储为： ‘abc\0\0\0\0\0’<br>‘abcd’实际存储为： ‘abcd\0\0\0\0’<br>‘abcde’实际存储为： ‘abcde\0\0\0’<br>‘abcdef’实际存储为： ‘abcdef\0\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’</p>
+</blockquote>
+<p>user_name  VARCHAR(8)：   变长字符串，不会产生空间浪费，但读取速度稍慢</p>
+<blockquote>
+<p> ‘a’  实际存储为： ‘a\0’<br> ‘ab’实际存储为： ‘ab\0’<br> ‘abc’实际存储为： ‘abc\0’<br> ‘abcd’实际存储为： ‘abcd\0’<br>‘abcde’实际存储为： ‘abcde\0’<br>‘abcdef’实际存储为： ‘abcdef\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’　</p>
+</blockquote>
+<h3 id="（3）日期时间类型"><a href="#（3）日期时间类型" class="headerlink" title="（3）日期时间类型"></a>（3）日期时间类型</h3><p>​    DATE : 日期类型，必须用引号括起来，采用’yyyy-mm-dd’格式。<br>​    TIME : 时间类型，必须用引号括起来，采用’hh:mi:ss’格式。<br>​    DATETIME : 时期时间类型，必须用引号括起来，采用’yyyy-mm-dd hh:mi:ss’格式。</p>
+<h3 id="（4）布尔类型"><a href="#（4）布尔类型" class="headerlink" title="（4）布尔类型"></a>（4）布尔类型</h3><p>​    BOOL/BOOLEAN : 智能表示TRUE(等价于1)或FLASE(等价于0)。</p>
+<h2 id="3-列上的约束"><a href="#3-列上的约束" class="headerlink" title="3.列上的约束"></a>3.列上的约束</h2><h3 id="1-Constraint约束"><a href="#1-Constraint约束" class="headerlink" title="(1)Constraint约束"></a>(1)Constraint约束</h3><p>列上的值往往是有限制，如：</p>
+<p>性别:只能取男或者女<br>政治面貌：只能取党员，团员，群众之一</p>
+<h3 id="2-主键约束-PRIMARY-KEY"><a href="#2-主键约束-PRIMARY-KEY" class="headerlink" title="(2)主键约束(PRIMARY  KEY)"></a>(2)主键约束(PRIMARY  KEY)</h3><p>语法：列名 类型 PRIMARY KEY<br>声明为”主键”的列上不能出现null值，且不能重复，如商品编号；表中所有的记录行会自动按照主键列上的值进行排序——一个表至多只能声明一个主键列。</p>
+<h3 id="3-唯一约束-UNIQUE"><a href="#3-唯一约束-UNIQUE" class="headerlink" title="(3)唯一约束(UNIQUE)"></a>(3)唯一约束(UNIQUE)</h3><p>语法：列名 类型 UNIQUE<br>声明为”唯一”约束的列上不能出现重复值，但可以出现多个NULL</p>
+<h3 id="4-非空约束-NOT-NULL"><a href="#4-非空约束-NOT-NULL" class="headerlink" title="(4)非空约束(NOT  NULL)"></a>(4)非空约束(NOT  NULL)</h3><p>语法：列名 类型 NOT  NULL<br>声明为”非空”约束的列上不能出现NULL，但可以重复。</p>
+<h3 id="5-检查约束——MySQL不支持"><a href="#5-检查约束——MySQL不支持" class="headerlink" title="(5)检查约束——MySQL不支持"></a>(5)检查约束——MySQL不支持</h3><h3 id="6-默认值约束-DEFAULT"><a href="#6-默认值约束-DEFAULT" class="headerlink" title="(6)默认值约束(DEFAULT)"></a>(6)默认值约束(DEFAULT)</h3><p>语法：列名 类型 DEFAULT 值<br>声明了默认值的列若未指定值，则使用默认值；若指定的特定值的值，则使用指定的值。</p>
+<h3 id="7-外键约束"><a href="#7-外键约束" class="headerlink" title="(7)外键约束"></a>(7)外键约束</h3><p>外键：POREIGN  KEY,可重复可为空，外键列上出现的值必须正另一个表的主键列上。</p>
+]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>vuex笔记</title>
     <url>/2021/03/16/vuex%E7%AC%94%E8%AE%B0/</url>
     <content><![CDATA[<h1 id="Vuex笔记"><a href="#Vuex笔记" class="headerlink" title="Vuex笔记"></a>Vuex笔记</h1><h3 id="Vuex概述"><a href="#Vuex概述" class="headerlink" title="Vuex概述"></a>Vuex概述</h3><h4 id="vuex是什么"><a href="#vuex是什么" class="headerlink" title="vuex是什么"></a>vuex是什么</h4><p>​    vuex是实现组件全局状态（数据）管理的一种机制，可以方便实现组件之间数据的共享<br><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/image-20201221091304337.png"></p>
@@ -199,97 +244,6 @@
       </categories>
       <tags>
         <tag>vuex</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MySQL列类型和列上约束</title>
-    <url>/2021/03/18/MySQL%E5%88%97%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%88%97%E4%B8%8A%E7%BA%A6%E6%9D%9F/</url>
-    <content><![CDATA[<h2 id="1-常用SQL命令"><a href="#1-常用SQL命令" class="headerlink" title="1.常用SQL命令"></a>1.常用SQL命令</h2><h3 id="（1）添加数据："><a href="#（1）添加数据：" class="headerlink" title="（1）添加数据："></a>（1）添加数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">INSERT</span>  <span class="keyword">INTO</span> 表名 <span class="keyword">VALUES</span>(….);</span><br></pre></td></tr></table></figure>
-
-<h3 id="（2）删除数据："><a href="#（2）删除数据：" class="headerlink" title="（2）删除数据："></a>（2）删除数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DELETE</span>  <span class="keyword">FROM</span> 表名;		#删除所有的记录行，慎用！</span><br><span class="line"><span class="keyword">DELETE</span>	<span class="keyword">FROM</span>	表名	<span class="keyword">WHERE</span>	列<span class="operator">=</span>值;		#删除满足条件的行</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-
-<h3 id="（3）修改数据："><a href="#（3）修改数据：" class="headerlink" title="（3）修改数据："></a>（3）修改数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">UPDATE 	表名	<span class="keyword">SET</span>  列<span class="operator">=</span>值，列<span class="operator">=</span>值；		#删除所有记录行，慎用</span><br><span class="line">UPDATE	表名	<span class="keyword">SET</span>	 列<span class="operator">=</span>值，列<span class="operator">=</span>值  <span class="keyword">WHERE</span>   列<span class="operator">=</span>值；</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="2-MySQL中的列类型"><a href="#2-MySQL中的列类型" class="headerlink" title="2.MySQL中的列类型"></a>2.MySQL中的列类型</h2><h3 id="（1）数字类型"><a href="#（1）数字类型" class="headerlink" title="（1）数字类型"></a>（1）数字类型</h3><h4 id="整型："><a href="#整型：" class="headerlink" title="整型："></a>整型：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">TINYINT: 占1个字节 -128~127。</span><br><span class="line">SMALLINT: 占2个字节 -32768~32767。</span><br><span class="line">INT: 占4个字节 -2147483648~2147483647。</span><br><span class="line">BIGINT: 占4/8个字节。</span><br></pre></td></tr></table></figure>
-
-<h4 id="小数型："><a href="#小数型：" class="headerlink" title="小数型："></a>小数型：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">FLOAT(M-M位有效数字,D-小数点后面D位小数):单精度浮点型，占4个字节。</span><br><span class="line">DOUBLE(M,D):双精度浮点型，占8个字节。</span><br><span class="line">DECIMAL(M,D):严格定点数，用于精确运算，如货币金额。</span><br></pre></td></tr></table></figure>
-
-<h3 id="（2）字符串类型"><a href="#（2）字符串类型" class="headerlink" title="（2）字符串类型"></a>（2）字符串类型</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">CHAR(M) : M不能超过255。</span><br><span class="line">VARCHAR(M) : M不能超过65535。</span><br><span class="line">TEXT(M) : M不能超过2^32,即40亿个字符。</span><br></pre></td></tr></table></figure>
-
-<p><strong>面试问题</strong>：CHAR(8)和VARCHAR(8)的区别?<br>user_name  CHAR(8)：定长字符串，可能产生空间浪费，但读取速度快</p>
-<blockquote>
-<p>‘a’  实际存储为： ‘a\0\0\0\0\0\0\0’<br>‘ab’实际存储为： ‘ab\0\0\0\0\0\0’<br>‘abc’实际存储为： ‘abc\0\0\0\0\0’<br>‘abcd’实际存储为： ‘abcd\0\0\0\0’<br>‘abcde’实际存储为： ‘abcde\0\0\0’<br>‘abcdef’实际存储为： ‘abcdef\0\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’</p>
-</blockquote>
-<p>user_name  VARCHAR(8)：   变长字符串，不会产生空间浪费，但读取速度稍慢</p>
-<blockquote>
-<p> ‘a’  实际存储为： ‘a\0’<br> ‘ab’实际存储为： ‘ab\0’<br> ‘abc’实际存储为： ‘abc\0’<br> ‘abcd’实际存储为： ‘abcd\0’<br>‘abcde’实际存储为： ‘abcde\0’<br>‘abcdef’实际存储为： ‘abcdef\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’　</p>
-</blockquote>
-<h3 id="（3）日期时间类型"><a href="#（3）日期时间类型" class="headerlink" title="（3）日期时间类型"></a>（3）日期时间类型</h3><p>​    DATE : 日期类型，必须用引号括起来，采用’yyyy-mm-dd’格式。<br>​    TIME : 时间类型，必须用引号括起来，采用’hh:mi:ss’格式。<br>​    DATETIME : 时期时间类型，必须用引号括起来，采用’yyyy-mm-dd hh:mi:ss’格式。</p>
-<h3 id="（4）布尔类型"><a href="#（4）布尔类型" class="headerlink" title="（4）布尔类型"></a>（4）布尔类型</h3><p>​    BOOL/BOOLEAN : 智能表示TRUE(等价于1)或FLASE(等价于0)。</p>
-<h2 id="3-列上的约束"><a href="#3-列上的约束" class="headerlink" title="3.列上的约束"></a>3.列上的约束</h2><h3 id="1-Constraint约束"><a href="#1-Constraint约束" class="headerlink" title="(1)Constraint约束"></a>(1)Constraint约束</h3><p>列上的值往往是有限制，如：</p>
-<p>性别:只能取男或者女<br>政治面貌：只能取党员，团员，群众之一</p>
-<h3 id="2-主键约束-PRIMARY-KEY"><a href="#2-主键约束-PRIMARY-KEY" class="headerlink" title="(2)主键约束(PRIMARY  KEY)"></a>(2)主键约束(PRIMARY  KEY)</h3><p>语法：列名 类型 PRIMARY KEY<br>声明为”主键”的列上不能出现null值，且不能重复，如商品编号；表中所有的记录行会自动按照主键列上的值进行排序——一个表至多只能声明一个主键列。</p>
-<h3 id="3-唯一约束-UNIQUE"><a href="#3-唯一约束-UNIQUE" class="headerlink" title="(3)唯一约束(UNIQUE)"></a>(3)唯一约束(UNIQUE)</h3><p>语法：列名 类型 UNIQUE<br>声明为”唯一”约束的列上不能出现重复值，但可以出现多个NULL</p>
-<h3 id="4-非空约束-NOT-NULL"><a href="#4-非空约束-NOT-NULL" class="headerlink" title="(4)非空约束(NOT  NULL)"></a>(4)非空约束(NOT  NULL)</h3><p>语法：列名 类型 NOT  NULL<br>声明为”非空”约束的列上不能出现NULL，但可以重复。</p>
-<h3 id="5-检查约束——MySQL不支持"><a href="#5-检查约束——MySQL不支持" class="headerlink" title="(5)检查约束——MySQL不支持"></a>(5)检查约束——MySQL不支持</h3><h3 id="6-默认值约束-DEFAULT"><a href="#6-默认值约束-DEFAULT" class="headerlink" title="(6)默认值约束(DEFAULT)"></a>(6)默认值约束(DEFAULT)</h3><p>语法：列名 类型 DEFAULT 值<br>声明了默认值的列若未指定值，则使用默认值；若指定的特定值的值，则使用指定的值。</p>
-<h3 id="7-外键约束"><a href="#7-外键约束" class="headerlink" title="(7)外键约束"></a>(7)外键约束</h3><p>外键：POREIGN  KEY,可重复可为空，外键列上出现的值必须正另一个表的主键列上。</p>
-]]></content>
-      <categories>
-        <category>MySQL</category>
-      </categories>
-      <tags>
-        <tag>MySQL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用Hbuilder快速打包一个app</title>
-    <url>/2021/03/18/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/</url>
-    <content><![CDATA[<p>HBuilder提供的打包有云端打包和本地打包两种，云端打包的特点是DCloud官方配置好了原生的打包环境，可以把HTML等文件编译为原生安装包。</p>
-<p>优点：速度快，所需要的环境少，加快了开发者速度，不会因为各种JDK，java，Android环境而无法打包生成apk或ipa头疼，大大减少了开发繁琐操作。</p>
-<p>方法步骤：</p>
-<span id="more"></span>
-
-<p>1.下载HBuilder，注册并登陆。首先打开“文件”-“新建”-“移动APP”，输入“应用名称”，“位置”可以根据需要自己选择即可，“选择模板”建议选择空模板，如下图所示：</p>
-<p>​​<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712163802432"></p>
-<p>2.新建完成后， 在项目管理器会显示新建的项目目录，其中css，img，js和index.html这几个文件可删可改可替换。<br>unpackage文件夹是放置app图标和启动界面的图片。</p>
-<p>manifest.json文件是移动App的配置文件，用于指定应用的显示名称、图标、应用入口文件地址及需要使用的设备权限等信息，用户可通过HBuilder的可视化界面视图或者源码视图来配置移动App的信息，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164108624"></p>
-<p>3.如果删除了css，img，js文件夹和index.html文件，就把其他自己打包好的的项目文件对应复制到文件夹中，注意html文件中的引用路径需要保持正确，如下图自己拷贝的项目（我的是项目打包后的build文件和index.html文件，其中css/js/img都在build文件夹下）：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164250660"></p>
-<p>4.文件复制完成后，刷新更新下，双击打开manifest.json文件来配置App。</p>
-<p>appid：点击云端获取。版本号：根据需要来编辑。页面入口：默认是index.html，根据自己项目需要，更改APP的启动页面。应用描述：自己随便填。应用是否全屏显示：勾上就全屏显示，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164915305"></p>
-<p>5.图标配置：点击页面下方的图标配置，配置APP显示图标。</p>
-<p>点击”+”号的正方形方框，选择图标素材的路径找到图标素材，再点击” 自动生成所有图标并替换”按钮，完成图标生成和替换，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165506582"></p>
-<p>生成的图标自动在unpackage文件夹下，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165618254"></p>
-<p>6.在启动图片设置里点击”选择”，找到刚放进来的启动图片，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165842174"></p>
-<p>7.SDK配置：有需要就配置，没有就默认就行。</p>
-<p>   模块权限配置：有需要就配置，没有就默认就行。</p>
-<p>8.云端打包：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170045185"></p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170127683"></p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170219731"></p>
-<p>然后等待几分钟，刷新状态，就可以看到制作完成，是否下载？点击下载。然后将apk发送到手机上安装就可以正常运行了！</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712171021649"></p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2018071217113978"></p>
-<p>以下是apk安装后再模拟器上运行效果：</p>
-<p><img data-src="https://img-blog.csdn.net/20180712171240702?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
-<p><img data-src="https://img-blog.csdn.net/20180712171322289?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
-<p><img data-src="https://img-blog.csdn.net/20180712171518460?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
-]]></content>
-      <categories>
-        <category>Hbuilder</category>
-      </categories>
-      <tags>
-        <tag>Hbuilder</tag>
       </tags>
   </entry>
   <entry>
@@ -437,6 +391,52 @@
       </categories>
       <tags>
         <tag>HTTP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Hbuilder快速打包一个app</title>
+    <url>/2021/03/18/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/</url>
+    <content><![CDATA[<p>HBuilder提供的打包有云端打包和本地打包两种，云端打包的特点是DCloud官方配置好了原生的打包环境，可以把HTML等文件编译为原生安装包。</p>
+<p>优点：速度快，所需要的环境少，加快了开发者速度，不会因为各种JDK，java，Android环境而无法打包生成apk或ipa头疼，大大减少了开发繁琐操作。</p>
+<p>方法步骤：</p>
+<span id="more"></span>
+
+<p>1.下载HBuilder，注册并登陆。首先打开“文件”-“新建”-“移动APP”，输入“应用名称”，“位置”可以根据需要自己选择即可，“选择模板”建议选择空模板，如下图所示：</p>
+<p>​​<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712163802432"></p>
+<p>2.新建完成后， 在项目管理器会显示新建的项目目录，其中css，img，js和index.html这几个文件可删可改可替换。<br>unpackage文件夹是放置app图标和启动界面的图片。</p>
+<p>manifest.json文件是移动App的配置文件，用于指定应用的显示名称、图标、应用入口文件地址及需要使用的设备权限等信息，用户可通过HBuilder的可视化界面视图或者源码视图来配置移动App的信息，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164108624"></p>
+<p>3.如果删除了css，img，js文件夹和index.html文件，就把其他自己打包好的的项目文件对应复制到文件夹中，注意html文件中的引用路径需要保持正确，如下图自己拷贝的项目（我的是项目打包后的build文件和index.html文件，其中css/js/img都在build文件夹下）：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164250660"></p>
+<p>4.文件复制完成后，刷新更新下，双击打开manifest.json文件来配置App。</p>
+<p>appid：点击云端获取。版本号：根据需要来编辑。页面入口：默认是index.html，根据自己项目需要，更改APP的启动页面。应用描述：自己随便填。应用是否全屏显示：勾上就全屏显示，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164915305"></p>
+<p>5.图标配置：点击页面下方的图标配置，配置APP显示图标。</p>
+<p>点击”+”号的正方形方框，选择图标素材的路径找到图标素材，再点击” 自动生成所有图标并替换”按钮，完成图标生成和替换，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165506582"></p>
+<p>生成的图标自动在unpackage文件夹下，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165618254"></p>
+<p>6.在启动图片设置里点击”选择”，找到刚放进来的启动图片，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165842174"></p>
+<p>7.SDK配置：有需要就配置，没有就默认就行。</p>
+<p>   模块权限配置：有需要就配置，没有就默认就行。</p>
+<p>8.云端打包：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170045185"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170127683"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170219731"></p>
+<p>然后等待几分钟，刷新状态，就可以看到制作完成，是否下载？点击下载。然后将apk发送到手机上安装就可以正常运行了！</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712171021649"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2018071217113978"></p>
+<p>以下是apk安装后再模拟器上运行效果：</p>
+<p><img data-src="https://img-blog.csdn.net/20180712171240702?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
+<p><img data-src="https://img-blog.csdn.net/20180712171322289?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
+<p><img data-src="https://img-blog.csdn.net/20180712171518460?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
+]]></content>
+      <categories>
+        <category>Hbuilder</category>
+      </categories>
+      <tags>
+        <tag>Hbuilder</tag>
       </tags>
   </entry>
   <entry>
