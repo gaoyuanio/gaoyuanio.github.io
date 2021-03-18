@@ -459,6 +459,42 @@ Original highlight.js style (c) Ivan Sagalaev <maniac@softwaremaniacs.org>
   font-weight: bold;
 }
 
+.highlight:hover .copy-btn,
+pre:hover .copy-btn {
+  opacity: 1;
+}
+.copy-btn {
+  color: #333;
+  cursor: pointer;
+  line-height: 1.6;
+  opacity: 0;
+  padding: 2px 6px;
+  position: absolute;
+  transition: opacity 0.2s ease-in-out;
+  color: var(--highlight-foreground);
+  font-size: 14px;
+  right: 0;
+  top: 2px;
+}
+figure.highlight {
+  border-radius: 5px;
+  box-shadow: 0 10px 30px 0 rgba(0,0,0,0.4);
+  padding-top: 30px;
+}
+figure.highlight .table-container {
+  border-radius: 0 0 5px 5px;
+}
+figure.highlight::before {
+  background: #fc625d;
+  box-shadow: 20px 0 #fdbc40, 40px 0 #35cd4b;
+  left: 12px;
+  margin-top: -20px;
+  position: absolute;
+  border-radius: 50%;
+  content: ' ';
+  height: 12px;
+  width: 12px;
+}
 code,
 kbd,
 figure.highlight,
@@ -1751,9 +1787,6 @@ pre code {
 .back-to-top {
   font-size: 12px;
 }
-.back-to-top span {
-  display: none;
-}
 .back-to-top {
   bottom: -100px;
   box-sizing: border-box;
@@ -1766,7 +1799,6 @@ pre code {
   position: fixed;
   z-index: 1300;
   right: 30px;
-  width: 24px;
 }
 @media (max-width: 991px) {
   .back-to-top {
@@ -1799,6 +1831,15 @@ pre code {
   top: 0;
   width: 100%;
   z-index: 1500;
+}
+.reading-progress-bar {
+  background: #333333;
+  height: 3px;
+  left: 0;
+  position: fixed;
+  width: 0;
+  z-index: 1500;
+  top: 0;
 }
 .rtl.post-body p,
 .rtl.post-body a,

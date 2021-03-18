@@ -24,31 +24,33 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-<meta name="description" content="一枚微不足道的前端攻城狮">
-<meta property="og:type" content="website">
-<meta property="og:title" content="GaoYuan&#39;s Blog">
-<meta property="og:url" content="http://example.com/index.html">
+<meta name="description" content="转换  什么是转换  改变元素在页面上的大小，位置，形状以及角度的一种方式  可以向元素应用2D以及3D的转换效果   转换属性     (1)转换效果             属性：transform             取值：1.none：默认值，即没有任何转换效果                  2.一个或多个转换函数，如果是多个转换函数，中间用&quot;空格隔开&quot;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用CSS3使你的网页动起来——transform属性">
+<meta property="og:url" content="http://example.com/2021/03/18/%E7%94%A8CSS3%E4%BD%BF%E4%BD%A0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%8A%A8%E8%B5%B7%E6%9D%A5%E2%80%94%E2%80%94transform%E5%B1%9E%E6%80%A7/index.html">
 <meta property="og:site_name" content="GaoYuan&#39;s Blog">
-<meta property="og:description" content="一枚微不足道的前端攻城狮">
+<meta property="og:description" content="转换  什么是转换  改变元素在页面上的大小，位置，形状以及角度的一种方式  可以向元素应用2D以及3D的转换效果   转换属性     (1)转换效果             属性：transform             取值：1.none：默认值，即没有任何转换效果                  2.一个或多个转换函数，如果是多个转换函数，中间用&quot;空格隔开&quot;">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-18T03:31:45.000Z">
+<meta property="article:modified_time" content="2021-03-18T03:32:59.108Z">
 <meta property="article:author" content="高原">
-<meta property="article:tag" content="前端">
+<meta property="article:tag" content="CSS">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/">
+<link rel="canonical" href="http://example.com/2021/03/18/%E7%94%A8CSS3%E4%BD%BF%E4%BD%A0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%8A%A8%E8%B5%B7%E6%9D%A5%E2%80%94%E2%80%94transform%E5%B1%9E%E6%80%A7/">
 
 
 <script class="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
-<title>GaoYuan's Blog</title>
+<title>用CSS3使你的网页动起来——transform属性 | GaoYuan's Blog</title>
   
 
 
@@ -261,118 +263,17 @@
 </noscript>
 
 
-    <div class="main-inner index posts-expand">
+    <div class="main-inner post posts-expand">
 
-    
+
+  
 
 
 <div class="post-block">
   
   
 
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/18/HTTPS%E5%92%8CHTTP%E5%8E%9F%E7%90%86%E5%92%8C%E5%8C%BA%E5%88%AB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="高原">
-      <meta itemprop="description" content="一枚微不足道的前端攻城狮">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GaoYuan's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/18/HTTPS%E5%92%8CHTTP%E5%8E%9F%E7%90%86%E5%92%8C%E5%8C%BA%E5%88%AB/" class="post-title-link" itemprop="url">HTTPS和HTTP原理和区别</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-03-18 11:33:28 / 修改时间：11:35:51" itemprop="dateCreated datePublished" datetime="2021-03-18T11:33:28+08:00">2021-03-18</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/HTTP/" itemprop="url" rel="index"><span itemprop="name">HTTP</span></a>
-        </span>
-    </span>
-
-  
-      </div>
-      <div class="post-meta">
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>5k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>一、HTTP 和 HTTPS 的基本概念<br>HTTP：超文本传输协议（HTTP，HyperText Transfer Protocol）是互联网上应用最为广泛的一种网络协议。设计 HTTP 最初的目的是为了提供一种发布和接收 HTML 页面的方法。它可以使浏览器更加高效。HTTP 协议是以明文方式发送信息的，如果黑客截取了 Web 浏览器和服务器之间的传输报文，就可以直接获得其中的信息。</p>
-<p>HTTP 原理：</p>
-<p>①  客户端的浏览器首先要通过网络与服务器建立连接，该连接是通过 TCP 来完成的，一般 TCP 连接的端口号是80。 建立连接后，客户机发送一个请求给服务器，请求方式的格式为：统一资源标识符（URL）、协议版本号，后边是 MIME 信息包括请求修饰符、客户机信息和许可内容。</p>
-<p>②  服务器接到请求后，给予相应的响应信息，其格式为一个状态行，包括信息的协议版本号、一个成功或错误的代码，后边是 MIME 信息包括服务器信息、实体信息和可能的内容。</p>
-<p>HTTPS：是以安全为目标的 HTTP 通道，是 HTTP 的安全版。HTTPS 的安全基础是 SSL。SSL 协议位于 TCP/IP 协议与各种应用层协议之间，为数据通讯提供安全支持。SSL 协议可分为两层：SSL 记录协议（SSL Record Protocol），它建立在可靠的传输协议（如TCP）之上，为高层协议提供数据封装、压缩、加密等基本功能的支持。SSL 握手协议（SSL Handshake Protocol），它建立在 SSL 记录协议之上，用于在实际的数据传输开始前，通讯双方进行身份认证、协商加密算法、交换加密密钥等。</p>
-<p>​​<img src="https://img-blog.csdnimg.cn/20200707084720409.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4Mjg5ODE1,size_16,color_FFFFFF,t_70">                                    </p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/03/18/HTTPS%E5%92%8CHTTP%E5%8E%9F%E7%90%86%E5%92%8C%E5%8C%BA%E5%88%AB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/18/%E7%94%A8CSS3%E4%BD%BF%E4%BD%A0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%8A%A8%E8%B5%B7%E6%9D%A5%E2%80%94%E2%80%94transform%E5%B1%9E%E6%80%A7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -385,9 +286,9 @@
       <meta itemprop="name" content="GaoYuan's Blog">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/18/%E7%94%A8CSS3%E4%BD%BF%E4%BD%A0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%8A%A8%E8%B5%B7%E6%9D%A5%E2%80%94%E2%80%94transform%E5%B1%9E%E6%80%A7/" class="post-title-link" itemprop="url">用CSS3使你的网页动起来——transform属性</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          用CSS3使你的网页动起来——transform属性
+        </h1>
 
         <div class="post-meta-container">
           <div class="post-meta">
@@ -411,6 +312,13 @@
     </span>
 
   
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
       </div>
       <div class="post-meta">
     <span class="post-meta-item" title="本文字数">
@@ -436,7 +344,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p><strong>转换</strong></p>
+        <p><strong>转换</strong></p>
 <ol>
 <li><p>什么是转换</p>
 <pre><code> 改变元素在页面上的大小，位置，形状以及角度的一种方式
@@ -462,15 +370,56 @@
 <ol start="3">
 <li>位移：改变元素在页面上的位置<br> 属性：transform<br> 取值：<br> 1.translate(x)：x取值为正，向右移动；x取值为负，向左移动<br> 2.translate(x,y)：x同上；y取值为正，下移；y取值为负，向下移动<br> 3.translateX(x)<br> 4.translateY(y)</li>
 </ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/03/18/%E7%94%A8CSS3%E4%BD%BF%E4%BD%A0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%8A%A8%E8%B5%B7%E6%9D%A5%E2%80%94%E2%80%94transform%E5%B1%9E%E6%80%A7/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
+<span id="more"></span>
+
+<ol>
+<li>缩放<br>属性：transform<br>取值：<br>1、scale(value)：value表示的是x轴和y轴的缩放倍率<pre><code>                      2、scale(x,y)
+                      3、scaleX(x)
+                      4、scaleY(y)
+</code></pre>
+注：x，y的取值   默认为1；放大：大于1的数值；缩小：0-1之间的数字</li>
+<li>旋转：改变元素在页面上的角度<pre><code>          属性：transform
+          取值：rotate(ndeg)
+</code></pre>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取值为正，顺时针旋转<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n取值为负，逆时针旋转<pre><code>          注意： 1、转换原点你会影响旋转效果
+                     &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;2、旋转操作时，连同坐标轴一同都跟着转
+</code></pre>
+</li>
+<li>倾斜：改变    元素在页面中的形状<br>属性：transform<br>取值：1、skewX(ndeg)    让元素向横向倾斜<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n取值为正，y轴逆时针倾斜<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n取值为负，y轴顺时针倾斜<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、skewY(ndeg)    让元素向纵向倾斜<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n取值为正，x轴顺时针倾斜<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n取值为负，x轴逆时针倾斜<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3、skew(x)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4、skew(x，y)</li>
+</ol>
+<p><strong>3D转换</strong></p>
+<ol>
+<li>属性：perspective<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;作用：模拟 人眼睛 到3D转换物体的距离，取值越大，表示离物体越远，取值越小，表示离物体越近<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取值：以px为单位的数值<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注意：该属性要加在3D转换元素的父元素上</li>
+<li>3D旋转<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;属性：transform<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取值：rotateX(xdeg)：以x轴为中心轴，旋转元素<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rotateY(ydeg)：以y轴为中心轴，旋转元素<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rotateZ(zdeg)：以z轴为中心轴，旋转元素<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rotate3D(x,y,z,ndeg)：x,y,z取值大于0的话，则该轴参与旋转；x,y,z取值为0的话，则该轴不参与旋转</li>
+</ol>
+<p><strong>过渡</strong></p>
+<ol>
+<li>什么是过渡<pre><code>        使得CSS的属性值在一段时间内平缓变化的效果
+        过渡能观察到元素的属性值得变化过程
+</code></pre>
+</li>
+<li>过渡四要素（四属性）<br>(1)指定过渡属性<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;作用：指定那个CSS属性值在变化时需要使用过渡的效果。当指定属性值发生变化时，过渡就会被触发<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;语法：transition-property<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取值： 1.属性名称<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.none：默认值<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.all<br>允许设置过渡的属性：1、颜色属性<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、取值为数字的属性<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3、转换属性-transform<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4、渐变属性<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5、visibility<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6、阴影属性<br>(2)指定过渡时长:过渡的效果要在多长时间内完成<br>&nbsp;&nbsp;&nbsp;&nbsp;属性：transition-duration<br>&nbsp;&nbsp;&nbsp;&nbsp;取值：以s或ms为单位的数值<br>&nbsp;&nbsp;&nbsp;&nbsp;默认值为0，意味着不会有过渡效果<br>(3)指定过渡的速度时间曲线函数<pre><code>                属性：transition-timing-function
+                取值：
+</code></pre>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、ease  默认值，慢速开始，快速变快，慢速结束<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、linear  匀速<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3、ease-in  慢速开始，加速结束<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4、ease-out    快速开始，减速结束<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5、ease-in-out  慢速开始和结束，中间先加后减<br>(4)指定过渡延迟:当用户激发操作后等待多长时间再显示效果<br>&nbsp;&nbsp;&nbsp;&nbsp;属性：transition-delay<br>&nbsp;&nbsp;&nbsp;&nbsp;取值：以s或ms为单位的数值</li>
+</ol>
+<p><strong>动画</strong><br>1、什么是动画<br>动画指使元素从一种样式逐渐变化为另一种样式的过程<br>动画是复杂版的过渡效果<br>本质：使用”关键帧”，来定义动画的每一步<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关键帧：包含 运行的时间点以及动作(样式)<br>2、动画的使用步骤<br>(1)声明动画<br>&nbsp;&nbsp;&nbsp;&nbsp;指定动画名称以及涉及到的关键帧们<br>(2)为元素调用动画<br>&nbsp;&nbsp;&nbsp;&nbsp;指定元素使用哪个动画效果<br>3、声明动画<br>&nbsp;&nbsp;&nbsp;&nbsp;样式表中，通过 @keyframes 规则来声明动画</p>
+<pre><code>            @keyframes 动画名称&#123;
+                    0%&#123;
+                        /*动画开始时，元素的样式*/
+                        属性：值;
+                        属性：值;
+                    &#125;
+                    50%&#123;
+                        /*动画执行到一半时，元素的样式*/
+                    &#125;
+                    100%&#123;
+                        /*动画结束时，元素的样式*/
+                    &#125;
+            &#125;
+</code></pre>
+<p>动画声明的浏览器兼容性：<br>&nbsp;&nbsp;&nbsp;&nbsp;@-moz-keyframes动画名{ … }<br>&nbsp;&nbsp;&nbsp;&nbsp;@-webkit-keyframes动画名{ … }<br>&nbsp;&nbsp;&nbsp;&nbsp;@-o-keyframes动画名{ … }<br>4、调用动画<br>&nbsp;&nbsp;&nbsp;&nbsp;(1)animation-name：要调用的动画名称<br>&nbsp;&nbsp;&nbsp;&nbsp;(2)animation-duration：动画完成一个周期需要的时长<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取值：以s或ms为单位的数值<br>&nbsp;&nbsp;&nbsp;&nbsp;(3)animation-timing-function：指定动画的速度时间曲线函数<br>                        取值：ease、linear、ease-in，ease-out、ease-in-out<br>&nbsp;&nbsp;&nbsp;&nbsp;(4)animation-delay：指定动画的播放延迟<br>&nbsp;&nbsp;&nbsp;&nbsp;(5)animation-iteration-count：指定动画的播放次数<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取值：1.默认值为1，只播放一次<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.自定义数值<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.infinite，表示无限次播放<br>&nbsp;&nbsp;&nbsp;&nbsp;(6)animation-direction：指定动画的播放方向<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取值： 1、normal：正向播放，从0%<del>100%<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、reverse：逆向播放，从100%</del>0%<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3、alternate：轮流播放，基数次数播放时，正向播放，偶数次数播放时，逆向播<br>&nbsp;&nbsp;&nbsp;&nbsp;(7)animation-flill-mode(不属于简写里)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;作用：动画的填充模式，指动画在播放之前或播放之后的显示效果<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取值：none  默认值，无任何效果<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forwards  当动画播放完成之后，元素将保持在最后一个帧的状态上<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backwards   动画播放前，在延迟时间内，动画将保持在第一帧的状态上<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;both   动画播放前后，分别应用在第一帧和最后一帧的状态上<br>&nbsp;&nbsp;&nbsp;&nbsp;(8)animation-play-state<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;作用：指定动画处于 播放状态 还是 暂停状态<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取值：  paused     动画暂停<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;running    动画播放</p>
+
     </div>
 
     
@@ -478,315 +427,41 @@
     
 
     <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
 
+  <div class="social-list">
 
+      <div class="social-item">
+        <a target="_blank" class="social-link" href="/images/wechat_channel.jpg">
+          <span class="icon">
+            <i class="fab fa-weixin"></i>
+          </span>
 
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/18/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="高原">
-      <meta itemprop="description" content="一枚微不足道的前端攻城狮">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GaoYuan's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/18/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/" class="post-title-link" itemprop="url">使用Hbuilder快速打包一个app</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-03-18 11:14:26 / 修改时间：11:30:23" itemprop="dateCreated datePublished" datetime="2021-03-18T11:14:26+08:00">2021-03-18</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Hbuilder/" itemprop="url" rel="index"><span itemprop="name">Hbuilder</span></a>
-        </span>
-    </span>
-
-  
+          <span class="label">WeChat</span>
+        </a>
       </div>
-      <div class="post-meta">
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
+  </div>
 </div>
 
-        </div>
-      </header>
+          <div class="post-tags">
+              <a href="/tags/CSS/" rel="tag"># CSS</a>
+          </div>
 
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>HBuilder提供的打包有云端打包和本地打包两种，云端打包的特点是DCloud官方配置好了原生的打包环境，可以把HTML等文件编译为原生安装包。</p>
-<p>优点：速度快，所需要的环境少，加快了开发者速度，不会因为各种JDK，java，Android环境而无法打包生成apk或ipa头疼，大大减少了开发繁琐操作。</p>
-<p>方法步骤：</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/03/18/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
-    </div>
 
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/16/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="高原">
-      <meta itemprop="description" content="一枚微不足道的前端攻城狮">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GaoYuan's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/16/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/" class="post-title-link" itemprop="url">开发小技巧</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-03-16 21:55:23" itemprop="dateCreated datePublished" datetime="2021-03-16T21:55:23+08:00">2021-03-16</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-17 10:04:24" itemprop="dateModified" datetime="2021-03-17T10:04:24+08:00">2021-03-17</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">个人笔记</span></a>
-        </span>
-    </span>
-
-  
-      </div>
-      <div class="post-meta">
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.5k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="阻止单击事件冒泡"><a href="#阻止单击事件冒泡" class="headerlink" title="阻止单击事件冒泡"></a>阻止单击事件冒泡</h2><p><code>&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;</code></p>
-<h2 id="提交事件不再重载页面"><a href="#提交事件不再重载页面" class="headerlink" title="提交事件不再重载页面"></a>提交事件不再重载页面</h2><p><code>&lt;form v-on:submit.prevent=&quot;onSubmit&quot;&gt;&lt;/form&gt;</code></p>
-<h2 id="修饰符可以串联"><a href="#修饰符可以串联" class="headerlink" title="修饰符可以串联"></a>修饰符可以串联</h2><p><code>&lt;a v-on:click.stop.prevent=&quot;doThat&quot;&gt;</code></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/03/16/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/03/18/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/" rel="prev" title="使用Hbuilder快速打包一个app">
+                  <i class="fa fa-chevron-left"></i> 使用Hbuilder快速打包一个app
+                </a>
             </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/16/vuex%E7%AC%94%E8%AE%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="高原">
-      <meta itemprop="description" content="一枚微不足道的前端攻城狮">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GaoYuan's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/16/vuex%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">vuex笔记</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-03-16 21:43:23" itemprop="dateCreated datePublished" datetime="2021-03-16T21:43:23+08:00">2021-03-16</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-17 10:05:41" itemprop="dateModified" datetime="2021-03-17T10:05:41+08:00">2021-03-17</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/vue/" itemprop="url" rel="index"><span itemprop="name">vue</span></a>
-        </span>
-    </span>
-
-  
-      </div>
-      <div class="post-meta">
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>3.6k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="Vuex笔记"><a href="#Vuex笔记" class="headerlink" title="Vuex笔记"></a>Vuex笔记</h1><h3 id="Vuex概述"><a href="#Vuex概述" class="headerlink" title="Vuex概述"></a>Vuex概述</h3><h4 id="vuex是什么"><a href="#vuex是什么" class="headerlink" title="vuex是什么"></a>vuex是什么</h4><p>​    vuex是实现组件全局状态（数据）管理的一种机制，可以方便实现组件之间数据的共享<br><img src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/image-20201221091304337.png"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/03/16/vuex%E7%AC%94%E8%AE%B0/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
+            <div class="post-nav-item">
+                <a href="/2021/03/18/HTTPS%E5%92%8CHTTP%E5%8E%9F%E7%90%86%E5%92%8C%E5%8C%BA%E5%88%AB/" rel="next" title="HTTPS和HTTP原理和区别">
+                  HTTPS和HTTP原理和区别 <i class="fa fa-chevron-right"></i>
+                </a>
             </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
+          </div>
     </footer>
   </article>
 </div>
@@ -795,6 +470,8 @@
 
 
 
+
+    <div class="comments gitalk-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -894,6 +571,25 @@
 
 
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('.gitalk-container', () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'b6854378950da6a4a9dc',
+      clientSecret: 'dfd37cf3129914db71752a3c108a7db103fddcd8',
+      repo        : 'gaoyuanio.github.io',
+      owner       : 'gaoyuanio',
+      admin       : ['gaoyuanio'],
+      id          : '73436f8051863d1b3ae0357aa3037db5',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render(document.querySelector('.gitalk-container'));
+  }, window.Gitalk);
+});
+</script>
 
 <script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":true,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
 </html>
