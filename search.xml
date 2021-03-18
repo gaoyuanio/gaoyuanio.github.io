@@ -7,9 +7,11 @@
 <p>HTTP 原理：</p>
 <p>①  客户端的浏览器首先要通过网络与服务器建立连接，该连接是通过 TCP 来完成的，一般 TCP 连接的端口号是80。 建立连接后，客户机发送一个请求给服务器，请求方式的格式为：统一资源标识符（URL）、协议版本号，后边是 MIME 信息包括请求修饰符、客户机信息和许可内容。</p>
 <p>②  服务器接到请求后，给予相应的响应信息，其格式为一个状态行，包括信息的协议版本号、一个成功或错误的代码，后边是 MIME 信息包括服务器信息、实体信息和可能的内容。</p>
+<span id="more"></span>
+
 <p>HTTPS：是以安全为目标的 HTTP 通道，是 HTTP 的安全版。HTTPS 的安全基础是 SSL。SSL 协议位于 TCP/IP 协议与各种应用层协议之间，为数据通讯提供安全支持。SSL 协议可分为两层：SSL 记录协议（SSL Record Protocol），它建立在可靠的传输协议（如TCP）之上，为高层协议提供数据封装、压缩、加密等基本功能的支持。SSL 握手协议（SSL Handshake Protocol），它建立在 SSL 记录协议之上，用于在实际的数据传输开始前，通讯双方进行身份认证、协商加密算法、交换加密密钥等。</p>
 <p>​​<img data-src="https://img-blog.csdnimg.cn/20200707084720409.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4Mjg5ODE1,size_16,color_FFFFFF,t_70">                                    </p>
-<span id="more"></span>
+<!-- more -->
 
 <p>HTTPS 设计目标：</p>
 <p>(1) 数据保密性：保证数据内容在传输的过程中不会被第三方查看。就像快递员传递包裹一样，都进行了封装，别人无法获知里面装了什么  。</p>
@@ -44,7 +46,7 @@
 <p>5、成本增加。部署 HTTPS 后，因为 HTTPS 协议的工作要增加额外的计算资源消耗，例如 SSL 协议加密算法和 SSL 交互次数将占用一定的计算资源和服务器成本。</p>
 <p>6、HTTPS 协议的加密范围也比较有限。最关键的，SSL 证书的信用链体系并不安全，特别是在某些国家可以控制 CA 根证书的情况下，中间人攻击一样可行。</p>
 <p>六、HTTPS 的连接过程</p>
-<p>​​<img data-src="https://img-blog.csdn.net/20180709141944471?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4Mjg5ODE1/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180709141944471"></p>
 <p>图片中的过程是按 8 个步骤分的，但是网上有更详细的步骤，所以我把详细的过程和这个图片配在一起。</p>
 <p>① 客户端的浏览器向服务器发送请求，并传送客户端 SSL 协议的版本号，加密算法的种类，产生的随机数，以及其他服务器和客户端之间通讯所需要的各种信息。</p>
 <p>② 服务器向客户端传送 SSL 协议的版本号，加密算法的种类，随机数以及其他相关信息，同时服务器还将向客户端传送自己的证书。</p>
@@ -200,57 +202,48 @@
       </tags>
   </entry>
   <entry>
-    <title>vue项目打包优化策略</title>
-    <url>/2021/03/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</url>
-    <content><![CDATA[<p>使用vue-cli部署生产包时，发现资源包很大，打包后的vendor.js达到了1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？<br>1.组件按需加载<br>这是首先可以优化的点。如果频繁使用了第三方组件/UI库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。<br>示例如下：<br>1.1 element-ui<br>首先，安装 babel-plugin-component：<br>npm install babel-plugin-component -D<br>然后，将.babelrc 修改为：<br>// main.js<br>import Vue from ‘vue’<br>import { Dialog, Loading } from ‘element-ui’<br>Vue.use(Dialog)<br>Vue.use(Loading.directive)<br>Vue.prototype.$loading = Loading.service<br>// 然后正常使用组件<br>1.2 mint-ui<br>由于mint-ui是element-ui的移动端组件，所以它的使用和引入几乎和element-ui一样。<br>首先，安装 babel-plugin-component：<br>npm install babel-plugin-component -D<br>然后，将.babelrc 修改为：<br>{<br>  “presets”: [<br>    [“es2015”, { “modules”: false }]<br>  ],<br>  “plugins”: [[“component”, [<br>    {<br>      “libraryName”: “mint-ui”,<br>      “style”: true<br>    }<br>  ]]]<br>}<br>然后引入部分组件<br>// main.js<br>import Vue from ‘vue’<br>import { Toast, MessageBox } from ‘element-ui’<br>Vue.use(Dialog)<br>Vue.use(Loading.directive)<br>Vue.prototype.$loading = Loading.service<br>// 然后正常使用组件<br>注意，element-ui和mint-ui不能同时在.babelrc中进行插件设置，这种情况下，依然可以按需引入，但是不要在.babelrc中配置，在引入的地方同时引入css即可。<br>1.3 echarts<br>首先安装babel-plugin-equire<br>npm i babel-plugin-equire -D<br>然后，在.babelrc文件中添加该插件<br>{<br>  “plugins”: [<br>       // other plugins<br>       …</p>
-<pre><code>&quot;equire&quot;
-</code></pre>
-<p>  ]<br>}<br>创建一个js文件<br>// echarts.js<br>// eslint-disable-next-line<br>const echarts = equire([<br>  ‘tooltip’,<br>  ‘candlestick’,<br>  ‘bar’,<br>  ‘line’,<br>  ‘axisPointer’,<br>  ‘legend’,<br>  ‘grid’<br>])<br>export default echarts<br>// 业务组件，引入echarts<br>import echarts from ‘@/assets/lib/echarts’<br>// 使用与以前一样<br>按需加载echarts<br>解决vue-cli首屏加载慢的问题<br>2.路由懒加载<br>这里需要一个插件<br>vue-router官方推荐syntax-dynamic-import插件，不过它要求同时安装@bable/core^7.0.0，如果你安装了babel-core6，是会有版本冲突的。我的做法如下<br>npm install babel-plugin-syntax-dynamic-import –save-dev(^6.18.0)<br>// router.js<br>const login = () =&gt; import(‘@/components/login’)<br>const router = new VueRouter({<br>  routes: [<br>    { path: ‘/login’, component: login }<br>  ]<br>})<br>还有一种魔法注释用法<br>有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack &gt; 2.4)。<br>const Foo = () =&gt; import(/* webpackChunkName: “group-foo” */ ‘./Foo.vue’)<br>3.异步组件<br>如果组件在页面加载时不需要，只在调用时用到，这时可以使用异步组件的写法。仅仅是引入和组件注册写法不同<br>// template<br><test v-if="showTest"></test><br>// script<br>  components: {<br>    test: () =&gt; import(‘./test’) // 将组件异步引入，告诉webpack，将该部分代码分割打包<br>  },<br>  methods:{<br>      clickTest () {<br>          this.showTest = !this.showTest<br>    }<br>  }<br>4.图片的压缩合并<br>如有可能，将图片制作成精灵图<br>5.CDN加速<br>在index.html中引入cdn资源<br>…</p>
-<body>
-  <div id="app">
-  </div>
-  <!-- built files will be auto injected -->
-  <script src="https://cdn.bootcss.com/vue/2.5.2/vue.min.js"></script>
-  <script src="https://cdn.bootcss.com/vue-router/3.0.1/vue-router.min.js"></script>
-  <script src="https://cdn.bootcss.com/vuex/3.0.1/vuex.min.js"></script>
-  <script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js"></script>
-</body>
-...
-修改 build/webpack.base.conf.js
-module.exports = {
-  context: path.resolve(__dirname, '../'),
-  entry: {
-    app: './src/main.js'
-  },
-  externals:{
-    'vue': 'Vue',
-    'vue-router': 'VueRouter',
-    'vuex':'Vuex',
-    'vue-resource': 'VueResource'
-  },
-  ...
-}
-修改src/main.js src/router/index.js 注释掉import引入的vue,vue-resource
-// import Vue from 'vue'
-// import VueResource from 'vue-resource'
-// Vue.use(VueResource)
-6.压缩代码
-vue-cli已经使用UglifyJsPlugin 插件来压缩代码，可以设置成如下配置：
-new webpack.optimize.UglifyJsPlugin({
-  compress: {
-    warnings: false,
-    drop_console: true,
-    pure_funcs: ['console.log']
-  },
-  sourceMap: false
-})
-其中sourceMap: false是禁用除错功能。
-如果设为true，在部署包中会生成.map结尾的js文件。它用于在代码混淆压缩的情况下仍可进行调试。这个功能虽好，但会大大增加整体资源包的体积，所以将其禁用。]]></content>
+    <title>MySQL列类型和列上约束</title>
+    <url>/2021/03/18/MySQL%E5%88%97%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%88%97%E4%B8%8A%E7%BA%A6%E6%9D%9F/</url>
+    <content><![CDATA[<h2 id="1-常用SQL命令"><a href="#1-常用SQL命令" class="headerlink" title="1.常用SQL命令"></a>1.常用SQL命令</h2><h3 id="（1）添加数据："><a href="#（1）添加数据：" class="headerlink" title="（1）添加数据："></a>（1）添加数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">INSERT</span>  <span class="keyword">INTO</span> 表名 <span class="keyword">VALUES</span>(….);</span><br></pre></td></tr></table></figure>
+
+<h3 id="（2）删除数据："><a href="#（2）删除数据：" class="headerlink" title="（2）删除数据："></a>（2）删除数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DELETE</span>  <span class="keyword">FROM</span> 表名;		#删除所有的记录行，慎用！</span><br><span class="line"><span class="keyword">DELETE</span>	<span class="keyword">FROM</span>	表名	<span class="keyword">WHERE</span>	列<span class="operator">=</span>值;		#删除满足条件的行</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+
+<h3 id="（3）修改数据："><a href="#（3）修改数据：" class="headerlink" title="（3）修改数据："></a>（3）修改数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">UPDATE 	表名	<span class="keyword">SET</span>  列<span class="operator">=</span>值，列<span class="operator">=</span>值；		#删除所有记录行，慎用</span><br><span class="line">UPDATE	表名	<span class="keyword">SET</span>	 列<span class="operator">=</span>值，列<span class="operator">=</span>值  <span class="keyword">WHERE</span>   列<span class="operator">=</span>值；</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-MySQL中的列类型"><a href="#2-MySQL中的列类型" class="headerlink" title="2.MySQL中的列类型"></a>2.MySQL中的列类型</h2><h3 id="（1）数字类型"><a href="#（1）数字类型" class="headerlink" title="（1）数字类型"></a>（1）数字类型</h3><h4 id="整型："><a href="#整型：" class="headerlink" title="整型："></a>整型：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">TINYINT: 占1个字节 -128~127。</span><br><span class="line">SMALLINT: 占2个字节 -32768~32767。</span><br><span class="line">INT: 占4个字节 -2147483648~2147483647。</span><br><span class="line">BIGINT: 占4/8个字节。</span><br></pre></td></tr></table></figure>
+
+<h4 id="小数型："><a href="#小数型：" class="headerlink" title="小数型："></a>小数型：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">FLOAT(M-M位有效数字,D-小数点后面D位小数):单精度浮点型，占4个字节。</span><br><span class="line">DOUBLE(M,D):双精度浮点型，占8个字节。</span><br><span class="line">DECIMAL(M,D):严格定点数，用于精确运算，如货币金额。</span><br></pre></td></tr></table></figure>
+
+<h3 id="（2）字符串类型"><a href="#（2）字符串类型" class="headerlink" title="（2）字符串类型"></a>（2）字符串类型</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">CHAR(M) : M不能超过255。</span><br><span class="line">VARCHAR(M) : M不能超过65535。</span><br><span class="line">TEXT(M) : M不能超过2^32,即40亿个字符。</span><br></pre></td></tr></table></figure>
+
+<p><strong>面试问题</strong>：CHAR(8)和VARCHAR(8)的区别?<br>user_name  CHAR(8)：定长字符串，可能产生空间浪费，但读取速度快</p>
+<blockquote>
+<p>‘a’  实际存储为： ‘a\0\0\0\0\0\0\0’<br>‘ab’实际存储为： ‘ab\0\0\0\0\0\0’<br>‘abc’实际存储为： ‘abc\0\0\0\0\0’<br>‘abcd’实际存储为： ‘abcd\0\0\0\0’<br>‘abcde’实际存储为： ‘abcde\0\0\0’<br>‘abcdef’实际存储为： ‘abcdef\0\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’</p>
+</blockquote>
+<p>user_name  VARCHAR(8)：   变长字符串，不会产生空间浪费，但读取速度稍慢</p>
+<blockquote>
+<p> ‘a’  实际存储为： ‘a\0’<br> ‘ab’实际存储为： ‘ab\0’<br> ‘abc’实际存储为： ‘abc\0’<br> ‘abcd’实际存储为： ‘abcd\0’<br>‘abcde’实际存储为： ‘abcde\0’<br>‘abcdef’实际存储为： ‘abcdef\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’　</p>
+</blockquote>
+<h3 id="（3）日期时间类型"><a href="#（3）日期时间类型" class="headerlink" title="（3）日期时间类型"></a>（3）日期时间类型</h3><p>​    DATE : 日期类型，必须用引号括起来，采用’yyyy-mm-dd’格式。<br>​    TIME : 时间类型，必须用引号括起来，采用’hh:mi:ss’格式。<br>​    DATETIME : 时期时间类型，必须用引号括起来，采用’yyyy-mm-dd hh:mi:ss’格式。</p>
+<h3 id="（4）布尔类型"><a href="#（4）布尔类型" class="headerlink" title="（4）布尔类型"></a>（4）布尔类型</h3><p>​    BOOL/BOOLEAN : 智能表示TRUE(等价于1)或FLASE(等价于0)。</p>
+<h2 id="3-列上的约束"><a href="#3-列上的约束" class="headerlink" title="3.列上的约束"></a>3.列上的约束</h2><h3 id="1-Constraint约束"><a href="#1-Constraint约束" class="headerlink" title="(1)Constraint约束"></a>(1)Constraint约束</h3><p>列上的值往往是有限制，如：</p>
+<p>性别:只能取男或者女<br>政治面貌：只能取党员，团员，群众之一</p>
+<h3 id="2-主键约束-PRIMARY-KEY"><a href="#2-主键约束-PRIMARY-KEY" class="headerlink" title="(2)主键约束(PRIMARY  KEY)"></a>(2)主键约束(PRIMARY  KEY)</h3><p>语法：列名 类型 PRIMARY KEY<br>声明为”主键”的列上不能出现null值，且不能重复，如商品编号；表中所有的记录行会自动按照主键列上的值进行排序——一个表至多只能声明一个主键列。</p>
+<h3 id="3-唯一约束-UNIQUE"><a href="#3-唯一约束-UNIQUE" class="headerlink" title="(3)唯一约束(UNIQUE)"></a>(3)唯一约束(UNIQUE)</h3><p>语法：列名 类型 UNIQUE<br>声明为”唯一”约束的列上不能出现重复值，但可以出现多个NULL</p>
+<h3 id="4-非空约束-NOT-NULL"><a href="#4-非空约束-NOT-NULL" class="headerlink" title="(4)非空约束(NOT  NULL)"></a>(4)非空约束(NOT  NULL)</h3><p>语法：列名 类型 NOT  NULL<br>声明为”非空”约束的列上不能出现NULL，但可以重复。</p>
+<h3 id="5-检查约束——MySQL不支持"><a href="#5-检查约束——MySQL不支持" class="headerlink" title="(5)检查约束——MySQL不支持"></a>(5)检查约束——MySQL不支持</h3><h3 id="6-默认值约束-DEFAULT"><a href="#6-默认值约束-DEFAULT" class="headerlink" title="(6)默认值约束(DEFAULT)"></a>(6)默认值约束(DEFAULT)</h3><p>语法：列名 类型 DEFAULT 值<br>声明了默认值的列若未指定值，则使用默认值；若指定的特定值的值，则使用指定的值。</p>
+<h3 id="7-外键约束"><a href="#7-外键约束" class="headerlink" title="(7)外键约束"></a>(7)外键约束</h3><p>外键：POREIGN  KEY,可重复可为空，外键列上出现的值必须正另一个表的主键列上。</p>
+]]></content>
       <categories>
-        <category>vue</category>
+        <category>MySQL</category>
       </categories>
       <tags>
-        <tag>webpack vue</tag>
+        <tag>MySQL</tag>
       </tags>
   </entry>
   <entry>
@@ -297,6 +290,197 @@ new webpack.optimize.UglifyJsPlugin({
       </categories>
       <tags>
         <tag>Hbuilder</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>vue项目打包优化策略</title>
+    <url>/2021/03/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</url>
+    <content><![CDATA[<p>使用vue-cli部署生产包时，发现资源包很大，打包后的<code>vendor.js</code>达到了1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？</p>
+<h3 id="1-组件按需加载"><a href="#1-组件按需加载" class="headerlink" title="1.组件按需加载"></a>1.组件按需加载</h3><p>这是首先可以优化的点。如果频繁使用了第三方组件/UI库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。</p>
+<p>示例如下：</p>
+<h4 id="1-1-element-ui"><a href="#1-1-element-ui" class="headerlink" title="1.1 element-ui"></a>1.1 element-ui</h4><p>首先，安装 babel-plugin-component：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<p>然后，将.babelrc 修改为：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; main.js</span><br><span class="line">import Vue from &#39;vue&#39;</span><br><span class="line">import &#123; Dialog, Loading &#125; from &#39;element-ui&#39;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading &#x3D; Loading.service</span><br><span class="line">&#x2F;&#x2F; 然后正常使用组件</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-mint-ui"><a href="#1-2-mint-ui" class="headerlink" title="1.2 mint-ui"></a>1.2 mint-ui</h4><p>由于mint-ui是element-ui的移动端组件，所以它的使用和引入几乎和element-ui一样。</p>
+<p>首先，安装 babel-plugin-component：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
+
+
+
+<p>然后，将.babelrc 修改为：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;presets&quot;: [</span><br><span class="line">    [&quot;es2015&quot;, &#123; &quot;modules&quot;: false &#125;]</span><br><span class="line">  ],</span><br><span class="line">  &quot;plugins&quot;: [[&quot;component&quot;, [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;libraryName&quot;: &quot;mint-ui&quot;,</span><br><span class="line">      &quot;style&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">  ]]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>然后引入部分组件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; main.js</span><br><span class="line">import Vue from &#39;vue&#39;</span><br><span class="line">import &#123; Toast, MessageBox &#125; from &#39;element-ui&#39;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading &#x3D; Loading.service</span><br><span class="line">&#x2F;&#x2F; 然后正常使用组件</span><br></pre></td></tr></table></figure>
+
+<p>注意，element-ui和mint-ui不能同时在.babelrc中进行插件设置，这种情况下，依然可以按需引入，但是不要在<code>.babelrc</code>中配置，在引入的地方同时引入css即可。</p>
+<h4 id="1-3-echarts"><a href="#1-3-echarts" class="headerlink" title="1.3 echarts"></a>1.3 echarts</h4><p>首先安装babel-plugin-equire</p>
+<p>npm i babel-plugin-equire -D</p>
+<p>然后，在<code>.babelrc</code>文件中添加该插件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;plugins&quot;: [</span><br><span class="line">       &#x2F;&#x2F; other plugins</span><br><span class="line">       ...</span><br><span class="line">       </span><br><span class="line">    &quot;equire&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>创建一个js文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; echarts.js</span><br><span class="line">&#x2F;&#x2F; eslint-disable-next-line</span><br><span class="line">const echarts &#x3D; equire([</span><br><span class="line">  &#39;tooltip&#39;,</span><br><span class="line">  &#39;candlestick&#39;,</span><br><span class="line">  &#39;bar&#39;,</span><br><span class="line">  &#39;line&#39;,</span><br><span class="line">  &#39;axisPointer&#39;,</span><br><span class="line">  &#39;legend&#39;,</span><br><span class="line">  &#39;grid&#39;</span><br><span class="line">])</span><br><span class="line">export default echarts</span><br><span class="line">&#x2F;&#x2F; 业务组件，引入echarts</span><br><span class="line">import echarts from &#39;@&#x2F;assets&#x2F;lib&#x2F;echarts&#39;</span><br><span class="line">&#x2F;&#x2F; 使用与以前一样</span><br></pre></td></tr></table></figure>
+
+
+
+<p>按需加载echarts</p>
+<p>解决vue-cli首屏加载慢的问题</p>
+<h3 id="2-路由懒加载"><a href="#2-路由懒加载" class="headerlink" title="2.路由懒加载"></a>2.路由懒加载</h3><p>这里需要一个插件</p>
+<p>vue-router官方推荐syntax-dynamic-import插件，不过它要求同时安装@bable/core^7.0.0，如果你安装了babel-core6，是会有版本冲突的。我的做法如下</p>
+<p>npm install babel-plugin-syntax-dynamic-import –save-dev(^6.18.0)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; router.js</span><br><span class="line">const login &#x3D; () &#x3D;&gt; import(&#39;@&#x2F;components&#x2F;login&#39;)</span><br><span class="line">const router &#x3D; new VueRouter(&#123;</span><br><span class="line">  routes: [</span><br><span class="line">    &#123; path: &#39;&#x2F;login&#39;, component: login &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>还有一种魔法注释用法</p>
+<p>有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack &gt; 2.4)。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const Foo &#x3D; () &#x3D;&gt; import(&#x2F;* webpackChunkName: &quot;group-foo&quot; *&#x2F; &#39;.&#x2F;Foo.vue&#39;)</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="3-异步组件"><a href="#3-异步组件" class="headerlink" title="3.异步组件"></a>3.异步组件</h3><p>如果组件在页面加载时不需要，只在调用时用到，这时可以使用异步组件的写法。仅仅是引入和组件注册写法不同</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; template</span><br><span class="line">&lt;test v-if&#x3D;&quot;showTest&quot;&gt;&lt;&#x2F;test&gt;</span><br><span class="line">&#x2F;&#x2F; script</span><br><span class="line">  components: &#123;</span><br><span class="line">    test: () &#x3D;&gt; import(&#39;.&#x2F;test&#39;) &#x2F;&#x2F; 将组件异步引入，告诉webpack，将该部分代码分割打包</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">      clickTest () &#123;</span><br><span class="line">          this.showTest &#x3D; !this.showTest</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-图片的压缩合并"><a href="#4-图片的压缩合并" class="headerlink" title="4.图片的压缩合并"></a>4.图片的压缩合并</h3><p>如有可能，将图片制作成精灵图</p>
+<h3 id="5-CDN加速"><a href="#5-CDN加速" class="headerlink" title="5.CDN加速"></a>5.CDN加速</h3><p>在index.html中引入cdn资源</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;div id&#x3D;&quot;app&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">  &lt;!-- built files will be auto injected --&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue&#x2F;2.5.2&#x2F;vue.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue-router&#x2F;3.0.1&#x2F;vue-router.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vuex&#x2F;3.0.1&#x2F;vuex.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue-resource&#x2F;1.5.1&#x2F;vue-resource.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+
+
+<p>修改 build/webpack.base.conf.js</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">module.exports &#x3D; &#123;</span><br><span class="line">  context: path.resolve(__dirname, &#39;..&#x2F;&#39;),</span><br><span class="line">  entry: &#123;</span><br><span class="line">    app: &#39;.&#x2F;src&#x2F;main.js&#39;</span><br><span class="line">  &#125;,</span><br><span class="line">  externals:&#123;</span><br><span class="line">    &#39;vue&#39;: &#39;Vue&#39;,</span><br><span class="line">    &#39;vue-router&#39;: &#39;VueRouter&#39;,</span><br><span class="line">    &#39;vuex&#39;:&#39;Vuex&#39;,</span><br><span class="line">    &#39;vue-resource&#39;: &#39;VueResource&#39;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>修改src/main.js src/router/index.js 注释掉import引入的vue,vue-resource</p>
+<p>// import Vue from ‘vue’</p>
+<p>// import VueResource from ‘vue-resource’</p>
+<p>// Vue.use(VueResource)</p>
+<h3 id="6-压缩代码"><a href="#6-压缩代码" class="headerlink" title="6.压缩代码"></a>6.压缩代码</h3><p>vue-cli已经使用UglifyJsPlugin 插件来压缩代码，可以设置成如下配置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">new webpack.optimize.UglifyJsPlugin(&#123;</span><br><span class="line">  compress: &#123;</span><br><span class="line">    warnings: false,</span><br><span class="line">    drop_console: true,</span><br><span class="line">    pure_funcs: [&#39;console.log&#39;]</span><br><span class="line">  &#125;,</span><br><span class="line">  sourceMap: false</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>其中sourceMap: false是禁用除错功能。</p>
+<p>如果设为true，在部署包中会生成.map结尾的js文件。它用于在代码混淆压缩的情况下仍可进行调试。这个功能虽好，但会大大增加整体资源包的体积，所以将其禁用。</p>
+]]></content>
+      <categories>
+        <category>vue</category>
+      </categories>
+      <tags>
+        <tag>webpack</tag>
+        <tag>vue</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>三次握手四次挥手的原理</title>
+    <url>/2021/03/18/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E7%9A%84%E5%8E%9F%E7%90%86/</url>
+    <content><![CDATA[<h2 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h2><p>  握手的过程：</p>
+<p>   1、第一次握手：客户端给服务器发送一个 SYN 报文。</p>
+<p>   2、第二次握手：服务器收到 SYN 报文之后，会应答一个 SYN+ACK 报文。</p>
+<p>   3、第三次握手：客户端收到 SYN+ACK 报文之后，会回应一个 ACK 报文。</p>
+<p>   4、服务器收到 ACK 报文之后，三次握手建立完成。</p>
+<p>   作用是为了确认双方的接收与发送能力是否正常。</p>
+   <span id="more"></span>
+
+<p>   <strong>这里我顺便解释一下为啥只有三次握手才能确认双方的接受与发送能力是否正常，而两次却不可以：</strong></p>
+<blockquote>
+<p>   第一次握手：客户端发送网络包，服务端收到了。这样服务端就能得出结论：客户端的发送能力、服务端的接收能力是正常的。<br>   第二次握手：服务端发包，客户端收到了。这样客户端就能得出结论：服务端的接收、发送能力，客户端的接收、发送能力是正常的。不过此时服务器并不能确认客户端的接收能力是否正常。<br>   第三次握手：客户端发包，服务端收到了。这样服务端就能得出结论：客户端的接收、发送能力正常，服务器自己的发送、接收能力也正常。</p>
+</blockquote>
+<p>   因此，需要三次握手才能确认双方的接收与发送能力是否正常。</p>
+<p>   这样回答其实也是可以的，但我觉得，这个过程的我们应该要描述的更<strong>详细一点</strong>，因为三次握手的过程中，双方是<strong>由很多状态的改变的</strong>，而这些状态，也是面试官可能会问的点。所以我觉得在回答三次握手的时候，我们应该要描述的详细一点，而且描述的详细一点意味着可以扯久一点。加分的描述我觉得应该是这样：</p>
+<p>   <strong>刚开始客户端处于 closed 的状态，服务端处于 listen 状态</strong>。然后<br>   1、第一次握手：客户端给服务端发一个 SYN 报文，并指明客户端的初始化序列号 <strong>ISN（c）</strong>。此时客户端处于 <strong>SYN_Send</strong> 状态。</p>
+<p>   2、第二次握手：服务器收到客户端的 SYN 报文之后，会以自己的 SYN 报文作为应答，并且也是指定了自己的初始化序列号 ISN(s)，同时会把客户端的 ISN + 1 作为 ACK 的值，表示自己已经收到了客户端的 SYN，此时服务器处于 <strong>SYN_REVD</strong> 的状态。</p>
+<p>   3、第三次握手：客户端收到 SYN 报文之后，会发送一个 ACK 报文，当然，也是一样把服务器的 ISN + 1 作为 ACK 的值，表示已经收到了服务端的 SYN 报文，此时客户端处于 <strong>establised</strong> 状态。</p>
+<p>   4、服务器收到 ACK 报文之后，也处于 <strong>establised 状态</strong>，此时，双方以建立起了链接。</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2019060815530363.png"></p>
+<h3 id="1、三次握手的作用"><a href="#1、三次握手的作用" class="headerlink" title="1、三次握手的作用"></a>1、三次握手的作用</h3><p>   三次握手的作用也是有好多的，多记住几个，保证不亏。例如：<br>   1、确认双方的接受能力、发送能力是否正常。<br>   2、指定自己的初始化序列号，为后面的可靠传送做准备。<br>   3、如果是 https 协议的话，三次握手这个过程，还会进行数字证书的验证以及加密密钥的生成到。</p>
+<h3 id="2、（ISN）是固定的吗？"><a href="#2、（ISN）是固定的吗？" class="headerlink" title="2、（ISN）是固定的吗？"></a>2、（ISN）是固定的吗？</h3><p>   三次握手的一个重要功能是客户端和服务端交换ISN(Initial Sequence Number), 以便让对方知道接下来接收数据的时候如何按序列号组装数据。</p>
+<p>   <strong>如果ISN是固定的，攻击者很容易猜出后续的确认号，因此 ISN 是动态生成的。</strong></p>
+<h3 id="3、什么是半连接队列"><a href="#3、什么是半连接队列" class="headerlink" title="3、什么是半连接队列"></a>3、什么是半连接队列</h3><p>   服务器第一次收到客户端的 SYN 之后，就会处于 SYN_RCVD 状态，此时双方还没有完全建立其连接，服务器会把此种状态下请求连接放在一个队列里，我们把这种队列称之为半连接队列。当然还有一个全连接队列，就是已经完成三次握手，建立起连接的就会放在全连接队列中。如果队列满了就有可能会出现丢包现象。</p>
+<blockquote>
+<p>   这里在补充一点关于SYN-ACK 重传次数的问题：　服务器发送完SYN－ACK包，如果未收到客户确认包，服务器进行首次重传，等待一段时间仍未收到客户确认包，进行第二次重传，如果重传次数超 过系统规定的最大重传次数，系统将该连接信息从半连接队列中删除。注意，每次重传等待的时间不一定相同，一般会是指数增长，例如间隔时间为 1s, 2s, 4s, 8s, …</p>
+</blockquote>
+<h3 id="4、三次握手过程中可以携带数据吗"><a href="#4、三次握手过程中可以携带数据吗" class="headerlink" title="4、三次握手过程中可以携带数据吗"></a>4、三次握手过程中可以携带数据吗</h3><p>   很多人可能会认为三次握手都不能携带数据，其实第三次握手的时候，是可以携带数据的。也就是说，第一次、第二次握手不可以携带数据，而第三次握手是可以携带数据的。</p>
+<p>为什么这样呢？大家可以想一个问题，假如第一次握手可以携带数据的话，如果有人要恶意攻击服务器，那他每次都在第一次握手中的 SYN 报文中放入大量的数据，因为攻击者根本就不理服务器的接收、发送能力是否正常，然后疯狂着重复发 SYN 报文的话，这会让服务器花费很多时间、内存空间来接收这些报文。也就是说，第一次握手可以放数据的话，其中一个简单的原因就是会让服务器更加容易受到攻击了。<br>而对于第三次的话，此时客户端已经处于 established 状态，也就是说，对于客户端来说，他已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的了，所以能携带数据页没啥毛病。</p>
+<h2 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h2><p>   <strong>四次挥手也一样，千万不要对方一个 FIN 报文，我方一个 ACK 报文，再我方一个 FIN 报文，我方一个 ACK 报文。然后结束，最好是说的详细一点，例如想下面这样就差不多了，要把每个阶段的状态记好。</strong></p>
+<p>   刚开始双方都处于 establised 状态，假如是客户端先发起关闭请求，则：</p>
+<p>   1、第一次挥手：客户端发送一个 FIN 报文，报文中会指定一个序列号。此时客户端处于<strong>FIN_WAIT1</strong>状态。</p>
+<p>   2、第二次握手：服务端收到 FIN 之后，会发送 ACK 报文，且把客户端的序列号值 + 1 作为 ACK 报文的序列号值，表明已经收到客户端的报文了，此时服务端处于 <strong>CLOSE_WAIT</strong>状态。</p>
+<p>   3、第三次挥手：如果服务端也想断开连接了，和客户端的第一次挥手一样，发给 FIN 报文，且指定一个序列号。此时服务端处于 <strong>LAST_ACK</strong> 的状态。</p>
+<p>   4、第四次挥手：客户端收到 FIN 之后，一样发送一个 ACK 报文作为应答，且把服务端的序列号值 + 1 作为自己 ACK 报文的序列号值，此时客户端处于 <strong>TIME_WAIT</strong> 状态。需要过一阵子以确保服务端收到自己的 ACK 报文之后才会进入 CLOSED 状态</p>
+<p>   5、服务端收到 ACK 报文之后，就处于关闭连接了，处于 CLOSED 状态。</p>
+<p><img data-src="https://img-blog.csdnimg.cn/20190608160051238.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RyZWFtaXNwb3NzaWJsZQ==,size_16,color_FFFFFF,t_70"></p>
+<p>   这里特别需要主要的就是TIME_WAIT这个状态了，这个是面试的高频考点，就是要理解，为什么客户端发送 ACK 之后不直接关闭，而是要等一阵子才关闭。这其中的原因就是，要确保服务器是否已经收到了我们的 ACK 报文，如果没有收到的话，服务器会重新发 FIN 报文给客户端，客户端再次收到 ACK 报文之后，就知道之前的 ACK 报文丢失了，然后再次发送 ACK 报文。</p>
+<p>   至于 TIME_WAIT 持续的时间至少是一个报文的来回时间。一般会设置一个计时，如果过了这个计时没有再次收到 FIN 报文，则代表对方成功就是 ACK 报文，此时处于 CLOSED 状态。</p>
+<p>   <strong>这里我给出每个状态所包含的含义，有兴趣的可以看看。</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LISTEN - 侦听来自远方TCP端口的连接请求； </span><br><span class="line">SYN-SENT -在发送连接请求后等待匹配的连接请求； </span><br><span class="line">SYN-RECEIVED - 在收到和发送一个连接请求后等待对连接请求的确认； </span><br><span class="line">ESTABLISHED- 代表一个打开的连接，数据可以传送给用户； </span><br><span class="line">FIN-WAIT-1 - 等待远程TCP的连接中断请求，或先前的连接中断请求的确认；</span><br><span class="line">FIN-WAIT-2 - 从远程TCP等待连接中断请求；</span><br><span class="line">CLOSE-WAIT - 等待从本地用户发来的连接中断请求； </span><br><span class="line">CLOSING -等待远程TCP对连接中断的确认； </span><br><span class="line">LAST-ACK - 等待原来发向远程TCP的连接中断请求的确认； </span><br><span class="line">TIME-WAIT -等待足够的时间以确保远程TCP接收到连接中断请求的确认； </span><br><span class="line">CLOSED - 没有任何连接状态；</span><br></pre></td></tr></table></figure>
+
+
+<p>   <strong>最后，在放张三次握手与四次挥手的图</strong></p>
+<p><img data-src="https://img-blog.csdnimg.cn/20190608160404569.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RyZWFtaXNwb3NzaWJsZQ==,size_16,color_FFFFFF,t_70"></p>
+]]></content>
+      <categories>
+        <category>HTTP</category>
+      </categories>
+      <tags>
+        <tag>HTTP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>学习之AJAX</title>
+    <url>/2021/03/18/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
+    <content><![CDATA[<p>对于AJAX这个玩意儿，一开始学习的时候，根本不知道这是什么，我连AJAX有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙B的状态。那么在学习一段时间的AJAX之后，我总结了一些我自己对AJAX的理解，一起共勉。</p>
+<p>一、页面访问方式</p>
+<p>在学习AJAX之前，我们首先就需要了解页面的访问方式。页面的访问方式有如下两种同步访问和异步访问：</p>
+<p>①同步访问：在访问服务器时，只能等待服务器的响应，不能做其他事情。</p>
+<p>②异步访问：在向服务器发送请求时，不耽误用户在网页其他操作。相当于在同一时间，用户能做多个事情。</p>
+<span id="more"></span>
+
+
+<p>光从字面上理解同步和异步不算太难，下面我为用图打个比方有助于更加深层次的理解同步和异步：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730181503984"></p>
+<p>上图反之是同步访问的图解，异步访问我就不再作图了，反之，你想买煎饼和稀饭，你走到卖煎饼的铺子时候，老板说：好的，你的煎饼5分钟后好，你可以5分钟后过来拿。这个时候你就可以在这五分钟去买你要的稀饭，这就是异步访问。</p>
+<p>二、什么是AJAX</p>
+<p>AJAX的英文全名是：Asynchronous  Javascript  And  Xml</p>
+<p> 异步的  JS     和    xml</p>
+<p> 其中的本质：使用JS中XMLHttpRequext(xhr)对象异步的向服务器发送请求，服务器响应回来的部分数据而不是原完整的页面，并可以以“无刷新”的效果来更改页面中的局部内容。为了方便理解，作以下用户名验证的例子图助于理解：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730183958321"></p>
+<p>三、获取ＡＪＡＸ对象　——XMLHttpRequest</p>
+<p>在主流浏览器中：new　XMLHttpRequest( );</p>
+<p>注意：在IE8以下的浏览器不支持XMLHttpRequest</p>
+<p>在IE8以下的浏览器中：</p>
+<p>new  ActiveXObject(“Microsoft.XMLHttp”);</p>
+<p>tip:如果想测试你使用的浏览器是否支持XMLHttpRequest，可以进行如下操作：</p>
+<p>1.打开你的浏览器，例如谷歌、360、火狐、欧朋….;</p>
+<p>2.按F12，使用开发者工具，在console一栏中输入：console.log(window.XMLHttpRequest);</p>
+<p>3.如果浏览器不支持XMLHttpRequest,以上会打印null。</p>
+<p>//创建ajax对象</p>
+<p> var  xhr;</p>
+<p>   if(window.XMLHttpRequest){</p>
+<p>xhr = new  XMLHttpRequest();</p>
+<p> }else{</p>
+<p>xhr = new ActiveXObject(“Microsoft.XMLHttp”);</p>
+<p>}</p>
+<p>tip：这段函在编写代码的时候使用的次数很多，通常我们将它封装成函数单独创建一个JS文件，命名为common.js，要使用的时候调用者个js文件就可以了。</p>
+]]></content>
+      <categories>
+        <category>HTTP</category>
+      </categories>
+      <tags>
+        <tag>AJAX</tag>
       </tags>
   </entry>
   <entry>

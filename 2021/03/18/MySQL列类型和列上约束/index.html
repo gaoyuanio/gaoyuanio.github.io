@@ -25,21 +25,21 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-<meta name="description" content="转换  什么是转换  改变元素在页面上的大小，位置，形状以及角度的一种方式  可以向元素应用2D以及3D的转换效果   转换属性     (1)转换效果             属性：transform             取值：1.none：默认值，即没有任何转换效果                  2.一个或多个转换函数，如果是多个转换函数，中间用&quot;空格隔开&quot;">
+<meta name="description" content="1.常用SQL命令（1）添加数据：1INSERT  INTO 表名 VALUES(….);  （2）删除数据：12DELETE  FROM 表名;		#删除所有的记录行，慎用！DELETE	FROM	表名	WHERE	列&#x3D;值;		#删除满足条件的行">
 <meta property="og:type" content="article">
-<meta property="og:title" content="用CSS3使你的网页动起来——transform属性">
-<meta property="og:url" content="http://example.com/2021/03/18/%E7%94%A8CSS3%E4%BD%BF%E4%BD%A0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%8A%A8%E8%B5%B7%E6%9D%A5%E2%80%94%E2%80%94transform%E5%B1%9E%E6%80%A7/index.html">
+<meta property="og:title" content="MySQL列类型和列上约束">
+<meta property="og:url" content="http://example.com/2021/03/18/MySQL%E5%88%97%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%88%97%E4%B8%8A%E7%BA%A6%E6%9D%9F/index.html">
 <meta property="og:site_name" content="GaoYuan&#39;s Blog">
-<meta property="og:description" content="转换  什么是转换  改变元素在页面上的大小，位置，形状以及角度的一种方式  可以向元素应用2D以及3D的转换效果   转换属性     (1)转换效果             属性：transform             取值：1.none：默认值，即没有任何转换效果                  2.一个或多个转换函数，如果是多个转换函数，中间用&quot;空格隔开&quot;">
+<meta property="og:description" content="1.常用SQL命令（1）添加数据：1INSERT  INTO 表名 VALUES(….);  （2）删除数据：12DELETE  FROM 表名;		#删除所有的记录行，慎用！DELETE	FROM	表名	WHERE	列&#x3D;值;		#删除满足条件的行">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-03-18T03:31:45.000Z">
-<meta property="article:modified_time" content="2021-03-18T03:32:59.108Z">
+<meta property="article:published_time" content="2021-03-18T14:51:07.000Z">
+<meta property="article:modified_time" content="2021-03-18T15:08:02.183Z">
 <meta property="article:author" content="高原">
-<meta property="article:tag" content="CSS">
+<meta property="article:tag" content="MySQL">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2021/03/18/%E7%94%A8CSS3%E4%BD%BF%E4%BD%A0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%8A%A8%E8%B5%B7%E6%9D%A5%E2%80%94%E2%80%94transform%E5%B1%9E%E6%80%A7/">
+<link rel="canonical" href="http://example.com/2021/03/18/MySQL%E5%88%97%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%88%97%E4%B8%8A%E7%BA%A6%E6%9D%9F/">
 
 
 <script class="page-configurations">
@@ -51,7 +51,7 @@
     lang   : 'zh-CN'
   };
 </script>
-<title>用CSS3使你的网页动起来——transform属性 | GaoYuan's Blog</title>
+<title>MySQL列类型和列上约束 | GaoYuan's Blog</title>
   
 
 
@@ -178,7 +178,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -191,6 +191,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%B8%B8%E7%94%A8SQL%E5%91%BD%E4%BB%A4"><span class="nav-text">1.常用SQL命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%881%EF%BC%89%E6%B7%BB%E5%8A%A0%E6%95%B0%E6%8D%AE%EF%BC%9A"><span class="nav-text">（1）添加数据：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%882%EF%BC%89%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE%EF%BC%9A"><span class="nav-text">（2）删除数据：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%883%EF%BC%89%E4%BF%AE%E6%94%B9%E6%95%B0%E6%8D%AE%EF%BC%9A"><span class="nav-text">（3）修改数据：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-MySQL%E4%B8%AD%E7%9A%84%E5%88%97%E7%B1%BB%E5%9E%8B"><span class="nav-text">2.MySQL中的列类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%881%EF%BC%89%E6%95%B0%E5%AD%97%E7%B1%BB%E5%9E%8B"><span class="nav-text">（1）数字类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B4%E5%9E%8B%EF%BC%9A"><span class="nav-text">整型：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B0%8F%E6%95%B0%E5%9E%8B%EF%BC%9A"><span class="nav-text">小数型：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%882%EF%BC%89%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%B1%BB%E5%9E%8B"><span class="nav-text">（2）字符串类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%883%EF%BC%89%E6%97%A5%E6%9C%9F%E6%97%B6%E9%97%B4%E7%B1%BB%E5%9E%8B"><span class="nav-text">（3）日期时间类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%884%EF%BC%89%E5%B8%83%E5%B0%94%E7%B1%BB%E5%9E%8B"><span class="nav-text">（4）布尔类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%88%97%E4%B8%8A%E7%9A%84%E7%BA%A6%E6%9D%9F"><span class="nav-text">3.列上的约束</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Constraint%E7%BA%A6%E6%9D%9F"><span class="nav-text">(1)Constraint约束</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%B8%BB%E9%94%AE%E7%BA%A6%E6%9D%9F-PRIMARY-KEY"><span class="nav-text">(2)主键约束(PRIMARY  KEY)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%94%AF%E4%B8%80%E7%BA%A6%E6%9D%9F-UNIQUE"><span class="nav-text">(3)唯一约束(UNIQUE)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E9%9D%9E%E7%A9%BA%E7%BA%A6%E6%9D%9F-NOT-NULL"><span class="nav-text">(4)非空约束(NOT  NULL)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E6%A3%80%E6%9F%A5%E7%BA%A6%E6%9D%9F%E2%80%94%E2%80%94MySQL%E4%B8%8D%E6%94%AF%E6%8C%81"><span class="nav-text">(5)检查约束——MySQL不支持</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E9%BB%98%E8%AE%A4%E5%80%BC%E7%BA%A6%E6%9D%9F-DEFAULT"><span class="nav-text">(6)默认值约束(DEFAULT)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E5%A4%96%E9%94%AE%E7%BA%A6%E6%9D%9F"><span class="nav-text">(7)外键约束</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -275,7 +276,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/18/%E7%94%A8CSS3%E4%BD%BF%E4%BD%A0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%8A%A8%E8%B5%B7%E6%9D%A5%E2%80%94%E2%80%94transform%E5%B1%9E%E6%80%A7/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/18/MySQL%E5%88%97%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%88%97%E4%B8%8A%E7%BA%A6%E6%9D%9F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpeg">
@@ -288,7 +289,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          用CSS3使你的网页动起来——transform属性
+          MySQL列类型和列上约束
         </h1>
 
         <div class="post-meta-container">
@@ -300,7 +301,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-03-18 11:31:45 / 修改时间：11:32:59" itemprop="dateCreated datePublished" datetime="2021-03-18T11:31:45+08:00">2021-03-18</time>
+      <time title="创建时间：2021-03-18 22:51:07 / 修改时间：23:08:02" itemprop="dateCreated datePublished" datetime="2021-03-18T22:51:07+08:00">2021-03-18</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -308,7 +309,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/CSS/" itemprop="url" rel="index"><span itemprop="name">CSS</span></a>
+          <a href="/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a>
         </span>
     </span>
 
@@ -327,14 +328,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>7k</span>
+      <span>1.6k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>6 分钟</span>
+      <span>1 分钟</span>
     </span>
 </div>
 
@@ -345,81 +346,40 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p><strong>转换</strong></p>
-<ol>
-<li><p>什么是转换</p>
-<pre><code> 改变元素在页面上的大小，位置，形状以及角度的一种方式
- 可以向元素应用2D以及3D的转换效果
-</code></pre>
-</li>
-<li><p>转换属性</p>
-<pre><code>    (1)转换效果
-            属性：transform
-            取值：1.none：默认值，即没有任何转换效果
-                 2.一个或多个转换函数，如果是多个转换函数，中间用&quot;空格隔开&quot;
-    (2)转换的原点
-            属性：transform-origin
-            取值：
-                1.两个值：表示原点在x轴和y轴的位置 
-                2.三个值：表示原点在x轴，y轴和z轴的位置
-                         可以取数值/百分比/关键字
-             
-</code></pre>
-</li>
-</ol>
-<p><strong>2D转换</strong></p>
-<ol start="3">
-<li>位移：改变元素在页面上的位置<br> 属性：transform<br> 取值：<br> 1.translate(x)：x取值为正，向右移动；x取值为负，向左移动<br> 2.translate(x,y)：x同上；y取值为正，下移；y取值为负，向下移动<br> 3.translateX(x)<br> 4.translateY(y)</li>
-</ol>
+        <h2 id="1-常用SQL命令"><a href="#1-常用SQL命令" class="headerlink" title="1.常用SQL命令"></a>1.常用SQL命令</h2><h3 id="（1）添加数据："><a href="#（1）添加数据：" class="headerlink" title="（1）添加数据："></a>（1）添加数据：</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span>  <span class="keyword">INTO</span> 表名 <span class="keyword">VALUES</span>(….);</span><br></pre></td></tr></table></figure>
+
+<h3 id="（2）删除数据："><a href="#（2）删除数据：" class="headerlink" title="（2）删除数据："></a>（2）删除数据：</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DELETE</span>  <span class="keyword">FROM</span> 表名;		#删除所有的记录行，慎用！</span><br><span class="line"><span class="keyword">DELETE</span>	<span class="keyword">FROM</span>	表名	<span class="keyword">WHERE</span>	列<span class="operator">=</span>值;		#删除满足条件的行</span><br></pre></td></tr></table></figure>
+
 <span id="more"></span>
 
-<ol>
-<li>缩放<br>属性：transform<br>取值：<br>1、scale(value)：value表示的是x轴和y轴的缩放倍率<pre><code>                      2、scale(x,y)
-                      3、scaleX(x)
-                      4、scaleY(y)
-</code></pre>
-注：x，y的取值   默认为1；放大：大于1的数值；缩小：0-1之间的数字</li>
-<li>旋转：改变元素在页面上的角度<pre><code>          属性：transform
-          取值：rotate(ndeg)
-</code></pre>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取值为正，顺时针旋转<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n取值为负，逆时针旋转<pre><code>          注意： 1、转换原点你会影响旋转效果
-                     &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;2、旋转操作时，连同坐标轴一同都跟着转
-</code></pre>
-</li>
-<li>倾斜：改变    元素在页面中的形状<br>属性：transform<br>取值：1、skewX(ndeg)    让元素向横向倾斜<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n取值为正，y轴逆时针倾斜<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n取值为负，y轴顺时针倾斜<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、skewY(ndeg)    让元素向纵向倾斜<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n取值为正，x轴顺时针倾斜<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n取值为负，x轴逆时针倾斜<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3、skew(x)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4、skew(x，y)</li>
-</ol>
-<p><strong>3D转换</strong></p>
-<ol>
-<li>属性：perspective<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;作用：模拟 人眼睛 到3D转换物体的距离，取值越大，表示离物体越远，取值越小，表示离物体越近<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取值：以px为单位的数值<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注意：该属性要加在3D转换元素的父元素上</li>
-<li>3D旋转<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;属性：transform<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取值：rotateX(xdeg)：以x轴为中心轴，旋转元素<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rotateY(ydeg)：以y轴为中心轴，旋转元素<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rotateZ(zdeg)：以z轴为中心轴，旋转元素<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rotate3D(x,y,z,ndeg)：x,y,z取值大于0的话，则该轴参与旋转；x,y,z取值为0的话，则该轴不参与旋转</li>
-</ol>
-<p><strong>过渡</strong></p>
-<ol>
-<li>什么是过渡<pre><code>        使得CSS的属性值在一段时间内平缓变化的效果
-        过渡能观察到元素的属性值得变化过程
-</code></pre>
-</li>
-<li>过渡四要素（四属性）<br>(1)指定过渡属性<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;作用：指定那个CSS属性值在变化时需要使用过渡的效果。当指定属性值发生变化时，过渡就会被触发<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;语法：transition-property<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取值： 1.属性名称<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.none：默认值<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.all<br>允许设置过渡的属性：1、颜色属性<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、取值为数字的属性<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3、转换属性-transform<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4、渐变属性<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5、visibility<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6、阴影属性<br>(2)指定过渡时长:过渡的效果要在多长时间内完成<br>&nbsp;&nbsp;&nbsp;&nbsp;属性：transition-duration<br>&nbsp;&nbsp;&nbsp;&nbsp;取值：以s或ms为单位的数值<br>&nbsp;&nbsp;&nbsp;&nbsp;默认值为0，意味着不会有过渡效果<br>(3)指定过渡的速度时间曲线函数<pre><code>                属性：transition-timing-function
-                取值：
-</code></pre>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、ease  默认值，慢速开始，快速变快，慢速结束<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、linear  匀速<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3、ease-in  慢速开始，加速结束<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4、ease-out    快速开始，减速结束<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5、ease-in-out  慢速开始和结束，中间先加后减<br>(4)指定过渡延迟:当用户激发操作后等待多长时间再显示效果<br>&nbsp;&nbsp;&nbsp;&nbsp;属性：transition-delay<br>&nbsp;&nbsp;&nbsp;&nbsp;取值：以s或ms为单位的数值</li>
-</ol>
-<p><strong>动画</strong><br>1、什么是动画<br>动画指使元素从一种样式逐渐变化为另一种样式的过程<br>动画是复杂版的过渡效果<br>本质：使用”关键帧”，来定义动画的每一步<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关键帧：包含 运行的时间点以及动作(样式)<br>2、动画的使用步骤<br>(1)声明动画<br>&nbsp;&nbsp;&nbsp;&nbsp;指定动画名称以及涉及到的关键帧们<br>(2)为元素调用动画<br>&nbsp;&nbsp;&nbsp;&nbsp;指定元素使用哪个动画效果<br>3、声明动画<br>&nbsp;&nbsp;&nbsp;&nbsp;样式表中，通过 @keyframes 规则来声明动画</p>
-<pre><code>            @keyframes 动画名称&#123;
-                    0%&#123;
-                        /*动画开始时，元素的样式*/
-                        属性：值;
-                        属性：值;
-                    &#125;
-                    50%&#123;
-                        /*动画执行到一半时，元素的样式*/
-                    &#125;
-                    100%&#123;
-                        /*动画结束时，元素的样式*/
-                    &#125;
-            &#125;
-</code></pre>
-<p>动画声明的浏览器兼容性：<br>&nbsp;&nbsp;&nbsp;&nbsp;@-moz-keyframes动画名{ … }<br>&nbsp;&nbsp;&nbsp;&nbsp;@-webkit-keyframes动画名{ … }<br>&nbsp;&nbsp;&nbsp;&nbsp;@-o-keyframes动画名{ … }<br>4、调用动画<br>&nbsp;&nbsp;&nbsp;&nbsp;(1)animation-name：要调用的动画名称<br>&nbsp;&nbsp;&nbsp;&nbsp;(2)animation-duration：动画完成一个周期需要的时长<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取值：以s或ms为单位的数值<br>&nbsp;&nbsp;&nbsp;&nbsp;(3)animation-timing-function：指定动画的速度时间曲线函数<br>                        取值：ease、linear、ease-in，ease-out、ease-in-out<br>&nbsp;&nbsp;&nbsp;&nbsp;(4)animation-delay：指定动画的播放延迟<br>&nbsp;&nbsp;&nbsp;&nbsp;(5)animation-iteration-count：指定动画的播放次数<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取值：1.默认值为1，只播放一次<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.自定义数值<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.infinite，表示无限次播放<br>&nbsp;&nbsp;&nbsp;&nbsp;(6)animation-direction：指定动画的播放方向<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取值： 1、normal：正向播放，从0%<del>100%<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、reverse：逆向播放，从100%</del>0%<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3、alternate：轮流播放，基数次数播放时，正向播放，偶数次数播放时，逆向播<br>&nbsp;&nbsp;&nbsp;&nbsp;(7)animation-flill-mode(不属于简写里)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;作用：动画的填充模式，指动画在播放之前或播放之后的显示效果<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取值：none  默认值，无任何效果<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forwards  当动画播放完成之后，元素将保持在最后一个帧的状态上<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backwards   动画播放前，在延迟时间内，动画将保持在第一帧的状态上<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;both   动画播放前后，分别应用在第一帧和最后一帧的状态上<br>&nbsp;&nbsp;&nbsp;&nbsp;(8)animation-play-state<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;作用：指定动画处于 播放状态 还是 暂停状态<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取值：  paused     动画暂停<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;running    动画播放</p>
+
+<h3 id="（3）修改数据："><a href="#（3）修改数据：" class="headerlink" title="（3）修改数据："></a>（3）修改数据：</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">UPDATE 	表名	<span class="keyword">SET</span>  列<span class="operator">=</span>值，列<span class="operator">=</span>值；		#删除所有记录行，慎用</span><br><span class="line">UPDATE	表名	<span class="keyword">SET</span>	 列<span class="operator">=</span>值，列<span class="operator">=</span>值  <span class="keyword">WHERE</span>   列<span class="operator">=</span>值；</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-MySQL中的列类型"><a href="#2-MySQL中的列类型" class="headerlink" title="2.MySQL中的列类型"></a>2.MySQL中的列类型</h2><h3 id="（1）数字类型"><a href="#（1）数字类型" class="headerlink" title="（1）数字类型"></a>（1）数字类型</h3><h4 id="整型："><a href="#整型：" class="headerlink" title="整型："></a>整型：</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">TINYINT: 占1个字节 -128~127。</span><br><span class="line">SMALLINT: 占2个字节 -32768~32767。</span><br><span class="line">INT: 占4个字节 -2147483648~2147483647。</span><br><span class="line">BIGINT: 占4/8个字节。</span><br></pre></td></tr></table></figure>
+
+<h4 id="小数型："><a href="#小数型：" class="headerlink" title="小数型："></a>小数型：</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FLOAT(M-M位有效数字,D-小数点后面D位小数):单精度浮点型，占4个字节。</span><br><span class="line">DOUBLE(M,D):双精度浮点型，占8个字节。</span><br><span class="line">DECIMAL(M,D):严格定点数，用于精确运算，如货币金额。</span><br></pre></td></tr></table></figure>
+
+<h3 id="（2）字符串类型"><a href="#（2）字符串类型" class="headerlink" title="（2）字符串类型"></a>（2）字符串类型</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CHAR(M) : M不能超过255。</span><br><span class="line">VARCHAR(M) : M不能超过65535。</span><br><span class="line">TEXT(M) : M不能超过2^32,即40亿个字符。</span><br></pre></td></tr></table></figure>
+
+<p><strong>面试问题</strong>：CHAR(8)和VARCHAR(8)的区别?<br>user_name  CHAR(8)：定长字符串，可能产生空间浪费，但读取速度快</p>
+<blockquote>
+<p>‘a’  实际存储为： ‘a\0\0\0\0\0\0\0’<br>‘ab’实际存储为： ‘ab\0\0\0\0\0\0’<br>‘abc’实际存储为： ‘abc\0\0\0\0\0’<br>‘abcd’实际存储为： ‘abcd\0\0\0\0’<br>‘abcde’实际存储为： ‘abcde\0\0\0’<br>‘abcdef’实际存储为： ‘abcdef\0\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’</p>
+</blockquote>
+<p>user_name  VARCHAR(8)：   变长字符串，不会产生空间浪费，但读取速度稍慢</p>
+<blockquote>
+<p> ‘a’  实际存储为： ‘a\0’<br> ‘ab’实际存储为： ‘ab\0’<br> ‘abc’实际存储为： ‘abc\0’<br> ‘abcd’实际存储为： ‘abcd\0’<br>‘abcde’实际存储为： ‘abcde\0’<br>‘abcdef’实际存储为： ‘abcdef\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’　</p>
+</blockquote>
+<h3 id="（3）日期时间类型"><a href="#（3）日期时间类型" class="headerlink" title="（3）日期时间类型"></a>（3）日期时间类型</h3><p>​    DATE : 日期类型，必须用引号括起来，采用’yyyy-mm-dd’格式。<br>​    TIME : 时间类型，必须用引号括起来，采用’hh:mi:ss’格式。<br>​    DATETIME : 时期时间类型，必须用引号括起来，采用’yyyy-mm-dd hh:mi:ss’格式。</p>
+<h3 id="（4）布尔类型"><a href="#（4）布尔类型" class="headerlink" title="（4）布尔类型"></a>（4）布尔类型</h3><p>​    BOOL/BOOLEAN : 智能表示TRUE(等价于1)或FLASE(等价于0)。</p>
+<h2 id="3-列上的约束"><a href="#3-列上的约束" class="headerlink" title="3.列上的约束"></a>3.列上的约束</h2><h3 id="1-Constraint约束"><a href="#1-Constraint约束" class="headerlink" title="(1)Constraint约束"></a>(1)Constraint约束</h3><p>列上的值往往是有限制，如：</p>
+<p>性别:只能取男或者女<br>政治面貌：只能取党员，团员，群众之一</p>
+<h3 id="2-主键约束-PRIMARY-KEY"><a href="#2-主键约束-PRIMARY-KEY" class="headerlink" title="(2)主键约束(PRIMARY  KEY)"></a>(2)主键约束(PRIMARY  KEY)</h3><p>语法：列名 类型 PRIMARY KEY<br>声明为”主键”的列上不能出现null值，且不能重复，如商品编号；表中所有的记录行会自动按照主键列上的值进行排序——一个表至多只能声明一个主键列。</p>
+<h3 id="3-唯一约束-UNIQUE"><a href="#3-唯一约束-UNIQUE" class="headerlink" title="(3)唯一约束(UNIQUE)"></a>(3)唯一约束(UNIQUE)</h3><p>语法：列名 类型 UNIQUE<br>声明为”唯一”约束的列上不能出现重复值，但可以出现多个NULL</p>
+<h3 id="4-非空约束-NOT-NULL"><a href="#4-非空约束-NOT-NULL" class="headerlink" title="(4)非空约束(NOT  NULL)"></a>(4)非空约束(NOT  NULL)</h3><p>语法：列名 类型 NOT  NULL<br>声明为”非空”约束的列上不能出现NULL，但可以重复。</p>
+<h3 id="5-检查约束——MySQL不支持"><a href="#5-检查约束——MySQL不支持" class="headerlink" title="(5)检查约束——MySQL不支持"></a>(5)检查约束——MySQL不支持</h3><h3 id="6-默认值约束-DEFAULT"><a href="#6-默认值约束-DEFAULT" class="headerlink" title="(6)默认值约束(DEFAULT)"></a>(6)默认值约束(DEFAULT)</h3><p>语法：列名 类型 DEFAULT 值<br>声明了默认值的列若未指定值，则使用默认值；若指定的特定值的值，则使用指定的值。</p>
+<h3 id="7-外键约束"><a href="#7-外键约束" class="headerlink" title="(7)外键约束"></a>(7)外键约束</h3><p>外键：POREIGN  KEY,可重复可为空，外键列上出现的值必须正另一个表的主键列上。</p>
 
     </div>
 
@@ -429,20 +389,20 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/CSS/" rel="tag"># CSS</a>
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/03/18/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/" rel="prev" title="使用Hbuilder快速打包一个app">
-                  <i class="fa fa-chevron-left"></i> 使用Hbuilder快速打包一个app
+                <a href="/2021/03/18/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E7%9A%84%E5%8E%9F%E7%90%86/" rel="prev" title="三次握手四次挥手的原理">
+                  <i class="fa fa-chevron-left"></i> 三次握手四次挥手的原理
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/03/18/HTTPS%E5%92%8CHTTP%E5%8E%9F%E7%90%86%E5%92%8C%E5%8C%BA%E5%88%AB/" rel="next" title="HTTPS和HTTP原理和区别">
-                  HTTPS和HTTP原理和区别 <i class="fa fa-chevron-right"></i>
+                <a href="/2021/03/18/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/" rel="next" title="学习之AJAX">
+                  学习之AJAX <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
@@ -568,7 +528,7 @@ NexT.utils.loadComments('.gitalk-container', () => {
       repo        : 'gaoyuanio.github.io',
       owner       : 'gaoyuanio',
       admin       : ['gaoyuanio'],
-      id          : '73436f8051863d1b3ae0357aa3037db5',
+      id          : '39d9035111eebb5c72053f6bfc333b28',
         language: 'zh-CN',
       distractionFreeMode: true
     });

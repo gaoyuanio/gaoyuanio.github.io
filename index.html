@@ -130,9 +130,9 @@
   <ul class="main-menu menu">
         <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
         <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">6</span></a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">9</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">6</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">9</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -204,20 +204,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -272,6 +272,308 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/18/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="高原">
+      <meta itemprop="description" content="一枚微不足道的前端攻城狮">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GaoYuan's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/18/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/" class="post-title-link" itemprop="url">学习之AJAX</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-03-18 23:13:48 / 修改时间：23:15:58" itemprop="dateCreated datePublished" datetime="2021-03-18T23:13:48+08:00">2021-03-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/HTTP/" itemprop="url" rel="index"><span itemprop="name">HTTP</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>对于AJAX这个玩意儿，一开始学习的时候，根本不知道这是什么，我连AJAX有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙B的状态。那么在学习一段时间的AJAX之后，我总结了一些我自己对AJAX的理解，一起共勉。</p>
+<p>一、页面访问方式</p>
+<p>在学习AJAX之前，我们首先就需要了解页面的访问方式。页面的访问方式有如下两种同步访问和异步访问：</p>
+<p>①同步访问：在访问服务器时，只能等待服务器的响应，不能做其他事情。</p>
+<p>②异步访问：在向服务器发送请求时，不耽误用户在网页其他操作。相当于在同一时间，用户能做多个事情。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/18/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/18/MySQL%E5%88%97%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%88%97%E4%B8%8A%E7%BA%A6%E6%9D%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="高原">
+      <meta itemprop="description" content="一枚微不足道的前端攻城狮">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GaoYuan's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/18/MySQL%E5%88%97%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%88%97%E4%B8%8A%E7%BA%A6%E6%9D%9F/" class="post-title-link" itemprop="url">MySQL列类型和列上约束</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-03-18 22:51:07 / 修改时间：23:08:02" itemprop="dateCreated datePublished" datetime="2021-03-18T22:51:07+08:00">2021-03-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="1-常用SQL命令"><a href="#1-常用SQL命令" class="headerlink" title="1.常用SQL命令"></a>1.常用SQL命令</h2><h3 id="（1）添加数据："><a href="#（1）添加数据：" class="headerlink" title="（1）添加数据："></a>（1）添加数据：</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span>  <span class="keyword">INTO</span> 表名 <span class="keyword">VALUES</span>(….);</span><br></pre></td></tr></table></figure>
+
+<h3 id="（2）删除数据："><a href="#（2）删除数据：" class="headerlink" title="（2）删除数据："></a>（2）删除数据：</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DELETE</span>  <span class="keyword">FROM</span> 表名;		#删除所有的记录行，慎用！</span><br><span class="line"><span class="keyword">DELETE</span>	<span class="keyword">FROM</span>	表名	<span class="keyword">WHERE</span>	列<span class="operator">=</span>值;		#删除满足条件的行</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/18/MySQL%E5%88%97%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%88%97%E4%B8%8A%E7%BA%A6%E6%9D%9F/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/18/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E7%9A%84%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="高原">
+      <meta itemprop="description" content="一枚微不足道的前端攻城狮">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GaoYuan's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/18/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E7%9A%84%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">三次握手四次挥手的原理</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-03-18 22:32:01 / 修改时间：22:41:56" itemprop="dateCreated datePublished" datetime="2021-03-18T22:32:01+08:00">2021-03-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/HTTP/" itemprop="url" rel="index"><span itemprop="name">HTTP</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h2><p>  握手的过程：</p>
+<p>   1、第一次握手：客户端给服务器发送一个 SYN 报文。</p>
+<p>   2、第二次握手：服务器收到 SYN 报文之后，会应答一个 SYN+ACK 报文。</p>
+<p>   3、第三次握手：客户端收到 SYN+ACK 报文之后，会回应一个 ACK 报文。</p>
+<p>   4、服务器收到 ACK 报文之后，三次握手建立完成。</p>
+<p>   作用是为了确认双方的接收与发送能力是否正常。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/18/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E7%9A%84%E5%8E%9F%E7%90%86/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -297,7 +599,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-03-18 22:26:13 / 修改时间：22:27:20" itemprop="dateCreated datePublished" datetime="2021-03-18T22:26:13+08:00">2021-03-18</time>
+      <time title="创建时间：2021-03-18 22:26:13 / 修改时间：22:31:13" itemprop="dateCreated datePublished" datetime="2021-03-18T22:26:13+08:00">2021-03-18</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -317,14 +619,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>2.6k</span>
+      <span>4.2k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>4 分钟</span>
     </span>
 </div>
 
@@ -335,50 +637,19 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>使用vue-cli部署生产包时，发现资源包很大，打包后的vendor.js达到了1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？<br>1.组件按需加载<br>这是首先可以优化的点。如果频繁使用了第三方组件/UI库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。<br>示例如下：<br>1.1 element-ui<br>首先，安装 babel-plugin-component：<br>npm install babel-plugin-component -D<br>然后，将.babelrc 修改为：<br>// main.js<br>import Vue from ‘vue’<br>import { Dialog, Loading } from ‘element-ui’<br>Vue.use(Dialog)<br>Vue.use(Loading.directive)<br>Vue.prototype.$loading = Loading.service<br>// 然后正常使用组件<br>1.2 mint-ui<br>由于mint-ui是element-ui的移动端组件，所以它的使用和引入几乎和element-ui一样。<br>首先，安装 babel-plugin-component：<br>npm install babel-plugin-component -D<br>然后，将.babelrc 修改为：<br>{<br>  “presets”: [<br>    [“es2015”, { “modules”: false }]<br>  ],<br>  “plugins”: [[“component”, [<br>    {<br>      “libraryName”: “mint-ui”,<br>      “style”: true<br>    }<br>  ]]]<br>}<br>然后引入部分组件<br>// main.js<br>import Vue from ‘vue’<br>import { Toast, MessageBox } from ‘element-ui’<br>Vue.use(Dialog)<br>Vue.use(Loading.directive)<br>Vue.prototype.$loading = Loading.service<br>// 然后正常使用组件<br>注意，element-ui和mint-ui不能同时在.babelrc中进行插件设置，这种情况下，依然可以按需引入，但是不要在.babelrc中配置，在引入的地方同时引入css即可。<br>1.3 echarts<br>首先安装babel-plugin-equire<br>npm i babel-plugin-equire -D<br>然后，在.babelrc文件中添加该插件<br>{<br>  “plugins”: [<br>       // other plugins<br>       …</p>
-<pre><code>&quot;equire&quot;
-</code></pre>
-<p>  ]<br>}<br>创建一个js文件<br>// echarts.js<br>// eslint-disable-next-line<br>const echarts = equire([<br>  ‘tooltip’,<br>  ‘candlestick’,<br>  ‘bar’,<br>  ‘line’,<br>  ‘axisPointer’,<br>  ‘legend’,<br>  ‘grid’<br>])<br>export default echarts<br>// 业务组件，引入echarts<br>import echarts from ‘@/assets/lib/echarts’<br>// 使用与以前一样<br>按需加载echarts<br>解决vue-cli首屏加载慢的问题<br>2.路由懒加载<br>这里需要一个插件<br>vue-router官方推荐syntax-dynamic-import插件，不过它要求同时安装@bable/core^7.0.0，如果你安装了babel-core6，是会有版本冲突的。我的做法如下<br>npm install babel-plugin-syntax-dynamic-import –save-dev(^6.18.0)<br>// router.js<br>const login = () =&gt; import(‘@/components/login’)<br>const router = new VueRouter({<br>  routes: [<br>    { path: ‘/login’, component: login }<br>  ]<br>})<br>还有一种魔法注释用法<br>有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack &gt; 2.4)。<br>const Foo = () =&gt; import(/* webpackChunkName: “group-foo” */ ‘./Foo.vue’)<br>3.异步组件<br>如果组件在页面加载时不需要，只在调用时用到，这时可以使用异步组件的写法。仅仅是引入和组件注册写法不同<br>// template<br><test v-if="showTest"></test><br>// script<br>  components: {<br>    test: () =&gt; import(‘./test’) // 将组件异步引入，告诉webpack，将该部分代码分割打包<br>  },<br>  methods:{<br>      clickTest () {<br>          this.showTest = !this.showTest<br>    }<br>  }<br>4.图片的压缩合并<br>如有可能，将图片制作成精灵图<br>5.CDN加速<br>在index.html中引入cdn资源<br>…</p>
-<body>
-  <div id="app">
-  </div>
-  <!-- built files will be auto injected -->
-  <script src="https://cdn.bootcss.com/vue/2.5.2/vue.min.js"></script>
-  <script src="https://cdn.bootcss.com/vue-router/3.0.1/vue-router.min.js"></script>
-  <script src="https://cdn.bootcss.com/vuex/3.0.1/vuex.min.js"></script>
-  <script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js"></script>
-</body>
-...
-修改 build/webpack.base.conf.js
-module.exports = {
-  context: path.resolve(__dirname, '../'),
-  entry: {
-    app: './src/main.js'
-  },
-  externals:{
-    'vue': 'Vue',
-    'vue-router': 'VueRouter',
-    'vuex':'Vuex',
-    'vue-resource': 'VueResource'
-  },
-  ...
-}
-修改src/main.js src/router/index.js 注释掉import引入的vue,vue-resource
-// import Vue from 'vue'
-// import VueResource from 'vue-resource'
-// Vue.use(VueResource)
-6.压缩代码
-vue-cli已经使用UglifyJsPlugin 插件来压缩代码，可以设置成如下配置：
-new webpack.optimize.UglifyJsPlugin({
-  compress: {
-    warnings: false,
-    drop_console: true,
-    pure_funcs: ['console.log']
-  },
-  sourceMap: false
-})
-其中sourceMap: false是禁用除错功能。
-如果设为true，在部署包中会生成.map结尾的js文件。它用于在代码混淆压缩的情况下仍可进行调试。这个功能虽好，但会大大增加整体资源包的体积，所以将其禁用。
+          <p>使用vue-cli部署生产包时，发现资源包很大，打包后的<code>vendor.js</code>达到了1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？</p>
+<h3 id="1-组件按需加载"><a href="#1-组件按需加载" class="headerlink" title="1.组件按需加载"></a>1.组件按需加载</h3><p>这是首先可以优化的点。如果频繁使用了第三方组件/UI库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。</p>
+<p>示例如下：</p>
+<h4 id="1-1-element-ui"><a href="#1-1-element-ui" class="headerlink" title="1.1 element-ui"></a>1.1 element-ui</h4><p>首先，安装 babel-plugin-component：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -429,7 +700,7 @@ new webpack.optimize.UglifyJsPlugin({
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-03-18 11:33:28 / 修改时间：11:35:51" itemprop="dateCreated datePublished" datetime="2021-03-18T11:33:28+08:00">2021-03-18</time>
+      <time title="创建时间：2021-03-18 11:33:28 / 修改时间：23:14:10" itemprop="dateCreated datePublished" datetime="2021-03-18T11:33:28+08:00">2021-03-18</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -471,8 +742,6 @@ new webpack.optimize.UglifyJsPlugin({
 <p>HTTP 原理：</p>
 <p>①  客户端的浏览器首先要通过网络与服务器建立连接，该连接是通过 TCP 来完成的，一般 TCP 连接的端口号是80。 建立连接后，客户机发送一个请求给服务器，请求方式的格式为：统一资源标识符（URL）、协议版本号，后边是 MIME 信息包括请求修饰符、客户机信息和许可内容。</p>
 <p>②  服务器接到请求后，给予相应的响应信息，其格式为一个状态行，包括信息的协议版本号、一个成功或错误的代码，后边是 MIME 信息包括服务器信息、实体信息和可能的内容。</p>
-<p>HTTPS：是以安全为目标的 HTTP 通道，是 HTTP 的安全版。HTTPS 的安全基础是 SSL。SSL 协议位于 TCP/IP 协议与各种应用层协议之间，为数据通讯提供安全支持。SSL 协议可分为两层：SSL 记录协议（SSL Record Protocol），它建立在可靠的传输协议（如TCP）之上，为高层协议提供数据封装、压缩、加密等基本功能的支持。SSL 握手协议（SSL Handshake Protocol），它建立在 SSL 记录协议之上，用于在实际的数据传输开始前，通讯双方进行身份认证、协商加密算法、交换加密密钥等。</p>
-<p>​​<img data-src="https://img-blog.csdnimg.cn/20200707084720409.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4Mjg5ODE1,size_16,color_FFFFFF,t_70">                                    </p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2021/03/18/HTTPS%E5%92%8CHTTP%E5%8E%9F%E7%90%86%E5%92%8C%E5%8C%BA%E5%88%AB/#more" rel="contents">
@@ -973,13 +1242,13 @@ new webpack.optimize.UglifyJsPlugin({
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">21k</span>
+    <span title="站点总字数">28k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">19 分钟</span>
+    <span title="站点阅读时长">25 分钟</span>
   </span>
 </div>
 <div class="busuanzi-count">
