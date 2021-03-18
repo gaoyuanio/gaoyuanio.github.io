@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2021-03-18T03:35:51.851Z</updated>
+  <updated>2021-03-18T14:27:20.329Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>vue项目打包优化策略</title>
+    <link href="http://example.com/2021/03/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/"/>
+    <id>http://example.com/2021/03/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</id>
+    <published>2021-03-18T14:26:13.000Z</published>
+    <updated>2021-03-18T14:27:20.329Z</updated>
+    
+    <content type="html"><![CDATA[<p>使用vue-cli部署生产包时，发现资源包很大，打包后的vendor.js达到了1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？<br>1.组件按需加载<br>这是首先可以优化的点。如果频繁使用了第三方组件/UI库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。<br>示例如下：<br>1.1 element-ui<br>首先，安装 babel-plugin-component：<br>npm install babel-plugin-component -D<br>然后，将.babelrc 修改为：<br>// main.js<br>import Vue from ‘vue’<br>import { Dialog, Loading } from ‘element-ui’<br>Vue.use(Dialog)<br>Vue.use(Loading.directive)<br>Vue.prototype.$loading = Loading.service<br>// 然后正常使用组件<br>1.2 mint-ui<br>由于mint-ui是element-ui的移动端组件，所以它的使用和引入几乎和element-ui一样。<br>首先，安装 babel-plugin-component：<br>npm install babel-plugin-component -D<br>然后，将.babelrc 修改为：<br>{<br>  “presets”: [<br>    [“es2015”, { “modules”: false }]<br>  ],<br>  “plugins”: [[“component”, [<br>    {<br>      “libraryName”: “mint-ui”,<br>      “style”: true<br>    }<br>  ]]]<br>}<br>然后引入部分组件<br>// main.js<br>import Vue from ‘vue’<br>import { Toast, MessageBox } from ‘element-ui’<br>Vue.use(Dialog)<br>Vue.use(Loading.directive)<br>Vue.prototype.$loading = Loading.service<br>// 然后正常使用组件<br>注意，element-ui和mint-ui不能同时在.babelrc中进行插件设置，这种情况下，依然可以按需引入，但是不要在.babelrc中配置，在引入的地方同时引入css即可。<br>1.3 echarts<br>首先安装babel-plugin-equire<br>npm i babel-plugin-equire -D<br>然后，在.babelrc文件中添加该插件<br>{<br>  “plugins”: [<br>       // other plugins<br>       …</p><pre><code>&quot;equire&quot;</code></pre><p>  ]<br>}<br>创建一个js文件<br>// echarts.js<br>// eslint-disable-next-line<br>const echarts = equire([<br>  ‘tooltip’,<br>  ‘candlestick’,<br>  ‘bar’,<br>  ‘line’,<br>  ‘axisPointer’,<br>  ‘legend’,<br>  ‘grid’<br>])<br>export default echarts<br>// 业务组件，引入echarts<br>import echarts from ‘@/assets/lib/echarts’<br>// 使用与以前一样<br>按需加载echarts<br>解决vue-cli首屏加载慢的问题<br>2.路由懒加载<br>这里需要一个插件<br>vue-router官方推荐syntax-dynamic-import插件，不过它要求同时安装@bable/core^7.0.0，如果你安装了babel-core6，是会有版本冲突的。我的做法如下<br>npm install babel-plugin-syntax-dynamic-import –save-dev(^6.18.0)<br>// router.js<br>const login = () =&gt; import(‘@/components/login’)<br>const router = new VueRouter({<br>  routes: [<br>    { path: ‘/login’, component: login }<br>  ]<br>})<br>还有一种魔法注释用法<br>有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack &gt; 2.4)。<br>const Foo = () =&gt; import(/* webpackChunkName: “group-foo” */ ‘./Foo.vue’)<br>3.异步组件<br>如果组件在页面加载时不需要，只在调用时用到，这时可以使用异步组件的写法。仅仅是引入和组件注册写法不同<br>// template<br><test v-if="showTest"></test><br>// script<br>  components: {<br>    test: () =&gt; import(‘./test’) // 将组件异步引入，告诉webpack，将该部分代码分割打包<br>  },<br>  methods:{<br>      clickTest () {<br>          this.showTest = !this.showTest<br>    }<br>  }<br>4.图片的压缩合并<br>如有可能，将图片制作成精灵图<br>5.CDN加速<br>在index.html中引入cdn资源<br>…</p><body>  <div id="app">  </div>  <!-- built files will be auto injected -->  <script src="https://cdn.bootcss.com/vue/2.5.2/vue.min.js"></script>  <script src="https://cdn.bootcss.com/vue-router/3.0.1/vue-router.min.js"></script>  <script src="https://cdn.bootcss.com/vuex/3.0.1/vuex.min.js"></script>  <script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js"></script></body>...修改 build/webpack.base.conf.jsmodule.exports = {  context: path.resolve(__dirname, '../'),  entry: {    app: './src/main.js'  },  externals:{    'vue': 'Vue',    'vue-router': 'VueRouter',    'vuex':'Vuex',    'vue-resource': 'VueResource'  },  ...}修改src/main.js src/router/index.js 注释掉import引入的vue,vue-resource// import Vue from 'vue'// import VueResource from 'vue-resource'// Vue.use(VueResource)6.压缩代码vue-cli已经使用UglifyJsPlugin 插件来压缩代码，可以设置成如下配置：new webpack.optimize.UglifyJsPlugin({  compress: {    warnings: false,    drop_console: true,    pure_funcs: ['console.log']  },  sourceMap: false})其中sourceMap: false是禁用除错功能。如果设为true，在部署包中会生成.map结尾的js文件。它用于在代码混淆压缩的情况下仍可进行调试。这个功能虽好，但会大大增加整体资源包的体积，所以将其禁用。]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;使用vue-cli部署生产包时，发现资源包很大，打包后的vendor.js达到了1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？&lt;br&gt;1.组件按需加载&lt;br&gt;这是首先可以优化的点。如果频繁使用了第三方组件/UI库，如我的项目中经常同时使用了 element</summary>
+      
+    
+    
+    
+    <category term="vue" scheme="http://example.com/categories/vue/"/>
+    
+    
+    <category term="webpack vue" scheme="http://example.com/tags/webpack-vue/"/>
+    
+  </entry>
   
   <entry>
     <title>HTTPS和HTTP原理和区别</title>
