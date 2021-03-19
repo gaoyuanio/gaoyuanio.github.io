@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic%7Csans-serif:300,300italic,400,400italic,700,700italic%7CPT+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="函数防抖一、为什么需要防抖 高频的函数操作可能产生不好的影响 如：resize、scroll、mousedown、mousemove、keyup、keydown……  为此，我们举个示例代码来了解事件如何频繁的触发： 我们写一个 index.html 文件： 12345678910111213141516171819202122232425262728293031&lt;html lang&amp;#x3">
+<meta property="og:type" content="article">
+<meta property="og:title" content="函数防抖与节流">
+<meta property="og:url" content="http://example.com/2021/03/19/%E5%87%BD%E6%95%B0%E9%98%B2%E6%8A%96%E4%B8%8E%E8%8A%82%E6%B5%81/index.html">
+<meta property="og:site_name" content="GaoYuan&#39;s Blog">
+<meta property="og:description" content="函数防抖一、为什么需要防抖 高频的函数操作可能产生不好的影响 如：resize、scroll、mousedown、mousemove、keyup、keydown……  为此，我们举个示例代码来了解事件如何频繁的触发： 我们写一个 index.html 文件： 12345678910111213141516171819202122232425262728293031&lt;html lang&amp;#x3">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740408456-269506ee-a343-41c8-86b8-e80da9304d8e.gif">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740408554-b0245fd8-1c4d-4085-80da-f91d8be8da6f.gif">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740408487-78c69123-24ec-4893-b442-366d3117eda2.gif">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740408427-b468ccd4-99ff-4eee-821a-290d95e04071.gif">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740551747-de70166f-f851-412c-ba2a-5a116a194f3d.gif">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740552204-2bb5f2b1-3807-4d26-b3eb-d34e798ab60a.gif">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740551861-12bc2cce-f80a-45ff-9913-7798160b3438.gif">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740551783-4d2e4584-8e32-4ca2-a1de-c2ab865a882c.gif">
+<meta property="article:published_time" content="2021-03-19T01:43:56.000Z">
+<meta property="article:modified_time" content="2021-03-19T01:58:55.730Z">
+<meta property="article:author" content="高原">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740408456-269506ee-a343-41c8-86b8-e80da9304d8e.gif">
+
+
+<link rel="canonical" href="http://example.com/2021/03/19/%E5%87%BD%E6%95%B0%E9%98%B2%E6%8A%96%E4%B8%8E%E8%8A%82%E6%B5%81/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>函数防抖与节流 | GaoYuan's Blog</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="GaoYuan's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">GaoYuan's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">生活就像海洋，只有意志将强的人才能到达彼岸</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">10</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">7</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">13</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E9%98%B2%E6%8A%96"><span class="nav-text">函数防抖</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E9%98%B2%E6%8A%96"><span class="nav-text">一、为什么需要防抖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E9%98%B2%E6%8A%96%E7%9A%84%E5%8E%9F%E7%90%86"><span class="nav-text">二、防抖的原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%87%AA%E5%B7%B1%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E9%98%B2%E6%8A%96"><span class="nav-text">三、自己实现一个防抖</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E7%AC%AC%E4%B8%80%E7%89%88"><span class="nav-text">3.1 第一版</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E7%AC%AC%E4%BA%8C%E7%89%88"><span class="nav-text">3.2 第二版</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E7%AC%AC%E4%B8%89%E7%89%88"><span class="nav-text">3.3 第三版</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E9%98%B2%E6%8A%96%E8%BF%9B%E9%98%B6"><span class="nav-text">四、防抖进阶</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E7%AB%8B%E5%8D%B3%E6%89%A7%E8%A1%8C"><span class="nav-text">4.1 立即执行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E6%B7%BB%E5%8A%A0%E7%AE%80%E5%8D%95%E9%AA%8C%E8%AF%81"><span class="nav-text">4.2 添加简单验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E6%B7%BB%E5%8A%A0%E5%8F%96%E6%B6%88%E4%BA%8B%E4%BB%B6%E6%96%B9%E6%B3%95"><span class="nav-text">4.3 添加取消事件方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E8%8A%82%E6%B5%81"><span class="nav-text">函数节流</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%A0%B8%E5%BF%83%E5%92%8C%E5%9F%BA%E6%9C%AC%E5%AE%9E%E7%8E%B0"><span class="nav-text">一、核心和基本实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-%E6%97%B6%E9%97%B4%E6%88%B3%E6%80%9D%E8%B7%AF"><span class="nav-text">1.1 时间戳思路</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E5%AE%9A%E6%97%B6%E5%99%A8%E6%80%9D%E8%B7%AF"><span class="nav-text">1.2 定时器思路</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-%E4%B8%A4%E7%A7%8D%E6%80%9D%E8%B7%AF%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">1.3 两种思路的区别</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E8%8A%82%E6%B5%81%E8%BF%9B%E9%98%B6"><span class="nav-text">二、节流进阶</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="高原"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">高原</p>
+  <div class="site-description" itemprop="description">一枚微不足道的前端攻城狮</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/gaoyuanio" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;gaoyuanio" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:gaoyuan9841@163.com" title="E-Mail → mailto:gaoyuan9841@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/231615898025_.pic.jpg" title="WeChat → https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;gh&#x2F;gaoyuanio&#x2F;imgs&#x2F;img&#x2F;231615898025_.pic.jpg" rel="noopener" target="_blank"><i class="fab fa-weixin fa-fw"></i>WeChat</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qm.qq.com/cgi-bin/qm/qr?k=QW2diWiXakeqYNjughKYKvo9LVXWd0rY&noverify=0" title="QQ → https:&#x2F;&#x2F;qm.qq.com&#x2F;cgi-bin&#x2F;qm&#x2F;qr?k&#x3D;QW2diWiXakeqYNjughKYKvo9LVXWd0rY&amp;noverify&#x3D;0" rel="noopener" target="_blank"><i class="fab fa-qq fa-fw"></i>QQ</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/gaoyuanio" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/19/%E5%87%BD%E6%95%B0%E9%98%B2%E6%8A%96%E4%B8%8E%E8%8A%82%E6%B5%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="高原">
+      <meta itemprop="description" content="一枚微不足道的前端攻城狮">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GaoYuan's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          函数防抖与节流
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-03-19 09:43:56 / 修改时间：09:58:55" itemprop="dateCreated datePublished" datetime="2021-03-19T09:43:56+08:00">2021-03-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>8.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>8 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="函数防抖"><a href="#函数防抖" class="headerlink" title="函数防抖"></a>函数防抖</h2><h3 id="一、为什么需要防抖"><a href="#一、为什么需要防抖" class="headerlink" title="一、为什么需要防抖"></a>一、为什么需要防抖</h3><ul>
+<li>高频的函数操作可能产生不好的影响</li>
+<li>如：resize、scroll、mousedown、mousemove、keyup、keydown……</li>
+</ul>
+<p>为此，我们举个示例代码来了解事件如何频繁的触发：</p>
+<p>我们写一个 index.html 文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">&lt;html lang&#x3D;&quot;en&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;meta charset&#x3D;&quot;UTF-8&quot;&gt;</span><br><span class="line">    &lt;meta name&#x3D;&quot;viewport&quot; content&#x3D;&quot;width&#x3D;device-width, initial-scale&#x3D;1.0&quot;&gt;</span><br><span class="line">    &lt;meta http-equiv&#x3D;&quot;X-UA-Compatible&quot; content&#x3D;&quot;ie&#x3D;edge&quot;&gt;</span><br><span class="line">    &lt;title&gt;Document&lt;&#x2F;title&gt;</span><br><span class="line">    &lt;title&gt;debounce&lt;&#x2F;title&gt;</span><br><span class="line">    &lt;style&gt;</span><br><span class="line">        #wrapper &#123;</span><br><span class="line">            width: 100%;</span><br><span class="line">            height: 200px;</span><br><span class="line">            line-height: 200px;</span><br><span class="line">            text-align: center;</span><br><span class="line">            color: #fff;</span><br><span class="line">            background-color: #444;</span><br><span class="line">            font-size: 30px;</span><br><span class="line">        &#125;</span><br><span class="line">    &lt;&#x2F;style&gt;</span><br><span class="line">&lt;&#x2F;head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;div id&#x3D;&quot;wrapper&quot;&gt;&lt;&#x2F;div&gt;</span><br><span class="line">    &lt;script&gt;</span><br><span class="line">        var count &#x3D; 1;</span><br><span class="line">        var oDiv &#x3D; document.getElementById(&quot;wrapper&quot;);</span><br><span class="line">        function getUserAction() &#123;</span><br><span class="line">            oDiv.innerHTML &#x3D; count++;</span><br><span class="line">        &#125;</span><br><span class="line">        oDiv.onmousemove &#x3D; getUserAction;</span><br><span class="line">    &lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<p>从左边滑到右边就触发了近100次<code>getUserAction</code> 函数！看如下Gif：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740408456-269506ee-a343-41c8-86b8-e80da9304d8e.gif"></p>
+<p>因为这个例子很简单，所以浏览器完全反应的过来，但假设：</p>
+<ul>
+<li>它的触发频次极高，1分钟2000次，且涉及到大量的位置计算、DOM 操作等工作，</li>
+<li>存在接口请求，单个函数执行时间较长，但每个函数触发的间隔很近。</li>
+</ul>
+<p>这种在一瞬间（短时间内）对浏览器或服务器造成了过多压力的交互就需要进行优化了，为了解决这个问题，一般有两种解决方案：</p>
+<ul>
+<li>debounce 防抖</li>
+<li>throttle 节流</li>
+</ul>
+<p>他们的目的都是：<strong>降低一个函数的触发频率，以提高性能或避免资源浪费。</strong></p>
+<h3 id="二、防抖的原理"><a href="#二、防抖的原理" class="headerlink" title="二、防抖的原理"></a>二、防抖的原理</h3><p>今天重点讲讲防抖的实现。</p>
+<p>防抖的原理就是：你尽管触发事件，但是我一定在事件触发<code>n秒无操作后</code>才执行。举个例子：</p>
+<p>我们规定<code>3s</code>为防抖的标准，那么:</p>
+<ol>
+<li>第一次要求执行事件 - 此时倒计时3s</li>
+<li>倒计时2s</li>
+<li>倒计时1s</li>
+<li>0.5s时事件再次被触发 - 此时倒计时3s</li>
+<li>…3s内无事发生</li>
+<li>执行事件，共用了5.5s</li>
+</ol>
+<h3 id="三、自己实现一个防抖"><a href="#三、自己实现一个防抖" class="headerlink" title="三、自己实现一个防抖"></a>三、自己实现一个防抖</h3><h4 id="3-1-第一版"><a href="#3-1-第一版" class="headerlink" title="3.1 第一版"></a>3.1 第一版</h4><p>我们根据上一节提到的核心思想，实现第一版代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function debounce(func, wait) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    return function () &#123;</span><br><span class="line">        clearTimeout(timer)</span><br><span class="line">        timer &#x3D; setTimeout(func, wait);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果我们要使用它，第一节的例子为例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">oDiv.onmousemove &#x3D; debounce(getUserAction, 2000);</span><br></pre></td></tr></table></figure>
+
+<p>此时大家可以再次测试一下，事件持续发生时，只有在完全停止2s后，才会触发事件：</p>
+<p>写到这里，作为针对部分高频事件的需求来说，已经结束了。我们来看看他的效果：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740408554-b0245fd8-1c4d-4085-80da-f91d8be8da6f.gif"></p>
+<h4 id="3-2-第二版"><a href="#3-2-第二版" class="headerlink" title="3.2 第二版"></a>3.2 第二版</h4><p>大家都知道，dom节点在触发事件的时候，this指向它本身，本例中则指向<code>oDiv</code>，但是在本例中：我们看一下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">var count &#x3D; 1;</span><br><span class="line">var oDiv &#x3D; document.getElementById(&quot;oDiv&quot;);</span><br><span class="line">function getUserAction() &#123;</span><br><span class="line">    oDiv.innerHTML &#x3D; count++;</span><br><span class="line">    console.log(&#39;this&#39;, this); &#x2F;&#x2F; 此时输出 Window...</span><br><span class="line">&#125;</span><br><span class="line">oDiv.onmousemove &#x3D; debounce(getUserAction, 2000);</span><br><span class="line">function debounce(func, wait) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    return function () &#123;</span><br><span class="line">        clearTimeout(timer)</span><br><span class="line">        timer &#x3D; setTimeout(func, wait);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>毕竟经过了一层匿名函数的包裹，this已经指向了window，为了减少影响，我们尝试修正它</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">function debounce(func, wait) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    return function () &#123;</span><br><span class="line">        var _this &#x3D; this; &#x2F;&#x2F; 记录当前this</span><br><span class="line">        clearTimeout(timer)</span><br><span class="line">        timer &#x3D; setTimeout(function()&#123;</span><br><span class="line">            func.apply(_this); &#x2F;&#x2F;将 func的this改为_this</span><br><span class="line">        &#125;, wait);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-3-第三版"><a href="#3-3-第三版" class="headerlink" title="3.3 第三版"></a>3.3 第三版</h4><p>解决的this指向问题，我们的函数仍然不够“完美”，JavaScript中，事件处理函数会提供<code>event</code>对象，我们简称为e。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 使用了 debouce 函数</span><br><span class="line">function getUserAction(e) &#123;</span><br><span class="line">    console.log(e); &#x2F;&#x2F; undefined</span><br><span class="line">    oDiv.innerHTML &#x3D; count++;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>为了保证它的原汁原味，我们再改第三版：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">var count &#x3D; 1;</span><br><span class="line">var oDiv &#x3D; document.getElementById(&quot;oDiv&quot;);</span><br><span class="line">function getUserAction(e) &#123;</span><br><span class="line">    oDiv.innerHTML &#x3D; count++;</span><br><span class="line">    console.log(&#39;e&#39;, e); &#x2F;&#x2F; MouseEvent</span><br><span class="line">&#125;</span><br><span class="line">oDiv.onmousemove &#x3D; debounce(getUserAction, 2000);</span><br><span class="line">function debounce(func, wait) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    return function () &#123;</span><br><span class="line">        var _this &#x3D; this; &#x2F;&#x2F; 记录当前this</span><br><span class="line">        var arg &#x3D; arguments; &#x2F;&#x2F; 记录参数</span><br><span class="line">        clearTimeout(timer)</span><br><span class="line">        timer &#x3D; setTimeout(function () &#123;</span><br><span class="line">            func.apply(_this, arg); &#x2F;&#x2F;将 func的this改为_this</span><br><span class="line">        &#125;, wait);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>到此为止，我们在尽可能保留Dom事件原有能力的情况下，给函数加上了防抖效果，它可以解决大部分我们日常开发的防抖问题，但我们需要更“完美”</p>
+<h3 id="四、防抖进阶"><a href="#四、防抖进阶" class="headerlink" title="四、防抖进阶"></a>四、防抖进阶</h3><h4 id="4-1-立即执行"><a href="#4-1-立即执行" class="headerlink" title="4.1 立即执行"></a>4.1 立即执行</h4><p>这个需求就是：</p>
+<ul>
+<li>立即执行</li>
+<li>保持<code>n</code>秒空白期</li>
+<li>将<code>n</code>秒空白期置后</li>
+</ul>
+<p>想想这个需求也是很有道理的嘛，那我们加个<code>immediate</code>参数判断是否是立刻执行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">function debounce(func, wait, immediate) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    return function () &#123;</span><br><span class="line">        var _this &#x3D; this;</span><br><span class="line">        var args &#x3D; arguments;</span><br><span class="line">        if (timer) clearTimeout(timer); &#x2F;&#x2F; 常规流程，间隔内触发时清掉重置定时</span><br><span class="line">        if (immediate) &#123;</span><br><span class="line">            &#x2F;&#x2F; 如果已经执行过，不再执行</span><br><span class="line">            var callNow &#x3D; !timer; &#x2F;&#x2F; 1. callNow 初始值是 true, 同步立即执行；随后 timer 才开始执行</span><br><span class="line">            timer &#x3D; setTimeout(function()&#123;</span><br><span class="line">                timer &#x3D; null; &#x2F;&#x2F; wait 期间，timer 是一个 ID 数字，所以 callNow 为 false，func 在此期间永远不会执行</span><br><span class="line">            &#125;, wait) &#x2F;&#x2F; wait 之后，timer 赋值 null，callNow 为 true，func 又开始立即执行。</span><br><span class="line">            if (callNow) func.apply(_this, args)</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            timer &#x3D; setTimeout(function()&#123;</span><br><span class="line">                func.apply(_this, args)</span><br><span class="line">            &#125;, wait);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>再来看下此时他是什么效果：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740408487-78c69123-24ec-4893-b442-366d3117eda2.gif"></p>
+<h4 id="4-2-添加简单验证"><a href="#4-2-添加简单验证" class="headerlink" title="4.2 添加简单验证"></a>4.2 添加简单验证</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">function debounce(func, wait, immediate) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    &#x2F;&#x2F; 检查函数</span><br><span class="line">    if (typeof func !&#x3D;&#x3D; &#39;function&#39;) &#123;</span><br><span class="line">        throw new TypeError(&#39;Expected a function&#39;);</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F; 保证wait存在</span><br><span class="line">    wait &#x3D; +wait || 0;</span><br><span class="line">    const debounced &#x3D; function () &#123;</span><br><span class="line">        var _this &#x3D; this;</span><br><span class="line">        var args &#x3D; arguments;</span><br><span class="line">        if (timer) clearTimeout(timer); &#x2F;&#x2F; 常规流程，间隔内触发时清掉重置定时</span><br><span class="line">        if (immediate) &#123;</span><br><span class="line">            &#x2F;&#x2F; 如果已经执行过，不再执行</span><br><span class="line">            var callNow &#x3D; !timer; &#x2F;&#x2F; 如果不存在定时器，则callNow为true</span><br><span class="line">            timer &#x3D; setTimeout(function () &#123;</span><br><span class="line">                timer &#x3D; null; &#x2F;&#x2F; 为了保证之后的时效性，手动添加timer</span><br><span class="line">            &#125;, wait)</span><br><span class="line">            &#x2F;&#x2F; 因为不存在timer，证明是首次执行，所以直接调用</span><br><span class="line">            if (callNow) func.apply(_this, args)</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            timer &#x3D; setTimeout(function () &#123;</span><br><span class="line">                func.apply(_this, args)</span><br><span class="line">            &#125;, wait);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return debounced</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-3-添加取消事件方法"><a href="#4-3-添加取消事件方法" class="headerlink" title="4.3 添加取消事件方法"></a>4.3 添加取消事件方法</h4><p>如果你希望能取消被防抖的事件，我们可以这样写：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">function debounce(func, wait, immediate) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    &#x2F;&#x2F; 检查函数</span><br><span class="line">    if (typeof func !&#x3D;&#x3D; &#39;function&#39;) &#123;</span><br><span class="line">        throw new TypeError(&#39;Expected a function&#39;);</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F; 保证wait存在</span><br><span class="line">    wait &#x3D; +wait || 0;</span><br><span class="line">    const debounced &#x3D; function () &#123;</span><br><span class="line">        var _this &#x3D; this;</span><br><span class="line">        var args &#x3D; arguments;</span><br><span class="line">        if (timer) clearTimeout(timer); &#x2F;&#x2F; 常规流程，间隔内触发时清掉重置定时</span><br><span class="line">        if (immediate) &#123;</span><br><span class="line">            &#x2F;&#x2F; 如果已经执行过，不再执行</span><br><span class="line">            var callNow &#x3D; !timer; &#x2F;&#x2F; 如果不存在定时器，则callNow为true</span><br><span class="line">            timer &#x3D; setTimeout(function () &#123;</span><br><span class="line">                timer &#x3D; null; &#x2F;&#x2F; 为了保证之后的时效性，手动添加timer</span><br><span class="line">            &#125;, wait)</span><br><span class="line">            &#x2F;&#x2F; 因为不存在timer，证明是首次执行，所以直接调用</span><br><span class="line">            if (callNow) func.apply(_this, args)</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            timer &#x3D; setTimeout(function () &#123;</span><br><span class="line">                func.apply(_this, args)</span><br><span class="line">            &#125;, wait);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    const cancel &#x3D; function()&#123;</span><br><span class="line">        clearTimeout(timer);</span><br><span class="line">        timer &#x3D; null;</span><br><span class="line">    &#125;</span><br><span class="line">    const pending &#x3D; function()&#123;</span><br><span class="line">        return timer !&#x3D;&#x3D; undefined;</span><br><span class="line">    &#125;</span><br><span class="line">    debounced.cancel &#x3D; cancel;</span><br><span class="line">    debounced.pending &#x3D; pending;</span><br><span class="line">    return debounced</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们再来看看效果：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740408427-b468ccd4-99ff-4eee-821a-290d95e04071.gif"></p>
+<h2 id="函数节流"><a href="#函数节流" class="headerlink" title="函数节流"></a>函数节流</h2><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>我们还是以移动事件举例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html lang&#x3D;&quot;en&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;meta charset&#x3D;&quot;UTF-8&quot;&gt;</span><br><span class="line">    &lt;meta name&#x3D;&quot;viewport&quot; content&#x3D;&quot;width&#x3D;device-width, initial-scale&#x3D;1.0&quot;&gt;</span><br><span class="line">    &lt;meta http-equiv&#x3D;&quot;X-UA-Compatible&quot; content&#x3D;&quot;ie&#x3D;edge&quot;&gt;</span><br><span class="line">    &lt;title&gt;Document&lt;&#x2F;title&gt;</span><br><span class="line">    &lt;style&gt;</span><br><span class="line">        #wrapper &#123;</span><br><span class="line">            width: 100%;</span><br><span class="line">            height: 140px;</span><br><span class="line">            background: rgba(0, 0, 0, 0.8);</span><br><span class="line">            color: #fff;</span><br><span class="line">            font-size: 30px;</span><br><span class="line">            font-weight: bold;</span><br><span class="line">            line-height: 140px;</span><br><span class="line">            text-align: center;</span><br><span class="line">        &#125;</span><br><span class="line">    &lt;&#x2F;style&gt;</span><br><span class="line">&lt;&#x2F;head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;div id&#x3D;&quot;wrapper&quot;&gt;&lt;&#x2F;div&gt;</span><br><span class="line">    &lt;script&gt;</span><br><span class="line">        var count &#x3D; 1;</span><br><span class="line">        function moveAction () &#123;</span><br><span class="line">            oWrapper.innerHTML &#x3D; count++;</span><br><span class="line">        &#125;</span><br><span class="line">        var oWrapper &#x3D; document.querySelector(&#39;#wrapper&#39;);</span><br><span class="line">        oWrapper.onmousemove &#x3D; moveAction;</span><br><span class="line">    &lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+
+<p>它的效果是这样：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740551747-de70166f-f851-412c-ba2a-5a116a194f3d.gif"></p>
+<h3 id="一、核心和基本实现"><a href="#一、核心和基本实现" class="headerlink" title="一、核心和基本实现"></a>一、核心和基本实现</h3><p>节流的原理很简单：<strong>如果你持续触发某个事件，特定的时间间隔内，只执行一次。</strong></p>
+<p><strong>关于节流的实现，有两种主流的实现方式：</strong></p>
+<ol>
+<li>时间戳思路</li>
+<li>定时器思路</li>
+</ol>
+<h4 id="1-1-时间戳思路"><a href="#1-1-时间戳思路" class="headerlink" title="1.1 时间戳思路"></a>1.1 时间戳思路</h4><p>顾名思义，通过两个时间戳来控制时间间隔，当触发事件的时候：</p>
+<ol>
+<li>我们取出当前的时间戳 <code>now</code>；</li>
+<li>然后减去之前<strong>执行时</strong>的时间戳(首次值为 0 ) <code>prev</code>；</li>
+<li>如果大<code>now - prev &gt; wait</code>，证明时间区间维护结束，执行指定事件，更新<code>prev</code>；</li>
+</ol>
+<p>根据这一思路，我们就可以实现第一版代码了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">oWrapper.onmousemove &#x3D; throttle(moveAction, 1000);</span><br><span class="line">function throttle(func, wait) &#123;</span><br><span class="line">    var _this, arg;</span><br><span class="line">    var prev &#x3D; 0; &#x2F;&#x2F; 上一次触发的时间，第一次默认为0</span><br><span class="line">    return function () &#123;</span><br><span class="line">        var now &#x3D; Date.now(); &#x2F;&#x2F; 触发时的时间</span><br><span class="line">        _this &#x3D; this;</span><br><span class="line">        if (now - prev &gt; wait) &#123;</span><br><span class="line">            func.apply(_this, arg); &#x2F;&#x2F; 允许传入参数，并修正this</span><br><span class="line">            prev &#x3D; now; &#x2F;&#x2F; 更新上一次触发的时间</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>来看看借助它，效果是什么样的：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740552204-2bb5f2b1-3807-4d26-b3eb-d34e798ab60a.gif"></p>
+<p>我们可以看到：</p>
+<ol>
+<li>当鼠标移入的时候，<strong>事件立刻执行</strong></li>
+<li>每过 1s 会执行一次，且移动2.5s会执行2次，意味着动作<strong>停止后不会再执行</strong>。</li>
+</ol>
+<h4 id="1-2-定时器思路"><a href="#1-2-定时器思路" class="headerlink" title="1.2 定时器思路"></a>1.2 定时器思路</h4><p>利用定时器来保证间隔时间内事件的触发次数</p>
+<ol>
+<li>创建定时器<code>timer</code>，记录当前是否在<strong>周期</strong>内；</li>
+<li>判断定时器是否存在，若存在则直接结束，否则执行事件；</li>
+<li><code>wait</code>时间之后再次执行，并清掉定时器；</li>
+</ol>
+<p>当触发事件的时候，我们设置一个定时器，再触发事件的时候，如果定时器存在，就不执行，直到定时器执行，然后执行函数，清空定时器，这样就可以设置下个定时器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">function throttle(func, wait) &#123;</span><br><span class="line">    var _this, arg;</span><br><span class="line">    var timer; &#x2F;&#x2F; 初始化</span><br><span class="line">    return function () &#123;</span><br><span class="line">        _this &#x3D; this; &#x2F;&#x2F; 记录this</span><br><span class="line">        arg &#x3D; arguments; &#x2F;&#x2F; 记录参数数组</span><br><span class="line">        if (timer) return; &#x2F;&#x2F; 时候未到</span><br><span class="line">        timer &#x3D; setTimeout(() &#x3D;&gt; &#123;</span><br><span class="line">            func.apply(_this, arg); &#x2F;&#x2F; 允许传入参数，并修正this</span><br><span class="line">            timer &#x3D; null;</span><br><span class="line">        &#125;, wait);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>来看看借助它，效果是什么样的：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740551861-12bc2cce-f80a-45ff-9913-7798160b3438.gif"></p>
+<p>但是，我们可以看到：</p>
+<ol>
+<li>当鼠标移入的时候，事件不会立刻执行;</li>
+<li>鼠标定制后<code>wait</code>间隔后会执行一次</li>
+</ol>
+<h4 id="1-3-两种思路的区别"><a href="#1-3-两种思路的区别" class="headerlink" title="1.3 两种思路的区别"></a>1.3 两种思路的区别</h4><table>
+<thead>
+<tr>
+<th></th>
+<th>时间戳</th>
+<th>定时器</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>“起点”</td>
+<td>立即执行</td>
+<td>n 秒后执行</td>
+</tr>
+<tr>
+<td>“终点”</td>
+<td>停止后不会执行</td>
+<td>停止会再执行一次</td>
+</tr>
+</tbody></table>
+<h3 id="二、节流进阶"><a href="#二、节流进阶" class="headerlink" title="二、节流进阶"></a>二、节流进阶</h3><p>结合两种思想完成一个可以立即执行，且停止触发后再执行一次的节流方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 第三版</span><br><span class="line">function throttle(func, wait) &#123;</span><br><span class="line">    var timeout, context, args, result;</span><br><span class="line">    var previous &#x3D; 0;</span><br><span class="line">    var later &#x3D; function() &#123;</span><br><span class="line">        previous &#x3D; +new Date();</span><br><span class="line">        timeout &#x3D; null;</span><br><span class="line">        func.apply(context, args)</span><br><span class="line">    &#125;;</span><br><span class="line">    var throttled &#x3D; function() &#123;</span><br><span class="line">        var now &#x3D; +new Date();</span><br><span class="line">        &#x2F;&#x2F;下次触发 func 剩余的时间</span><br><span class="line">        var remaining &#x3D; wait - (now - previous);</span><br><span class="line">        context &#x3D; this;</span><br><span class="line">        args &#x3D; arguments;</span><br><span class="line">         &#x2F;&#x2F; 如果没有剩余的时间了或者你改了系统时间</span><br><span class="line">        if (remaining &lt;&#x3D; 0 || remaining &gt; wait) &#123;</span><br><span class="line">            if (timeout) &#123;</span><br><span class="line">                clearTimeout(timeout);</span><br><span class="line">                timeout &#x3D; null;</span><br><span class="line">            &#125;</span><br><span class="line">            previous &#x3D; now;</span><br><span class="line">            func.apply(context, args);</span><br><span class="line">        &#125; else if (!timeout) &#123;</span><br><span class="line">            timeout &#x3D; setTimeout(later, remaining);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    return throttled;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>效果演示如下：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740551783-4d2e4584-8e32-4ca2-a1de-c2ab865a882c.gif"></p>
+<p>我在看代码的时候，我是反复打印数据才理解为什么会这样做，一起加油～</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/javascript/" rel="tag"># javascript</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/03/19/JS%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9/" rel="prev" title="JS实现图片压缩">
+                  <i class="fa fa-chevron-left"></i> JS实现图片压缩
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/03/19/VUE%E7%BB%84%E4%BB%B6%E4%B9%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E7%9A%846%E7%A7%8D%E6%96%B9%E5%BC%8F/" rel="next" title="VUE组件之间通信的6种方式">
+                  VUE组件之间通信的6种方式 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">京ICP备 1234567890号-1 </a>
+      <img src="/uploads/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=1234567890" rel="noopener" target="_blank">京公网安备 1234567890号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fas fa-bone"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">高原</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">50k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">46 分钟</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="128,128,128" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('.gitalk-container', () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'b6854378950da6a4a9dc',
+      clientSecret: 'dfd37cf3129914db71752a3c108a7db103fddcd8',
+      repo        : 'gaoyuanio.github.io',
+      owner       : 'gaoyuanio',
+      admin       : ['gaoyuanio'],
+      id          : '45f044d52c5ad442634e9b9cfe82939f',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render(document.querySelector('.gitalk-container'));
+  }, window.Gitalk);
+});
+</script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":true,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
