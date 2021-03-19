@@ -91,51 +91,6 @@
       </tags>
   </entry>
   <entry>
-    <title>MySQL列类型和列上约束</title>
-    <url>/2021/03/18/MySQL%E5%88%97%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%88%97%E4%B8%8A%E7%BA%A6%E6%9D%9F/</url>
-    <content><![CDATA[<h2 id="1-常用SQL命令"><a href="#1-常用SQL命令" class="headerlink" title="1.常用SQL命令"></a>1.常用SQL命令</h2><h3 id="（1）添加数据："><a href="#（1）添加数据：" class="headerlink" title="（1）添加数据："></a>（1）添加数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">INSERT</span>  <span class="keyword">INTO</span> 表名 <span class="keyword">VALUES</span>(….);</span><br></pre></td></tr></table></figure>
-
-<h3 id="（2）删除数据："><a href="#（2）删除数据：" class="headerlink" title="（2）删除数据："></a>（2）删除数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DELETE</span>  <span class="keyword">FROM</span> 表名;		#删除所有的记录行，慎用！</span><br><span class="line"><span class="keyword">DELETE</span>	<span class="keyword">FROM</span>	表名	<span class="keyword">WHERE</span>	列<span class="operator">=</span>值;		#删除满足条件的行</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-
-<h3 id="（3）修改数据："><a href="#（3）修改数据：" class="headerlink" title="（3）修改数据："></a>（3）修改数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">UPDATE 	表名	<span class="keyword">SET</span>  列<span class="operator">=</span>值，列<span class="operator">=</span>值；		#删除所有记录行，慎用</span><br><span class="line">UPDATE	表名	<span class="keyword">SET</span>	 列<span class="operator">=</span>值，列<span class="operator">=</span>值  <span class="keyword">WHERE</span>   列<span class="operator">=</span>值；</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="2-MySQL中的列类型"><a href="#2-MySQL中的列类型" class="headerlink" title="2.MySQL中的列类型"></a>2.MySQL中的列类型</h2><h3 id="（1）数字类型"><a href="#（1）数字类型" class="headerlink" title="（1）数字类型"></a>（1）数字类型</h3><h4 id="整型："><a href="#整型：" class="headerlink" title="整型："></a>整型：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">TINYINT: 占1个字节 -128~127。</span><br><span class="line">SMALLINT: 占2个字节 -32768~32767。</span><br><span class="line">INT: 占4个字节 -2147483648~2147483647。</span><br><span class="line">BIGINT: 占4/8个字节。</span><br></pre></td></tr></table></figure>
-
-<h4 id="小数型："><a href="#小数型：" class="headerlink" title="小数型："></a>小数型：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">FLOAT(M-M位有效数字,D-小数点后面D位小数):单精度浮点型，占4个字节。</span><br><span class="line">DOUBLE(M,D):双精度浮点型，占8个字节。</span><br><span class="line">DECIMAL(M,D):严格定点数，用于精确运算，如货币金额。</span><br></pre></td></tr></table></figure>
-
-<h3 id="（2）字符串类型"><a href="#（2）字符串类型" class="headerlink" title="（2）字符串类型"></a>（2）字符串类型</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">CHAR(M) : M不能超过255。</span><br><span class="line">VARCHAR(M) : M不能超过65535。</span><br><span class="line">TEXT(M) : M不能超过2^32,即40亿个字符。</span><br></pre></td></tr></table></figure>
-
-<p><strong>面试问题</strong>：CHAR(8)和VARCHAR(8)的区别?<br>user_name  CHAR(8)：定长字符串，可能产生空间浪费，但读取速度快</p>
-<blockquote>
-<p>‘a’  实际存储为： ‘a\0\0\0\0\0\0\0’<br>‘ab’实际存储为： ‘ab\0\0\0\0\0\0’<br>‘abc’实际存储为： ‘abc\0\0\0\0\0’<br>‘abcd’实际存储为： ‘abcd\0\0\0\0’<br>‘abcde’实际存储为： ‘abcde\0\0\0’<br>‘abcdef’实际存储为： ‘abcdef\0\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’</p>
-</blockquote>
-<p>user_name  VARCHAR(8)：   变长字符串，不会产生空间浪费，但读取速度稍慢</p>
-<blockquote>
-<p> ‘a’  实际存储为： ‘a\0’<br> ‘ab’实际存储为： ‘ab\0’<br> ‘abc’实际存储为： ‘abc\0’<br> ‘abcd’实际存储为： ‘abcd\0’<br>‘abcde’实际存储为： ‘abcde\0’<br>‘abcdef’实际存储为： ‘abcdef\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’　</p>
-</blockquote>
-<h3 id="（3）日期时间类型"><a href="#（3）日期时间类型" class="headerlink" title="（3）日期时间类型"></a>（3）日期时间类型</h3><p>​    DATE : 日期类型，必须用引号括起来，采用’yyyy-mm-dd’格式。<br>​    TIME : 时间类型，必须用引号括起来，采用’hh:mi:ss’格式。<br>​    DATETIME : 时期时间类型，必须用引号括起来，采用’yyyy-mm-dd hh:mi:ss’格式。</p>
-<h3 id="（4）布尔类型"><a href="#（4）布尔类型" class="headerlink" title="（4）布尔类型"></a>（4）布尔类型</h3><p>​    BOOL/BOOLEAN : 智能表示TRUE(等价于1)或FLASE(等价于0)。</p>
-<h2 id="3-列上的约束"><a href="#3-列上的约束" class="headerlink" title="3.列上的约束"></a>3.列上的约束</h2><h3 id="1-Constraint约束"><a href="#1-Constraint约束" class="headerlink" title="(1)Constraint约束"></a>(1)Constraint约束</h3><p>列上的值往往是有限制，如：</p>
-<p>性别:只能取男或者女<br>政治面貌：只能取党员，团员，群众之一</p>
-<h3 id="2-主键约束-PRIMARY-KEY"><a href="#2-主键约束-PRIMARY-KEY" class="headerlink" title="(2)主键约束(PRIMARY  KEY)"></a>(2)主键约束(PRIMARY  KEY)</h3><p>语法：列名 类型 PRIMARY KEY<br>声明为”主键”的列上不能出现null值，且不能重复，如商品编号；表中所有的记录行会自动按照主键列上的值进行排序——一个表至多只能声明一个主键列。</p>
-<h3 id="3-唯一约束-UNIQUE"><a href="#3-唯一约束-UNIQUE" class="headerlink" title="(3)唯一约束(UNIQUE)"></a>(3)唯一约束(UNIQUE)</h3><p>语法：列名 类型 UNIQUE<br>声明为”唯一”约束的列上不能出现重复值，但可以出现多个NULL</p>
-<h3 id="4-非空约束-NOT-NULL"><a href="#4-非空约束-NOT-NULL" class="headerlink" title="(4)非空约束(NOT  NULL)"></a>(4)非空约束(NOT  NULL)</h3><p>语法：列名 类型 NOT  NULL<br>声明为”非空”约束的列上不能出现NULL，但可以重复。</p>
-<h3 id="5-检查约束——MySQL不支持"><a href="#5-检查约束——MySQL不支持" class="headerlink" title="(5)检查约束——MySQL不支持"></a>(5)检查约束——MySQL不支持</h3><h3 id="6-默认值约束-DEFAULT"><a href="#6-默认值约束-DEFAULT" class="headerlink" title="(6)默认值约束(DEFAULT)"></a>(6)默认值约束(DEFAULT)</h3><p>语法：列名 类型 DEFAULT 值<br>声明了默认值的列若未指定值，则使用默认值；若指定的特定值的值，则使用指定的值。</p>
-<h3 id="7-外键约束"><a href="#7-外键约束" class="headerlink" title="(7)外键约束"></a>(7)外键约束</h3><p>外键：POREIGN  KEY,可重复可为空，外键列上出现的值必须正另一个表的主键列上。</p>
-]]></content>
-      <categories>
-        <category>MySQL</category>
-      </categories>
-      <tags>
-        <tag>MySQL</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>JS实现图片压缩</title>
     <url>/2021/03/19/JS%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9/</url>
     <content><![CDATA[<blockquote>
@@ -240,6 +195,51 @@
       </tags>
   </entry>
   <entry>
+    <title>MySQL列类型和列上约束</title>
+    <url>/2021/03/18/MySQL%E5%88%97%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%88%97%E4%B8%8A%E7%BA%A6%E6%9D%9F/</url>
+    <content><![CDATA[<h2 id="1-常用SQL命令"><a href="#1-常用SQL命令" class="headerlink" title="1.常用SQL命令"></a>1.常用SQL命令</h2><h3 id="（1）添加数据："><a href="#（1）添加数据：" class="headerlink" title="（1）添加数据："></a>（1）添加数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">INSERT</span>  <span class="keyword">INTO</span> 表名 <span class="keyword">VALUES</span>(….);</span><br></pre></td></tr></table></figure>
+
+<h3 id="（2）删除数据："><a href="#（2）删除数据：" class="headerlink" title="（2）删除数据："></a>（2）删除数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DELETE</span>  <span class="keyword">FROM</span> 表名;		#删除所有的记录行，慎用！</span><br><span class="line"><span class="keyword">DELETE</span>	<span class="keyword">FROM</span>	表名	<span class="keyword">WHERE</span>	列<span class="operator">=</span>值;		#删除满足条件的行</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+
+<h3 id="（3）修改数据："><a href="#（3）修改数据：" class="headerlink" title="（3）修改数据："></a>（3）修改数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">UPDATE 	表名	<span class="keyword">SET</span>  列<span class="operator">=</span>值，列<span class="operator">=</span>值；		#删除所有记录行，慎用</span><br><span class="line">UPDATE	表名	<span class="keyword">SET</span>	 列<span class="operator">=</span>值，列<span class="operator">=</span>值  <span class="keyword">WHERE</span>   列<span class="operator">=</span>值；</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-MySQL中的列类型"><a href="#2-MySQL中的列类型" class="headerlink" title="2.MySQL中的列类型"></a>2.MySQL中的列类型</h2><h3 id="（1）数字类型"><a href="#（1）数字类型" class="headerlink" title="（1）数字类型"></a>（1）数字类型</h3><h4 id="整型："><a href="#整型：" class="headerlink" title="整型："></a>整型：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">TINYINT: 占1个字节 -128~127。</span><br><span class="line">SMALLINT: 占2个字节 -32768~32767。</span><br><span class="line">INT: 占4个字节 -2147483648~2147483647。</span><br><span class="line">BIGINT: 占4/8个字节。</span><br></pre></td></tr></table></figure>
+
+<h4 id="小数型："><a href="#小数型：" class="headerlink" title="小数型："></a>小数型：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">FLOAT(M-M位有效数字,D-小数点后面D位小数):单精度浮点型，占4个字节。</span><br><span class="line">DOUBLE(M,D):双精度浮点型，占8个字节。</span><br><span class="line">DECIMAL(M,D):严格定点数，用于精确运算，如货币金额。</span><br></pre></td></tr></table></figure>
+
+<h3 id="（2）字符串类型"><a href="#（2）字符串类型" class="headerlink" title="（2）字符串类型"></a>（2）字符串类型</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">CHAR(M) : M不能超过255。</span><br><span class="line">VARCHAR(M) : M不能超过65535。</span><br><span class="line">TEXT(M) : M不能超过2^32,即40亿个字符。</span><br></pre></td></tr></table></figure>
+
+<p><strong>面试问题</strong>：CHAR(8)和VARCHAR(8)的区别?<br>user_name  CHAR(8)：定长字符串，可能产生空间浪费，但读取速度快</p>
+<blockquote>
+<p>‘a’  实际存储为： ‘a\0\0\0\0\0\0\0’<br>‘ab’实际存储为： ‘ab\0\0\0\0\0\0’<br>‘abc’实际存储为： ‘abc\0\0\0\0\0’<br>‘abcd’实际存储为： ‘abcd\0\0\0\0’<br>‘abcde’实际存储为： ‘abcde\0\0\0’<br>‘abcdef’实际存储为： ‘abcdef\0\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’</p>
+</blockquote>
+<p>user_name  VARCHAR(8)：   变长字符串，不会产生空间浪费，但读取速度稍慢</p>
+<blockquote>
+<p> ‘a’  实际存储为： ‘a\0’<br> ‘ab’实际存储为： ‘ab\0’<br> ‘abc’实际存储为： ‘abc\0’<br> ‘abcd’实际存储为： ‘abcd\0’<br>‘abcde’实际存储为： ‘abcde\0’<br>‘abcdef’实际存储为： ‘abcdef\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’　</p>
+</blockquote>
+<h3 id="（3）日期时间类型"><a href="#（3）日期时间类型" class="headerlink" title="（3）日期时间类型"></a>（3）日期时间类型</h3><p>​    DATE : 日期类型，必须用引号括起来，采用’yyyy-mm-dd’格式。<br>​    TIME : 时间类型，必须用引号括起来，采用’hh:mi:ss’格式。<br>​    DATETIME : 时期时间类型，必须用引号括起来，采用’yyyy-mm-dd hh:mi:ss’格式。</p>
+<h3 id="（4）布尔类型"><a href="#（4）布尔类型" class="headerlink" title="（4）布尔类型"></a>（4）布尔类型</h3><p>​    BOOL/BOOLEAN : 智能表示TRUE(等价于1)或FLASE(等价于0)。</p>
+<h2 id="3-列上的约束"><a href="#3-列上的约束" class="headerlink" title="3.列上的约束"></a>3.列上的约束</h2><h3 id="1-Constraint约束"><a href="#1-Constraint约束" class="headerlink" title="(1)Constraint约束"></a>(1)Constraint约束</h3><p>列上的值往往是有限制，如：</p>
+<p>性别:只能取男或者女<br>政治面貌：只能取党员，团员，群众之一</p>
+<h3 id="2-主键约束-PRIMARY-KEY"><a href="#2-主键约束-PRIMARY-KEY" class="headerlink" title="(2)主键约束(PRIMARY  KEY)"></a>(2)主键约束(PRIMARY  KEY)</h3><p>语法：列名 类型 PRIMARY KEY<br>声明为”主键”的列上不能出现null值，且不能重复，如商品编号；表中所有的记录行会自动按照主键列上的值进行排序——一个表至多只能声明一个主键列。</p>
+<h3 id="3-唯一约束-UNIQUE"><a href="#3-唯一约束-UNIQUE" class="headerlink" title="(3)唯一约束(UNIQUE)"></a>(3)唯一约束(UNIQUE)</h3><p>语法：列名 类型 UNIQUE<br>声明为”唯一”约束的列上不能出现重复值，但可以出现多个NULL</p>
+<h3 id="4-非空约束-NOT-NULL"><a href="#4-非空约束-NOT-NULL" class="headerlink" title="(4)非空约束(NOT  NULL)"></a>(4)非空约束(NOT  NULL)</h3><p>语法：列名 类型 NOT  NULL<br>声明为”非空”约束的列上不能出现NULL，但可以重复。</p>
+<h3 id="5-检查约束——MySQL不支持"><a href="#5-检查约束——MySQL不支持" class="headerlink" title="(5)检查约束——MySQL不支持"></a>(5)检查约束——MySQL不支持</h3><h3 id="6-默认值约束-DEFAULT"><a href="#6-默认值约束-DEFAULT" class="headerlink" title="(6)默认值约束(DEFAULT)"></a>(6)默认值约束(DEFAULT)</h3><p>语法：列名 类型 DEFAULT 值<br>声明了默认值的列若未指定值，则使用默认值；若指定的特定值的值，则使用指定的值。</p>
+<h3 id="7-外键约束"><a href="#7-外键约束" class="headerlink" title="(7)外键约束"></a>(7)外键约束</h3><p>外键：POREIGN  KEY,可重复可为空，外键列上出现的值必须正另一个表的主键列上。</p>
+]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>VUE组件之间通信的6种方式</title>
     <url>/2021/03/19/VUE%E7%BB%84%E4%BB%B6%E4%B9%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E7%9A%846%E7%A7%8D%E6%96%B9%E5%BC%8F/</url>
     <content><![CDATA[<h3 id="1-方法一：props和-emit"><a href="#1-方法一：props和-emit" class="headerlink" title="1.方法一：props和**$emit**"></a>1.方法一：<strong>props</strong>和**$emit**</h3><p>父组件通过props向下传递数据给子组件，子组件通过event给父组件发送消息，实际上就是子组件把自己的数据发送给父组件。</p>
@@ -287,6 +287,98 @@
       </categories>
       <tags>
         <tag>vue</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>vue项目打包优化策略</title>
+    <url>/2021/03/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</url>
+    <content><![CDATA[<p>使用vue-cli部署生产包时，发现资源包很大，打包后的<code>vendor.js</code>达到了1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？</p>
+<h3 id="1-组件按需加载"><a href="#1-组件按需加载" class="headerlink" title="1.组件按需加载"></a>1.组件按需加载</h3><p>这是首先可以优化的点。如果频繁使用了第三方组件/UI库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。</p>
+<p>示例如下：</p>
+<h4 id="1-1-element-ui"><a href="#1-1-element-ui" class="headerlink" title="1.1 element-ui"></a>1.1 element-ui</h4><p>首先，安装 babel-plugin-component：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<p>然后，将.babelrc 修改为：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; main.js</span><br><span class="line">import Vue from &#39;vue&#39;</span><br><span class="line">import &#123; Dialog, Loading &#125; from &#39;element-ui&#39;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading &#x3D; Loading.service</span><br><span class="line">&#x2F;&#x2F; 然后正常使用组件</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-mint-ui"><a href="#1-2-mint-ui" class="headerlink" title="1.2 mint-ui"></a>1.2 mint-ui</h4><p>由于mint-ui是element-ui的移动端组件，所以它的使用和引入几乎和element-ui一样。</p>
+<p>首先，安装 babel-plugin-component：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
+
+
+
+<p>然后，将.babelrc 修改为：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;presets&quot;: [</span><br><span class="line">    [&quot;es2015&quot;, &#123; &quot;modules&quot;: false &#125;]</span><br><span class="line">  ],</span><br><span class="line">  &quot;plugins&quot;: [[&quot;component&quot;, [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;libraryName&quot;: &quot;mint-ui&quot;,</span><br><span class="line">      &quot;style&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">  ]]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>然后引入部分组件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; main.js</span><br><span class="line">import Vue from &#39;vue&#39;</span><br><span class="line">import &#123; Toast, MessageBox &#125; from &#39;element-ui&#39;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading &#x3D; Loading.service</span><br><span class="line">&#x2F;&#x2F; 然后正常使用组件</span><br></pre></td></tr></table></figure>
+
+<p>注意，element-ui和mint-ui不能同时在.babelrc中进行插件设置，这种情况下，依然可以按需引入，但是不要在<code>.babelrc</code>中配置，在引入的地方同时引入css即可。</p>
+<h4 id="1-3-echarts"><a href="#1-3-echarts" class="headerlink" title="1.3 echarts"></a>1.3 echarts</h4><p>首先安装babel-plugin-equire</p>
+<p>npm i babel-plugin-equire -D</p>
+<p>然后，在<code>.babelrc</code>文件中添加该插件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;plugins&quot;: [</span><br><span class="line">       &#x2F;&#x2F; other plugins</span><br><span class="line">       ...</span><br><span class="line">       </span><br><span class="line">    &quot;equire&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>创建一个js文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; echarts.js</span><br><span class="line">&#x2F;&#x2F; eslint-disable-next-line</span><br><span class="line">const echarts &#x3D; equire([</span><br><span class="line">  &#39;tooltip&#39;,</span><br><span class="line">  &#39;candlestick&#39;,</span><br><span class="line">  &#39;bar&#39;,</span><br><span class="line">  &#39;line&#39;,</span><br><span class="line">  &#39;axisPointer&#39;,</span><br><span class="line">  &#39;legend&#39;,</span><br><span class="line">  &#39;grid&#39;</span><br><span class="line">])</span><br><span class="line">export default echarts</span><br><span class="line">&#x2F;&#x2F; 业务组件，引入echarts</span><br><span class="line">import echarts from &#39;@&#x2F;assets&#x2F;lib&#x2F;echarts&#39;</span><br><span class="line">&#x2F;&#x2F; 使用与以前一样</span><br></pre></td></tr></table></figure>
+
+
+
+<p>按需加载echarts</p>
+<p>解决vue-cli首屏加载慢的问题</p>
+<h3 id="2-路由懒加载"><a href="#2-路由懒加载" class="headerlink" title="2.路由懒加载"></a>2.路由懒加载</h3><p>这里需要一个插件</p>
+<p>vue-router官方推荐syntax-dynamic-import插件，不过它要求同时安装@bable/core^7.0.0，如果你安装了babel-core6，是会有版本冲突的。我的做法如下</p>
+<p>npm install babel-plugin-syntax-dynamic-import –save-dev(^6.18.0)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; router.js</span><br><span class="line">const login &#x3D; () &#x3D;&gt; import(&#39;@&#x2F;components&#x2F;login&#39;)</span><br><span class="line">const router &#x3D; new VueRouter(&#123;</span><br><span class="line">  routes: [</span><br><span class="line">    &#123; path: &#39;&#x2F;login&#39;, component: login &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>还有一种魔法注释用法</p>
+<p>有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack &gt; 2.4)。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const Foo &#x3D; () &#x3D;&gt; import(&#x2F;* webpackChunkName: &quot;group-foo&quot; *&#x2F; &#39;.&#x2F;Foo.vue&#39;)</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="3-异步组件"><a href="#3-异步组件" class="headerlink" title="3.异步组件"></a>3.异步组件</h3><p>如果组件在页面加载时不需要，只在调用时用到，这时可以使用异步组件的写法。仅仅是引入和组件注册写法不同</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; template</span><br><span class="line">&lt;test v-if&#x3D;&quot;showTest&quot;&gt;&lt;&#x2F;test&gt;</span><br><span class="line">&#x2F;&#x2F; script</span><br><span class="line">  components: &#123;</span><br><span class="line">    test: () &#x3D;&gt; import(&#39;.&#x2F;test&#39;) &#x2F;&#x2F; 将组件异步引入，告诉webpack，将该部分代码分割打包</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">      clickTest () &#123;</span><br><span class="line">          this.showTest &#x3D; !this.showTest</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-图片的压缩合并"><a href="#4-图片的压缩合并" class="headerlink" title="4.图片的压缩合并"></a>4.图片的压缩合并</h3><p>如有可能，将图片制作成精灵图</p>
+<h3 id="5-CDN加速"><a href="#5-CDN加速" class="headerlink" title="5.CDN加速"></a>5.CDN加速</h3><p>在index.html中引入cdn资源</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;div id&#x3D;&quot;app&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">  &lt;!-- built files will be auto injected --&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue&#x2F;2.5.2&#x2F;vue.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue-router&#x2F;3.0.1&#x2F;vue-router.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vuex&#x2F;3.0.1&#x2F;vuex.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue-resource&#x2F;1.5.1&#x2F;vue-resource.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+
+
+<p>修改 build/webpack.base.conf.js</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">module.exports &#x3D; &#123;</span><br><span class="line">  context: path.resolve(__dirname, &#39;..&#x2F;&#39;),</span><br><span class="line">  entry: &#123;</span><br><span class="line">    app: &#39;.&#x2F;src&#x2F;main.js&#39;</span><br><span class="line">  &#125;,</span><br><span class="line">  externals:&#123;</span><br><span class="line">    &#39;vue&#39;: &#39;Vue&#39;,</span><br><span class="line">    &#39;vue-router&#39;: &#39;VueRouter&#39;,</span><br><span class="line">    &#39;vuex&#39;:&#39;Vuex&#39;,</span><br><span class="line">    &#39;vue-resource&#39;: &#39;VueResource&#39;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>修改src/main.js src/router/index.js 注释掉import引入的vue,vue-resource</p>
+<p>// import Vue from ‘vue’</p>
+<p>// import VueResource from ‘vue-resource’</p>
+<p>// Vue.use(VueResource)</p>
+<h3 id="6-压缩代码"><a href="#6-压缩代码" class="headerlink" title="6.压缩代码"></a>6.压缩代码</h3><p>vue-cli已经使用UglifyJsPlugin 插件来压缩代码，可以设置成如下配置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">new webpack.optimize.UglifyJsPlugin(&#123;</span><br><span class="line">  compress: &#123;</span><br><span class="line">    warnings: false,</span><br><span class="line">    drop_console: true,</span><br><span class="line">    pure_funcs: [&#39;console.log&#39;]</span><br><span class="line">  &#125;,</span><br><span class="line">  sourceMap: false</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>其中sourceMap: false是禁用除错功能。</p>
+<p>如果设为true，在部署包中会生成.map结尾的js文件。它用于在代码混淆压缩的情况下仍可进行调试。这个功能虽好，但会大大增加整体资源包的体积，所以将其禁用。</p>
+]]></content>
+      <categories>
+        <category>vue</category>
+      </categories>
+      <tags>
+        <tag>vue</tag>
+        <tag>webpack</tag>
       </tags>
   </entry>
   <entry>
@@ -398,98 +490,6 @@
       </categories>
       <tags>
         <tag>vuex</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>vue项目打包优化策略</title>
-    <url>/2021/03/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</url>
-    <content><![CDATA[<p>使用vue-cli部署生产包时，发现资源包很大，打包后的<code>vendor.js</code>达到了1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？</p>
-<h3 id="1-组件按需加载"><a href="#1-组件按需加载" class="headerlink" title="1.组件按需加载"></a>1.组件按需加载</h3><p>这是首先可以优化的点。如果频繁使用了第三方组件/UI库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。</p>
-<p>示例如下：</p>
-<h4 id="1-1-element-ui"><a href="#1-1-element-ui" class="headerlink" title="1.1 element-ui"></a>1.1 element-ui</h4><p>首先，安装 babel-plugin-component：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<p>然后，将.babelrc 修改为：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; main.js</span><br><span class="line">import Vue from &#39;vue&#39;</span><br><span class="line">import &#123; Dialog, Loading &#125; from &#39;element-ui&#39;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading &#x3D; Loading.service</span><br><span class="line">&#x2F;&#x2F; 然后正常使用组件</span><br></pre></td></tr></table></figure>
-
-<h4 id="1-2-mint-ui"><a href="#1-2-mint-ui" class="headerlink" title="1.2 mint-ui"></a>1.2 mint-ui</h4><p>由于mint-ui是element-ui的移动端组件，所以它的使用和引入几乎和element-ui一样。</p>
-<p>首先，安装 babel-plugin-component：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
-
-
-
-<p>然后，将.babelrc 修改为：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;presets&quot;: [</span><br><span class="line">    [&quot;es2015&quot;, &#123; &quot;modules&quot;: false &#125;]</span><br><span class="line">  ],</span><br><span class="line">  &quot;plugins&quot;: [[&quot;component&quot;, [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;libraryName&quot;: &quot;mint-ui&quot;,</span><br><span class="line">      &quot;style&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">  ]]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>然后引入部分组件</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; main.js</span><br><span class="line">import Vue from &#39;vue&#39;</span><br><span class="line">import &#123; Toast, MessageBox &#125; from &#39;element-ui&#39;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading &#x3D; Loading.service</span><br><span class="line">&#x2F;&#x2F; 然后正常使用组件</span><br></pre></td></tr></table></figure>
-
-<p>注意，element-ui和mint-ui不能同时在.babelrc中进行插件设置，这种情况下，依然可以按需引入，但是不要在<code>.babelrc</code>中配置，在引入的地方同时引入css即可。</p>
-<h4 id="1-3-echarts"><a href="#1-3-echarts" class="headerlink" title="1.3 echarts"></a>1.3 echarts</h4><p>首先安装babel-plugin-equire</p>
-<p>npm i babel-plugin-equire -D</p>
-<p>然后，在<code>.babelrc</code>文件中添加该插件</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;plugins&quot;: [</span><br><span class="line">       &#x2F;&#x2F; other plugins</span><br><span class="line">       ...</span><br><span class="line">       </span><br><span class="line">    &quot;equire&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>创建一个js文件</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; echarts.js</span><br><span class="line">&#x2F;&#x2F; eslint-disable-next-line</span><br><span class="line">const echarts &#x3D; equire([</span><br><span class="line">  &#39;tooltip&#39;,</span><br><span class="line">  &#39;candlestick&#39;,</span><br><span class="line">  &#39;bar&#39;,</span><br><span class="line">  &#39;line&#39;,</span><br><span class="line">  &#39;axisPointer&#39;,</span><br><span class="line">  &#39;legend&#39;,</span><br><span class="line">  &#39;grid&#39;</span><br><span class="line">])</span><br><span class="line">export default echarts</span><br><span class="line">&#x2F;&#x2F; 业务组件，引入echarts</span><br><span class="line">import echarts from &#39;@&#x2F;assets&#x2F;lib&#x2F;echarts&#39;</span><br><span class="line">&#x2F;&#x2F; 使用与以前一样</span><br></pre></td></tr></table></figure>
-
-
-
-<p>按需加载echarts</p>
-<p>解决vue-cli首屏加载慢的问题</p>
-<h3 id="2-路由懒加载"><a href="#2-路由懒加载" class="headerlink" title="2.路由懒加载"></a>2.路由懒加载</h3><p>这里需要一个插件</p>
-<p>vue-router官方推荐syntax-dynamic-import插件，不过它要求同时安装@bable/core^7.0.0，如果你安装了babel-core6，是会有版本冲突的。我的做法如下</p>
-<p>npm install babel-plugin-syntax-dynamic-import –save-dev(^6.18.0)</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; router.js</span><br><span class="line">const login &#x3D; () &#x3D;&gt; import(&#39;@&#x2F;components&#x2F;login&#39;)</span><br><span class="line">const router &#x3D; new VueRouter(&#123;</span><br><span class="line">  routes: [</span><br><span class="line">    &#123; path: &#39;&#x2F;login&#39;, component: login &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-
-
-<p>还有一种魔法注释用法</p>
-<p>有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack &gt; 2.4)。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const Foo &#x3D; () &#x3D;&gt; import(&#x2F;* webpackChunkName: &quot;group-foo&quot; *&#x2F; &#39;.&#x2F;Foo.vue&#39;)</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<h3 id="3-异步组件"><a href="#3-异步组件" class="headerlink" title="3.异步组件"></a>3.异步组件</h3><p>如果组件在页面加载时不需要，只在调用时用到，这时可以使用异步组件的写法。仅仅是引入和组件注册写法不同</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; template</span><br><span class="line">&lt;test v-if&#x3D;&quot;showTest&quot;&gt;&lt;&#x2F;test&gt;</span><br><span class="line">&#x2F;&#x2F; script</span><br><span class="line">  components: &#123;</span><br><span class="line">    test: () &#x3D;&gt; import(&#39;.&#x2F;test&#39;) &#x2F;&#x2F; 将组件异步引入，告诉webpack，将该部分代码分割打包</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">      clickTest () &#123;</span><br><span class="line">          this.showTest &#x3D; !this.showTest</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="4-图片的压缩合并"><a href="#4-图片的压缩合并" class="headerlink" title="4.图片的压缩合并"></a>4.图片的压缩合并</h3><p>如有可能，将图片制作成精灵图</p>
-<h3 id="5-CDN加速"><a href="#5-CDN加速" class="headerlink" title="5.CDN加速"></a>5.CDN加速</h3><p>在index.html中引入cdn资源</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;div id&#x3D;&quot;app&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">  &lt;!-- built files will be auto injected --&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue&#x2F;2.5.2&#x2F;vue.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue-router&#x2F;3.0.1&#x2F;vue-router.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vuex&#x2F;3.0.1&#x2F;vuex.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue-resource&#x2F;1.5.1&#x2F;vue-resource.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-
-
-<p>修改 build/webpack.base.conf.js</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">module.exports &#x3D; &#123;</span><br><span class="line">  context: path.resolve(__dirname, &#39;..&#x2F;&#39;),</span><br><span class="line">  entry: &#123;</span><br><span class="line">    app: &#39;.&#x2F;src&#x2F;main.js&#39;</span><br><span class="line">  &#125;,</span><br><span class="line">  externals:&#123;</span><br><span class="line">    &#39;vue&#39;: &#39;Vue&#39;,</span><br><span class="line">    &#39;vue-router&#39;: &#39;VueRouter&#39;,</span><br><span class="line">    &#39;vuex&#39;:&#39;Vuex&#39;,</span><br><span class="line">    &#39;vue-resource&#39;: &#39;VueResource&#39;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>修改src/main.js src/router/index.js 注释掉import引入的vue,vue-resource</p>
-<p>// import Vue from ‘vue’</p>
-<p>// import VueResource from ‘vue-resource’</p>
-<p>// Vue.use(VueResource)</p>
-<h3 id="6-压缩代码"><a href="#6-压缩代码" class="headerlink" title="6.压缩代码"></a>6.压缩代码</h3><p>vue-cli已经使用UglifyJsPlugin 插件来压缩代码，可以设置成如下配置：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">new webpack.optimize.UglifyJsPlugin(&#123;</span><br><span class="line">  compress: &#123;</span><br><span class="line">    warnings: false,</span><br><span class="line">    drop_console: true,</span><br><span class="line">    pure_funcs: [&#39;console.log&#39;]</span><br><span class="line">  &#125;,</span><br><span class="line">  sourceMap: false</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<p>其中sourceMap: false是禁用除错功能。</p>
-<p>如果设为true，在部署包中会生成.map结尾的js文件。它用于在代码混淆压缩的情况下仍可进行调试。这个功能虽好，但会大大增加整体资源包的体积，所以将其禁用。</p>
-]]></content>
-      <categories>
-        <category>vue</category>
-      </categories>
-      <tags>
-        <tag>vue</tag>
-        <tag>webpack</tag>
       </tags>
   </entry>
   <entry>
