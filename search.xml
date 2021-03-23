@@ -440,6 +440,56 @@
       </tags>
   </entry>
   <entry>
+    <title>VUE组件之间通信的6种方式</title>
+    <url>/2021/03/19/VUE%E7%BB%84%E4%BB%B6%E4%B9%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E7%9A%846%E7%A7%8D%E6%96%B9%E5%BC%8F/</url>
+    <content><![CDATA[<h3 id="1-方法一：props和-emit"><a href="#1-方法一：props和-emit" class="headerlink" title="1.方法一：props和**$emit**"></a>1.方法一：<strong>props</strong>和**$emit**</h3><p>父组件通过props向下传递数据给子组件，子组件通过event给父组件发送消息，实际上就是子组件把自己的数据发送给父组件。</p>
+<h3 id="2-方法二：-attrs和-listeners"><a href="#2-方法二：-attrs和-listeners" class="headerlink" title="2.方法二：**$attrs和$listeners**"></a>2.方法二：**$attrs<strong>和</strong>$listeners**</h3><p>​    第一种方式处理父子组件之间的数据传输有一个问题：如果父组件A下面有子组件B，组件B下面有组件C,这时如果组件A想传递数据给组件C怎么办呢？ 如果采用第一种方法，我们必须让组件A通过prop传递消息给组件B，组件B在通过prop传递消息给组件C；要是组件A和组件C之间有更多的组件，那采用这种方式就很复杂了。Vue 2.4开始提供了$attrs和$listeners来解决这个问题，能够让组件A之间传递消息给组件C。</p>
+<span id="more"></span>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件C--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">        &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;$attrs.messagec&quot; @input&#x3D;&quot;passCData($attrs.messagec)&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;C&#39;,</span><br><span class="line">    data () &#123;</span><br><span class="line">      return &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passCData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发父组件A中的事件,把从A得到的数据hello C还给A组件</span><br><span class="line">        this.$emit(&#39;getCData&#39;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @input&#x3D;&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">    &lt;!-- C组件中能直接触发getCData的原因在于 B组件调用C组件时 使用 v-on 绑定了$listeners 属性 --&gt;</span><br><span class="line">    &lt;!-- 通过v-bind 绑定$attrs属性，C组件可以直接获取到A组件中传递下来的props（除了B组件中props声明的） --&gt;</span><br><span class="line">    &lt;C v-bind&#x3D;&quot;$attrs&quot; v-on&#x3D;&quot;$listeners&quot;&gt;&lt;&#x2F;C&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;B&#39;,</span><br><span class="line">    props:[</span><br><span class="line">      message:&#123;</span><br><span class="line">        type: String,</span><br><span class="line">        default: null</span><br><span class="line">      &#125;</span><br><span class="line">    ],&#x2F;&#x2F;得到父组件A传递过来的数据,hello B</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发父组件中的事件,把message给组件A</span><br><span class="line">        this.$emit(&#39;getChildData&#39;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;B </span><br><span class="line">     :messagec&#x3D;&quot;messagec&quot; </span><br><span class="line">     :message&#x3D;&quot;message&quot; </span><br><span class="line">     :getCData&#x3D;&quot;getCData&quot;</span><br><span class="line">     :getChildData&#x3D;&quot;getChildData&quot;&gt;&lt;&#x2F;B&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;A&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#39;hello B&#39;,</span><br><span class="line">        messagec:&#39;hello C&#39; &#x2F;&#x2F;传递给c组件的数据</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      getChildData(val)&#123;</span><br><span class="line">        console.log(&#39;这是来自B组件的数据&#39;,val) &#x2F;&#x2F;打印hello B</span><br><span class="line">      &#125;,</span><br><span class="line">      &#x2F;&#x2F;执行C子组件触发的事件</span><br><span class="line">      getCData(val)&#123;</span><br><span class="line">        console.log(&quot;这是来自C组件的数据：&quot;, val) &#x2F;&#x2F;打印hello C</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-方法3：provide和-inject"><a href="#3-方法3：provide和-inject" class="headerlink" title="3.方法3：provide和 inject"></a>3.方法3：<strong>provide</strong>和 <strong>inject</strong></h3><p>在 Vue.js 的 <code>2.2.0+</code> 版本中添加加了 provide 和 inject 选项。他们成对出现，用于父级组件向下传递数据。</p>
+<p>父组件中通过provide来提供变量，然后在子组件中通过inject来注入变量。不论子组件有多深，只要调用了inject那么就可以注入provide中的数据。而不是局限于只能从当前父组件的prop属性来获取数据，只要在父组件的生命周期内，子组件都可以调用。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--父组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;child&gt;&lt;&#x2F;child&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;parent&#39;,</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#39;这是要个子组件的数据&#39;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#39;hello&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--子组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;child&#39;,</span><br><span class="line">    inject:[&#39;forChidrenData&#39;], &#x2F;&#x2F;得到父组件传递过来的数据</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#39;这是要个子组件的数据&#39;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:this.forChidrenData</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-方法四：vuex处理组件之间的数据交互"><a href="#4-方法四：vuex处理组件之间的数据交互" class="headerlink" title="4.方法四：vuex处理组件之间的数据交互"></a>4.方法四：<strong>vuex处理组件之间的数据交互</strong></h3><p>​    如果业务逻辑复杂，很多组件之间需要同时处理一些公共的数据，这个时候才有上面这一些方法可能不利于项目的维护，vuex的做法就是将这一些公共的数据抽离出来，然后其他组件就可以对这个公共数据进行读写操作，这样达到了解耦的目的。</p>
+<h3 id="5-方法五：中央事件总线"><a href="#5-方法五：中央事件总线" class="headerlink" title="5.方法五：中央事件总线"></a>5.方法五：<strong>中央事件总线</strong></h3><p>​    如果两个组件不是父子关系呢？这种情况下可以使用中央事件总线的方式。新建一个Vue事件bus对象，然后通过bus.$emit触发事件，bus.$on监听触发的事件。</p>
+<blockquote>
+<p>公共事件总线eventBus的实质就是创建一个vue实例，通过一个空的vue实例作为桥梁实现vue组件间的通信。它是实现非父子组件通信的一种解决方案。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother1 compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @input&#x3D;&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;brother1&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:&#39;hello brother1&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发全局事件globalEvent</span><br><span class="line">        bus.$emit(&#39;globalEvent&#39;, val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother2 compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;p&gt;brother1传递过来的数据：&#123;&#123;brothermessage&#125;&#125;&lt;&#x2F;p&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;brother2&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        brothermessage:&#39;&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    mounted()&#123;</span><br><span class="line">      &#x2F;&#x2F;绑定全局事件globalEvent</span><br><span class="line">      bus.$on(&#39;globalEvent&#39;,(val)&#x3D;&gt;&#123;</span><br><span class="line">        this.brothermessage &#x3D; val;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;中央事件总线</span><br><span class="line">var bus&#x3D;new Vue();</span><br><span class="line">var app&#x3D;new Vue(&#123;</span><br><span class="line">  el:&#39;#app&#39;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;brother1&gt;&lt;&#x2F;brother1&gt;</span><br><span class="line">      &lt;brother2&gt;&lt;&#x2F;brother2&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;,</span><br><span class="line">   beforeDestroy()&#123;</span><br><span class="line">sd     bus.$off(&#39;globalEvent&#39;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="6-方法六：-parent和-children"><a href="#6-方法六：-parent和-children" class="headerlink" title="6.方法六：**$parent和$children**"></a>6.方法六：**$parent<strong>和</strong>$children**</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Vue.component(&#39;child&#39;,&#123;</span><br><span class="line">  props:&#123;</span><br><span class="line">    value:String, &#x2F;&#x2F;v-model会自动传递一个字段为value的prop属性</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      mymessage:this.value</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeValue()&#123;</span><br><span class="line">      this.$parent.message &#x3D; this.mymessage;&#x2F;&#x2F;通过如此调用可以改变父组件的值</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @change&#x3D;&quot;changeValue&quot;&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;&#96;</span><br><span class="line">&#125;)</span><br><span class="line">  </span><br><span class="line">Vue.component(&#39;parent&#39;,&#123;</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">      &lt;button @click&#x3D;&quot;changeChildValue&quot;&gt;test&lt;&#x2F;button &gt;</span><br><span class="line">      &lt;child&gt;&lt;&#x2F;child&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeChildValue()&#123;</span><br><span class="line">      this.$children[0].mymessage &#x3D; &#39;hello&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      message:&#39;hello&#39;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">var app&#x3D;new Vue(&#123;</span><br><span class="line">  el:&#39;#app&#39;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;parent&gt;&lt;&#x2F;parent&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>vue</category>
+      </categories>
+      <tags>
+        <tag>vue</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>MySQL列类型和列上约束</title>
     <url>/2021/03/18/MySQL%E5%88%97%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%88%97%E4%B8%8A%E7%BA%A6%E6%9D%9F/</url>
     <content><![CDATA[<h2 id="1-常用SQL命令"><a href="#1-常用SQL命令" class="headerlink" title="1.常用SQL命令"></a>1.常用SQL命令</h2><h3 id="（1）添加数据："><a href="#（1）添加数据：" class="headerlink" title="（1）添加数据："></a>（1）添加数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">INSERT</span>  <span class="keyword">INTO</span> 表名 <span class="keyword">VALUES</span>(….);</span><br></pre></td></tr></table></figure>
@@ -482,98 +532,6 @@
       </categories>
       <tags>
         <tag>MySQL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>vue项目打包优化策略</title>
-    <url>/2021/03/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</url>
-    <content><![CDATA[<p>使用vue-cli部署生产包时，发现资源包很大，打包后的<code>vendor.js</code>达到了1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？</p>
-<h3 id="1-组件按需加载"><a href="#1-组件按需加载" class="headerlink" title="1.组件按需加载"></a>1.组件按需加载</h3><p>这是首先可以优化的点。如果频繁使用了第三方组件/UI库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。</p>
-<p>示例如下：</p>
-<h4 id="1-1-element-ui"><a href="#1-1-element-ui" class="headerlink" title="1.1 element-ui"></a>1.1 element-ui</h4><p>首先，安装 babel-plugin-component：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<p>然后，将.babelrc 修改为：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; main.js</span><br><span class="line">import Vue from &#39;vue&#39;</span><br><span class="line">import &#123; Dialog, Loading &#125; from &#39;element-ui&#39;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading &#x3D; Loading.service</span><br><span class="line">&#x2F;&#x2F; 然后正常使用组件</span><br></pre></td></tr></table></figure>
-
-<h4 id="1-2-mint-ui"><a href="#1-2-mint-ui" class="headerlink" title="1.2 mint-ui"></a>1.2 mint-ui</h4><p>由于mint-ui是element-ui的移动端组件，所以它的使用和引入几乎和element-ui一样。</p>
-<p>首先，安装 babel-plugin-component：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
-
-
-
-<p>然后，将.babelrc 修改为：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;presets&quot;: [</span><br><span class="line">    [&quot;es2015&quot;, &#123; &quot;modules&quot;: false &#125;]</span><br><span class="line">  ],</span><br><span class="line">  &quot;plugins&quot;: [[&quot;component&quot;, [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;libraryName&quot;: &quot;mint-ui&quot;,</span><br><span class="line">      &quot;style&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">  ]]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>然后引入部分组件</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; main.js</span><br><span class="line">import Vue from &#39;vue&#39;</span><br><span class="line">import &#123; Toast, MessageBox &#125; from &#39;element-ui&#39;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading &#x3D; Loading.service</span><br><span class="line">&#x2F;&#x2F; 然后正常使用组件</span><br></pre></td></tr></table></figure>
-
-<p>注意，element-ui和mint-ui不能同时在.babelrc中进行插件设置，这种情况下，依然可以按需引入，但是不要在<code>.babelrc</code>中配置，在引入的地方同时引入css即可。</p>
-<h4 id="1-3-echarts"><a href="#1-3-echarts" class="headerlink" title="1.3 echarts"></a>1.3 echarts</h4><p>首先安装babel-plugin-equire</p>
-<p>npm i babel-plugin-equire -D</p>
-<p>然后，在<code>.babelrc</code>文件中添加该插件</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;plugins&quot;: [</span><br><span class="line">       &#x2F;&#x2F; other plugins</span><br><span class="line">       ...</span><br><span class="line">       </span><br><span class="line">    &quot;equire&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>创建一个js文件</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; echarts.js</span><br><span class="line">&#x2F;&#x2F; eslint-disable-next-line</span><br><span class="line">const echarts &#x3D; equire([</span><br><span class="line">  &#39;tooltip&#39;,</span><br><span class="line">  &#39;candlestick&#39;,</span><br><span class="line">  &#39;bar&#39;,</span><br><span class="line">  &#39;line&#39;,</span><br><span class="line">  &#39;axisPointer&#39;,</span><br><span class="line">  &#39;legend&#39;,</span><br><span class="line">  &#39;grid&#39;</span><br><span class="line">])</span><br><span class="line">export default echarts</span><br><span class="line">&#x2F;&#x2F; 业务组件，引入echarts</span><br><span class="line">import echarts from &#39;@&#x2F;assets&#x2F;lib&#x2F;echarts&#39;</span><br><span class="line">&#x2F;&#x2F; 使用与以前一样</span><br></pre></td></tr></table></figure>
-
-
-
-<p>按需加载echarts</p>
-<p>解决vue-cli首屏加载慢的问题</p>
-<h3 id="2-路由懒加载"><a href="#2-路由懒加载" class="headerlink" title="2.路由懒加载"></a>2.路由懒加载</h3><p>这里需要一个插件</p>
-<p>vue-router官方推荐syntax-dynamic-import插件，不过它要求同时安装@bable/core^7.0.0，如果你安装了babel-core6，是会有版本冲突的。我的做法如下</p>
-<p>npm install babel-plugin-syntax-dynamic-import –save-dev(^6.18.0)</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; router.js</span><br><span class="line">const login &#x3D; () &#x3D;&gt; import(&#39;@&#x2F;components&#x2F;login&#39;)</span><br><span class="line">const router &#x3D; new VueRouter(&#123;</span><br><span class="line">  routes: [</span><br><span class="line">    &#123; path: &#39;&#x2F;login&#39;, component: login &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-
-
-<p>还有一种魔法注释用法</p>
-<p>有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack &gt; 2.4)。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const Foo &#x3D; () &#x3D;&gt; import(&#x2F;* webpackChunkName: &quot;group-foo&quot; *&#x2F; &#39;.&#x2F;Foo.vue&#39;)</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<h3 id="3-异步组件"><a href="#3-异步组件" class="headerlink" title="3.异步组件"></a>3.异步组件</h3><p>如果组件在页面加载时不需要，只在调用时用到，这时可以使用异步组件的写法。仅仅是引入和组件注册写法不同</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; template</span><br><span class="line">&lt;test v-if&#x3D;&quot;showTest&quot;&gt;&lt;&#x2F;test&gt;</span><br><span class="line">&#x2F;&#x2F; script</span><br><span class="line">  components: &#123;</span><br><span class="line">    test: () &#x3D;&gt; import(&#39;.&#x2F;test&#39;) &#x2F;&#x2F; 将组件异步引入，告诉webpack，将该部分代码分割打包</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">      clickTest () &#123;</span><br><span class="line">          this.showTest &#x3D; !this.showTest</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="4-图片的压缩合并"><a href="#4-图片的压缩合并" class="headerlink" title="4.图片的压缩合并"></a>4.图片的压缩合并</h3><p>如有可能，将图片制作成精灵图</p>
-<h3 id="5-CDN加速"><a href="#5-CDN加速" class="headerlink" title="5.CDN加速"></a>5.CDN加速</h3><p>在index.html中引入cdn资源</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;div id&#x3D;&quot;app&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">  &lt;!-- built files will be auto injected --&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue&#x2F;2.5.2&#x2F;vue.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue-router&#x2F;3.0.1&#x2F;vue-router.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vuex&#x2F;3.0.1&#x2F;vuex.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue-resource&#x2F;1.5.1&#x2F;vue-resource.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-
-
-<p>修改 build/webpack.base.conf.js</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">module.exports &#x3D; &#123;</span><br><span class="line">  context: path.resolve(__dirname, &#39;..&#x2F;&#39;),</span><br><span class="line">  entry: &#123;</span><br><span class="line">    app: &#39;.&#x2F;src&#x2F;main.js&#39;</span><br><span class="line">  &#125;,</span><br><span class="line">  externals:&#123;</span><br><span class="line">    &#39;vue&#39;: &#39;Vue&#39;,</span><br><span class="line">    &#39;vue-router&#39;: &#39;VueRouter&#39;,</span><br><span class="line">    &#39;vuex&#39;:&#39;Vuex&#39;,</span><br><span class="line">    &#39;vue-resource&#39;: &#39;VueResource&#39;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>修改src/main.js src/router/index.js 注释掉import引入的vue,vue-resource</p>
-<p>// import Vue from ‘vue’</p>
-<p>// import VueResource from ‘vue-resource’</p>
-<p>// Vue.use(VueResource)</p>
-<h3 id="6-压缩代码"><a href="#6-压缩代码" class="headerlink" title="6.压缩代码"></a>6.压缩代码</h3><p>vue-cli已经使用UglifyJsPlugin 插件来压缩代码，可以设置成如下配置：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">new webpack.optimize.UglifyJsPlugin(&#123;</span><br><span class="line">  compress: &#123;</span><br><span class="line">    warnings: false,</span><br><span class="line">    drop_console: true,</span><br><span class="line">    pure_funcs: [&#39;console.log&#39;]</span><br><span class="line">  &#125;,</span><br><span class="line">  sourceMap: false</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<p>其中sourceMap: false是禁用除错功能。</p>
-<p>如果设为true，在部署包中会生成.map结尾的js文件。它用于在代码混淆压缩的情况下仍可进行调试。这个功能虽好，但会大大增加整体资源包的体积，所以将其禁用。</p>
-]]></content>
-      <categories>
-        <category>vue</category>
-      </categories>
-      <tags>
-        <tag>webpack</tag>
-        <tag>vue</tag>
       </tags>
   </entry>
   <entry>
@@ -688,6 +646,98 @@
       </tags>
   </entry>
   <entry>
+    <title>vue项目打包优化策略</title>
+    <url>/2021/03/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</url>
+    <content><![CDATA[<p>使用vue-cli部署生产包时，发现资源包很大，打包后的<code>vendor.js</code>达到了1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？</p>
+<h3 id="1-组件按需加载"><a href="#1-组件按需加载" class="headerlink" title="1.组件按需加载"></a>1.组件按需加载</h3><p>这是首先可以优化的点。如果频繁使用了第三方组件/UI库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。</p>
+<p>示例如下：</p>
+<h4 id="1-1-element-ui"><a href="#1-1-element-ui" class="headerlink" title="1.1 element-ui"></a>1.1 element-ui</h4><p>首先，安装 babel-plugin-component：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<p>然后，将.babelrc 修改为：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; main.js</span><br><span class="line">import Vue from &#39;vue&#39;</span><br><span class="line">import &#123; Dialog, Loading &#125; from &#39;element-ui&#39;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading &#x3D; Loading.service</span><br><span class="line">&#x2F;&#x2F; 然后正常使用组件</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-mint-ui"><a href="#1-2-mint-ui" class="headerlink" title="1.2 mint-ui"></a>1.2 mint-ui</h4><p>由于mint-ui是element-ui的移动端组件，所以它的使用和引入几乎和element-ui一样。</p>
+<p>首先，安装 babel-plugin-component：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
+
+
+
+<p>然后，将.babelrc 修改为：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;presets&quot;: [</span><br><span class="line">    [&quot;es2015&quot;, &#123; &quot;modules&quot;: false &#125;]</span><br><span class="line">  ],</span><br><span class="line">  &quot;plugins&quot;: [[&quot;component&quot;, [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;libraryName&quot;: &quot;mint-ui&quot;,</span><br><span class="line">      &quot;style&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">  ]]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>然后引入部分组件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; main.js</span><br><span class="line">import Vue from &#39;vue&#39;</span><br><span class="line">import &#123; Toast, MessageBox &#125; from &#39;element-ui&#39;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading &#x3D; Loading.service</span><br><span class="line">&#x2F;&#x2F; 然后正常使用组件</span><br></pre></td></tr></table></figure>
+
+<p>注意，element-ui和mint-ui不能同时在.babelrc中进行插件设置，这种情况下，依然可以按需引入，但是不要在<code>.babelrc</code>中配置，在引入的地方同时引入css即可。</p>
+<h4 id="1-3-echarts"><a href="#1-3-echarts" class="headerlink" title="1.3 echarts"></a>1.3 echarts</h4><p>首先安装babel-plugin-equire</p>
+<p>npm i babel-plugin-equire -D</p>
+<p>然后，在<code>.babelrc</code>文件中添加该插件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;plugins&quot;: [</span><br><span class="line">       &#x2F;&#x2F; other plugins</span><br><span class="line">       ...</span><br><span class="line">       </span><br><span class="line">    &quot;equire&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>创建一个js文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; echarts.js</span><br><span class="line">&#x2F;&#x2F; eslint-disable-next-line</span><br><span class="line">const echarts &#x3D; equire([</span><br><span class="line">  &#39;tooltip&#39;,</span><br><span class="line">  &#39;candlestick&#39;,</span><br><span class="line">  &#39;bar&#39;,</span><br><span class="line">  &#39;line&#39;,</span><br><span class="line">  &#39;axisPointer&#39;,</span><br><span class="line">  &#39;legend&#39;,</span><br><span class="line">  &#39;grid&#39;</span><br><span class="line">])</span><br><span class="line">export default echarts</span><br><span class="line">&#x2F;&#x2F; 业务组件，引入echarts</span><br><span class="line">import echarts from &#39;@&#x2F;assets&#x2F;lib&#x2F;echarts&#39;</span><br><span class="line">&#x2F;&#x2F; 使用与以前一样</span><br></pre></td></tr></table></figure>
+
+
+
+<p>按需加载echarts</p>
+<p>解决vue-cli首屏加载慢的问题</p>
+<h3 id="2-路由懒加载"><a href="#2-路由懒加载" class="headerlink" title="2.路由懒加载"></a>2.路由懒加载</h3><p>这里需要一个插件</p>
+<p>vue-router官方推荐syntax-dynamic-import插件，不过它要求同时安装@bable/core^7.0.0，如果你安装了babel-core6，是会有版本冲突的。我的做法如下</p>
+<p>npm install babel-plugin-syntax-dynamic-import –save-dev(^6.18.0)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; router.js</span><br><span class="line">const login &#x3D; () &#x3D;&gt; import(&#39;@&#x2F;components&#x2F;login&#39;)</span><br><span class="line">const router &#x3D; new VueRouter(&#123;</span><br><span class="line">  routes: [</span><br><span class="line">    &#123; path: &#39;&#x2F;login&#39;, component: login &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>还有一种魔法注释用法</p>
+<p>有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack &gt; 2.4)。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const Foo &#x3D; () &#x3D;&gt; import(&#x2F;* webpackChunkName: &quot;group-foo&quot; *&#x2F; &#39;.&#x2F;Foo.vue&#39;)</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="3-异步组件"><a href="#3-异步组件" class="headerlink" title="3.异步组件"></a>3.异步组件</h3><p>如果组件在页面加载时不需要，只在调用时用到，这时可以使用异步组件的写法。仅仅是引入和组件注册写法不同</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; template</span><br><span class="line">&lt;test v-if&#x3D;&quot;showTest&quot;&gt;&lt;&#x2F;test&gt;</span><br><span class="line">&#x2F;&#x2F; script</span><br><span class="line">  components: &#123;</span><br><span class="line">    test: () &#x3D;&gt; import(&#39;.&#x2F;test&#39;) &#x2F;&#x2F; 将组件异步引入，告诉webpack，将该部分代码分割打包</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">      clickTest () &#123;</span><br><span class="line">          this.showTest &#x3D; !this.showTest</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-图片的压缩合并"><a href="#4-图片的压缩合并" class="headerlink" title="4.图片的压缩合并"></a>4.图片的压缩合并</h3><p>如有可能，将图片制作成精灵图</p>
+<h3 id="5-CDN加速"><a href="#5-CDN加速" class="headerlink" title="5.CDN加速"></a>5.CDN加速</h3><p>在index.html中引入cdn资源</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;div id&#x3D;&quot;app&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">  &lt;!-- built files will be auto injected --&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue&#x2F;2.5.2&#x2F;vue.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue-router&#x2F;3.0.1&#x2F;vue-router.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vuex&#x2F;3.0.1&#x2F;vuex.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue-resource&#x2F;1.5.1&#x2F;vue-resource.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+
+
+<p>修改 build/webpack.base.conf.js</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">module.exports &#x3D; &#123;</span><br><span class="line">  context: path.resolve(__dirname, &#39;..&#x2F;&#39;),</span><br><span class="line">  entry: &#123;</span><br><span class="line">    app: &#39;.&#x2F;src&#x2F;main.js&#39;</span><br><span class="line">  &#125;,</span><br><span class="line">  externals:&#123;</span><br><span class="line">    &#39;vue&#39;: &#39;Vue&#39;,</span><br><span class="line">    &#39;vue-router&#39;: &#39;VueRouter&#39;,</span><br><span class="line">    &#39;vuex&#39;:&#39;Vuex&#39;,</span><br><span class="line">    &#39;vue-resource&#39;: &#39;VueResource&#39;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>修改src/main.js src/router/index.js 注释掉import引入的vue,vue-resource</p>
+<p>// import Vue from ‘vue’</p>
+<p>// import VueResource from ‘vue-resource’</p>
+<p>// Vue.use(VueResource)</p>
+<h3 id="6-压缩代码"><a href="#6-压缩代码" class="headerlink" title="6.压缩代码"></a>6.压缩代码</h3><p>vue-cli已经使用UglifyJsPlugin 插件来压缩代码，可以设置成如下配置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">new webpack.optimize.UglifyJsPlugin(&#123;</span><br><span class="line">  compress: &#123;</span><br><span class="line">    warnings: false,</span><br><span class="line">    drop_console: true,</span><br><span class="line">    pure_funcs: [&#39;console.log&#39;]</span><br><span class="line">  &#125;,</span><br><span class="line">  sourceMap: false</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>其中sourceMap: false是禁用除错功能。</p>
+<p>如果设为true，在部署包中会生成.map结尾的js文件。它用于在代码混淆压缩的情况下仍可进行调试。这个功能虽好，但会大大增加整体资源包的体积，所以将其禁用。</p>
+]]></content>
+      <categories>
+        <category>vue</category>
+      </categories>
+      <tags>
+        <tag>vue</tag>
+        <tag>webpack</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>三次握手四次挥手的原理</title>
     <url>/2021/03/18/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E7%9A%84%E5%8E%9F%E7%90%86/</url>
     <content><![CDATA[<h2 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h2><p>  握手的过程：</p>
@@ -740,102 +790,6 @@
       </categories>
       <tags>
         <tag>HTTP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>VUE组件之间通信的6种方式</title>
-    <url>/2021/03/19/VUE%E7%BB%84%E4%BB%B6%E4%B9%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E7%9A%846%E7%A7%8D%E6%96%B9%E5%BC%8F/</url>
-    <content><![CDATA[<h3 id="1-方法一：props和-emit"><a href="#1-方法一：props和-emit" class="headerlink" title="1.方法一：props和**$emit**"></a>1.方法一：<strong>props</strong>和**$emit**</h3><p>父组件通过props向下传递数据给子组件，子组件通过event给父组件发送消息，实际上就是子组件把自己的数据发送给父组件。</p>
-<h3 id="2-方法二：-attrs和-listeners"><a href="#2-方法二：-attrs和-listeners" class="headerlink" title="2.方法二：**$attrs和$listeners**"></a>2.方法二：**$attrs<strong>和</strong>$listeners**</h3><p>​    第一种方式处理父子组件之间的数据传输有一个问题：如果父组件A下面有子组件B，组件B下面有组件C,这时如果组件A想传递数据给组件C怎么办呢？ 如果采用第一种方法，我们必须让组件A通过prop传递消息给组件B，组件B在通过prop传递消息给组件C；要是组件A和组件C之间有更多的组件，那采用这种方式就很复杂了。Vue 2.4开始提供了$attrs和$listeners来解决这个问题，能够让组件A之间传递消息给组件C。</p>
-<span id="more"></span>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件C--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">        &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;$attrs.messagec&quot; @input&#x3D;&quot;passCData($attrs.messagec)&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;C&#39;,</span><br><span class="line">    data () &#123;</span><br><span class="line">      return &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passCData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发父组件A中的事件,把从A得到的数据hello C还给A组件</span><br><span class="line">        this.$emit(&#39;getCData&#39;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @input&#x3D;&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">    &lt;!-- C组件中能直接触发getCData的原因在于 B组件调用C组件时 使用 v-on 绑定了$listeners 属性 --&gt;</span><br><span class="line">    &lt;!-- 通过v-bind 绑定$attrs属性，C组件可以直接获取到A组件中传递下来的props（除了B组件中props声明的） --&gt;</span><br><span class="line">    &lt;C v-bind&#x3D;&quot;$attrs&quot; v-on&#x3D;&quot;$listeners&quot;&gt;&lt;&#x2F;C&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;B&#39;,</span><br><span class="line">    props:[</span><br><span class="line">      message:&#123;</span><br><span class="line">        type: String,</span><br><span class="line">        default: null</span><br><span class="line">      &#125;</span><br><span class="line">    ],&#x2F;&#x2F;得到父组件A传递过来的数据,hello B</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发父组件中的事件,把message给组件A</span><br><span class="line">        this.$emit(&#39;getChildData&#39;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;B </span><br><span class="line">     :messagec&#x3D;&quot;messagec&quot; </span><br><span class="line">     :message&#x3D;&quot;message&quot; </span><br><span class="line">     :getCData&#x3D;&quot;getCData&quot;</span><br><span class="line">     :getChildData&#x3D;&quot;getChildData&quot;&gt;&lt;&#x2F;B&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;A&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#39;hello B&#39;,</span><br><span class="line">        messagec:&#39;hello C&#39; &#x2F;&#x2F;传递给c组件的数据</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      getChildData(val)&#123;</span><br><span class="line">        console.log(&#39;这是来自B组件的数据&#39;,val) &#x2F;&#x2F;打印hello B</span><br><span class="line">      &#125;,</span><br><span class="line">      &#x2F;&#x2F;执行C子组件触发的事件</span><br><span class="line">      getCData(val)&#123;</span><br><span class="line">        console.log(&quot;这是来自C组件的数据：&quot;, val) &#x2F;&#x2F;打印hello C</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="3-方法3：provide和-inject"><a href="#3-方法3：provide和-inject" class="headerlink" title="3.方法3：provide和 inject"></a>3.方法3：<strong>provide</strong>和 <strong>inject</strong></h3><p>在 Vue.js 的 <code>2.2.0+</code> 版本中添加加了 provide 和 inject 选项。他们成对出现，用于父级组件向下传递数据。</p>
-<p>父组件中通过provide来提供变量，然后在子组件中通过inject来注入变量。不论子组件有多深，只要调用了inject那么就可以注入provide中的数据。而不是局限于只能从当前父组件的prop属性来获取数据，只要在父组件的生命周期内，子组件都可以调用。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--父组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;child&gt;&lt;&#x2F;child&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;parent&#39;,</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#39;这是要个子组件的数据&#39;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#39;hello&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--子组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;child&#39;,</span><br><span class="line">    inject:[&#39;forChidrenData&#39;], &#x2F;&#x2F;得到父组件传递过来的数据</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#39;这是要个子组件的数据&#39;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:this.forChidrenData</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="4-方法四：vuex处理组件之间的数据交互"><a href="#4-方法四：vuex处理组件之间的数据交互" class="headerlink" title="4.方法四：vuex处理组件之间的数据交互"></a>4.方法四：<strong>vuex处理组件之间的数据交互</strong></h3><p>​    如果业务逻辑复杂，很多组件之间需要同时处理一些公共的数据，这个时候才有上面这一些方法可能不利于项目的维护，vuex的做法就是将这一些公共的数据抽离出来，然后其他组件就可以对这个公共数据进行读写操作，这样达到了解耦的目的。</p>
-<h3 id="5-方法五：中央事件总线"><a href="#5-方法五：中央事件总线" class="headerlink" title="5.方法五：中央事件总线"></a>5.方法五：<strong>中央事件总线</strong></h3><p>​    如果两个组件不是父子关系呢？这种情况下可以使用中央事件总线的方式。新建一个Vue事件bus对象，然后通过bus.$emit触发事件，bus.$on监听触发的事件。</p>
-<blockquote>
-<p>公共事件总线eventBus的实质就是创建一个vue实例，通过一个空的vue实例作为桥梁实现vue组件间的通信。它是实现非父子组件通信的一种解决方案。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother1 compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @input&#x3D;&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;brother1&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:&#39;hello brother1&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发全局事件globalEvent</span><br><span class="line">        bus.$emit(&#39;globalEvent&#39;, val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother2 compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;p&gt;brother1传递过来的数据：&#123;&#123;brothermessage&#125;&#125;&lt;&#x2F;p&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;brother2&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        brothermessage:&#39;&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    mounted()&#123;</span><br><span class="line">      &#x2F;&#x2F;绑定全局事件globalEvent</span><br><span class="line">      bus.$on(&#39;globalEvent&#39;,(val)&#x3D;&gt;&#123;</span><br><span class="line">        this.brothermessage &#x3D; val;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;中央事件总线</span><br><span class="line">var bus&#x3D;new Vue();</span><br><span class="line">var app&#x3D;new Vue(&#123;</span><br><span class="line">  el:&#39;#app&#39;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;brother1&gt;&lt;&#x2F;brother1&gt;</span><br><span class="line">      &lt;brother2&gt;&lt;&#x2F;brother2&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;,</span><br><span class="line">   beforeDestroy()&#123;</span><br><span class="line">sd     bus.$off(&#39;globalEvent&#39;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="6-方法六：-parent和-children"><a href="#6-方法六：-parent和-children" class="headerlink" title="6.方法六：**$parent和$children**"></a>6.方法六：**$parent<strong>和</strong>$children**</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Vue.component(&#39;child&#39;,&#123;</span><br><span class="line">  props:&#123;</span><br><span class="line">    value:String, &#x2F;&#x2F;v-model会自动传递一个字段为value的prop属性</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      mymessage:this.value</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeValue()&#123;</span><br><span class="line">      this.$parent.message &#x3D; this.mymessage;&#x2F;&#x2F;通过如此调用可以改变父组件的值</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @change&#x3D;&quot;changeValue&quot;&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;&#96;</span><br><span class="line">&#125;)</span><br><span class="line">  </span><br><span class="line">Vue.component(&#39;parent&#39;,&#123;</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">      &lt;button @click&#x3D;&quot;changeChildValue&quot;&gt;test&lt;&#x2F;button &gt;</span><br><span class="line">      &lt;child&gt;&lt;&#x2F;child&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeChildValue()&#123;</span><br><span class="line">      this.$children[0].mymessage &#x3D; &#39;hello&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      message:&#39;hello&#39;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">var app&#x3D;new Vue(&#123;</span><br><span class="line">  el:&#39;#app&#39;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;parent&gt;&lt;&#x2F;parent&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>vue</category>
-      </categories>
-      <tags>
-        <tag>vue</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用Hbuilder快速打包一个app</title>
-    <url>/2021/03/18/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/</url>
-    <content><![CDATA[<p>HBuilder提供的打包有云端打包和本地打包两种，云端打包的特点是DCloud官方配置好了原生的打包环境，可以把HTML等文件编译为原生安装包。</p>
-<p>优点：速度快，所需要的环境少，加快了开发者速度，不会因为各种JDK，java，Android环境而无法打包生成apk或ipa头疼，大大减少了开发繁琐操作。</p>
-<p>方法步骤：</p>
-<span id="more"></span>
-
-<p>1.下载HBuilder，注册并登陆。首先打开“文件”-“新建”-“移动APP”，输入“应用名称”，“位置”可以根据需要自己选择即可，“选择模板”建议选择空模板，如下图所示：</p>
-<p>​​<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712163802432"></p>
-<p>2.新建完成后， 在项目管理器会显示新建的项目目录，其中css，img，js和index.html这几个文件可删可改可替换。<br>unpackage文件夹是放置app图标和启动界面的图片。</p>
-<p>manifest.json文件是移动App的配置文件，用于指定应用的显示名称、图标、应用入口文件地址及需要使用的设备权限等信息，用户可通过HBuilder的可视化界面视图或者源码视图来配置移动App的信息，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164108624"></p>
-<p>3.如果删除了css，img，js文件夹和index.html文件，就把其他自己打包好的的项目文件对应复制到文件夹中，注意html文件中的引用路径需要保持正确，如下图自己拷贝的项目（我的是项目打包后的build文件和index.html文件，其中css/js/img都在build文件夹下）：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164250660"></p>
-<p>4.文件复制完成后，刷新更新下，双击打开manifest.json文件来配置App。</p>
-<p>appid：点击云端获取。版本号：根据需要来编辑。页面入口：默认是index.html，根据自己项目需要，更改APP的启动页面。应用描述：自己随便填。应用是否全屏显示：勾上就全屏显示，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164915305"></p>
-<p>5.图标配置：点击页面下方的图标配置，配置APP显示图标。</p>
-<p>点击”+”号的正方形方框，选择图标素材的路径找到图标素材，再点击” 自动生成所有图标并替换”按钮，完成图标生成和替换，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165506582"></p>
-<p>生成的图标自动在unpackage文件夹下，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165618254"></p>
-<p>6.在启动图片设置里点击”选择”，找到刚放进来的启动图片，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165842174"></p>
-<p>7.SDK配置：有需要就配置，没有就默认就行。</p>
-<p>   模块权限配置：有需要就配置，没有就默认就行。</p>
-<p>8.云端打包：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170045185"></p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170127683"></p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170219731"></p>
-<p>然后等待几分钟，刷新状态，就可以看到制作完成，是否下载？点击下载。然后将apk发送到手机上安装就可以正常运行了！</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712171021649"></p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2018071217113978"></p>
-<p>以下是apk安装后再模拟器上运行效果：</p>
-<p><img data-src="https://img-blog.csdn.net/20180712171240702?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
-<p><img data-src="https://img-blog.csdn.net/20180712171322289?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
-<p><img data-src="https://img-blog.csdn.net/20180712171518460?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
-]]></content>
-      <categories>
-        <category>Hbuilder</category>
-      </categories>
-      <tags>
-        <tag>Hbuilder</tag>
       </tags>
   </entry>
   <entry>
@@ -989,6 +943,52 @@
       </categories>
       <tags>
         <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Hbuilder快速打包一个app</title>
+    <url>/2021/03/18/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/</url>
+    <content><![CDATA[<p>HBuilder提供的打包有云端打包和本地打包两种，云端打包的特点是DCloud官方配置好了原生的打包环境，可以把HTML等文件编译为原生安装包。</p>
+<p>优点：速度快，所需要的环境少，加快了开发者速度，不会因为各种JDK，java，Android环境而无法打包生成apk或ipa头疼，大大减少了开发繁琐操作。</p>
+<p>方法步骤：</p>
+<span id="more"></span>
+
+<p>1.下载HBuilder，注册并登陆。首先打开“文件”-“新建”-“移动APP”，输入“应用名称”，“位置”可以根据需要自己选择即可，“选择模板”建议选择空模板，如下图所示：</p>
+<p>​​<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712163802432"></p>
+<p>2.新建完成后， 在项目管理器会显示新建的项目目录，其中css，img，js和index.html这几个文件可删可改可替换。<br>unpackage文件夹是放置app图标和启动界面的图片。</p>
+<p>manifest.json文件是移动App的配置文件，用于指定应用的显示名称、图标、应用入口文件地址及需要使用的设备权限等信息，用户可通过HBuilder的可视化界面视图或者源码视图来配置移动App的信息，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164108624"></p>
+<p>3.如果删除了css，img，js文件夹和index.html文件，就把其他自己打包好的的项目文件对应复制到文件夹中，注意html文件中的引用路径需要保持正确，如下图自己拷贝的项目（我的是项目打包后的build文件和index.html文件，其中css/js/img都在build文件夹下）：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164250660"></p>
+<p>4.文件复制完成后，刷新更新下，双击打开manifest.json文件来配置App。</p>
+<p>appid：点击云端获取。版本号：根据需要来编辑。页面入口：默认是index.html，根据自己项目需要，更改APP的启动页面。应用描述：自己随便填。应用是否全屏显示：勾上就全屏显示，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164915305"></p>
+<p>5.图标配置：点击页面下方的图标配置，配置APP显示图标。</p>
+<p>点击”+”号的正方形方框，选择图标素材的路径找到图标素材，再点击” 自动生成所有图标并替换”按钮，完成图标生成和替换，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165506582"></p>
+<p>生成的图标自动在unpackage文件夹下，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165618254"></p>
+<p>6.在启动图片设置里点击”选择”，找到刚放进来的启动图片，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165842174"></p>
+<p>7.SDK配置：有需要就配置，没有就默认就行。</p>
+<p>   模块权限配置：有需要就配置，没有就默认就行。</p>
+<p>8.云端打包：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170045185"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170127683"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170219731"></p>
+<p>然后等待几分钟，刷新状态，就可以看到制作完成，是否下载？点击下载。然后将apk发送到手机上安装就可以正常运行了！</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712171021649"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2018071217113978"></p>
+<p>以下是apk安装后再模拟器上运行效果：</p>
+<p><img data-src="https://img-blog.csdn.net/20180712171240702?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
+<p><img data-src="https://img-blog.csdn.net/20180712171322289?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
+<p><img data-src="https://img-blog.csdn.net/20180712171518460?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
+]]></content>
+      <categories>
+        <category>Hbuilder</category>
+      </categories>
+      <tags>
+        <tag>Hbuilder</tag>
       </tags>
   </entry>
   <entry>
