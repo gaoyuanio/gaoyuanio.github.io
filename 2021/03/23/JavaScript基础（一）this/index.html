@@ -33,11 +33,11 @@
 <meta property="og:description" content="一、this的指向百度、谷歌上输入“this的指向”关键字，大几千条文章肯定是有的，总不至于为了全方面、无死角的掌握它就要将所有的文章都看一遍吧？所以不如梳理出一个稳固的框架，我们一起来填充它。 思维导图">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20200602110330766.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20200602141035376.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=2299180848,518697654&fm=26&gp=0.jpeg">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20200602153648211.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20200602143803240.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=826503588,4160798134&fm=15&gp=0.jpeg">
 <meta property="article:published_time" content="2021-03-23T01:55:37.000Z">
-<meta property="article:modified_time" content="2021-03-23T02:05:11.138Z">
+<meta property="article:modified_time" content="2021-03-23T02:31:11.085Z">
 <meta property="article:author" content="高原">
 <meta property="article:tag" content="javascript">
 <meta name="twitter:card" content="summary">
@@ -306,7 +306,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-03-23 09:55:37 / 修改时间：10:05:11" itemprop="dateCreated datePublished" datetime="2021-03-23T09:55:37+08:00">2021-03-23</time>
+      <time title="创建时间：2021-03-23 09:55:37 / 修改时间：10:31:11" itemprop="dateCreated datePublished" datetime="2021-03-23T09:55:37+08:00">2021-03-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -378,7 +378,7 @@
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">window</span>.name = <span class="string">&#x27;老王&#x27;</span></span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="string">&#x27;gaoyuan&#x27;</span>,</span><br><span class="line">    getName: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.name)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> getNew = obj.getName;</span><br><span class="line">getNew(); <span class="comment">// 老王</span></span><br></pre></td></tr></table></figure>
 
 <p>而在ES5的严格模式下，this被规定为不会指向全局对象，而是<code>undefined</code></p>
-<h4 id="1-3-构造器调用"><a href="#1-3-构造器调用" class="headerlink" title="#1.3 构造器调用"></a><a target="_blank" rel="noopener" href="https://webbj97.github.io/summary/blog/js-basics/1.html#_1-3-%E6%9E%84%E9%80%A0%E5%99%A8%E8%B0%83%E7%94%A8">#</a>1.3 构造器调用</h4><p>除了一些内置函数，大部分Js中的函数都可以成为构造器，它们与普通函数没什么不同</p>
+<h4 id="1-3-构造器调用"><a href="#1-3-构造器调用" class="headerlink" title="1.3 构造器调用"></a>1.3 构造器调用</h4><p>除了一些内置函数，大部分Js中的函数都可以成为构造器，它们与普通函数没什么不同</p>
 <p><strong>构造器</strong>和<strong>普通函数</strong>的区别在于<code>被调用的方式</code>： 当new运算符调用函数时，总是返回一个对象，this通常也指向这个对象</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass()</span><br><span class="line">obj.name; <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
 
@@ -411,8 +411,7 @@
 </ul>
 <p><strong>利用call和apply修正情况二</strong></p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.getElementById = (<span class="function"><span class="keyword">function</span> (<span class="params">func</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> func.call(<span class="built_in">document</span>, ...arguments)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)(<span class="built_in">document</span>.getElementById)</span><br><span class="line"><span class="comment">// 利用立即执行函数将document保存在作用域中</span></span><br></pre></td></tr></table></figure>
-
-<p><img data-src="https://img-blog.csdnimg.cn/20200602141035376.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="img"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=2299180848,518697654&fm=26&gp=0.jpeg"></p>
 <h3 id="二、call和apply"><a href="#二、call和apply" class="headerlink" title="二、call和apply"></a>二、call和apply</h3><p>不要因为它的“强大”而对它产生抗拒，了解并熟悉它是我们必须要做的，共勉！</p>
 <h4 id="思维导图-1"><a href="#思维导图-1" class="headerlink" title="思维导图"></a>思维导图</h4><p><img data-src="https://img-blog.csdnimg.cn/20200602153648211.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
 <h4 id="1-call和apply区别"><a href="#1-call和apply区别" class="headerlink" title="1.call和apply区别"></a>1.call和apply区别</h4><p>先来看区别，是因为它们<strong>几乎</strong>没有区别，下文代码实例call和apply都可以轻易的切换。</p>
@@ -453,7 +452,7 @@
 <p><strong>3.使用call单纯的调用某个函数</strong></p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Math</span>.max.apply(<span class="literal">null</span>, [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">10</span>,<span class="number">4</span>,<span class="number">5</span>]); <span class="comment">// 10</span></span><br></pre></td></tr></table></figure>
 
-<p><img data-src="https://img-blog.csdnimg.cn/20200602143803240.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="img"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=826503588,4160798134&fm=15&gp=0.jpeg"></p>
 <h3 id="三、模拟实现一个call"><a href="#三、模拟实现一个call" class="headerlink" title="三、模拟实现一个call"></a>三、模拟实现一个call</h3><p>先来看一下call帮我们需要做什么？</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = &#123;</span><br><span class="line">	value: <span class="number">1</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="built_in">this</span>.value);</span><br><span class="line">&#125;;</span><br><span class="line">show.call(foo); <span class="comment">//1</span></span><br></pre></td></tr></table></figure>
 

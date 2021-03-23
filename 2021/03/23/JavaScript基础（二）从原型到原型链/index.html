@@ -32,9 +32,9 @@
 <meta property="og:site_name" content="GaoYuan&#39;s Blog">
 <meta property="og:description" content="本文主要从构造函数 -&gt; 原型（隐式原型+显示原型）-&gt; 原型链的顺序，渐进式讲解，希望对你有所做帮助，共勉～  前言又到了回忆过去的时候了，知识就是这样，原型和原型链在我之前的实习生涯中用到的很少——几乎没有（噗！我菜我摊牌了），但是它和this指向问题 (opens new window)一样，是初级、中级前端开发在面试时永远绕不开的话题。是不是大家每次看面经的时候都会去搜索原型">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20200605103052857.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/src=http___img.wxcha.com_file_201711_22_e1655873d2.jpg&refer=http___img.wxcha.jpeg">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20200604185358168.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/2020060516301968.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&fm=26&gp=0.jpeg">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20200605140618427.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTEucG5n?x-oss-process=image/format,png">
 <meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTIucG5n?x-oss-process=image/format,png">
@@ -42,11 +42,11 @@
 <meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTQucG5n?x-oss-process=image/format,png">
 <meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTUucG5n?x-oss-process=image/format,png">
 <meta property="article:published_time" content="2021-03-23T02:09:04.000Z">
-<meta property="article:modified_time" content="2021-03-23T02:12:29.781Z">
+<meta property="article:modified_time" content="2021-03-23T02:24:47.416Z">
 <meta property="article:author" content="高原">
 <meta property="article:tag" content="javascript">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200605103052857.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/src=http___img.wxcha.com_file_201711_22_e1655873d2.jpg&refer=http___img.wxcha.jpeg">
 
 
 <link rel="canonical" href="http://example.com/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%E4%BB%8E%E5%8E%9F%E5%9E%8B%E5%88%B0%E5%8E%9F%E5%9E%8B%E9%93%BE/">
@@ -311,7 +311,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-03-23 10:09:04 / 修改时间：10:12:29" itemprop="dateCreated datePublished" datetime="2021-03-23T10:09:04+08:00">2021-03-23</time>
+      <time title="创建时间：2021-03-23 10:09:04 / 修改时间：10:24:47" itemprop="dateCreated datePublished" datetime="2021-03-23T10:09:04+08:00">2021-03-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -361,7 +361,8 @@
 </blockquote>
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>又到了回忆过去的时候了，知识就是这样，原型和原型链在我之前的实习生涯中用到的很少——几乎没有（噗！我菜我摊牌了），但是它和<a target="_blank" rel="noopener" href="https://blog.csdn.net/jbj6568839z/article/details/106479511">this指向问题 (opens new window)</a>一样，是初级、中级前端开发在面试时永远绕不开的话题。是不是大家每次看面经的时候都会去搜索原型相关的知识点？</p>
 <p>你看这知识，总是在考的时候，才能知道它的重要，就好像曾经有一段贼拉真挚的面试题摆在我面前…话题拉回来，今天我们就收了这个<strong>孽障</strong>！</p>
-<p><img data-src="https://img-blog.csdnimg.cn/20200605103052857.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="img"></p>
+<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/src=http___img.wxcha.com_file_201711_22_e1655873d2.jpg&refer=http___img.wxcha.jpeg" style="zoom:50%;" />
+
 <span id="more"></span>
 
 <h2 id="一、构造函数"><a href="#一、构造函数" class="headerlink" title="一、构造函数"></a>一、构造函数</h2><h3 id="1-1-什么是构造函数？"><a href="#1-1-什么是构造函数？" class="headerlink" title="1.1 什么是构造函数？"></a>1.1 什么是构造函数？</h3><p>构造函数本身就是一个函数，与普通函数没有任何区别，不过<strong>为了规范一般将其首字母大写</strong>。构造函数和普通函数的区别在于，使用<strong>new</strong>生成实例的函数就是构造函数，直接调用的就是普通函数。</p>
@@ -384,7 +385,8 @@
 <p>我们利用 <code>__proto__</code>（隐式原型，下文会提到）属性来模拟一下new 调用构造函数的过程：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> objectNew = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="comment">// 从object.prototype上克隆一个空的对象</span></span><br><span class="line">    <span class="keyword">var</span> obj = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">    <span class="comment">// 取得外部传入的构造器，这里是Person</span></span><br><span class="line">    <span class="keyword">var</span> Constructor = [].shift.call( <span class="built_in">arguments</span> );</span><br><span class="line">    <span class="comment">// 更新，指向正确的原型</span></span><br><span class="line">    obj.__proto__ = Constructor.prototype; <span class="comment">//知识点，要考、要考、要考</span></span><br><span class="line">    <span class="comment">// 借用外部传入的构造器给obj设置属性</span></span><br><span class="line">    <span class="keyword">var</span> ret = Constructor.apply(obj, <span class="built_in">arguments</span>);</span><br><span class="line">    <span class="comment">// 确保构造器总是返回一个对象</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">typeof</span> ref === <span class="string">&#x27;object&#x27;</span> ? ret : obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><img data-src="https://img-blog.csdnimg.cn/2020060516301968.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="img"></p>
+<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&fm=26&gp=0.jpeg" style="zoom: 67%;" />
+
 <h2 id="二、原型"><a href="#二、原型" class="headerlink" title="二、原型"></a>二、原型</h2><h3 id="2-1-prototype-显式原型"><a href="#2-1-prototype-显式原型" class="headerlink" title="2.1 prototype(显式原型)"></a>2.1 prototype(显式原型)</h3><p>JavaScript 是一种基于原型的语言 (prototype-based language)，在设计的时候模仿了Java的两套类型机制：<code>基本类型</code> 和 <code>对象类型</code>。可见原型很重要！</p>
 <p>每个对象都拥有一个原型对象，类是以函数的形式来定义的。prototype表示该函数的原型，也表示一个类的成员的集合。看下图： <img data-src="https://img-blog.csdnimg.cn/20200605140618427.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"> 可以发现Person函数自己的原型都有什么：</p>
 <ul>

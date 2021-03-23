@@ -224,7 +224,7 @@
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">window</span>.name = <span class="string">&#x27;老王&#x27;</span></span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="string">&#x27;gaoyuan&#x27;</span>,</span><br><span class="line">    getName: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.name)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> getNew = obj.getName;</span><br><span class="line">getNew(); <span class="comment">// 老王</span></span><br></pre></td></tr></table></figure>
 
 <p>而在ES5的严格模式下，this被规定为不会指向全局对象，而是<code>undefined</code></p>
-<h4 id="1-3-构造器调用"><a href="#1-3-构造器调用" class="headerlink" title="#1.3 构造器调用"></a><a href="https://webbj97.github.io/summary/blog/js-basics/1.html#_1-3-%E6%9E%84%E9%80%A0%E5%99%A8%E8%B0%83%E7%94%A8">#</a>1.3 构造器调用</h4><p>除了一些内置函数，大部分Js中的函数都可以成为构造器，它们与普通函数没什么不同</p>
+<h4 id="1-3-构造器调用"><a href="#1-3-构造器调用" class="headerlink" title="1.3 构造器调用"></a>1.3 构造器调用</h4><p>除了一些内置函数，大部分Js中的函数都可以成为构造器，它们与普通函数没什么不同</p>
 <p><strong>构造器</strong>和<strong>普通函数</strong>的区别在于<code>被调用的方式</code>： 当new运算符调用函数时，总是返回一个对象，this通常也指向这个对象</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass()</span><br><span class="line">obj.name; <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
 
@@ -257,8 +257,7 @@
 </ul>
 <p><strong>利用call和apply修正情况二</strong></p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">document</span>.getElementById = (<span class="function"><span class="keyword">function</span> (<span class="params">func</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> func.call(<span class="built_in">document</span>, ...arguments)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)(<span class="built_in">document</span>.getElementById)</span><br><span class="line"><span class="comment">// 利用立即执行函数将document保存在作用域中</span></span><br></pre></td></tr></table></figure>
-
-<p><img data-src="https://img-blog.csdnimg.cn/20200602141035376.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="img"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=2299180848,518697654&fm=26&gp=0.jpeg"></p>
 <h3 id="二、call和apply"><a href="#二、call和apply" class="headerlink" title="二、call和apply"></a>二、call和apply</h3><p>不要因为它的“强大”而对它产生抗拒，了解并熟悉它是我们必须要做的，共勉！</p>
 <h4 id="思维导图-1"><a href="#思维导图-1" class="headerlink" title="思维导图"></a>思维导图</h4><p><img data-src="https://img-blog.csdnimg.cn/20200602153648211.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
 <h4 id="1-call和apply区别"><a href="#1-call和apply区别" class="headerlink" title="1.call和apply区别"></a>1.call和apply区别</h4><p>先来看区别，是因为它们<strong>几乎</strong>没有区别，下文代码实例call和apply都可以轻易的切换。</p>
@@ -299,7 +298,7 @@
 <p><strong>3.使用call单纯的调用某个函数</strong></p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Math</span>.max.apply(<span class="literal">null</span>, [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">10</span>,<span class="number">4</span>,<span class="number">5</span>]); <span class="comment">// 10</span></span><br></pre></td></tr></table></figure>
 
-<p><img data-src="https://img-blog.csdnimg.cn/20200602143803240.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="img"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=826503588,4160798134&fm=15&gp=0.jpeg"></p>
 <h3 id="三、模拟实现一个call"><a href="#三、模拟实现一个call" class="headerlink" title="三、模拟实现一个call"></a>三、模拟实现一个call</h3><p>先来看一下call帮我们需要做什么？</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = &#123;</span><br><span class="line">	value: <span class="number">1</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="built_in">this</span>.value);</span><br><span class="line">&#125;;</span><br><span class="line">show.call(foo); <span class="comment">//1</span></span><br></pre></td></tr></table></figure>
 
@@ -343,7 +342,8 @@
 </blockquote>
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>又到了回忆过去的时候了，知识就是这样，原型和原型链在我之前的实习生涯中用到的很少——几乎没有（噗！我菜我摊牌了），但是它和<a href="https://blog.csdn.net/jbj6568839z/article/details/106479511">this指向问题 (opens new window)</a>一样，是初级、中级前端开发在面试时永远绕不开的话题。是不是大家每次看面经的时候都会去搜索原型相关的知识点？</p>
 <p>你看这知识，总是在考的时候，才能知道它的重要，就好像曾经有一段贼拉真挚的面试题摆在我面前…话题拉回来，今天我们就收了这个<strong>孽障</strong>！</p>
-<p><img data-src="https://img-blog.csdnimg.cn/20200605103052857.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="img"></p>
+<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/src=http___img.wxcha.com_file_201711_22_e1655873d2.jpg&refer=http___img.wxcha.jpeg" style="zoom:50%;" />
+
 <span id="more"></span>
 
 <h2 id="一、构造函数"><a href="#一、构造函数" class="headerlink" title="一、构造函数"></a>一、构造函数</h2><h3 id="1-1-什么是构造函数？"><a href="#1-1-什么是构造函数？" class="headerlink" title="1.1 什么是构造函数？"></a>1.1 什么是构造函数？</h3><p>构造函数本身就是一个函数，与普通函数没有任何区别，不过<strong>为了规范一般将其首字母大写</strong>。构造函数和普通函数的区别在于，使用<strong>new</strong>生成实例的函数就是构造函数，直接调用的就是普通函数。</p>
@@ -366,7 +366,8 @@
 <p>我们利用 <code>__proto__</code>（隐式原型，下文会提到）属性来模拟一下new 调用构造函数的过程：</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> objectNew = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="comment">// 从object.prototype上克隆一个空的对象</span></span><br><span class="line">    <span class="keyword">var</span> obj = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">    <span class="comment">// 取得外部传入的构造器，这里是Person</span></span><br><span class="line">    <span class="keyword">var</span> Constructor = [].shift.call( <span class="built_in">arguments</span> );</span><br><span class="line">    <span class="comment">// 更新，指向正确的原型</span></span><br><span class="line">    obj.__proto__ = Constructor.prototype; <span class="comment">//知识点，要考、要考、要考</span></span><br><span class="line">    <span class="comment">// 借用外部传入的构造器给obj设置属性</span></span><br><span class="line">    <span class="keyword">var</span> ret = Constructor.apply(obj, <span class="built_in">arguments</span>);</span><br><span class="line">    <span class="comment">// 确保构造器总是返回一个对象</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">typeof</span> ref === <span class="string">&#x27;object&#x27;</span> ? ret : obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><img data-src="https://img-blog.csdnimg.cn/2020060516301968.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="img"></p>
+<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&fm=26&gp=0.jpeg" style="zoom: 67%;" />
+
 <h2 id="二、原型"><a href="#二、原型" class="headerlink" title="二、原型"></a>二、原型</h2><h3 id="2-1-prototype-显式原型"><a href="#2-1-prototype-显式原型" class="headerlink" title="2.1 prototype(显式原型)"></a>2.1 prototype(显式原型)</h3><p>JavaScript 是一种基于原型的语言 (prototype-based language)，在设计的时候模仿了Java的两套类型机制：<code>基本类型</code> 和 <code>对象类型</code>。可见原型很重要！</p>
 <p>每个对象都拥有一个原型对象，类是以函数的形式来定义的。prototype表示该函数的原型，也表示一个类的成员的集合。看下图： <img data-src="https://img-blog.csdnimg.cn/20200605140618427.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"> 可以发现Person函数自己的原型都有什么：</p>
 <ul>
@@ -531,117 +532,6 @@
       </categories>
       <tags>
         <tag>vue</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>vuex笔记</title>
-    <url>/2021/03/16/vuex%E7%AC%94%E8%AE%B0/</url>
-    <content><![CDATA[<h1 id="Vuex笔记"><a href="#Vuex笔记" class="headerlink" title="Vuex笔记"></a>Vuex笔记</h1><h3 id="Vuex概述"><a href="#Vuex概述" class="headerlink" title="Vuex概述"></a>Vuex概述</h3><h4 id="vuex是什么"><a href="#vuex是什么" class="headerlink" title="vuex是什么"></a>vuex是什么</h4><p>​    vuex是实现组件全局状态（数据）管理的一种机制，可以方便实现组件之间数据的共享<br><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/image-20201221091304337.png"></p>
-<span id="more"></span>
-
-<h4 id="使用Vuex统一管理状态的好处"><a href="#使用Vuex统一管理状态的好处" class="headerlink" title="使用Vuex统一管理状态的好处"></a>使用Vuex统一管理状态的好处</h4><ul>
-<li>能够在vuex中集中管理共享的数据，易于开发和后期维护</li>
-<li>能够高效地实现组件之间的数据共享，提高开发效率</li>
-<li>存储在Vuex中的数据都是响应式的，能够实施保持数据与页面的同步</li>
-</ul>
-<h4 id="什么样的数据适合存储到Vuex中"><a href="#什么样的数据适合存储到Vuex中" class="headerlink" title="什么样的数据适合存储到Vuex中"></a>什么样的数据适合存储到Vuex中</h4><p>​    一般情况下，只有组件之间共享的数据，才有必要存储到vuex中；对于组件中的私有数据，依旧存储在组件自身的data中即可</p>
-<h3 id="vuex的基本使用"><a href="#vuex的基本使用" class="headerlink" title="vuex的基本使用"></a>vuex的基本使用</h3><h4 id="安装vuex依赖"><a href="#安装vuex依赖" class="headerlink" title="安装vuex依赖"></a>安装vuex依赖</h4><figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="attribute">npm</span> install vex --save</span><br></pre></td></tr></table></figure>
-
-<h4 id="导入vuex包"><a href="#导入vuex包" class="headerlink" title="导入vuex包"></a>导入vuex包</h4><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> Vuex <span class="keyword">from</span> <span class="string">&#x27;vuex&#x27;</span></span><br><span class="line">Vue.use(Vuex)</span><br></pre></td></tr></table></figure>
-
-<h4 id="创建store对象"><a href="#创建store对象" class="headerlink" title="创建store对象"></a>创建store对象</h4><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> store = <span class="keyword">new</span> Vuex.store(&#123;</span><br><span class="line">  <span class="comment">// state中存放的就是全局共享的数据</span></span><br><span class="line">  state: &#123; <span class="attr">count</span>: <span class="number">0</span> &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<h4 id="将store对象挂载到vue实例中"><a href="#将store对象挂载到vue实例中" class="headerlink" title="将store对象挂载到vue实例中"></a>将store对象挂载到vue实例中</h4><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">&#x27;#app&#x27;</span>,</span><br><span class="line">  reader: <span class="function"><span class="params">h</span> =&gt;</span> h(app),</span><br><span class="line">  router,</span><br><span class="line">  <span class="comment">// 将创建的共享数据对象，挂载到vue实例中</span></span><br><span class="line">  <span class="comment">// 所有的组件，就可以直接从store中获取全局的数据了</span></span><br><span class="line">  store</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="核心概念概述"><a href="#核心概念概述" class="headerlink" title="核心概念概述"></a>核心概念概述</h3><blockquote>
-<p>vuex中的主要核心概念如下：</p>
-<ul>
-<li><strong>state</strong></li>
-<li><strong>Mutation</strong></li>
-<li><strong>Action</strong></li>
-<li><strong>Getter</strong></li>
-</ul>
-</blockquote>
-<h4 id="State"><a href="#State" class="headerlink" title="State"></a>State</h4><p>​    State提供唯一的公共数据源，所有的共享的数据都要统一放到Store的State中进行储存</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 创建store数据源，提供唯一公共数据</span></span><br><span class="line"><span class="keyword">const</span> store = <span class="keyword">new</span> Vuex.store(&#123;</span><br><span class="line">  state: &#123;</span><br><span class="line">    count: <span class="number">0</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<p>（1）组件访问State中数据的第一种方式：</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="built_in">this</span>.$store.state.全局数据名称</span><br></pre></td></tr></table></figure>
-
-<p>（2）组件访问State中数据的第二种方式</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 1.从vuex中按需导入 mapState函数</span></span><br><span class="line"><span class="keyword">import</span> &#123; mapState &#125; <span class="keyword">from</span> <span class="string">&#x27;vuex&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>通过刚刚导入的mapState函数，将当前组件需要的全局数据，映射为当前数据的computed计算属性：</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 2.将全局数据，映射为当前组件的计算属性</span></span><br><span class="line">computed: &#123;</span><br><span class="line">	...mapState([<span class="string">&#x27;count&#x27;</span>])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="Mutation"><a href="#Mutation" class="headerlink" title="Mutation"></a>Mutation</h4><p>Mutation用于变更Store中的数据</p>
-<ol>
-<li><p>只能通过mutation变更Store数据，不可以直接操作Store中的数据</p>
-</li>
-<li><p>通过这种方式虽然操作起来稍微繁琐一些，但是可以集中件套所有数据的变化</p>
-</li>
-</ol>
-<h5 id="定义mutations"><a href="#定义mutations" class="headerlink" title="定义mutations"></a>定义mutations</h5><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 定义Mutation</span></span><br><span class="line"><span class="keyword">const</span> store = <span class="keyword">new</span> Vuex.Store(&#123;</span><br><span class="line">	state: &#123;</span><br><span class="line">		count: <span class="number">0</span></span><br><span class="line">	&#125;,</span><br><span class="line">	mutations: &#123;</span><br><span class="line">		<span class="function"><span class="title">add</span>(<span class="params">state</span>)</span>&#123;</span><br><span class="line">			<span class="comment">//变更状态</span></span><br><span class="line">			state.count++</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<h5 id="触发mutations"><a href="#触发mutations" class="headerlink" title="触发mutations"></a>触发mutations</h5><p>（1）触发mutations的第一种方式：</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 触发mutation</span></span><br><span class="line">methods: &#123;</span><br><span class="line">	<span class="function"><span class="title">handle1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		<span class="comment">//	触发mutation的第一种方式</span></span><br><span class="line">		<span class="built_in">this</span>.$store.commit(<span class="string">&#x27;add&#x27;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>可以在触发mutations时传递参数：</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 定义Mutation</span></span><br><span class="line"><span class="keyword">const</span> store = <span class="keyword">new</span> Vuex.Store(&#123;</span><br><span class="line">	state: &#123;</span><br><span class="line">		count: <span class="number">0</span></span><br><span class="line">	&#125;,</span><br><span class="line">	mutations: &#123;</span><br><span class="line">		<span class="function"><span class="title">addN</span>(<span class="params">state, step</span>)</span>&#123;</span><br><span class="line">			<span class="comment">//变更状态</span></span><br><span class="line">			state.count += step</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 触发mutation</span></span><br><span class="line">methods: &#123;</span><br><span class="line">	<span class="function"><span class="title">handle1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		<span class="comment">//	触发mutation的第一种方式</span></span><br><span class="line">		<span class="built_in">this</span>.$store.commit(<span class="string">&#x27;addN&#x27;</span>, <span class="number">3</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>（2）触发mutations第二种方式：</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 1.从vuex中按需导入mapMutations函数</span></span><br><span class="line"><span class="keyword">import</span> &#123; mapMutations &#125; <span class="keyword">from</span> <span class="string">&#x27;vuex&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>通过刚才导入的mapMuntations函数，将需要的mutations函数，映射为当前组件的methods方法：</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 2.将指定的mutations函数，映射为当前组件的methods函数</span></span><br><span class="line">methods: &#123;</span><br><span class="line">	...mapMutations([<span class="string">&#x27;add&#x27;</span>,<span class="string">&#x27;addN&#x27;</span>])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="Action"><a href="#Action" class="headerlink" title="Action"></a>Action</h4><blockquote>
-<p>Action用于处理异步任务</p>
-</blockquote>
-<p>如果通过异步操作变更数据，必须通过Action，而不能使用Mutation，但是在Action中还是要通过出发Mutation的方式间接变更数据。</p>
-<h5 id="定义Action"><a href="#定义Action" class="headerlink" title="定义Action"></a>定义Action</h5><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 定义Action</span></span><br><span class="line"><span class="keyword">const</span> store = <span class="keyword">new</span> Vuex.Store(&#123;</span><br><span class="line">  	<span class="comment">// ...此处省略其他代码</span></span><br><span class="line">  mutaions: &#123;</span><br><span class="line">    <span class="function"><span class="title">add</span>(<span class="params">state</span>)</span>&#123;</span><br><span class="line">			state.count++</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  actions: &#123;</span><br><span class="line">    <span class="function"><span class="title">addAsync</span>(<span class="params">context</span>)</span>&#123;</span><br><span class="line">      <span class="built_in">setTimeout</span>(<span class="function">()=&gt;</span>&#123;</span><br><span class="line">        context.commit(<span class="string">&#x27;add&#x27;</span>)</span><br><span class="line">      &#125;,<span class="number">1000</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<h5 id="触发Action"><a href="#触发Action" class="headerlink" title="触发Action"></a>触发Action</h5><p>（1）触发actions的第一种方式</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">methods:&#123;</span><br><span class="line">	<span class="function"><span class="title">handle</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="comment">// 触发actions的第一种方式</span></span><br><span class="line">    <span class="built_in">this</span>.$store.dispatch(<span class="string">&#x27;addAsync&#x27;</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>触发actions异步任务时携带参数：</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 定义Action</span></span><br><span class="line"><span class="keyword">const</span> store = <span class="keyword">new</span> Vuex.Store(&#123;</span><br><span class="line">  	<span class="comment">// ...此处省略其他代码</span></span><br><span class="line">  mutaions: &#123;</span><br><span class="line">    <span class="function"><span class="title">addN</span>(<span class="params">state,step</span>)</span>&#123;</span><br><span class="line">			state.count += step</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  actions: &#123;</span><br><span class="line">    <span class="function"><span class="title">addNAsync</span>(<span class="params">context, step</span>)</span>&#123;</span><br><span class="line">      <span class="built_in">setTimeout</span>(<span class="function">()=&gt;</span>&#123;</span><br><span class="line">        context.commit(<span class="string">&#x27;addN&#x27;</span>,step)</span><br><span class="line">      &#125;,<span class="number">1000</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 触发actions</span></span><br><span class="line">methods:&#123;</span><br><span class="line">	<span class="function"><span class="title">handle</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.$store.dispatch(<span class="string">&#x27;addAsync&#x27;</span>, <span class="number">5</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>（2）触发actions的第二种方式</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 1.从vuex中按需导入mapActions函数</span></span><br><span class="line"><span class="keyword">import</span> &#123; mapActions &#125; <span class="keyword">from</span> <span class="string">&#x27;vuex&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>通过刚才导入的mapActions函数，映射为当前组件的methods函数</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">methods: &#123;</span><br><span class="line">	...mapAction([&#39;addAsync&#39;,&#39;addNASync&#39;])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="Getter"><a href="#Getter" class="headerlink" title="Getter"></a>Getter</h4><p>Getter用于对store中的数据进行加工处理形成新的数据</p>
-<ul>
-<li><p>Getter可以对Store中已有的数据加工处理之后形成新的数据，类似Vue的计算属性</p>
-</li>
-<li><p>Store中数据发生变化，Getter的数据也会跟着变化</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 定义Getter</span></span><br><span class="line"><span class="keyword">const</span> store = <span class="keyword">new</span> Vuex.Store(&#123;</span><br><span class="line">  state: &#123;</span><br><span class="line">    count: <span class="number">0</span></span><br><span class="line">  &#125;,</span><br><span class="line">  getters: &#123;</span><br><span class="line">    showNum: <span class="function"><span class="params">state</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="string">`当前最新的数据时【 <span class="subst">$&#123;state.count&#125;</span> 】`</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;) </span><br></pre></td></tr></table></figure></li>
-</ul>
-<p>使用Getter的第一种方式：</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="built_in">this</span>.$store.getters.名称</span><br></pre></td></tr></table></figure>
-
-<p>使用Getter的第二种方式：</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; mapGetters &#125; <span class="keyword">from</span> <span class="string">&#x27;vuex&#x27;</span></span><br><span class="line"></span><br><span class="line">computed: &#123;</span><br><span class="line">  ...mapGetters([<span class="string">&#x27;showNum&#x27;</span>])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-]]></content>
-      <categories>
-        <category>vue</category>
-      </categories>
-      <tags>
-        <tag>vuex</tag>
       </tags>
   </entry>
   <entry>
@@ -991,6 +881,54 @@
       </tags>
   </entry>
   <entry>
+    <title>开发小技巧</title>
+    <url>/2021/03/16/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
+    <content><![CDATA[<h2 id="阻止单击事件冒泡"><a href="#阻止单击事件冒泡" class="headerlink" title="阻止单击事件冒泡"></a>阻止单击事件冒泡</h2><p><code>&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;</code></p>
+<h2 id="提交事件不再重载页面"><a href="#提交事件不再重载页面" class="headerlink" title="提交事件不再重载页面"></a>提交事件不再重载页面</h2><p><code>&lt;form v-on:submit.prevent=&quot;onSubmit&quot;&gt;&lt;/form&gt;</code></p>
+<h2 id="修饰符可以串联"><a href="#修饰符可以串联" class="headerlink" title="修饰符可以串联"></a>修饰符可以串联</h2><p><code>&lt;a v-on:click.stop.prevent=&quot;doThat&quot;&gt;</code></p>
+<span id="more"></span>
+
+
+<h2 id="只有修饰符"><a href="#只有修饰符" class="headerlink" title="只有修饰符"></a>只有修饰符</h2><p><code>&lt;form v-on:submit.prevent&gt;&lt;/form&gt;</code></p>
+<br>
+<br>
+<br>
+
+<h2 id="Mac谷歌跨域命令"><a href="#Mac谷歌跨域命令" class="headerlink" title="Mac谷歌跨域命令"></a>Mac谷歌跨域命令</h2><p><code>open -n /Applications/Google\ Chrome.app/ --args --disable-web-security  --user-data-dir=/Users/GaoYuan/Documents/MyChromeDevUserData</code></p>
+<br>
+<br>
+<br>
+
+<h2 id="Mac显示隐藏文件命令："><a href="#Mac显示隐藏文件命令：" class="headerlink" title="Mac显示隐藏文件命令："></a>Mac显示隐藏文件命令：</h2><p><strong>显示隐藏文件</strong></p>
+<p><code>defaults write com.apple.finder AppleShowAllFiles Yes &amp;&amp; killall Finder </code></p>
+<p><strong>不显示隐藏文件</strong></p>
+<p><code>defaults write com.apple.finder AppleShowAllFiles No &amp;&amp; killall Finder </code></p>
+<br>
+<br>
+
+<h2 id="Jison解决JS处理后端返回的Long型数据精度丢失问题"><a href="#Jison解决JS处理后端返回的Long型数据精度丢失问题" class="headerlink" title="Jison解决JS处理后端返回的Long型数据精度丢失问题"></a>Jison解决JS处理后端返回的Long型数据精度丢失问题</h2><p>原因：js是弱类型语言，所有的数字类型统称为Number类型，不区分int、long、double等。</p>
+<p><code>git clone git://github.com/zaach/jsonlint.git</code></p>
+<p>在src目录下提供了jsonlint.y（grammaFile）和jsonlint.l（lexFile)两个文件。使用这两个文件可以直接生成jsonlint.js。如下修改jsonlint.y：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">JSONNumber</span><br><span class="line"></span><br><span class="line">    : NUMBER</span><br><span class="line">    </span><br><span class="line">        &#123;$$ &#x3D; yytext &#x3D;&#x3D; String(Number(yytext))? Number(yytext): yytext;&#125;</span><br><span class="line">    ;</span><br></pre></td></tr></table></figure>
+
+<p> 然后：</p>
+<p><code>cd src</code></p>
+<p><code>jison jsonlint.y jsonlint.l</code></p>
+<h3 id="最后引入至项目"><a href="#最后引入至项目" class="headerlink" title="最后引入至项目"></a>最后引入至项目</h3><p>1.将自定义的 jsonlint.js 放到 static 目录下<br>2.在 index.html 中引入<br><code>&lt;script src=&quot;./static/jsonlint/jsonlint.js&quot;&gt;&lt;/script&gt;</code></p>
+<p>3、在我们请求的返回数据中，做一层拦截转换，此处以 axios 的实现方法为例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;*transformResponse 选项允许我们在数据传送到 &#96;then&#x2F;catch&#96; 方法之前对数据进行改动*&#x2F;</span><br><span class="line">axios.defaults.transformResponse &#x3D; [</span><br><span class="line">  function(data) &#123;</span><br><span class="line">    return jsonlint.parse(data)</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>综上，定义JSON转化避免long类型数据溢出，可以实现long类型数据在前端正常显示</p>
+<h2 id="Mac给文件夹赋予管理员权限"><a href="#Mac给文件夹赋予管理员权限" class="headerlink" title="Mac给文件夹赋予管理员权限"></a>Mac给文件夹赋予管理员权限</h2><p><code>sudo chown -R gaoyuan ios</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if ($request_filename ~* .*index\.html$) &#123;</span><br><span class="line">     add_header Cache-Control &quot;private, no-store, no-cache, must-revalidate, proxy-revalidate&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>个人笔记</category>
+      </categories>
+      <tags>
+        <tag>note</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>学习之AJAX</title>
     <url>/2021/03/18/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
     <content><![CDATA[<p>对于AJAX这个玩意儿，一开始学习的时候，根本不知道这是什么，我连AJAX有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙B的状态。那么在学习一段时间的AJAX之后，我总结了一些我自己对AJAX的理解，一起共勉。</p>
@@ -1121,51 +1059,114 @@
       </tags>
   </entry>
   <entry>
-    <title>开发小技巧</title>
-    <url>/2021/03/16/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
-    <content><![CDATA[<h2 id="阻止单击事件冒泡"><a href="#阻止单击事件冒泡" class="headerlink" title="阻止单击事件冒泡"></a>阻止单击事件冒泡</h2><p><code>&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;</code></p>
-<h2 id="提交事件不再重载页面"><a href="#提交事件不再重载页面" class="headerlink" title="提交事件不再重载页面"></a>提交事件不再重载页面</h2><p><code>&lt;form v-on:submit.prevent=&quot;onSubmit&quot;&gt;&lt;/form&gt;</code></p>
-<h2 id="修饰符可以串联"><a href="#修饰符可以串联" class="headerlink" title="修饰符可以串联"></a>修饰符可以串联</h2><p><code>&lt;a v-on:click.stop.prevent=&quot;doThat&quot;&gt;</code></p>
+    <title>vuex笔记</title>
+    <url>/2021/03/16/vuex%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[<h1 id="Vuex笔记"><a href="#Vuex笔记" class="headerlink" title="Vuex笔记"></a>Vuex笔记</h1><h3 id="Vuex概述"><a href="#Vuex概述" class="headerlink" title="Vuex概述"></a>Vuex概述</h3><h4 id="vuex是什么"><a href="#vuex是什么" class="headerlink" title="vuex是什么"></a>vuex是什么</h4><p>​    vuex是实现组件全局状态（数据）管理的一种机制，可以方便实现组件之间数据的共享<br><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/image-20201221091304337.png"></p>
 <span id="more"></span>
 
+<h4 id="使用Vuex统一管理状态的好处"><a href="#使用Vuex统一管理状态的好处" class="headerlink" title="使用Vuex统一管理状态的好处"></a>使用Vuex统一管理状态的好处</h4><ul>
+<li>能够在vuex中集中管理共享的数据，易于开发和后期维护</li>
+<li>能够高效地实现组件之间的数据共享，提高开发效率</li>
+<li>存储在Vuex中的数据都是响应式的，能够实施保持数据与页面的同步</li>
+</ul>
+<h4 id="什么样的数据适合存储到Vuex中"><a href="#什么样的数据适合存储到Vuex中" class="headerlink" title="什么样的数据适合存储到Vuex中"></a>什么样的数据适合存储到Vuex中</h4><p>​    一般情况下，只有组件之间共享的数据，才有必要存储到vuex中；对于组件中的私有数据，依旧存储在组件自身的data中即可</p>
+<h3 id="vuex的基本使用"><a href="#vuex的基本使用" class="headerlink" title="vuex的基本使用"></a>vuex的基本使用</h3><h4 id="安装vuex依赖"><a href="#安装vuex依赖" class="headerlink" title="安装vuex依赖"></a>安装vuex依赖</h4><figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="attribute">npm</span> install vex --save</span><br></pre></td></tr></table></figure>
 
-<h2 id="只有修饰符"><a href="#只有修饰符" class="headerlink" title="只有修饰符"></a>只有修饰符</h2><p><code>&lt;form v-on:submit.prevent&gt;&lt;/form&gt;</code></p>
-<br>
-<br>
-<br>
+<h4 id="导入vuex包"><a href="#导入vuex包" class="headerlink" title="导入vuex包"></a>导入vuex包</h4><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> Vuex <span class="keyword">from</span> <span class="string">&#x27;vuex&#x27;</span></span><br><span class="line">Vue.use(Vuex)</span><br></pre></td></tr></table></figure>
 
-<h2 id="Mac谷歌跨域命令"><a href="#Mac谷歌跨域命令" class="headerlink" title="Mac谷歌跨域命令"></a>Mac谷歌跨域命令</h2><p><code>open -n /Applications/Google\ Chrome.app/ --args --disable-web-security  --user-data-dir=/Users/GaoYuan/Documents/MyChromeDevUserData</code></p>
-<br>
-<br>
-<br>
+<h4 id="创建store对象"><a href="#创建store对象" class="headerlink" title="创建store对象"></a>创建store对象</h4><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> store = <span class="keyword">new</span> Vuex.store(&#123;</span><br><span class="line">  <span class="comment">// state中存放的就是全局共享的数据</span></span><br><span class="line">  state: &#123; <span class="attr">count</span>: <span class="number">0</span> &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 
-<h2 id="Mac显示隐藏文件命令："><a href="#Mac显示隐藏文件命令：" class="headerlink" title="Mac显示隐藏文件命令："></a>Mac显示隐藏文件命令：</h2><p><strong>显示隐藏文件</strong></p>
-<p><code>defaults write com.apple.finder AppleShowAllFiles Yes &amp;&amp; killall Finder </code></p>
-<p><strong>不显示隐藏文件</strong></p>
-<p><code>defaults write com.apple.finder AppleShowAllFiles No &amp;&amp; killall Finder </code></p>
-<br>
-<br>
+<h4 id="将store对象挂载到vue实例中"><a href="#将store对象挂载到vue实例中" class="headerlink" title="将store对象挂载到vue实例中"></a>将store对象挂载到vue实例中</h4><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">&#x27;#app&#x27;</span>,</span><br><span class="line">  reader: <span class="function"><span class="params">h</span> =&gt;</span> h(app),</span><br><span class="line">  router,</span><br><span class="line">  <span class="comment">// 将创建的共享数据对象，挂载到vue实例中</span></span><br><span class="line">  <span class="comment">// 所有的组件，就可以直接从store中获取全局的数据了</span></span><br><span class="line">  store</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 
-<h2 id="Jison解决JS处理后端返回的Long型数据精度丢失问题"><a href="#Jison解决JS处理后端返回的Long型数据精度丢失问题" class="headerlink" title="Jison解决JS处理后端返回的Long型数据精度丢失问题"></a>Jison解决JS处理后端返回的Long型数据精度丢失问题</h2><p>原因：js是弱类型语言，所有的数字类型统称为Number类型，不区分int、long、double等。</p>
-<p><code>git clone git://github.com/zaach/jsonlint.git</code></p>
-<p>在src目录下提供了jsonlint.y（grammaFile）和jsonlint.l（lexFile)两个文件。使用这两个文件可以直接生成jsonlint.js。如下修改jsonlint.y：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">JSONNumber</span><br><span class="line"></span><br><span class="line">    : NUMBER</span><br><span class="line">    </span><br><span class="line">        &#123;$$ &#x3D; yytext &#x3D;&#x3D; String(Number(yytext))? Number(yytext): yytext;&#125;</span><br><span class="line">    ;</span><br></pre></td></tr></table></figure>
 
-<p> 然后：</p>
-<p><code>cd src</code></p>
-<p><code>jison jsonlint.y jsonlint.l</code></p>
-<h3 id="最后引入至项目"><a href="#最后引入至项目" class="headerlink" title="最后引入至项目"></a>最后引入至项目</h3><p>1.将自定义的 jsonlint.js 放到 static 目录下<br>2.在 index.html 中引入<br><code>&lt;script src=&quot;./static/jsonlint/jsonlint.js&quot;&gt;&lt;/script&gt;</code></p>
-<p>3、在我们请求的返回数据中，做一层拦截转换，此处以 axios 的实现方法为例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;*transformResponse 选项允许我们在数据传送到 &#96;then&#x2F;catch&#96; 方法之前对数据进行改动*&#x2F;</span><br><span class="line">axios.defaults.transformResponse &#x3D; [</span><br><span class="line">  function(data) &#123;</span><br><span class="line">    return jsonlint.parse(data)</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<p>综上，定义JSON转化避免long类型数据溢出，可以实现long类型数据在前端正常显示</p>
-<h2 id="Mac给文件夹赋予管理员权限"><a href="#Mac给文件夹赋予管理员权限" class="headerlink" title="Mac给文件夹赋予管理员权限"></a>Mac给文件夹赋予管理员权限</h2><p><code>sudo chown -R gaoyuan ios</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if ($request_filename ~* .*index\.html$) &#123;</span><br><span class="line">     add_header Cache-Control &quot;private, no-store, no-cache, must-revalidate, proxy-revalidate&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+<h3 id="核心概念概述"><a href="#核心概念概述" class="headerlink" title="核心概念概述"></a>核心概念概述</h3><blockquote>
+<p>vuex中的主要核心概念如下：</p>
+<ul>
+<li><strong>state</strong></li>
+<li><strong>Mutation</strong></li>
+<li><strong>Action</strong></li>
+<li><strong>Getter</strong></li>
+</ul>
+</blockquote>
+<h4 id="State"><a href="#State" class="headerlink" title="State"></a>State</h4><p>​    State提供唯一的公共数据源，所有的共享的数据都要统一放到Store的State中进行储存</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 创建store数据源，提供唯一公共数据</span></span><br><span class="line"><span class="keyword">const</span> store = <span class="keyword">new</span> Vuex.store(&#123;</span><br><span class="line">  state: &#123;</span><br><span class="line">    count: <span class="number">0</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>（1）组件访问State中数据的第一种方式：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="built_in">this</span>.$store.state.全局数据名称</span><br></pre></td></tr></table></figure>
+
+<p>（2）组件访问State中数据的第二种方式</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 1.从vuex中按需导入 mapState函数</span></span><br><span class="line"><span class="keyword">import</span> &#123; mapState &#125; <span class="keyword">from</span> <span class="string">&#x27;vuex&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>通过刚刚导入的mapState函数，将当前组件需要的全局数据，映射为当前数据的computed计算属性：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 2.将全局数据，映射为当前组件的计算属性</span></span><br><span class="line">computed: &#123;</span><br><span class="line">	...mapState([<span class="string">&#x27;count&#x27;</span>])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="Mutation"><a href="#Mutation" class="headerlink" title="Mutation"></a>Mutation</h4><p>Mutation用于变更Store中的数据</p>
+<ol>
+<li><p>只能通过mutation变更Store数据，不可以直接操作Store中的数据</p>
+</li>
+<li><p>通过这种方式虽然操作起来稍微繁琐一些，但是可以集中件套所有数据的变化</p>
+</li>
+</ol>
+<h5 id="定义mutations"><a href="#定义mutations" class="headerlink" title="定义mutations"></a>定义mutations</h5><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 定义Mutation</span></span><br><span class="line"><span class="keyword">const</span> store = <span class="keyword">new</span> Vuex.Store(&#123;</span><br><span class="line">	state: &#123;</span><br><span class="line">		count: <span class="number">0</span></span><br><span class="line">	&#125;,</span><br><span class="line">	mutations: &#123;</span><br><span class="line">		<span class="function"><span class="title">add</span>(<span class="params">state</span>)</span>&#123;</span><br><span class="line">			<span class="comment">//变更状态</span></span><br><span class="line">			state.count++</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h5 id="触发mutations"><a href="#触发mutations" class="headerlink" title="触发mutations"></a>触发mutations</h5><p>（1）触发mutations的第一种方式：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 触发mutation</span></span><br><span class="line">methods: &#123;</span><br><span class="line">	<span class="function"><span class="title">handle1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		<span class="comment">//	触发mutation的第一种方式</span></span><br><span class="line">		<span class="built_in">this</span>.$store.commit(<span class="string">&#x27;add&#x27;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以在触发mutations时传递参数：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 定义Mutation</span></span><br><span class="line"><span class="keyword">const</span> store = <span class="keyword">new</span> Vuex.Store(&#123;</span><br><span class="line">	state: &#123;</span><br><span class="line">		count: <span class="number">0</span></span><br><span class="line">	&#125;,</span><br><span class="line">	mutations: &#123;</span><br><span class="line">		<span class="function"><span class="title">addN</span>(<span class="params">state, step</span>)</span>&#123;</span><br><span class="line">			<span class="comment">//变更状态</span></span><br><span class="line">			state.count += step</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 触发mutation</span></span><br><span class="line">methods: &#123;</span><br><span class="line">	<span class="function"><span class="title">handle1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		<span class="comment">//	触发mutation的第一种方式</span></span><br><span class="line">		<span class="built_in">this</span>.$store.commit(<span class="string">&#x27;addN&#x27;</span>, <span class="number">3</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>（2）触发mutations第二种方式：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 1.从vuex中按需导入mapMutations函数</span></span><br><span class="line"><span class="keyword">import</span> &#123; mapMutations &#125; <span class="keyword">from</span> <span class="string">&#x27;vuex&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>通过刚才导入的mapMuntations函数，将需要的mutations函数，映射为当前组件的methods方法：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 2.将指定的mutations函数，映射为当前组件的methods函数</span></span><br><span class="line">methods: &#123;</span><br><span class="line">	...mapMutations([<span class="string">&#x27;add&#x27;</span>,<span class="string">&#x27;addN&#x27;</span>])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="Action"><a href="#Action" class="headerlink" title="Action"></a>Action</h4><blockquote>
+<p>Action用于处理异步任务</p>
+</blockquote>
+<p>如果通过异步操作变更数据，必须通过Action，而不能使用Mutation，但是在Action中还是要通过出发Mutation的方式间接变更数据。</p>
+<h5 id="定义Action"><a href="#定义Action" class="headerlink" title="定义Action"></a>定义Action</h5><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 定义Action</span></span><br><span class="line"><span class="keyword">const</span> store = <span class="keyword">new</span> Vuex.Store(&#123;</span><br><span class="line">  	<span class="comment">// ...此处省略其他代码</span></span><br><span class="line">  mutaions: &#123;</span><br><span class="line">    <span class="function"><span class="title">add</span>(<span class="params">state</span>)</span>&#123;</span><br><span class="line">			state.count++</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  actions: &#123;</span><br><span class="line">    <span class="function"><span class="title">addAsync</span>(<span class="params">context</span>)</span>&#123;</span><br><span class="line">      <span class="built_in">setTimeout</span>(<span class="function">()=&gt;</span>&#123;</span><br><span class="line">        context.commit(<span class="string">&#x27;add&#x27;</span>)</span><br><span class="line">      &#125;,<span class="number">1000</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h5 id="触发Action"><a href="#触发Action" class="headerlink" title="触发Action"></a>触发Action</h5><p>（1）触发actions的第一种方式</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">methods:&#123;</span><br><span class="line">	<span class="function"><span class="title">handle</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="comment">// 触发actions的第一种方式</span></span><br><span class="line">    <span class="built_in">this</span>.$store.dispatch(<span class="string">&#x27;addAsync&#x27;</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>触发actions异步任务时携带参数：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 定义Action</span></span><br><span class="line"><span class="keyword">const</span> store = <span class="keyword">new</span> Vuex.Store(&#123;</span><br><span class="line">  	<span class="comment">// ...此处省略其他代码</span></span><br><span class="line">  mutaions: &#123;</span><br><span class="line">    <span class="function"><span class="title">addN</span>(<span class="params">state,step</span>)</span>&#123;</span><br><span class="line">			state.count += step</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  actions: &#123;</span><br><span class="line">    <span class="function"><span class="title">addNAsync</span>(<span class="params">context, step</span>)</span>&#123;</span><br><span class="line">      <span class="built_in">setTimeout</span>(<span class="function">()=&gt;</span>&#123;</span><br><span class="line">        context.commit(<span class="string">&#x27;addN&#x27;</span>,step)</span><br><span class="line">      &#125;,<span class="number">1000</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 触发actions</span></span><br><span class="line">methods:&#123;</span><br><span class="line">	<span class="function"><span class="title">handle</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.$store.dispatch(<span class="string">&#x27;addAsync&#x27;</span>, <span class="number">5</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>（2）触发actions的第二种方式</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 1.从vuex中按需导入mapActions函数</span></span><br><span class="line"><span class="keyword">import</span> &#123; mapActions &#125; <span class="keyword">from</span> <span class="string">&#x27;vuex&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>通过刚才导入的mapActions函数，映射为当前组件的methods函数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">methods: &#123;</span><br><span class="line">	...mapAction([&#39;addAsync&#39;,&#39;addNASync&#39;])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="Getter"><a href="#Getter" class="headerlink" title="Getter"></a>Getter</h4><p>Getter用于对store中的数据进行加工处理形成新的数据</p>
+<ul>
+<li><p>Getter可以对Store中已有的数据加工处理之后形成新的数据，类似Vue的计算属性</p>
+</li>
+<li><p>Store中数据发生变化，Getter的数据也会跟着变化</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 定义Getter</span></span><br><span class="line"><span class="keyword">const</span> store = <span class="keyword">new</span> Vuex.Store(&#123;</span><br><span class="line">  state: &#123;</span><br><span class="line">    count: <span class="number">0</span></span><br><span class="line">  &#125;,</span><br><span class="line">  getters: &#123;</span><br><span class="line">    showNum: <span class="function"><span class="params">state</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="string">`当前最新的数据时【 <span class="subst">$&#123;state.count&#125;</span> 】`</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;) </span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>使用Getter的第一种方式：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="built_in">this</span>.$store.getters.名称</span><br></pre></td></tr></table></figure>
+
+<p>使用Getter的第二种方式：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; mapGetters &#125; <span class="keyword">from</span> <span class="string">&#x27;vuex&#x27;</span></span><br><span class="line"></span><br><span class="line">computed: &#123;</span><br><span class="line">  ...mapGetters([<span class="string">&#x27;showNum&#x27;</span>])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+]]></content>
       <categories>
-        <category>个人笔记</category>
+        <category>vue</category>
       </categories>
       <tags>
-        <tag>note</tag>
+        <tag>vuex</tag>
       </tags>
   </entry>
 </search>
