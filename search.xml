@@ -91,6 +91,110 @@
       </tags>
   </entry>
   <entry>
+    <title>JS实现图片压缩</title>
+    <url>/2021/03/19/JS%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9/</url>
+    <content><![CDATA[<blockquote>
+<p>说起图片压缩，大家想到的或者平时用到的很多工具都可以实现，例如，客户端类的有图片压缩工具 PPDuck3， JS 实现类的有插件 compression.js ，亦或是在线处理类的 OSS 上传，文件上传后，在访问文件时中也有图片的压缩配置选项，那能不能使用 JS 实现的图片压缩代码呢？当然可以，那我们先来理一下思路。</p>
+</blockquote>
+<h2 id="压缩思路"><a href="#压缩思路" class="headerlink" title="压缩思路"></a>压缩思路</h2><p>涉及到 JS 的图片压缩，我的想法是需要用到 Canvas 的绘图能力，通过调整图片的分辨率或者绘图质量来达到图片压缩的效果，实现思路如下：</p>
+<ul>
+<li>获取上传 Input 中的图片对象 File</li>
+<li>将图片转换成 base64 格式</li>
+<li>base64 编码的图片通过 Canvas 转换压缩，这里会用到的 Canvas 的 drawImage 以及 toDataURL 这两个 Api，一个调节图片的分辨率的，一个是调节图片压缩质量并且输出的，后续会有详细介绍</li>
+<li>转换后的图片生成对应的新图片，然后输出</li>
+<li></li>
+</ul>
+<h2 id="优缺点介绍"><a href="#优缺点介绍" class="headerlink" title="优缺点介绍"></a>优缺点介绍</h2><p>不过 Canvas 压缩的方式也有着自己的优缺点：</p>
+<ul>
+<li>优点：实现简单，参数可以配置化，自定义图片的尺寸，指定区域裁剪等等。</li>
+<li>缺点：只有 jpeg 、webp 支持原图尺寸下图片质量的调整来达到压缩图片的效果，其他图片格式，仅能通过调节尺寸来实现</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div class&#x3D;&quot;container&quot;&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;file&quot; id&#x3D;&quot;input-img&quot; @change&#x3D;&quot;compress&quot; &#x2F;&gt;</span><br><span class="line">    &lt;a :download&#x3D;&quot;fileName&quot; :href&#x3D;&quot;compressImg&quot; &gt;普通下载&lt;&#x2F;a&gt;</span><br><span class="line">    &lt;button @click&#x3D;&quot;downloadImg&quot;&gt;兼容 IE 下载&lt;&#x2F;button&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;img :src&#x3D;&quot;compressImg&quot; &#x2F;&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;export default &#123;</span><br><span class="line">  name: &#39;compress&#39;,</span><br><span class="line">  data: function() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      compressImg: null,</span><br><span class="line">      fileName: null,</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">  components: &#123;&#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    compress() &#123;</span><br><span class="line">      &#x2F;&#x2F; 获取文件对象</span><br><span class="line">      const fileObj &#x3D; document.querySelector(&#39;#input-img&#39;).files[0];</span><br><span class="line">      &#x2F;&#x2F; 获取文件名称，后续下载重命名</span><br><span class="line">      this.fileName &#x3D; &#96;$&#123;new Date().getTime()&#125;-$&#123;fileObj.name&#125;&#96;;</span><br><span class="line">      &#x2F;&#x2F; 获取文件后缀名</span><br><span class="line">      const fileNames &#x3D; fileObj.name.split(&#39;.&#39;);</span><br><span class="line">      const type &#x3D; fileNames[fileNames.length-1];</span><br><span class="line">      &#x2F;&#x2F; 压缩图片</span><br><span class="line">      this.handleCompressImage(fileObj, type);</span><br><span class="line">    &#125;,</span><br><span class="line">    handleCompressImage(img, type) &#123;</span><br><span class="line">      const vm &#x3D; this;</span><br><span class="line">      let reader &#x3D; new FileReader();</span><br><span class="line">      &#x2F;&#x2F; 读取文件</span><br><span class="line">      reader.readAsDataURL(img);</span><br><span class="line">      reader.onload &#x3D; function(e) &#123;</span><br><span class="line">        let image &#x3D; new Image(); &#x2F;&#x2F;新建一个img标签</span><br><span class="line">        image.src &#x3D; e.target.result;</span><br><span class="line">        image.onload &#x3D; function() &#123;</span><br><span class="line">          let canvas &#x3D; document.createElement(&#39;canvas&#39;);</span><br><span class="line">          let context &#x3D; canvas.getContext(&#39;2d&#39;);</span><br><span class="line">          &#x2F;&#x2F; 定义 canvas 大小，也就是压缩后下载的图片大小</span><br><span class="line">          let imageWidth &#x3D; image.width; &#x2F;&#x2F;压缩后图片的大小</span><br><span class="line">          let imageHeight &#x3D; image.height;</span><br><span class="line">          canvas.width &#x3D; imageWidth;</span><br><span class="line">          canvas.height &#x3D; imageHeight;</span><br><span class="line">          </span><br><span class="line">          &#x2F;&#x2F; 图片不压缩，全部加载展示</span><br><span class="line">          context.drawImage(image, 0, 0);</span><br><span class="line">          &#x2F;&#x2F; 图片按压缩尺寸载入</span><br><span class="line">          &#x2F;&#x2F; let imageWidth &#x3D; 500; &#x2F;&#x2F;压缩后图片的大小</span><br><span class="line">          &#x2F;&#x2F; let imageHeight &#x3D; 200;</span><br><span class="line">          &#x2F;&#x2F; context.drawImage(image, 0, 0, 500, 200);</span><br><span class="line">          &#x2F;&#x2F; 图片去截取指定位置载入</span><br><span class="line">          &#x2F;&#x2F; context.drawImage(image,100, 100, 100, 100, 0, 0, imageWidth, imageHeight);</span><br><span class="line">          vm.compressImg &#x3D; canvas.toDataURL(&#96;image&#x2F;$&#123;type&#125;&#96;);</span><br><span class="line">        &#125;;</span><br><span class="line">      &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#x2F;&#x2F; base64 图片转 blob 后下载</span><br><span class="line">    downloadImg() &#123;</span><br><span class="line">      let parts &#x3D; this.compressImg.split(&#39;;base64,&#39;);</span><br><span class="line">      let contentType &#x3D; parts[0].split(&#39;:&#39;)[1];</span><br><span class="line">      let raw &#x3D; window.atob(parts[1]);</span><br><span class="line">      let rawLength &#x3D; raw.length;</span><br><span class="line">      let uInt8Array &#x3D; new Uint8Array(rawLength);</span><br><span class="line">      for(let i &#x3D; 0; i &lt; rawLength; ++i) &#123;</span><br><span class="line">        uInt8Array[i] &#x3D; raw.charCodeAt(i);</span><br><span class="line">      &#125;</span><br><span class="line">      const blob &#x3D; new Blob([uInt8Array], &#123;type: contentType&#125;);</span><br><span class="line">      this.compressImg &#x3D; URL.createObjectURL(blob);</span><br><span class="line">      if (window.navigator.msSaveOrOpenBlob) &#123;</span><br><span class="line">        &#x2F;&#x2F; 兼容 ie 的下载方式</span><br><span class="line">        window.navigator.msSaveOrOpenBlob(blob, this.fileName);</span><br><span class="line">      &#125;else&#123;</span><br><span class="line">        const a &#x3D; document.createElement(&#39;a&#39;);</span><br><span class="line">        a.href &#x3D; this.compressImg;</span><br><span class="line">        a.setAttribute(&#39;download&#39;, this.fileName);</span><br><span class="line">        a.click();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h2><blockquote>
+<p>上面的代码是可以直接拿来看效果的，不喜欢用 Vue 的也可以把代码稍微调整一下，下面开始具体分解一下代码的实现思路</p>
+</blockquote>
+<h3 id="步骤一：Input-上传-File-处理"><a href="#步骤一：Input-上传-File-处理" class="headerlink" title="步骤一：Input 上传 File 处理"></a>步骤一：Input 上传 File 处理</h3><p>将 File 对象通过 <code>FileReader</code> 的 <code>readAsDataURL</code> 方法转换为URL格式的字符串（base64 编码）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const fileObj &#x3D; document.querySelector(&#39;#input-img&#39;).files[0];</span><br><span class="line">let reader &#x3D; new FileReader();</span><br><span class="line">&#x2F;&#x2F; 读取文件</span><br><span class="line">reader.readAsDataURL(fileObj);</span><br></pre></td></tr></table></figure>
+
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2><h3 id="步骤二：Canvas-处理-File-对象"><a href="#步骤二：Canvas-处理-File-对象" class="headerlink" title="步骤二：Canvas 处理 File 对象"></a>步骤二：Canvas 处理 File 对象</h3><p>建立一个 <code>Image</code> 对象，一个 <code>canvas</code> 画布，设定自己想要下载的图片尺寸，调用 <code>drawImage</code> 方法在 canvas 中绘制上传的图片</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">let image &#x3D; new Image(); &#x2F;&#x2F;新建一个img标签</span><br><span class="line">image.src &#x3D; e.target.result;</span><br><span class="line">let canvas &#x3D; document.createElement(&#39;canvas&#39;);</span><br><span class="line">let context &#x3D; canvas.getContext(&#39;2d&#39;);</span><br><span class="line">context.drawImage(image, 0, 0);</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="步骤三：Api-解析：drawImage"><a href="#步骤三：Api-解析：drawImage" class="headerlink" title="步骤三：Api 解析：drawImage"></a>步骤三：Api 解析：drawImage</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">context.drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);</span><br></pre></td></tr></table></figure>
+
+<p>**img:**就是图片对象，可以是页面上获取的 DOM 对象，也可以是虚拟 DOM 中的图片对象。</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1598786576273-20cc4996-634f-4a19-8fb8-68262d4313b0.webp"></p>
+<p><strong>（1）dx、dy、dWidth、dHeight：</strong></p>
+<p>表示在 <code>canvas</code> 画布上规划出一片区域用来放置图片，<code>dx, dy</code> 为绘图位置在 Canvas 元素的 X 轴、Y 轴坐标，<code>dWidth, dHeight</code> 指在 Canvas 元素上绘制图像的宽度和高度（如果不说明， 在绘制时图片的宽度和高度不会缩放）。</p>
+<p><strong>（2）sx、sy、swidth、sheight:</strong></p>
+<p>这 4 个参数是用来裁剪源图片的，表示图片在 <code>canvas</code> 画布上显示的大小和位置。<code>sx, sy</code> 表示在源图片上裁剪位置的 X 轴、Y 轴坐标，然后以 <code>swidth, sheight</code> 尺寸来选择一个区域范围，裁剪出来的图片作为最终在 Canvas 上显示的图片内容（ <code>swidth, sheight</code> 不说明的情况下，整个矩形（裁剪）从坐标的 <code>sx</code> 和 <code>sy</code> 开始，到图片的右下角结束）。</p>
+<p>以下为图片绘制的实例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">context.drawImage(image, 0, 0, 100, 100);</span><br><span class="line">context.drawImage(image, 300, 300, 200, 200);</span><br><span class="line">context.drawImage(image, 0, 100, 150, 150, 300, 0, 150, 150);</span><br></pre></td></tr></table></figure>
+
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1598786576278-66f315b0-3c36-45b3-825d-c8f3171672e1.webp"></p>
+<p>Api 中奇怪之处在于，sx、sy、swidth、sheight 为选填参数，但位置在 dx、dy、dWidth、dHeight 之前。</p>
+<h3 id="步骤四：Canvas-输出图片"><a href="#步骤四：Canvas-输出图片" class="headerlink" title="步骤四：Canvas 输出图片"></a>步骤四：Canvas 输出图片</h3><p>调用 <code>canvas</code> 的 <code>toDataURL</code> 方法可以输出 base64 格式的图片。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">canvas.toDataURL(&#96;image&#x2F;$&#123;type&#125;&#96;);</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="步骤五：Api-解析：toDataURL"><a href="#步骤五：Api-解析：toDataURL" class="headerlink" title="步骤五：Api 解析：toDataURL"></a>步骤五：Api 解析：toDataURL</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">canvas.toDataURL(type, encoderOptions);</span><br></pre></td></tr></table></figure>
+
+<p><strong>type （可选）：</strong>图片格式，默认为 image/png。</p>
+<p><strong>encoderOptions （可选）：</strong>在指定图片格式为 image/jpeg 或 image/webp 的情况下，可以从 0 到 1 的区间内选择图片的质量。如果超出取值范围，将会使用默认值 0.92。其他参数会被忽略。</p>
+<p><strong>a 标签的下载</strong>：调用 <code>&lt;a&gt;</code> 标签的 <code>download</code> 属性，即可完成图片的下载。</p>
+<h3 id="步骤六：Api-解析：download"><a href="#步骤六：Api-解析：download" class="headerlink" title="步骤六：Api 解析：download"></a>步骤六：Api 解析：download</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; href 下载必填</span><br><span class="line">&lt;a download&#x3D;&quot;filename&quot; href&#x3D;&quot;href&quot;&gt; 下载 &lt;&#x2F;a&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>filename：</strong>选填，规定作为文件名来使用的文本。</p>
+<p><strong>href：</strong>文件的下载地址。</p>
+<h3 id="步骤七：非主流浏览器下载处理"><a href="#步骤七：非主流浏览器下载处理" class="headerlink" title="步骤七：非主流浏览器下载处理"></a>步骤七：非主流浏览器下载处理</h3><p>这一步可以解决 Chroma 、 Firefox 和 Safari（自测支持） 浏览器的下载功能，因为 IE 等浏览器不支持 <code>download</code> 属性，所以需要进行其他方式的下载，也就有了代码中的后续内容</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; base64 图片转 blob 后下载</span><br><span class="line">downloadImg() &#123;</span><br><span class="line">  let parts &#x3D; this.compressImg.split(&#39;;base64,&#39;);</span><br><span class="line">  let contentType &#x3D; parts[0].split(&#39;:&#39;)[1];</span><br><span class="line">  let raw &#x3D; window.atob(parts[1]);</span><br><span class="line">  let rawLength &#x3D; raw.length;</span><br><span class="line">  let uInt8Array &#x3D; new Uint8Array(rawLength);</span><br><span class="line">  for(let i &#x3D; 0; i &lt; rawLength; ++i) &#123;</span><br><span class="line">    uInt8Array[i] &#x3D; raw.charCodeAt(i);</span><br><span class="line">  &#125;</span><br><span class="line">  const blob &#x3D; new Blob([uInt8Array], &#123;type: contentType&#125;);</span><br><span class="line">  this.compressImg &#x3D; URL.createObjectURL(blob);</span><br><span class="line">  if (window.navigator.msSaveOrOpenBlob) &#123;</span><br><span class="line">    &#x2F;&#x2F; 兼容 ie 的下载方式</span><br><span class="line">    window.navigator.msSaveOrOpenBlob(blob, this.fileName);</span><br><span class="line">  &#125;else&#123;</span><br><span class="line">    const a &#x3D; document.createElement(&#39;a&#39;);</span><br><span class="line">    a.href &#x3D; this.compressImg;</span><br><span class="line">    a.setAttribute(&#39;download&#39;, this.fileName);</span><br><span class="line">    a.click();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>将之前 <code>canvas</code> 生成的 base64 数据拆分后，通过 <code>atob</code> 方法解码</li>
+<li>将解码后的数据转换成 Uint8Array 格式的无符号整形数组</li>
+<li>转换后的数组来生成一个 Blob 数据对象，通过 <code>URL.createObjectURL(blob)</code> 来生成一个临时的 DOM 对象</li>
+<li>之后 IE 类浏览器可以调用 <code>window.navigator.msSaveOrOpenBlob</code> 方法来执行下载，其他浏览器也可以继续通过 <code>&lt;a&gt;</code> 标签的 <code>download</code> 属性来进行下载</li>
+</ul>
+<h3 id="步骤八：Api-解析：atob"><a href="#步骤八：Api-解析：atob" class="headerlink" title="步骤八：Api 解析：atob"></a>步骤八：Api 解析：atob</h3><p>base-64 解码使用方法是 atob()。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">window.atob(encodedStr)</span><br></pre></td></tr></table></figure>
+
+<p><strong>encodedStr：</strong>必需，是一个通过 btoa() 方法编码的字符串，btoa() 是 base64 编码的使用方法。</p>
+<h3 id="步骤九：Api-解析：Uint8Array"><a href="#步骤九：Api-解析：Uint8Array" class="headerlink" title="步骤九：Api 解析：Uint8Array"></a>步骤九：Api 解析：Uint8Array</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">new Uint8Array(length)</span><br></pre></td></tr></table></figure>
+
+<p><strong>length：</strong>创建初始化为 0 的，包含 length 个元素的无符号整型数组。</p>
+<h3 id="步骤十：Api-解析：Blob"><a href="#步骤十：Api-解析：Blob" class="headerlink" title="步骤十：Api 解析：Blob"></a>步骤十：Api 解析：Blob</h3><p><code>Blob</code> 对象表示一个不可变、原始数据的类文件对象。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 构造函数允许通过其它对象创建 Blob 对象</span><br><span class="line">new Blob([obj],&#123;type:createType&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><strong>obj：</strong>字符串内容</p>
+<p><strong>createType：</strong>要构造的类型，兼容性 IE 10 以上</p>
+<h3 id="步骤十一：Api-解析：createObjectURL"><a href="#步骤十一：Api-解析：createObjectURL" class="headerlink" title="步骤十一：Api 解析：createObjectURL"></a>步骤十一：Api 解析：createObjectURL</h3><p>静态方法会创建一个 DOMString。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">objectURL &#x3D; URL.createObjectURL(object);</span><br></pre></td></tr></table></figure>
+
+<p><strong>object：</strong>用于创建 URL 的 File 对象、Blob 对象或者 MediaSource 对象。</p>
+<h3 id="步骤十二：Api-解析：window-navigator"><a href="#步骤十二：Api-解析：window-navigator" class="headerlink" title="步骤十二：Api 解析：window.navigator"></a>步骤十二：Api 解析：window.navigator</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 官方已不建议使用的文件下载方式，仅针对 ie 且兼容性 10 以上</span><br><span class="line">&#x2F;&#x2F; msSaveBlob 仅提供下载</span><br><span class="line">&#x2F;&#x2F; msSaveOrOpenBlob 支持下载和打开</span><br><span class="line">window.navigator.msSaveOrOpenBlob(blob, fileName);</span><br></pre></td></tr></table></figure>
+
+<p><strong>blob：</strong>要下载的 blob 对象</p>
+<p><strong>fileName：</strong>下载后命名的文件名称。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本方法仅针对图片压缩介绍了一些思路，简单的使用场景可能如下介绍，当然也会引申出来更多的使用场景，这些还有待大家一起挖掘。</p>
+<ul>
+<li>上传存储图片如果需要对文件大小格式有要求的，可以统一压缩处理图片</li>
+<li>前台页面想要编辑图片，可以在 Canvas 处理图片的时候，加一些其他逻辑，例如添加文字，剪裁，拼图等等操作</li>
+</ul>
+<p>tip：因部分接口有 IE 兼容性问题，IE 浏览器方面，仅能支持 IE 10 以上版本进行下载。</p>
+]]></content>
+      <categories>
+        <category>javascript</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>JavaScript基础（一）this</title>
     <url>/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89this/</url>
     <content><![CDATA[<h3 id="一、this的指向"><a href="#一、this的指向" class="headerlink" title="一、this的指向"></a>一、this的指向</h3><p>百度、谷歌上输入“this的指向”关键字，大几千条文章肯定是有的，总不至于为了全方面、无死角的掌握它就要将所有的文章都看一遍吧？所以不如梳理出一个稳固的框架，我们一起来填充它。</p>
@@ -113,7 +217,7 @@
 <h4 id="1-1-作为对象的方法调用"><a href="#1-1-作为对象的方法调用" class="headerlink" title="1.1 作为对象的方法调用"></a>1.1 作为对象的方法调用</h4><p>当函数作为对象的方法被调用时，<code>this指向该对象</code></p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    a: <span class="string">&#x27;gaoyuan&#x27;</span>,</span><br><span class="line">    getName: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span> === obj);</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.a);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">obj.getName(); <span class="comment">// true gaoyuan</span></span><br></pre></td></tr></table></figure>
 
-<h4 id="1-2-作为普通函数调用"><a href="#1-2-作为普通函数调用" class="headerlink" title="#1.2 作为普通函数调用"></a><a href="https://webbj97.github.io/summary/blog/js-basics/1.html#_1-2-%E4%BD%9C%E4%B8%BA%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8">#</a>1.2 作为普通函数调用</h4><p>当函数不作为对象的属性被调用，而是以普通函数的方式，this总是指向全局对象（在浏览器中，通常是Window对象）</p>
+<h4 id="1-2-作为普通函数调用"><a href="#1-2-作为普通函数调用" class="headerlink" title="1.2 作为普通函数调用"></a>1.2 作为普通函数调用</h4><p>当函数不作为对象的属性被调用，而是以普通函数的方式，this总是指向全局对象（在浏览器中，通常是Window对象）</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">window</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> getName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.name);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">getName(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
 
 <p>或者下面这段迷惑性的代码</p>
@@ -231,116 +335,12 @@
       </tags>
   </entry>
   <entry>
-    <title>JS实现图片压缩</title>
-    <url>/2021/03/19/JS%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9/</url>
-    <content><![CDATA[<blockquote>
-<p>说起图片压缩，大家想到的或者平时用到的很多工具都可以实现，例如，客户端类的有图片压缩工具 PPDuck3， JS 实现类的有插件 compression.js ，亦或是在线处理类的 OSS 上传，文件上传后，在访问文件时中也有图片的压缩配置选项，那能不能使用 JS 实现的图片压缩代码呢？当然可以，那我们先来理一下思路。</p>
-</blockquote>
-<h2 id="压缩思路"><a href="#压缩思路" class="headerlink" title="压缩思路"></a>压缩思路</h2><p>涉及到 JS 的图片压缩，我的想法是需要用到 Canvas 的绘图能力，通过调整图片的分辨率或者绘图质量来达到图片压缩的效果，实现思路如下：</p>
-<ul>
-<li>获取上传 Input 中的图片对象 File</li>
-<li>将图片转换成 base64 格式</li>
-<li>base64 编码的图片通过 Canvas 转换压缩，这里会用到的 Canvas 的 drawImage 以及 toDataURL 这两个 Api，一个调节图片的分辨率的，一个是调节图片压缩质量并且输出的，后续会有详细介绍</li>
-<li>转换后的图片生成对应的新图片，然后输出</li>
-<li></li>
-</ul>
-<h2 id="优缺点介绍"><a href="#优缺点介绍" class="headerlink" title="优缺点介绍"></a>优缺点介绍</h2><p>不过 Canvas 压缩的方式也有着自己的优缺点：</p>
-<ul>
-<li>优点：实现简单，参数可以配置化，自定义图片的尺寸，指定区域裁剪等等。</li>
-<li>缺点：只有 jpeg 、webp 支持原图尺寸下图片质量的调整来达到压缩图片的效果，其他图片格式，仅能通过调节尺寸来实现</li>
-</ul>
-<span id="more"></span>
-
-<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div class&#x3D;&quot;container&quot;&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;file&quot; id&#x3D;&quot;input-img&quot; @change&#x3D;&quot;compress&quot; &#x2F;&gt;</span><br><span class="line">    &lt;a :download&#x3D;&quot;fileName&quot; :href&#x3D;&quot;compressImg&quot; &gt;普通下载&lt;&#x2F;a&gt;</span><br><span class="line">    &lt;button @click&#x3D;&quot;downloadImg&quot;&gt;兼容 IE 下载&lt;&#x2F;button&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;img :src&#x3D;&quot;compressImg&quot; &#x2F;&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;export default &#123;</span><br><span class="line">  name: &#39;compress&#39;,</span><br><span class="line">  data: function() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      compressImg: null,</span><br><span class="line">      fileName: null,</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">  components: &#123;&#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    compress() &#123;</span><br><span class="line">      &#x2F;&#x2F; 获取文件对象</span><br><span class="line">      const fileObj &#x3D; document.querySelector(&#39;#input-img&#39;).files[0];</span><br><span class="line">      &#x2F;&#x2F; 获取文件名称，后续下载重命名</span><br><span class="line">      this.fileName &#x3D; &#96;$&#123;new Date().getTime()&#125;-$&#123;fileObj.name&#125;&#96;;</span><br><span class="line">      &#x2F;&#x2F; 获取文件后缀名</span><br><span class="line">      const fileNames &#x3D; fileObj.name.split(&#39;.&#39;);</span><br><span class="line">      const type &#x3D; fileNames[fileNames.length-1];</span><br><span class="line">      &#x2F;&#x2F; 压缩图片</span><br><span class="line">      this.handleCompressImage(fileObj, type);</span><br><span class="line">    &#125;,</span><br><span class="line">    handleCompressImage(img, type) &#123;</span><br><span class="line">      const vm &#x3D; this;</span><br><span class="line">      let reader &#x3D; new FileReader();</span><br><span class="line">      &#x2F;&#x2F; 读取文件</span><br><span class="line">      reader.readAsDataURL(img);</span><br><span class="line">      reader.onload &#x3D; function(e) &#123;</span><br><span class="line">        let image &#x3D; new Image(); &#x2F;&#x2F;新建一个img标签</span><br><span class="line">        image.src &#x3D; e.target.result;</span><br><span class="line">        image.onload &#x3D; function() &#123;</span><br><span class="line">          let canvas &#x3D; document.createElement(&#39;canvas&#39;);</span><br><span class="line">          let context &#x3D; canvas.getContext(&#39;2d&#39;);</span><br><span class="line">          &#x2F;&#x2F; 定义 canvas 大小，也就是压缩后下载的图片大小</span><br><span class="line">          let imageWidth &#x3D; image.width; &#x2F;&#x2F;压缩后图片的大小</span><br><span class="line">          let imageHeight &#x3D; image.height;</span><br><span class="line">          canvas.width &#x3D; imageWidth;</span><br><span class="line">          canvas.height &#x3D; imageHeight;</span><br><span class="line">          </span><br><span class="line">          &#x2F;&#x2F; 图片不压缩，全部加载展示</span><br><span class="line">          context.drawImage(image, 0, 0);</span><br><span class="line">          &#x2F;&#x2F; 图片按压缩尺寸载入</span><br><span class="line">          &#x2F;&#x2F; let imageWidth &#x3D; 500; &#x2F;&#x2F;压缩后图片的大小</span><br><span class="line">          &#x2F;&#x2F; let imageHeight &#x3D; 200;</span><br><span class="line">          &#x2F;&#x2F; context.drawImage(image, 0, 0, 500, 200);</span><br><span class="line">          &#x2F;&#x2F; 图片去截取指定位置载入</span><br><span class="line">          &#x2F;&#x2F; context.drawImage(image,100, 100, 100, 100, 0, 0, imageWidth, imageHeight);</span><br><span class="line">          vm.compressImg &#x3D; canvas.toDataURL(&#96;image&#x2F;$&#123;type&#125;&#96;);</span><br><span class="line">        &#125;;</span><br><span class="line">      &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#x2F;&#x2F; base64 图片转 blob 后下载</span><br><span class="line">    downloadImg() &#123;</span><br><span class="line">      let parts &#x3D; this.compressImg.split(&#39;;base64,&#39;);</span><br><span class="line">      let contentType &#x3D; parts[0].split(&#39;:&#39;)[1];</span><br><span class="line">      let raw &#x3D; window.atob(parts[1]);</span><br><span class="line">      let rawLength &#x3D; raw.length;</span><br><span class="line">      let uInt8Array &#x3D; new Uint8Array(rawLength);</span><br><span class="line">      for(let i &#x3D; 0; i &lt; rawLength; ++i) &#123;</span><br><span class="line">        uInt8Array[i] &#x3D; raw.charCodeAt(i);</span><br><span class="line">      &#125;</span><br><span class="line">      const blob &#x3D; new Blob([uInt8Array], &#123;type: contentType&#125;);</span><br><span class="line">      this.compressImg &#x3D; URL.createObjectURL(blob);</span><br><span class="line">      if (window.navigator.msSaveOrOpenBlob) &#123;</span><br><span class="line">        &#x2F;&#x2F; 兼容 ie 的下载方式</span><br><span class="line">        window.navigator.msSaveOrOpenBlob(blob, this.fileName);</span><br><span class="line">      &#125;else&#123;</span><br><span class="line">        const a &#x3D; document.createElement(&#39;a&#39;);</span><br><span class="line">        a.href &#x3D; this.compressImg;</span><br><span class="line">        a.setAttribute(&#39;download&#39;, this.fileName);</span><br><span class="line">        a.click();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h2><blockquote>
-<p>上面的代码是可以直接拿来看效果的，不喜欢用 Vue 的也可以把代码稍微调整一下，下面开始具体分解一下代码的实现思路</p>
-</blockquote>
-<h3 id="步骤一：Input-上传-File-处理"><a href="#步骤一：Input-上传-File-处理" class="headerlink" title="步骤一：Input 上传 File 处理"></a>步骤一：Input 上传 File 处理</h3><p>将 File 对象通过 <code>FileReader</code> 的 <code>readAsDataURL</code> 方法转换为URL格式的字符串（base64 编码）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const fileObj &#x3D; document.querySelector(&#39;#input-img&#39;).files[0];</span><br><span class="line">let reader &#x3D; new FileReader();</span><br><span class="line">&#x2F;&#x2F; 读取文件</span><br><span class="line">reader.readAsDataURL(fileObj);</span><br></pre></td></tr></table></figure>
-
-<h2 id=""><a href="#" class="headerlink" title=""></a></h2><h3 id="步骤二：Canvas-处理-File-对象"><a href="#步骤二：Canvas-处理-File-对象" class="headerlink" title="步骤二：Canvas 处理 File 对象"></a>步骤二：Canvas 处理 File 对象</h3><p>建立一个 <code>Image</code> 对象，一个 <code>canvas</code> 画布，设定自己想要下载的图片尺寸，调用 <code>drawImage</code> 方法在 canvas 中绘制上传的图片</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">let image &#x3D; new Image(); &#x2F;&#x2F;新建一个img标签</span><br><span class="line">image.src &#x3D; e.target.result;</span><br><span class="line">let canvas &#x3D; document.createElement(&#39;canvas&#39;);</span><br><span class="line">let context &#x3D; canvas.getContext(&#39;2d&#39;);</span><br><span class="line">context.drawImage(image, 0, 0);</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="步骤三：Api-解析：drawImage"><a href="#步骤三：Api-解析：drawImage" class="headerlink" title="步骤三：Api 解析：drawImage"></a>步骤三：Api 解析：drawImage</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">context.drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);</span><br></pre></td></tr></table></figure>
-
-<p>**img:**就是图片对象，可以是页面上获取的 DOM 对象，也可以是虚拟 DOM 中的图片对象。</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1598786576273-20cc4996-634f-4a19-8fb8-68262d4313b0.webp"></p>
-<p><strong>（1）dx、dy、dWidth、dHeight：</strong></p>
-<p>表示在 <code>canvas</code> 画布上规划出一片区域用来放置图片，<code>dx, dy</code> 为绘图位置在 Canvas 元素的 X 轴、Y 轴坐标，<code>dWidth, dHeight</code> 指在 Canvas 元素上绘制图像的宽度和高度（如果不说明， 在绘制时图片的宽度和高度不会缩放）。</p>
-<p><strong>（2）sx、sy、swidth、sheight:</strong></p>
-<p>这 4 个参数是用来裁剪源图片的，表示图片在 <code>canvas</code> 画布上显示的大小和位置。<code>sx, sy</code> 表示在源图片上裁剪位置的 X 轴、Y 轴坐标，然后以 <code>swidth, sheight</code> 尺寸来选择一个区域范围，裁剪出来的图片作为最终在 Canvas 上显示的图片内容（ <code>swidth, sheight</code> 不说明的情况下，整个矩形（裁剪）从坐标的 <code>sx</code> 和 <code>sy</code> 开始，到图片的右下角结束）。</p>
-<p>以下为图片绘制的实例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">context.drawImage(image, 0, 0, 100, 100);</span><br><span class="line">context.drawImage(image, 300, 300, 200, 200);</span><br><span class="line">context.drawImage(image, 0, 100, 150, 150, 300, 0, 150, 150);</span><br></pre></td></tr></table></figure>
-
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1598786576278-66f315b0-3c36-45b3-825d-c8f3171672e1.webp"></p>
-<p>Api 中奇怪之处在于，sx、sy、swidth、sheight 为选填参数，但位置在 dx、dy、dWidth、dHeight 之前。</p>
-<h3 id="步骤四：Canvas-输出图片"><a href="#步骤四：Canvas-输出图片" class="headerlink" title="步骤四：Canvas 输出图片"></a>步骤四：Canvas 输出图片</h3><p>调用 <code>canvas</code> 的 <code>toDataURL</code> 方法可以输出 base64 格式的图片。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">canvas.toDataURL(&#96;image&#x2F;$&#123;type&#125;&#96;);</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="步骤五：Api-解析：toDataURL"><a href="#步骤五：Api-解析：toDataURL" class="headerlink" title="步骤五：Api 解析：toDataURL"></a>步骤五：Api 解析：toDataURL</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">canvas.toDataURL(type, encoderOptions);</span><br></pre></td></tr></table></figure>
-
-<p><strong>type （可选）：</strong>图片格式，默认为 image/png。</p>
-<p><strong>encoderOptions （可选）：</strong>在指定图片格式为 image/jpeg 或 image/webp 的情况下，可以从 0 到 1 的区间内选择图片的质量。如果超出取值范围，将会使用默认值 0.92。其他参数会被忽略。</p>
-<p><strong>a 标签的下载</strong>：调用 <code>&lt;a&gt;</code> 标签的 <code>download</code> 属性，即可完成图片的下载。</p>
-<h3 id="步骤六：Api-解析：download"><a href="#步骤六：Api-解析：download" class="headerlink" title="步骤六：Api 解析：download"></a>步骤六：Api 解析：download</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; href 下载必填</span><br><span class="line">&lt;a download&#x3D;&quot;filename&quot; href&#x3D;&quot;href&quot;&gt; 下载 &lt;&#x2F;a&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>filename：</strong>选填，规定作为文件名来使用的文本。</p>
-<p><strong>href：</strong>文件的下载地址。</p>
-<h3 id="步骤七：非主流浏览器下载处理"><a href="#步骤七：非主流浏览器下载处理" class="headerlink" title="步骤七：非主流浏览器下载处理"></a>步骤七：非主流浏览器下载处理</h3><p>这一步可以解决 Chroma 、 Firefox 和 Safari（自测支持） 浏览器的下载功能，因为 IE 等浏览器不支持 <code>download</code> 属性，所以需要进行其他方式的下载，也就有了代码中的后续内容</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; base64 图片转 blob 后下载</span><br><span class="line">downloadImg() &#123;</span><br><span class="line">  let parts &#x3D; this.compressImg.split(&#39;;base64,&#39;);</span><br><span class="line">  let contentType &#x3D; parts[0].split(&#39;:&#39;)[1];</span><br><span class="line">  let raw &#x3D; window.atob(parts[1]);</span><br><span class="line">  let rawLength &#x3D; raw.length;</span><br><span class="line">  let uInt8Array &#x3D; new Uint8Array(rawLength);</span><br><span class="line">  for(let i &#x3D; 0; i &lt; rawLength; ++i) &#123;</span><br><span class="line">    uInt8Array[i] &#x3D; raw.charCodeAt(i);</span><br><span class="line">  &#125;</span><br><span class="line">  const blob &#x3D; new Blob([uInt8Array], &#123;type: contentType&#125;);</span><br><span class="line">  this.compressImg &#x3D; URL.createObjectURL(blob);</span><br><span class="line">  if (window.navigator.msSaveOrOpenBlob) &#123;</span><br><span class="line">    &#x2F;&#x2F; 兼容 ie 的下载方式</span><br><span class="line">    window.navigator.msSaveOrOpenBlob(blob, this.fileName);</span><br><span class="line">  &#125;else&#123;</span><br><span class="line">    const a &#x3D; document.createElement(&#39;a&#39;);</span><br><span class="line">    a.href &#x3D; this.compressImg;</span><br><span class="line">    a.setAttribute(&#39;download&#39;, this.fileName);</span><br><span class="line">    a.click();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>将之前 <code>canvas</code> 生成的 base64 数据拆分后，通过 <code>atob</code> 方法解码</li>
-<li>将解码后的数据转换成 Uint8Array 格式的无符号整形数组</li>
-<li>转换后的数组来生成一个 Blob 数据对象，通过 <code>URL.createObjectURL(blob)</code> 来生成一个临时的 DOM 对象</li>
-<li>之后 IE 类浏览器可以调用 <code>window.navigator.msSaveOrOpenBlob</code> 方法来执行下载，其他浏览器也可以继续通过 <code>&lt;a&gt;</code> 标签的 <code>download</code> 属性来进行下载</li>
-</ul>
-<h3 id="步骤八：Api-解析：atob"><a href="#步骤八：Api-解析：atob" class="headerlink" title="步骤八：Api 解析：atob"></a>步骤八：Api 解析：atob</h3><p>base-64 解码使用方法是 atob()。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">window.atob(encodedStr)</span><br></pre></td></tr></table></figure>
-
-<p><strong>encodedStr：</strong>必需，是一个通过 btoa() 方法编码的字符串，btoa() 是 base64 编码的使用方法。</p>
-<h3 id="步骤九：Api-解析：Uint8Array"><a href="#步骤九：Api-解析：Uint8Array" class="headerlink" title="步骤九：Api 解析：Uint8Array"></a>步骤九：Api 解析：Uint8Array</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">new Uint8Array(length)</span><br></pre></td></tr></table></figure>
-
-<p><strong>length：</strong>创建初始化为 0 的，包含 length 个元素的无符号整型数组。</p>
-<h3 id="步骤十：Api-解析：Blob"><a href="#步骤十：Api-解析：Blob" class="headerlink" title="步骤十：Api 解析：Blob"></a>步骤十：Api 解析：Blob</h3><p><code>Blob</code> 对象表示一个不可变、原始数据的类文件对象。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 构造函数允许通过其它对象创建 Blob 对象</span><br><span class="line">new Blob([obj],&#123;type:createType&#125;)</span><br></pre></td></tr></table></figure>
-
-<p><strong>obj：</strong>字符串内容</p>
-<p><strong>createType：</strong>要构造的类型，兼容性 IE 10 以上</p>
-<h3 id="步骤十一：Api-解析：createObjectURL"><a href="#步骤十一：Api-解析：createObjectURL" class="headerlink" title="步骤十一：Api 解析：createObjectURL"></a>步骤十一：Api 解析：createObjectURL</h3><p>静态方法会创建一个 DOMString。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">objectURL &#x3D; URL.createObjectURL(object);</span><br></pre></td></tr></table></figure>
-
-<p><strong>object：</strong>用于创建 URL 的 File 对象、Blob 对象或者 MediaSource 对象。</p>
-<h3 id="步骤十二：Api-解析：window-navigator"><a href="#步骤十二：Api-解析：window-navigator" class="headerlink" title="步骤十二：Api 解析：window.navigator"></a>步骤十二：Api 解析：window.navigator</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 官方已不建议使用的文件下载方式，仅针对 ie 且兼容性 10 以上</span><br><span class="line">&#x2F;&#x2F; msSaveBlob 仅提供下载</span><br><span class="line">&#x2F;&#x2F; msSaveOrOpenBlob 支持下载和打开</span><br><span class="line">window.navigator.msSaveOrOpenBlob(blob, fileName);</span><br></pre></td></tr></table></figure>
-
-<p><strong>blob：</strong>要下载的 blob 对象</p>
-<p><strong>fileName：</strong>下载后命名的文件名称。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本方法仅针对图片压缩介绍了一些思路，简单的使用场景可能如下介绍，当然也会引申出来更多的使用场景，这些还有待大家一起挖掘。</p>
-<ul>
-<li>上传存储图片如果需要对文件大小格式有要求的，可以统一压缩处理图片</li>
-<li>前台页面想要编辑图片，可以在 Canvas 处理图片的时候，加一些其他逻辑，例如添加文字，剪裁，拼图等等操作</li>
-</ul>
-<p>tip：因部分接口有 IE 兼容性问题，IE 浏览器方面，仅能支持 IE 10 以上版本进行下载。</p>
-]]></content>
-      <categories>
-        <category>javascript</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>JavaScript基础（二）从原型到原型链</title>
     <url>/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%E4%BB%8E%E5%8E%9F%E5%9E%8B%E5%88%B0%E5%8E%9F%E5%9E%8B%E9%93%BE/</url>
     <content><![CDATA[<blockquote>
 <p>本文主要从构造函数 -&gt; 原型（隐式原型+显示原型）-&gt; 原型链的顺序，渐进式讲解，希望对你有所做帮助，共勉～</p>
 </blockquote>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>又到了回忆过去的时候了，知识就是这样，原型和原型链在我之前的实习生涯中用到的很少——几乎没有（噗！我菜我摊牌了），但是它和<a href="https://blog.csdn.net/jbj6568839z/article/details/106479511">this指向问题 (opens new window)</a>一样，是初级、中级前端开发在面试时永远绕不开的话题。是不是大家每次看面经的时候都会去搜索原型相关的知识点？</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>又到了回忆过去的时候了，知识就是这样，原型和原型链在我之前的实习生涯中用到的很少——几乎没有（噗！我菜我摊牌了），但是它和this指向问题一样，是初级、中级前端开发在面试时永远绕不开的话题。是不是大家每次看面经的时候都会去搜索原型相关的知识点？</p>
 <p>你看这知识，总是在考的时候，才能知道它的重要，就好像曾经有一段贼拉真挚的面试题摆在我面前…话题拉回来，今天我们就收了这个<strong>孽障</strong>！</p>
 <img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/src=http___img.wxcha.com_file_201711_22_e1655873d2.jpg&refer=http___img.wxcha.jpeg" style="zoom:50%;" />
 
@@ -793,6 +793,96 @@
       </tags>
   </entry>
   <entry>
+    <title>使用Hbuilder快速打包一个app</title>
+    <url>/2021/03/18/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/</url>
+    <content><![CDATA[<p>HBuilder提供的打包有云端打包和本地打包两种，云端打包的特点是DCloud官方配置好了原生的打包环境，可以把HTML等文件编译为原生安装包。</p>
+<p>优点：速度快，所需要的环境少，加快了开发者速度，不会因为各种JDK，java，Android环境而无法打包生成apk或ipa头疼，大大减少了开发繁琐操作。</p>
+<p>方法步骤：</p>
+<span id="more"></span>
+
+<p>1.下载HBuilder，注册并登陆。首先打开“文件”-“新建”-“移动APP”，输入“应用名称”，“位置”可以根据需要自己选择即可，“选择模板”建议选择空模板，如下图所示：</p>
+<p>​​<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712163802432"></p>
+<p>2.新建完成后， 在项目管理器会显示新建的项目目录，其中css，img，js和index.html这几个文件可删可改可替换。<br>unpackage文件夹是放置app图标和启动界面的图片。</p>
+<p>manifest.json文件是移动App的配置文件，用于指定应用的显示名称、图标、应用入口文件地址及需要使用的设备权限等信息，用户可通过HBuilder的可视化界面视图或者源码视图来配置移动App的信息，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164108624"></p>
+<p>3.如果删除了css，img，js文件夹和index.html文件，就把其他自己打包好的的项目文件对应复制到文件夹中，注意html文件中的引用路径需要保持正确，如下图自己拷贝的项目（我的是项目打包后的build文件和index.html文件，其中css/js/img都在build文件夹下）：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164250660"></p>
+<p>4.文件复制完成后，刷新更新下，双击打开manifest.json文件来配置App。</p>
+<p>appid：点击云端获取。版本号：根据需要来编辑。页面入口：默认是index.html，根据自己项目需要，更改APP的启动页面。应用描述：自己随便填。应用是否全屏显示：勾上就全屏显示，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164915305"></p>
+<p>5.图标配置：点击页面下方的图标配置，配置APP显示图标。</p>
+<p>点击”+”号的正方形方框，选择图标素材的路径找到图标素材，再点击” 自动生成所有图标并替换”按钮，完成图标生成和替换，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165506582"></p>
+<p>生成的图标自动在unpackage文件夹下，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165618254"></p>
+<p>6.在启动图片设置里点击”选择”，找到刚放进来的启动图片，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165842174"></p>
+<p>7.SDK配置：有需要就配置，没有就默认就行。</p>
+<p>   模块权限配置：有需要就配置，没有就默认就行。</p>
+<p>8.云端打包：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170045185"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170127683"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170219731"></p>
+<p>然后等待几分钟，刷新状态，就可以看到制作完成，是否下载？点击下载。然后将apk发送到手机上安装就可以正常运行了！</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712171021649"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2018071217113978"></p>
+<p>以下是apk安装后再模拟器上运行效果：</p>
+<p><img data-src="https://img-blog.csdn.net/20180712171240702?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
+<p><img data-src="https://img-blog.csdn.net/20180712171322289?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
+<p><img data-src="https://img-blog.csdn.net/20180712171518460?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
+]]></content>
+      <categories>
+        <category>Hbuilder</category>
+      </categories>
+      <tags>
+        <tag>Hbuilder</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>学习之AJAX</title>
+    <url>/2021/03/18/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
+    <content><![CDATA[<p>对于AJAX这个玩意儿，一开始学习的时候，根本不知道这是什么，我连AJAX有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙B的状态。那么在学习一段时间的AJAX之后，我总结了一些我自己对AJAX的理解，一起共勉。</p>
+<p>一、页面访问方式</p>
+<p>在学习AJAX之前，我们首先就需要了解页面的访问方式。页面的访问方式有如下两种同步访问和异步访问：</p>
+<p>①同步访问：在访问服务器时，只能等待服务器的响应，不能做其他事情。</p>
+<p>②异步访问：在向服务器发送请求时，不耽误用户在网页其他操作。相当于在同一时间，用户能做多个事情。</p>
+<span id="more"></span>
+
+
+<p>光从字面上理解同步和异步不算太难，下面我为用图打个比方有助于更加深层次的理解同步和异步：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730181503984"></p>
+<p>上图反之是同步访问的图解，异步访问我就不再作图了，反之，你想买煎饼和稀饭，你走到卖煎饼的铺子时候，老板说：好的，你的煎饼5分钟后好，你可以5分钟后过来拿。这个时候你就可以在这五分钟去买你要的稀饭，这就是异步访问。</p>
+<p>二、什么是AJAX</p>
+<p>AJAX的英文全名是：Asynchronous  Javascript  And  Xml</p>
+<p> 异步的  JS     和    xml</p>
+<p> 其中的本质：使用JS中XMLHttpRequext(xhr)对象异步的向服务器发送请求，服务器响应回来的部分数据而不是原完整的页面，并可以以“无刷新”的效果来更改页面中的局部内容。为了方便理解，作以下用户名验证的例子图助于理解：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730183958321"></p>
+<p>三、获取ＡＪＡＸ对象　——XMLHttpRequest</p>
+<p>在主流浏览器中：new　XMLHttpRequest( );</p>
+<p>注意：在IE8以下的浏览器不支持XMLHttpRequest</p>
+<p>在IE8以下的浏览器中：</p>
+<p>new  ActiveXObject(“Microsoft.XMLHttp”);</p>
+<p>tip:如果想测试你使用的浏览器是否支持XMLHttpRequest，可以进行如下操作：</p>
+<p>1.打开你的浏览器，例如谷歌、360、火狐、欧朋….;</p>
+<p>2.按F12，使用开发者工具，在console一栏中输入：console.log(window.XMLHttpRequest);</p>
+<p>3.如果浏览器不支持XMLHttpRequest,以上会打印null。</p>
+<p>//创建ajax对象</p>
+<p> var  xhr;</p>
+<p>   if(window.XMLHttpRequest){</p>
+<p>xhr = new  XMLHttpRequest();</p>
+<p> }else{</p>
+<p>xhr = new ActiveXObject(“Microsoft.XMLHttp”);</p>
+<p>}</p>
+<p>tip：这段函在编写代码的时候使用的次数很多，通常我们将它封装成函数单独创建一个JS文件，命名为common.js，要使用的时候调用者个js文件就可以了。</p>
+]]></content>
+      <categories>
+        <category>HTTP</category>
+      </categories>
+      <tags>
+        <tag>AJAX</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>函数防抖与节流</title>
     <url>/2021/03/19/%E5%87%BD%E6%95%B0%E9%98%B2%E6%8A%96%E4%B8%8E%E8%8A%82%E6%B5%81/</url>
     <content><![CDATA[<h2 id="函数防抖"><a href="#函数防抖" class="headerlink" title="函数防抖"></a>函数防抖</h2><h3 id="一、为什么需要防抖"><a href="#一、为什么需要防抖" class="headerlink" title="一、为什么需要防抖"></a>一、为什么需要防抖</h3><ul>
@@ -943,96 +1033,6 @@
       </categories>
       <tags>
         <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用Hbuilder快速打包一个app</title>
-    <url>/2021/03/18/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/</url>
-    <content><![CDATA[<p>HBuilder提供的打包有云端打包和本地打包两种，云端打包的特点是DCloud官方配置好了原生的打包环境，可以把HTML等文件编译为原生安装包。</p>
-<p>优点：速度快，所需要的环境少，加快了开发者速度，不会因为各种JDK，java，Android环境而无法打包生成apk或ipa头疼，大大减少了开发繁琐操作。</p>
-<p>方法步骤：</p>
-<span id="more"></span>
-
-<p>1.下载HBuilder，注册并登陆。首先打开“文件”-“新建”-“移动APP”，输入“应用名称”，“位置”可以根据需要自己选择即可，“选择模板”建议选择空模板，如下图所示：</p>
-<p>​​<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712163802432"></p>
-<p>2.新建完成后， 在项目管理器会显示新建的项目目录，其中css，img，js和index.html这几个文件可删可改可替换。<br>unpackage文件夹是放置app图标和启动界面的图片。</p>
-<p>manifest.json文件是移动App的配置文件，用于指定应用的显示名称、图标、应用入口文件地址及需要使用的设备权限等信息，用户可通过HBuilder的可视化界面视图或者源码视图来配置移动App的信息，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164108624"></p>
-<p>3.如果删除了css，img，js文件夹和index.html文件，就把其他自己打包好的的项目文件对应复制到文件夹中，注意html文件中的引用路径需要保持正确，如下图自己拷贝的项目（我的是项目打包后的build文件和index.html文件，其中css/js/img都在build文件夹下）：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164250660"></p>
-<p>4.文件复制完成后，刷新更新下，双击打开manifest.json文件来配置App。</p>
-<p>appid：点击云端获取。版本号：根据需要来编辑。页面入口：默认是index.html，根据自己项目需要，更改APP的启动页面。应用描述：自己随便填。应用是否全屏显示：勾上就全屏显示，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164915305"></p>
-<p>5.图标配置：点击页面下方的图标配置，配置APP显示图标。</p>
-<p>点击”+”号的正方形方框，选择图标素材的路径找到图标素材，再点击” 自动生成所有图标并替换”按钮，完成图标生成和替换，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165506582"></p>
-<p>生成的图标自动在unpackage文件夹下，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165618254"></p>
-<p>6.在启动图片设置里点击”选择”，找到刚放进来的启动图片，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165842174"></p>
-<p>7.SDK配置：有需要就配置，没有就默认就行。</p>
-<p>   模块权限配置：有需要就配置，没有就默认就行。</p>
-<p>8.云端打包：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170045185"></p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170127683"></p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170219731"></p>
-<p>然后等待几分钟，刷新状态，就可以看到制作完成，是否下载？点击下载。然后将apk发送到手机上安装就可以正常运行了！</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712171021649"></p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2018071217113978"></p>
-<p>以下是apk安装后再模拟器上运行效果：</p>
-<p><img data-src="https://img-blog.csdn.net/20180712171240702?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
-<p><img data-src="https://img-blog.csdn.net/20180712171322289?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
-<p><img data-src="https://img-blog.csdn.net/20180712171518460?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
-]]></content>
-      <categories>
-        <category>Hbuilder</category>
-      </categories>
-      <tags>
-        <tag>Hbuilder</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>学习之AJAX</title>
-    <url>/2021/03/18/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
-    <content><![CDATA[<p>对于AJAX这个玩意儿，一开始学习的时候，根本不知道这是什么，我连AJAX有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙B的状态。那么在学习一段时间的AJAX之后，我总结了一些我自己对AJAX的理解，一起共勉。</p>
-<p>一、页面访问方式</p>
-<p>在学习AJAX之前，我们首先就需要了解页面的访问方式。页面的访问方式有如下两种同步访问和异步访问：</p>
-<p>①同步访问：在访问服务器时，只能等待服务器的响应，不能做其他事情。</p>
-<p>②异步访问：在向服务器发送请求时，不耽误用户在网页其他操作。相当于在同一时间，用户能做多个事情。</p>
-<span id="more"></span>
-
-
-<p>光从字面上理解同步和异步不算太难，下面我为用图打个比方有助于更加深层次的理解同步和异步：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730181503984"></p>
-<p>上图反之是同步访问的图解，异步访问我就不再作图了，反之，你想买煎饼和稀饭，你走到卖煎饼的铺子时候，老板说：好的，你的煎饼5分钟后好，你可以5分钟后过来拿。这个时候你就可以在这五分钟去买你要的稀饭，这就是异步访问。</p>
-<p>二、什么是AJAX</p>
-<p>AJAX的英文全名是：Asynchronous  Javascript  And  Xml</p>
-<p> 异步的  JS     和    xml</p>
-<p> 其中的本质：使用JS中XMLHttpRequext(xhr)对象异步的向服务器发送请求，服务器响应回来的部分数据而不是原完整的页面，并可以以“无刷新”的效果来更改页面中的局部内容。为了方便理解，作以下用户名验证的例子图助于理解：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730183958321"></p>
-<p>三、获取ＡＪＡＸ对象　——XMLHttpRequest</p>
-<p>在主流浏览器中：new　XMLHttpRequest( );</p>
-<p>注意：在IE8以下的浏览器不支持XMLHttpRequest</p>
-<p>在IE8以下的浏览器中：</p>
-<p>new  ActiveXObject(“Microsoft.XMLHttp”);</p>
-<p>tip:如果想测试你使用的浏览器是否支持XMLHttpRequest，可以进行如下操作：</p>
-<p>1.打开你的浏览器，例如谷歌、360、火狐、欧朋….;</p>
-<p>2.按F12，使用开发者工具，在console一栏中输入：console.log(window.XMLHttpRequest);</p>
-<p>3.如果浏览器不支持XMLHttpRequest,以上会打印null。</p>
-<p>//创建ajax对象</p>
-<p> var  xhr;</p>
-<p>   if(window.XMLHttpRequest){</p>
-<p>xhr = new  XMLHttpRequest();</p>
-<p> }else{</p>
-<p>xhr = new ActiveXObject(“Microsoft.XMLHttp”);</p>
-<p>}</p>
-<p>tip：这段函在编写代码的时候使用的次数很多，通常我们将它封装成函数单独创建一个JS文件，命名为common.js，要使用的时候调用者个js文件就可以了。</p>
-]]></content>
-      <categories>
-        <category>HTTP</category>
-      </categories>
-      <tags>
-        <tag>AJAX</tag>
       </tags>
   </entry>
   <entry>

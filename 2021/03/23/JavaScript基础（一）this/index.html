@@ -37,7 +37,7 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20200602153648211.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=826503588,4160798134&fm=15&gp=0.jpeg">
 <meta property="article:published_time" content="2021-03-23T01:55:37.000Z">
-<meta property="article:modified_time" content="2021-03-23T02:31:11.085Z">
+<meta property="article:modified_time" content="2021-03-23T02:56:05.713Z">
 <meta property="article:author" content="高原">
 <meta property="article:tag" content="javascript">
 <meta name="twitter:card" content="summary">
@@ -306,7 +306,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-03-23 09:55:37 / 修改时间：10:31:11" itemprop="dateCreated datePublished" datetime="2021-03-23T09:55:37+08:00">2021-03-23</time>
+      <time title="创建时间：2021-03-23 09:55:37 / 修改时间：10:56:05" itemprop="dateCreated datePublished" datetime="2021-03-23T09:55:37+08:00">2021-03-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -371,7 +371,7 @@
 <h4 id="1-1-作为对象的方法调用"><a href="#1-1-作为对象的方法调用" class="headerlink" title="1.1 作为对象的方法调用"></a>1.1 作为对象的方法调用</h4><p>当函数作为对象的方法被调用时，<code>this指向该对象</code></p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    a: <span class="string">&#x27;gaoyuan&#x27;</span>,</span><br><span class="line">    getName: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span> === obj);</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.a);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">obj.getName(); <span class="comment">// true gaoyuan</span></span><br></pre></td></tr></table></figure>
 
-<h4 id="1-2-作为普通函数调用"><a href="#1-2-作为普通函数调用" class="headerlink" title="#1.2 作为普通函数调用"></a><a target="_blank" rel="noopener" href="https://webbj97.github.io/summary/blog/js-basics/1.html#_1-2-%E4%BD%9C%E4%B8%BA%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8">#</a>1.2 作为普通函数调用</h4><p>当函数不作为对象的属性被调用，而是以普通函数的方式，this总是指向全局对象（在浏览器中，通常是Window对象）</p>
+<h4 id="1-2-作为普通函数调用"><a href="#1-2-作为普通函数调用" class="headerlink" title="1.2 作为普通函数调用"></a>1.2 作为普通函数调用</h4><p>当函数不作为对象的属性被调用，而是以普通函数的方式，this总是指向全局对象（在浏览器中，通常是Window对象）</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">window</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> getName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.name);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">getName(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
 
 <p>或者下面这段迷惑性的代码</p>
