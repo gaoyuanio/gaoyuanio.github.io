@@ -244,9 +244,9 @@
     <category term="vue" scheme="http://example.com/categories/vue/"/>
     
     
-    <category term="vue" scheme="http://example.com/tags/vue/"/>
-    
     <category term="webpack" scheme="http://example.com/tags/webpack/"/>
+    
+    <category term="vue" scheme="http://example.com/tags/vue/"/>
     
   </entry>
   
