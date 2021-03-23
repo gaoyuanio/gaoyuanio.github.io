@@ -132,7 +132,7 @@
         <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
         <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">10</span></a></li>
         <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">7</span></a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">12</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">14</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -204,7 +204,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">14</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -263,6 +263,227 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/18/%E7%94%A8CSS3%E4%BD%BF%E4%BD%A0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%8A%A8%E8%B5%B7%E6%9D%A5%E2%80%94%E2%80%94transform%E5%B1%9E%E6%80%A7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="高原">
+      <meta itemprop="description" content="一枚微不足道的前端攻城狮">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GaoYuan's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/18/%E7%94%A8CSS3%E4%BD%BF%E4%BD%A0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%8A%A8%E8%B5%B7%E6%9D%A5%E2%80%94%E2%80%94transform%E5%B1%9E%E6%80%A7/" class="post-title-link" itemprop="url">用CSS3使你的网页动起来——transform属性</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-03-18 11:31:45 / 修改时间：11:32:59" itemprop="dateCreated datePublished" datetime="2021-03-18T11:31:45+08:00">2021-03-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/CSS/" itemprop="url" rel="index"><span itemprop="name">CSS</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>7k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>6 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>转换</strong></p>
+<ol>
+<li><p>什么是转换</p>
+<pre><code> 改变元素在页面上的大小，位置，形状以及角度的一种方式
+ 可以向元素应用2D以及3D的转换效果
+</code></pre>
+</li>
+<li><p>转换属性</p>
+<pre><code>    (1)转换效果
+            属性：transform
+            取值：1.none：默认值，即没有任何转换效果
+                 2.一个或多个转换函数，如果是多个转换函数，中间用&quot;空格隔开&quot;
+    (2)转换的原点
+            属性：transform-origin
+            取值：
+                1.两个值：表示原点在x轴和y轴的位置 
+                2.三个值：表示原点在x轴，y轴和z轴的位置
+                         可以取数值/百分比/关键字
+             
+</code></pre>
+</li>
+</ol>
+<p><strong>2D转换</strong></p>
+<ol start="3">
+<li>位移：改变元素在页面上的位置<br> 属性：transform<br> 取值：<br> 1.translate(x)：x取值为正，向右移动；x取值为负，向左移动<br> 2.translate(x,y)：x同上；y取值为正，下移；y取值为负，向下移动<br> 3.translateX(x)<br> 4.translateY(y)</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/18/%E7%94%A8CSS3%E4%BD%BF%E4%BD%A0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%8A%A8%E8%B5%B7%E6%9D%A5%E2%80%94%E2%80%94transform%E5%B1%9E%E6%80%A7/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/18/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="高原">
+      <meta itemprop="description" content="一枚微不足道的前端攻城狮">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GaoYuan's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/18/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/" class="post-title-link" itemprop="url">使用Hbuilder快速打包一个app</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-03-18 11:14:26 / 修改时间：11:30:23" itemprop="dateCreated datePublished" datetime="2021-03-18T11:14:26+08:00">2021-03-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Hbuilder/" itemprop="url" rel="index"><span itemprop="name">Hbuilder</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>HBuilder提供的打包有云端打包和本地打包两种，云端打包的特点是DCloud官方配置好了原生的打包环境，可以把HTML等文件编译为原生安装包。</p>
+<p>优点：速度快，所需要的环境少，加快了开发者速度，不会因为各种JDK，java，Android环境而无法打包生成apk或ipa头疼，大大减少了开发繁琐操作。</p>
+<p>方法步骤：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/18/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -521,13 +742,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">50k</span>
+    <span title="站点总字数">62k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">46 分钟</span>
+    <span title="站点阅读时长">56 分钟</span>
   </span>
 </div>
 <div class="busuanzi-count">
