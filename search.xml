@@ -545,51 +545,6 @@
       </tags>
   </entry>
   <entry>
-    <title>MySQL列类型和列上约束</title>
-    <url>/2017/08/06/MySQL%E5%88%97%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%88%97%E4%B8%8A%E7%BA%A6%E6%9D%9F/</url>
-    <content><![CDATA[<h2 id="1-常用SQL命令"><a href="#1-常用SQL命令" class="headerlink" title="1.常用SQL命令"></a>1.常用SQL命令</h2><h3 id="（1）添加数据："><a href="#（1）添加数据：" class="headerlink" title="（1）添加数据："></a>（1）添加数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">INSERT</span>  <span class="keyword">INTO</span> 表名 <span class="keyword">VALUES</span>(….);</span><br></pre></td></tr></table></figure>
-
-<h3 id="（2）删除数据："><a href="#（2）删除数据：" class="headerlink" title="（2）删除数据："></a>（2）删除数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DELETE</span>  <span class="keyword">FROM</span> 表名;		#删除所有的记录行，慎用！</span><br><span class="line"><span class="keyword">DELETE</span>	<span class="keyword">FROM</span>	表名	<span class="keyword">WHERE</span>	列<span class="operator">=</span>值;		#删除满足条件的行</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-
-<h3 id="（3）修改数据："><a href="#（3）修改数据：" class="headerlink" title="（3）修改数据："></a>（3）修改数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">UPDATE 	表名	<span class="keyword">SET</span>  列<span class="operator">=</span>值，列<span class="operator">=</span>值；		#删除所有记录行，慎用</span><br><span class="line">UPDATE	表名	<span class="keyword">SET</span>	 列<span class="operator">=</span>值，列<span class="operator">=</span>值  <span class="keyword">WHERE</span>   列<span class="operator">=</span>值；</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="2-MySQL中的列类型"><a href="#2-MySQL中的列类型" class="headerlink" title="2.MySQL中的列类型"></a>2.MySQL中的列类型</h2><h3 id="（1）数字类型"><a href="#（1）数字类型" class="headerlink" title="（1）数字类型"></a>（1）数字类型</h3><h4 id="整型："><a href="#整型：" class="headerlink" title="整型："></a>整型：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">TINYINT: 占1个字节 -128~127。</span><br><span class="line">SMALLINT: 占2个字节 -32768~32767。</span><br><span class="line">INT: 占4个字节 -2147483648~2147483647。</span><br><span class="line">BIGINT: 占4/8个字节。</span><br></pre></td></tr></table></figure>
-
-<h4 id="小数型："><a href="#小数型：" class="headerlink" title="小数型："></a>小数型：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">FLOAT(M-M位有效数字,D-小数点后面D位小数):单精度浮点型，占4个字节。</span><br><span class="line">DOUBLE(M,D):双精度浮点型，占8个字节。</span><br><span class="line">DECIMAL(M,D):严格定点数，用于精确运算，如货币金额。</span><br></pre></td></tr></table></figure>
-
-<h3 id="（2）字符串类型"><a href="#（2）字符串类型" class="headerlink" title="（2）字符串类型"></a>（2）字符串类型</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">CHAR(M) : M不能超过255。</span><br><span class="line">VARCHAR(M) : M不能超过65535。</span><br><span class="line">TEXT(M) : M不能超过2^32,即40亿个字符。</span><br></pre></td></tr></table></figure>
-
-<p><strong>面试问题</strong>：CHAR(8)和VARCHAR(8)的区别?<br>user_name  CHAR(8)：定长字符串，可能产生空间浪费，但读取速度快</p>
-<blockquote>
-<p>‘a’  实际存储为： ‘a\0\0\0\0\0\0\0’<br>‘ab’实际存储为： ‘ab\0\0\0\0\0\0’<br>‘abc’实际存储为： ‘abc\0\0\0\0\0’<br>‘abcd’实际存储为： ‘abcd\0\0\0\0’<br>‘abcde’实际存储为： ‘abcde\0\0\0’<br>‘abcdef’实际存储为： ‘abcdef\0\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’</p>
-</blockquote>
-<p>user_name  VARCHAR(8)：   变长字符串，不会产生空间浪费，但读取速度稍慢</p>
-<blockquote>
-<p> ‘a’  实际存储为： ‘a\0’<br> ‘ab’实际存储为： ‘ab\0’<br> ‘abc’实际存储为： ‘abc\0’<br> ‘abcd’实际存储为： ‘abcd\0’<br>‘abcde’实际存储为： ‘abcde\0’<br>‘abcdef’实际存储为： ‘abcdef\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’　</p>
-</blockquote>
-<h3 id="（3）日期时间类型"><a href="#（3）日期时间类型" class="headerlink" title="（3）日期时间类型"></a>（3）日期时间类型</h3><p>​    DATE : 日期类型，必须用引号括起来，采用’yyyy-mm-dd’格式。<br>​    TIME : 时间类型，必须用引号括起来，采用’hh:mi:ss’格式。<br>​    DATETIME : 时期时间类型，必须用引号括起来，采用’yyyy-mm-dd hh:mi:ss’格式。</p>
-<h3 id="（4）布尔类型"><a href="#（4）布尔类型" class="headerlink" title="（4）布尔类型"></a>（4）布尔类型</h3><p>​    BOOL/BOOLEAN : 智能表示TRUE(等价于1)或FLASE(等价于0)。</p>
-<h2 id="3-列上的约束"><a href="#3-列上的约束" class="headerlink" title="3.列上的约束"></a>3.列上的约束</h2><h3 id="1-Constraint约束"><a href="#1-Constraint约束" class="headerlink" title="(1)Constraint约束"></a>(1)Constraint约束</h3><p>列上的值往往是有限制，如：</p>
-<p>性别:只能取男或者女<br>政治面貌：只能取党员，团员，群众之一</p>
-<h3 id="2-主键约束-PRIMARY-KEY"><a href="#2-主键约束-PRIMARY-KEY" class="headerlink" title="(2)主键约束(PRIMARY  KEY)"></a>(2)主键约束(PRIMARY  KEY)</h3><p>语法：列名 类型 PRIMARY KEY<br>声明为”主键”的列上不能出现null值，且不能重复，如商品编号；表中所有的记录行会自动按照主键列上的值进行排序——一个表至多只能声明一个主键列。</p>
-<h3 id="3-唯一约束-UNIQUE"><a href="#3-唯一约束-UNIQUE" class="headerlink" title="(3)唯一约束(UNIQUE)"></a>(3)唯一约束(UNIQUE)</h3><p>语法：列名 类型 UNIQUE<br>声明为”唯一”约束的列上不能出现重复值，但可以出现多个NULL</p>
-<h3 id="4-非空约束-NOT-NULL"><a href="#4-非空约束-NOT-NULL" class="headerlink" title="(4)非空约束(NOT  NULL)"></a>(4)非空约束(NOT  NULL)</h3><p>语法：列名 类型 NOT  NULL<br>声明为”非空”约束的列上不能出现NULL，但可以重复。</p>
-<h3 id="5-检查约束——MySQL不支持"><a href="#5-检查约束——MySQL不支持" class="headerlink" title="(5)检查约束——MySQL不支持"></a>(5)检查约束——MySQL不支持</h3><h3 id="6-默认值约束-DEFAULT"><a href="#6-默认值约束-DEFAULT" class="headerlink" title="(6)默认值约束(DEFAULT)"></a>(6)默认值约束(DEFAULT)</h3><p>语法：列名 类型 DEFAULT 值<br>声明了默认值的列若未指定值，则使用默认值；若指定的特定值的值，则使用指定的值。</p>
-<h3 id="7-外键约束"><a href="#7-外键约束" class="headerlink" title="(7)外键约束"></a>(7)外键约束</h3><p>外键：POREIGN  KEY,可重复可为空，外键列上出现的值必须正另一个表的主键列上。</p>
-]]></content>
-      <categories>
-        <category>MySQL</category>
-      </categories>
-      <tags>
-        <tag>MySQL</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>JavaScript基础（四）立即调用函数</title>
     <url>/2021/03/24/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%9B%9B%EF%BC%89%E7%AB%8B%E5%8D%B3%E8%B0%83%E7%94%A8%E5%87%BD%E6%95%B0/</url>
     <content><![CDATA[<blockquote>
@@ -651,6 +606,51 @@
       </categories>
       <tags>
         <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL列类型和列上约束</title>
+    <url>/2017/08/06/MySQL%E5%88%97%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%88%97%E4%B8%8A%E7%BA%A6%E6%9D%9F/</url>
+    <content><![CDATA[<h2 id="1-常用SQL命令"><a href="#1-常用SQL命令" class="headerlink" title="1.常用SQL命令"></a>1.常用SQL命令</h2><h3 id="（1）添加数据："><a href="#（1）添加数据：" class="headerlink" title="（1）添加数据："></a>（1）添加数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">INSERT</span>  <span class="keyword">INTO</span> 表名 <span class="keyword">VALUES</span>(….);</span><br></pre></td></tr></table></figure>
+
+<h3 id="（2）删除数据："><a href="#（2）删除数据：" class="headerlink" title="（2）删除数据："></a>（2）删除数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DELETE</span>  <span class="keyword">FROM</span> 表名;		#删除所有的记录行，慎用！</span><br><span class="line"><span class="keyword">DELETE</span>	<span class="keyword">FROM</span>	表名	<span class="keyword">WHERE</span>	列<span class="operator">=</span>值;		#删除满足条件的行</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+
+<h3 id="（3）修改数据："><a href="#（3）修改数据：" class="headerlink" title="（3）修改数据："></a>（3）修改数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">UPDATE 	表名	<span class="keyword">SET</span>  列<span class="operator">=</span>值，列<span class="operator">=</span>值；		#删除所有记录行，慎用</span><br><span class="line">UPDATE	表名	<span class="keyword">SET</span>	 列<span class="operator">=</span>值，列<span class="operator">=</span>值  <span class="keyword">WHERE</span>   列<span class="operator">=</span>值；</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-MySQL中的列类型"><a href="#2-MySQL中的列类型" class="headerlink" title="2.MySQL中的列类型"></a>2.MySQL中的列类型</h2><h3 id="（1）数字类型"><a href="#（1）数字类型" class="headerlink" title="（1）数字类型"></a>（1）数字类型</h3><h4 id="整型："><a href="#整型：" class="headerlink" title="整型："></a>整型：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">TINYINT: 占1个字节 -128~127。</span><br><span class="line">SMALLINT: 占2个字节 -32768~32767。</span><br><span class="line">INT: 占4个字节 -2147483648~2147483647。</span><br><span class="line">BIGINT: 占4/8个字节。</span><br></pre></td></tr></table></figure>
+
+<h4 id="小数型："><a href="#小数型：" class="headerlink" title="小数型："></a>小数型：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">FLOAT(M-M位有效数字,D-小数点后面D位小数):单精度浮点型，占4个字节。</span><br><span class="line">DOUBLE(M,D):双精度浮点型，占8个字节。</span><br><span class="line">DECIMAL(M,D):严格定点数，用于精确运算，如货币金额。</span><br></pre></td></tr></table></figure>
+
+<h3 id="（2）字符串类型"><a href="#（2）字符串类型" class="headerlink" title="（2）字符串类型"></a>（2）字符串类型</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">CHAR(M) : M不能超过255。</span><br><span class="line">VARCHAR(M) : M不能超过65535。</span><br><span class="line">TEXT(M) : M不能超过2^32,即40亿个字符。</span><br></pre></td></tr></table></figure>
+
+<p><strong>面试问题</strong>：CHAR(8)和VARCHAR(8)的区别?<br>user_name  CHAR(8)：定长字符串，可能产生空间浪费，但读取速度快</p>
+<blockquote>
+<p>‘a’  实际存储为： ‘a\0\0\0\0\0\0\0’<br>‘ab’实际存储为： ‘ab\0\0\0\0\0\0’<br>‘abc’实际存储为： ‘abc\0\0\0\0\0’<br>‘abcd’实际存储为： ‘abcd\0\0\0\0’<br>‘abcde’实际存储为： ‘abcde\0\0\0’<br>‘abcdef’实际存储为： ‘abcdef\0\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’</p>
+</blockquote>
+<p>user_name  VARCHAR(8)：   变长字符串，不会产生空间浪费，但读取速度稍慢</p>
+<blockquote>
+<p> ‘a’  实际存储为： ‘a\0’<br> ‘ab’实际存储为： ‘ab\0’<br> ‘abc’实际存储为： ‘abc\0’<br> ‘abcd’实际存储为： ‘abcd\0’<br>‘abcde’实际存储为： ‘abcde\0’<br>‘abcdef’实际存储为： ‘abcdef\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’　</p>
+</blockquote>
+<h3 id="（3）日期时间类型"><a href="#（3）日期时间类型" class="headerlink" title="（3）日期时间类型"></a>（3）日期时间类型</h3><p>​    DATE : 日期类型，必须用引号括起来，采用’yyyy-mm-dd’格式。<br>​    TIME : 时间类型，必须用引号括起来，采用’hh:mi:ss’格式。<br>​    DATETIME : 时期时间类型，必须用引号括起来，采用’yyyy-mm-dd hh:mi:ss’格式。</p>
+<h3 id="（4）布尔类型"><a href="#（4）布尔类型" class="headerlink" title="（4）布尔类型"></a>（4）布尔类型</h3><p>​    BOOL/BOOLEAN : 智能表示TRUE(等价于1)或FLASE(等价于0)。</p>
+<h2 id="3-列上的约束"><a href="#3-列上的约束" class="headerlink" title="3.列上的约束"></a>3.列上的约束</h2><h3 id="1-Constraint约束"><a href="#1-Constraint约束" class="headerlink" title="(1)Constraint约束"></a>(1)Constraint约束</h3><p>列上的值往往是有限制，如：</p>
+<p>性别:只能取男或者女<br>政治面貌：只能取党员，团员，群众之一</p>
+<h3 id="2-主键约束-PRIMARY-KEY"><a href="#2-主键约束-PRIMARY-KEY" class="headerlink" title="(2)主键约束(PRIMARY  KEY)"></a>(2)主键约束(PRIMARY  KEY)</h3><p>语法：列名 类型 PRIMARY KEY<br>声明为”主键”的列上不能出现null值，且不能重复，如商品编号；表中所有的记录行会自动按照主键列上的值进行排序——一个表至多只能声明一个主键列。</p>
+<h3 id="3-唯一约束-UNIQUE"><a href="#3-唯一约束-UNIQUE" class="headerlink" title="(3)唯一约束(UNIQUE)"></a>(3)唯一约束(UNIQUE)</h3><p>语法：列名 类型 UNIQUE<br>声明为”唯一”约束的列上不能出现重复值，但可以出现多个NULL</p>
+<h3 id="4-非空约束-NOT-NULL"><a href="#4-非空约束-NOT-NULL" class="headerlink" title="(4)非空约束(NOT  NULL)"></a>(4)非空约束(NOT  NULL)</h3><p>语法：列名 类型 NOT  NULL<br>声明为”非空”约束的列上不能出现NULL，但可以重复。</p>
+<h3 id="5-检查约束——MySQL不支持"><a href="#5-检查约束——MySQL不支持" class="headerlink" title="(5)检查约束——MySQL不支持"></a>(5)检查约束——MySQL不支持</h3><h3 id="6-默认值约束-DEFAULT"><a href="#6-默认值约束-DEFAULT" class="headerlink" title="(6)默认值约束(DEFAULT)"></a>(6)默认值约束(DEFAULT)</h3><p>语法：列名 类型 DEFAULT 值<br>声明了默认值的列若未指定值，则使用默认值；若指定的特定值的值，则使用指定的值。</p>
+<h3 id="7-外键约束"><a href="#7-外键约束" class="headerlink" title="(7)外键约束"></a>(7)外键约束</h3><p>外键：POREIGN  KEY,可重复可为空，外键列上出现的值必须正另一个表的主键列上。</p>
+]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
       </tags>
   </entry>
   <entry>
