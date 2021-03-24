@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/gao.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/gao.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/gao.png">
+  <link rel="mask-icon" href="/images/gao.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic%7Csans-serif:300,300italic,400,400italic,700,700italic%7CPT+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="本篇文章，主要讲解的立即执行函数或自执行匿名函数的含义、用法、以及使用它的主要场景。系列的前面几篇文章主要讲解了作用域、原型，本篇文章一样起到了承上启下的作用，如果您感兴趣，不妨去看看哦～  一、了解立即调用函数表达式1.1 思维导图 1.2 什么是立即调用？在详细了解这个之前，我们来谈了解一下“自执行”这个叫法，本文对这个功能的叫法也不一定完全对，每个人对他的理解都不一样，我们在这里用立即调用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript基础（四）立即调用函数">
+<meta property="og:url" content="http://example.com/2021/03/24/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%9B%9B%EF%BC%89%E7%AB%8B%E5%8D%B3%E8%B0%83%E7%94%A8%E5%87%BD%E6%95%B0/index.html">
+<meta property="og:site_name" content="GaoYuan&#39;s Blog">
+<meta property="og:description" content="本篇文章，主要讲解的立即执行函数或自执行匿名函数的含义、用法、以及使用它的主要场景。系列的前面几篇文章主要讲解了作用域、原型，本篇文章一样起到了承上启下的作用，如果您感兴趣，不妨去看看哦～  一、了解立即调用函数表达式1.1 思维导图 1.2 什么是立即调用？在详细了解这个之前，我们来谈了解一下“自执行”这个叫法，本文对这个功能的叫法也不一定完全对，每个人对他的理解都不一样，我们在这里用立即调用">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200622113604893.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="article:published_time" content="2021-03-24T01:37:26.000Z">
+<meta property="article:modified_time" content="2021-03-24T01:38:37.819Z">
+<meta property="article:author" content="高原">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200622113604893.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center">
+
+
+<link rel="canonical" href="http://example.com/2021/03/24/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%9B%9B%EF%BC%89%E7%AB%8B%E5%8D%B3%E8%B0%83%E7%94%A8%E5%87%BD%E6%95%B0/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>JavaScript基础（四）立即调用函数 | GaoYuan's Blog</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="GaoYuan's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">GaoYuan's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">生活就像海洋，只有意志将强的人才能到达彼岸</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">10</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">7</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">16</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BA%86%E8%A7%A3%E7%AB%8B%E5%8D%B3%E8%B0%83%E7%94%A8%E5%87%BD%E6%95%B0%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-text">一、了解立即调用函数表达式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE"><span class="nav-text">1.1 思维导图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E4%BB%80%E4%B9%88%E6%98%AF%E7%AB%8B%E5%8D%B3%E8%B0%83%E7%94%A8%EF%BC%9F"><span class="nav-text">1.2 什么是立即调用？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-%E6%A0%B8%E5%BF%83%E9%97%AE%E9%A2%98"><span class="nav-text">1.3 核心问题</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%AB%8B%E5%8D%B3%E8%B0%83%E7%94%A8%E5%87%BD%E6%95%B0%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%8A%A5%E9%94%99%E4%BA%86%EF%BC%9F"><span class="nav-text">二、立即调用函数表达式报错了？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%BD%BF%E7%94%A8%E7%AB%8B%E5%8D%B3%E8%B0%83%E7%94%A8%E5%87%BD%E6%95%B0%E7%9A%84%E6%AD%A3%E7%A1%AE%E5%A7%BF%E5%8A%BF"><span class="nav-text">三、使用立即调用函数的正确姿势</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E5%B8%B8%E8%A7%81%E4%BD%BF%E7%94%A8%E5%A7%BF%E5%8A%BF"><span class="nav-text">3.1 常见使用姿势</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E4%B8%8D%E5%B8%B8%E8%A7%81%E7%9A%84%E4%BD%BF%E7%94%A8%E5%A7%BF%E5%8A%BF%EF%BC%88%E4%B8%80%EF%BC%89"><span class="nav-text">3.2 不常见的使用姿势（一）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E4%B8%8D%E5%B8%B8%E8%A7%81%E7%9A%84%E4%BD%BF%E7%94%A8%E5%A7%BF%E5%8A%BF%EF%BC%88%E4%BA%8C%EF%BC%89"><span class="nav-text">3.3 不常见的使用姿势（二）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-%E4%B8%8D%E5%B8%B8%E8%A7%81%E7%9A%84%E4%BD%BF%E7%94%A8%E5%A7%BF%E5%8A%BF%EF%BC%88%E4%B8%89%EF%BC%89"><span class="nav-text">3.4 不常见的使用姿势（三）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%B8%B8%E8%A7%81%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">四、常见使用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E9%9A%94%E7%A6%BB%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="nav-text">4.1 隔离作用域</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E6%83%B0%E6%80%A7%E5%87%BD%E6%95%B0"><span class="nav-text">4.2 惰性函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E7%94%A8%E9%97%AD%E5%8C%85%E4%BF%9D%E5%AD%98%E7%8A%B6%E6%80%81"><span class="nav-text">4.3 用闭包保存状态</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F"><span class="nav-text">注意</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="高原"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">高原</p>
+  <div class="site-description" itemprop="description">一枚微不足道的前端攻城狮</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/gaoyuanio" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;gaoyuanio" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:gaoyuan9841@163.com" title="E-Mail → mailto:gaoyuan9841@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/231615898025_.pic.jpg" title="WeChat → https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;gh&#x2F;gaoyuanio&#x2F;imgs&#x2F;img&#x2F;231615898025_.pic.jpg" rel="noopener" target="_blank"><i class="fab fa-weixin fa-fw"></i>WeChat</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qm.qq.com/cgi-bin/qm/qr?k=QW2diWiXakeqYNjughKYKvo9LVXWd0rY&noverify=0" title="QQ → https:&#x2F;&#x2F;qm.qq.com&#x2F;cgi-bin&#x2F;qm&#x2F;qr?k&#x3D;QW2diWiXakeqYNjughKYKvo9LVXWd0rY&amp;noverify&#x3D;0" rel="noopener" target="_blank"><i class="fab fa-qq fa-fw"></i>QQ</a>
+      </span>
+  </div>
+
+
+
+
+          <!-- <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=1808492017&auto=1&height=66"></iframe> -->
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/gaoyuanio" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/24/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%9B%9B%EF%BC%89%E7%AB%8B%E5%8D%B3%E8%B0%83%E7%94%A8%E5%87%BD%E6%95%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="高原">
+      <meta itemprop="description" content="一枚微不足道的前端攻城狮">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GaoYuan's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JavaScript基础（四）立即调用函数
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-03-24 09:37:26 / 修改时间：09:38:37" itemprop="dateCreated datePublished" datetime="2021-03-24T09:37:26+08:00">2021-03-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>本篇文章，主要讲解的立即执行函数或自执行匿名函数的含义、用法、以及使用它的主要场景。系列的前面几篇文章主要讲解了作用域、原型，本篇文章一样起到了承上启下的作用，如果您感兴趣，不妨去看看哦～</p>
+</blockquote>
+<h2 id="一、了解立即调用函数表达式"><a href="#一、了解立即调用函数表达式" class="headerlink" title="一、了解立即调用函数表达式"></a>一、了解立即调用函数表达式</h2><h4 id="1-1-思维导图"><a href="#1-1-思维导图" class="headerlink" title="1.1 思维导图"></a>1.1 思维导图</h4><p><img data-src="https://img-blog.csdnimg.cn/20200622113604893.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<h4 id="1-2-什么是立即调用？"><a href="#1-2-什么是立即调用？" class="headerlink" title="1.2 什么是立即调用？"></a>1.2 什么是立即调用？</h4><p>在详细了解这个之前，我们来谈了解一下“自执行”这个叫法，本文对这个功能的叫法也不一定完全对，每个人对他的理解都不一样，我们在这里用<code>立即调用</code>～</p>
+<p>立即调用：</p>
+<ul>
+<li>顾名思义，该表达式一被<code>创建就立即执行</code>。</li>
+<li>是一个在定义时就会立即执行的 <code>JavaScript 函数</code>。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params">x</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;x + x = &#x27;</span>, x + x);</span><br><span class="line">&#125;)(<span class="number">5</span>) <span class="comment">// x + x = 10</span></span><br></pre></td></tr></table></figure>
+
+<p>这是一个被称为 <code>自执行匿名函数</code> 的设计模式，主要包含两部分:</p>
+<ol>
+<li>第一部分是包围在 圆括号运算符 <code>()</code> 里的一个匿名函数，这个匿名函数拥有独立的词法作用域。这不仅避免了外界访问此 IIFE 中的变量，而且又不会污染全局作用域。</li>
+<li>第二部分再一次使用 <code>()</code> 创建了一个立即执行函数表达式，JavaScript 引擎到此将直接执行函数。</li>
+</ol>
+<h4 id="1-3-核心问题"><a href="#1-3-核心问题" class="headerlink" title="1.3 核心问题"></a>1.3 核心问题</h4><p><strong>当你声明一个函数的时候，通过在后面加括号就可以实现立即执行吗？</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;(); <span class="comment">// gaoyuan 成功了！</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ...是不是意味着后面加个括弧都可以自动执行？</span></span><br><span class="line"><span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;&#x27;</span>gaoyuan);</span><br><span class="line">&#125;(); <span class="comment">// Uncaught SyntaxError: Function statements require a function name</span></span><br><span class="line"><span class="comment">// 什么？还需要一个函数名？不是叫 自执行匿名函数吗？</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 我加上了函数名</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;(); <span class="comment">// Uncaught SyntaxError: Unexpected token &#x27;)&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>很显然，例子中的第二条和第三条确实报错了，而且报错内容不一样，那么问题出现在哪呢？</p>
+<h2 id="二、立即调用函数表达式报错了？"><a href="#二、立即调用函数表达式报错了？" class="headerlink" title="二、立即调用函数表达式报错了？"></a>二、立即调用函数表达式报错了？</h2><p>有时，我们定义函数之后，立即调用该函数，这时不能在函数的定义后面直接加圆括号，这会产生语法错误。产生语法错误的原因是，<code>function</code> 这个关键字，既可以当做语句，也可以当做表达式，比如下边：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//语句</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>) </span>&#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//表达式</span></span><br><span class="line"><span class="keyword">var</span> fn = <span class="function"><span class="keyword">function</span> (<span class="params"></span>)</span>&#123;&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>为了避免解析上的歧义，JS引擎规定，如果function出现在行首，一律解析成语句。因此JS引擎看到行首是function关键字以后，认为这一段都是函数定义，不应该以<code>括号结尾</code>，在它看来<code>括号</code>只是分组操作符。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 下面这个function在语法上是没问题的，但是依然只是一个语句</span></span><br><span class="line"><span class="comment">// 加上括号()以后依然会报错，因为分组操作符需要包含表达式</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123; <span class="comment">/* code */</span> &#125;(); <span class="comment">// SyntaxError: Unexpected token )</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 但是如果你在括弧()里传入一个表达式，将不会有异常抛出</span></span><br><span class="line"><span class="comment">// 但是foo函数依然不会执行</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123; <span class="comment">/* code */</span> &#125;( <span class="number">1</span> );</span><br><span class="line"></span><br><span class="line"><span class="comment">// 因为它完全等价于下面这个代码，一个function声明后面，又声明了一个毫无关系的表达式：</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123; <span class="comment">/* code */</span> &#125;</span><br><span class="line"></span><br><span class="line">( <span class="number">1</span> );</span><br></pre></td></tr></table></figure>
+
+<h2 id="三、使用立即调用函数的正确姿势"><a href="#三、使用立即调用函数的正确姿势" class="headerlink" title="三、使用立即调用函数的正确姿势"></a>三、使用立即调用函数的正确姿势</h2><p>要解决上述问题，非常简单。</p>
+<p>我们只需要用<code>大括弧</code>将代码的代码全部括住就行了，因为JavaScript里<code>括弧()</code>里面不能包含语句，所以在这一点上，解析器在解析function关键字的时候，会将相应的代码解析成function表达式，而不是function声明。</p>
+<h4 id="3-1-常见使用姿势"><a href="#3-1-常见使用姿势" class="headerlink" title="3.1 常见使用姿势"></a>3.1 常见使用姿势</h4><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 下面2个括弧()都会立即执行</span></span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="comment">/* code */</span> &#125; ()); <span class="comment">// 推荐使用这个</span></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="comment">/* code */</span> &#125;)(); <span class="comment">// 但是这个也是可以用的</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-不常见的使用姿势（一）"><a href="#3-2-不常见的使用姿势（一）" class="headerlink" title="3.2 不常见的使用姿势（一）"></a>3.2 不常见的使用姿势（一）</h4><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 由于括弧()和JS的&amp;&amp;，异或，逗号等操作符是在函数表达式和函数声明上消除歧义的</span></span><br><span class="line"><span class="comment">// 所以一旦解析器知道其中一个已经是表达式了，其它的也都默认为表达式了</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> i = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>)</span><br><span class="line">&#125;(); <span class="comment">// gaoyuan</span></span><br><span class="line"></span><br><span class="line"><span class="literal">true</span> &amp;&amp; <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>)</span><br><span class="line">&#125;(); <span class="comment">// gaoyuan</span></span><br><span class="line"></span><br><span class="line"><span class="number">0</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>) &#125;(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-3-不常见的使用姿势（二）"><a href="#3-3-不常见的使用姿势（二）" class="headerlink" title="3.3 不常见的使用姿势（二）"></a>3.3 不常见的使用姿势（二）</h4><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 如果你不在意返回值，或者不怕难以阅读</span></span><br><span class="line"><span class="comment">// 你甚至可以在function前面加一元操作符号</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//转bool</span></span><br><span class="line"><span class="keyword">var</span> res1 = !<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;()</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;res1:&#x27;</span>, res1); <span class="comment">// gaoyuan true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 转数字</span></span><br><span class="line"><span class="keyword">var</span> res2 = +<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;()</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;res2:&#x27;</span>, res2); <span class="comment">// gaoyuan NaN</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 按位非</span></span><br><span class="line"><span class="keyword">var</span> res3 = ～<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;()</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;res3:&#x27;</span>, res3); <span class="comment">// gaoyuan NaN</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-4-不常见的使用姿势（三）"><a href="#3-4-不常见的使用姿势（三）" class="headerlink" title="3.4 不常见的使用姿势（三）"></a>3.4 不常见的使用姿势（三）</h4><p>还有一个情况，使用new和void关键字，不过不太常见罢了。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;();</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;();</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、常见使用场景"><a href="#四、常见使用场景" class="headerlink" title="四、常见使用场景"></a>四、常见使用场景</h2><h4 id="4-1-隔离作用域"><a href="#4-1-隔离作用域" class="headerlink" title="4.1 隔离作用域"></a>4.1 隔离作用域</h4><p>IIFE最常见的功能，就是隔离作用域，在ES6之前JS原生也没有块级作用域的概念，所以需要函数作用域来模拟。</p>
+<p>举例:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> currentTime = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> time = <span class="keyword">new</span> <span class="built_in">Date</span>();</span><br><span class="line">    <span class="keyword">var</span> year  = time.getFullYear()</span><br><span class="line">    <span class="keyword">var</span> month = time.getMonth()+<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">var</span> date  = time.getDate();</span><br><span class="line">    <span class="keyword">var</span> hour  = time.getHours();</span><br><span class="line">    <span class="keyword">var</span> min   = time.getMinutes();</span><br><span class="line">    <span class="keyword">return</span> year + <span class="string">&#x27;-&#x27;</span> + month + <span class="string">&#x27;-&#x27;</span> + date + <span class="string">&#x27; &#x27;</span> + hour + <span class="string">&#x27;:&#x27;</span> + min;</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+
+<p>你仍然可以在其他地方声明同名变量～</p>
+<h4 id="4-2-惰性函数"><a href="#4-2-惰性函数" class="headerlink" title="4.2 惰性函数"></a>4.2 惰性函数</h4><p>DOM事件添加中，为了兼容现代浏览器和IE浏览器，我们需要对浏览器环境进行一次判断：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> addEvent = (<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">window</span>.addEventListener) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">type, el, fn</span>) </span>&#123;</span><br><span class="line">            el.addEventListener(type, fn, <span class="literal">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(<span class="built_in">window</span>.attachEvent) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">type, el, fn</span>) </span>&#123;</span><br><span class="line">            el.attachEvent(<span class="string">&#x27;on&#x27;</span> + type, fn);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-3-用闭包保存状态"><a href="#4-3-用闭包保存状态" class="headerlink" title="4.3 用闭包保存状态"></a>4.3 用闭包保存状态</h4><p>这里我仅举个例子，为我的下一篇文章——《JavaScript中的闭包》卖个关子</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> elems = <span class="built_in">document</span>.getElementsByTagName(<span class="string">&#x27;a&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; elems.length; i++) &#123;</span><br><span class="line">    (<span class="function"><span class="keyword">function</span> (<span class="params">lockedInIndex</span>) </span>&#123;</span><br><span class="line">        elems[i].addEventListener(<span class="string">&#x27;click&#x27;</span>, <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span><br><span class="line">            e.preventDefault();</span><br><span class="line">            alert(<span class="string">&#x27;I am link #&#x27;</span> + lockedInIndex);</span><br><span class="line">        &#125;, <span class="string">&#x27;false&#x27;</span>);</span><br><span class="line">    &#125;)(i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h4><p>当函数变成立即执行的函数表达式时，表达式中的变量不能从外部访问。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&quot;Barry&quot;</span>;</span><br><span class="line">&#125;)();</span><br><span class="line"><span class="comment">// 无法从外部访问变量 name</span></span><br><span class="line">name <span class="comment">// 抛出错误：&quot;Uncaught ReferenceError: name is not defined&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>将 IIFE 分配给一个变量，不是存储 IIFE 本身，而是存储 IIFE 执行后返回的结果。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> result = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&quot;Barry&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> name;</span><br><span class="line">&#125;)();</span><br><span class="line"><span class="comment">// IIFE 执行后返回的结果：</span></span><br><span class="line">result; <span class="comment">// &quot;Barry&quot;</span></span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/javascript/" rel="tag"># javascript</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89%E4%BD%9C%E7%94%A8%E5%9F%9F/" rel="prev" title="JavaScript基础（三）作用域">
+                  <i class="fa fa-chevron-left"></i> JavaScript基础（三）作用域
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">京ICP备 1234567890号-1 </a>
+      <img src="/uploads/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=1234567890" rel="noopener" target="_blank">京公网安备 1234567890号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fas fa-bone"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">高原</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">69k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:02</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="128,128,128" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('.gitalk-container', () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'b6854378950da6a4a9dc',
+      clientSecret: 'dfd37cf3129914db71752a3c108a7db103fddcd8',
+      repo        : 'gaoyuanio.github.io',
+      owner       : 'gaoyuanio',
+      admin       : ['gaoyuanio'],
+      id          : '6ef320409031a618fed68f3e03ab595c',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render(document.querySelector('.gitalk-container'));
+  }, window.Gitalk);
+});
+</script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":true,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
