@@ -551,6 +551,8 @@
 <p>本篇文章，主要讲解的立即执行函数或自执行匿名函数的含义、用法、以及使用它的主要场景。系列的前面几篇文章主要讲解了作用域、原型，本篇文章一样起到了承上启下的作用，如果您感兴趣，不妨去看看哦～</p>
 </blockquote>
 <h2 id="一、了解立即调用函数表达式"><a href="#一、了解立即调用函数表达式" class="headerlink" title="一、了解立即调用函数表达式"></a>一、了解立即调用函数表达式</h2><h4 id="1-1-思维导图"><a href="#1-1-思维导图" class="headerlink" title="1.1 思维导图"></a>1.1 思维导图</h4><p><img data-src="https://img-blog.csdnimg.cn/20200622113604893.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<span id="more"></span>
+
 <h4 id="1-2-什么是立即调用？"><a href="#1-2-什么是立即调用？" class="headerlink" title="1.2 什么是立即调用？"></a>1.2 什么是立即调用？</h4><p>在详细了解这个之前，我们来谈了解一下“自执行”这个叫法，本文对这个功能的叫法也不一定完全对，每个人对他的理解都不一样，我们在这里用<code>立即调用</code>～</p>
 <p>立即调用：</p>
 <ul>
@@ -1008,6 +1010,54 @@
       </tags>
   </entry>
   <entry>
+    <title>开发小技巧</title>
+    <url>/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
+    <content><![CDATA[<h2 id="阻止单击事件冒泡"><a href="#阻止单击事件冒泡" class="headerlink" title="阻止单击事件冒泡"></a>阻止单击事件冒泡</h2><p><code>&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;</code></p>
+<h2 id="提交事件不再重载页面"><a href="#提交事件不再重载页面" class="headerlink" title="提交事件不再重载页面"></a>提交事件不再重载页面</h2><p><code>&lt;form v-on:submit.prevent=&quot;onSubmit&quot;&gt;&lt;/form&gt;</code></p>
+<h2 id="修饰符可以串联"><a href="#修饰符可以串联" class="headerlink" title="修饰符可以串联"></a>修饰符可以串联</h2><p><code>&lt;a v-on:click.stop.prevent=&quot;doThat&quot;&gt;</code></p>
+<span id="more"></span>
+
+
+<h2 id="只有修饰符"><a href="#只有修饰符" class="headerlink" title="只有修饰符"></a>只有修饰符</h2><p><code>&lt;form v-on:submit.prevent&gt;&lt;/form&gt;</code></p>
+<br>
+<br>
+<br>
+
+<h2 id="Mac谷歌跨域命令"><a href="#Mac谷歌跨域命令" class="headerlink" title="Mac谷歌跨域命令"></a>Mac谷歌跨域命令</h2><p><code>open -n /Applications/Google\ Chrome.app/ --args --disable-web-security  --user-data-dir=/Users/GaoYuan/Documents/MyChromeDevUserData</code></p>
+<br>
+<br>
+<br>
+
+<h2 id="Mac显示隐藏文件命令："><a href="#Mac显示隐藏文件命令：" class="headerlink" title="Mac显示隐藏文件命令："></a>Mac显示隐藏文件命令：</h2><p><strong>显示隐藏文件</strong></p>
+<p><code>defaults write com.apple.finder AppleShowAllFiles Yes &amp;&amp; killall Finder </code></p>
+<p><strong>不显示隐藏文件</strong></p>
+<p><code>defaults write com.apple.finder AppleShowAllFiles No &amp;&amp; killall Finder </code></p>
+<br>
+<br>
+
+<h2 id="Jison解决JS处理后端返回的Long型数据精度丢失问题"><a href="#Jison解决JS处理后端返回的Long型数据精度丢失问题" class="headerlink" title="Jison解决JS处理后端返回的Long型数据精度丢失问题"></a>Jison解决JS处理后端返回的Long型数据精度丢失问题</h2><p>原因：js是弱类型语言，所有的数字类型统称为Number类型，不区分int、long、double等。</p>
+<p><code>git clone git://github.com/zaach/jsonlint.git</code></p>
+<p>在src目录下提供了jsonlint.y（grammaFile）和jsonlint.l（lexFile)两个文件。使用这两个文件可以直接生成jsonlint.js。如下修改jsonlint.y：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">JSONNumber</span><br><span class="line"></span><br><span class="line">    : NUMBER</span><br><span class="line">    </span><br><span class="line">        &#123;$$ &#x3D; yytext &#x3D;&#x3D; String(Number(yytext))? Number(yytext): yytext;&#125;</span><br><span class="line">    ;</span><br></pre></td></tr></table></figure>
+
+<p> 然后：</p>
+<p><code>cd src</code></p>
+<p><code>jison jsonlint.y jsonlint.l</code></p>
+<h3 id="最后引入至项目"><a href="#最后引入至项目" class="headerlink" title="最后引入至项目"></a>最后引入至项目</h3><p>1.将自定义的 jsonlint.js 放到 static 目录下<br>2.在 index.html 中引入<br><code>&lt;script src=&quot;./static/jsonlint/jsonlint.js&quot;&gt;&lt;/script&gt;</code></p>
+<p>3、在我们请求的返回数据中，做一层拦截转换，此处以 axios 的实现方法为例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;*transformResponse 选项允许我们在数据传送到 &#96;then&#x2F;catch&#96; 方法之前对数据进行改动*&#x2F;</span><br><span class="line">axios.defaults.transformResponse &#x3D; [</span><br><span class="line">  function(data) &#123;</span><br><span class="line">    return jsonlint.parse(data)</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>综上，定义JSON转化避免long类型数据溢出，可以实现long类型数据在前端正常显示</p>
+<h2 id="Mac给文件夹赋予管理员权限"><a href="#Mac给文件夹赋予管理员权限" class="headerlink" title="Mac给文件夹赋予管理员权限"></a>Mac给文件夹赋予管理员权限</h2><p><code>sudo chown -R gaoyuan ios</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if ($request_filename ~* .*index\.html$) &#123;</span><br><span class="line">     add_header Cache-Control &quot;private, no-store, no-cache, must-revalidate, proxy-revalidate&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>个人笔记</category>
+      </categories>
+      <tags>
+        <tag>note</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>函数防抖与节流</title>
     <url>/2021/03/19/%E5%87%BD%E6%95%B0%E9%98%B2%E6%8A%96%E4%B8%8E%E8%8A%82%E6%B5%81/</url>
     <content><![CDATA[<h2 id="函数防抖"><a href="#函数防抖" class="headerlink" title="函数防抖"></a>函数防抖</h2><h3 id="一、为什么需要防抖"><a href="#一、为什么需要防抖" class="headerlink" title="一、为什么需要防抖"></a>一、为什么需要防抖</h3><ul>
@@ -1202,54 +1252,6 @@
       </categories>
       <tags>
         <tag>AJAX</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>开发小技巧</title>
-    <url>/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
-    <content><![CDATA[<h2 id="阻止单击事件冒泡"><a href="#阻止单击事件冒泡" class="headerlink" title="阻止单击事件冒泡"></a>阻止单击事件冒泡</h2><p><code>&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;</code></p>
-<h2 id="提交事件不再重载页面"><a href="#提交事件不再重载页面" class="headerlink" title="提交事件不再重载页面"></a>提交事件不再重载页面</h2><p><code>&lt;form v-on:submit.prevent=&quot;onSubmit&quot;&gt;&lt;/form&gt;</code></p>
-<h2 id="修饰符可以串联"><a href="#修饰符可以串联" class="headerlink" title="修饰符可以串联"></a>修饰符可以串联</h2><p><code>&lt;a v-on:click.stop.prevent=&quot;doThat&quot;&gt;</code></p>
-<span id="more"></span>
-
-
-<h2 id="只有修饰符"><a href="#只有修饰符" class="headerlink" title="只有修饰符"></a>只有修饰符</h2><p><code>&lt;form v-on:submit.prevent&gt;&lt;/form&gt;</code></p>
-<br>
-<br>
-<br>
-
-<h2 id="Mac谷歌跨域命令"><a href="#Mac谷歌跨域命令" class="headerlink" title="Mac谷歌跨域命令"></a>Mac谷歌跨域命令</h2><p><code>open -n /Applications/Google\ Chrome.app/ --args --disable-web-security  --user-data-dir=/Users/GaoYuan/Documents/MyChromeDevUserData</code></p>
-<br>
-<br>
-<br>
-
-<h2 id="Mac显示隐藏文件命令："><a href="#Mac显示隐藏文件命令：" class="headerlink" title="Mac显示隐藏文件命令："></a>Mac显示隐藏文件命令：</h2><p><strong>显示隐藏文件</strong></p>
-<p><code>defaults write com.apple.finder AppleShowAllFiles Yes &amp;&amp; killall Finder </code></p>
-<p><strong>不显示隐藏文件</strong></p>
-<p><code>defaults write com.apple.finder AppleShowAllFiles No &amp;&amp; killall Finder </code></p>
-<br>
-<br>
-
-<h2 id="Jison解决JS处理后端返回的Long型数据精度丢失问题"><a href="#Jison解决JS处理后端返回的Long型数据精度丢失问题" class="headerlink" title="Jison解决JS处理后端返回的Long型数据精度丢失问题"></a>Jison解决JS处理后端返回的Long型数据精度丢失问题</h2><p>原因：js是弱类型语言，所有的数字类型统称为Number类型，不区分int、long、double等。</p>
-<p><code>git clone git://github.com/zaach/jsonlint.git</code></p>
-<p>在src目录下提供了jsonlint.y（grammaFile）和jsonlint.l（lexFile)两个文件。使用这两个文件可以直接生成jsonlint.js。如下修改jsonlint.y：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">JSONNumber</span><br><span class="line"></span><br><span class="line">    : NUMBER</span><br><span class="line">    </span><br><span class="line">        &#123;$$ &#x3D; yytext &#x3D;&#x3D; String(Number(yytext))? Number(yytext): yytext;&#125;</span><br><span class="line">    ;</span><br></pre></td></tr></table></figure>
-
-<p> 然后：</p>
-<p><code>cd src</code></p>
-<p><code>jison jsonlint.y jsonlint.l</code></p>
-<h3 id="最后引入至项目"><a href="#最后引入至项目" class="headerlink" title="最后引入至项目"></a>最后引入至项目</h3><p>1.将自定义的 jsonlint.js 放到 static 目录下<br>2.在 index.html 中引入<br><code>&lt;script src=&quot;./static/jsonlint/jsonlint.js&quot;&gt;&lt;/script&gt;</code></p>
-<p>3、在我们请求的返回数据中，做一层拦截转换，此处以 axios 的实现方法为例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;*transformResponse 选项允许我们在数据传送到 &#96;then&#x2F;catch&#96; 方法之前对数据进行改动*&#x2F;</span><br><span class="line">axios.defaults.transformResponse &#x3D; [</span><br><span class="line">  function(data) &#123;</span><br><span class="line">    return jsonlint.parse(data)</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>综上，定义JSON转化避免long类型数据溢出，可以实现long类型数据在前端正常显示</p>
-<h2 id="Mac给文件夹赋予管理员权限"><a href="#Mac给文件夹赋予管理员权限" class="headerlink" title="Mac给文件夹赋予管理员权限"></a>Mac给文件夹赋予管理员权限</h2><p><code>sudo chown -R gaoyuan ios</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if ($request_filename ~* .*index\.html$) &#123;</span><br><span class="line">     add_header Cache-Control &quot;private, no-store, no-cache, must-revalidate, proxy-revalidate&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>个人笔记</category>
-      </categories>
-      <tags>
-        <tag>note</tag>
       </tags>
   </entry>
   <entry>
