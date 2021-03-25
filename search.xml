@@ -195,6 +195,216 @@
       </tags>
   </entry>
   <entry>
+    <title>JavaScript基础（三）作用域</title>
+    <url>/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89%E4%BD%9C%E7%94%A8%E5%9F%9F/</url>
+    <content><![CDATA[<blockquote>
+<p>作用域的篇幅不会太长，作为自己对Js总结的第三篇文章，主要是承上启下。 之后会涉及到执行上下文，闭包等相关专题，为了避免内容过多，作用域这一部分单独总结。</p>
+</blockquote>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/%E4%B8%8B%E8%BD%BD.jpeg" style="zoom:67%;" />
+
+<span id="more"></span>
+
+<h2 id="一、作用域的定义"><a href="#一、作用域的定义" class="headerlink" title="一、作用域的定义"></a>一、作用域的定义</h2><p><strong>一张导图概括本节内容</strong> <img data-src="https://img-blog.csdnimg.cn/20200609102448438.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"> <strong>1.1 常见的解释</strong></p>
+<ol>
+<li>一段程序代码中所用到的<strong>名字</strong>并不总是有效，而限定它的可用性的范围就是这个名字的作用域；</li>
+<li>作用域规定了<strong>如何查找变量</strong>，也就是确定当前执行代码对变量的访问权限；</li>
+<li>通俗的讲作用域就是<strong>一套规则</strong>，用于确定在何处以及如何查找<strong>某个变量</strong>的规则</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(a); <span class="comment">// 100</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(a) <span class="comment">// a is not defined a变量并不是任何地方都可以被找到的</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>1.2 JavaScript中作用域工作模型</strong></p>
+<p>JavaScript 采用是词法作用域(lexical scoping)，也就是静态作用域：</p>
+<ul>
+<li>函数的作用域在函数定义的时候就决定了</li>
+</ul>
+<p>与之对应的还有一个动态作用域：</p>
+<ul>
+<li>函数的作用域是在函数调用的时候才决定的；</li>
+</ul>
+<p><strong>1.3 全局变量和局部变量</strong></p>
+<p>根据定义变量的方式又可以分为：</p>
+<p>局部变量：只能在函数中访问，该函数外不可访问；</p>
+<ul>
+<li>定义在函数中的变量</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(name);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br><span class="line">fn(); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
+
+<p>全局：任何地方都能访问到的对象拥有全局作用域。</p>
+<ul>
+<li>函数外定义的变量</li>
+<li>所有末定义直接赋值的变量自动声明为拥有全局作用域</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a4-&#x27;</span>,a);</span><br></pre></td></tr></table></figure>
+
+<p>注意：在ES6之后又提出了块级作用域，它们之间的区别我们之后再来讨论。</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=2659298556,3987226078&fm=26&gp=0.jpeg"></p>
+<h2 id="二、理解作用域"><a href="#二、理解作用域" class="headerlink" title="二、理解作用域"></a>二、理解作用域</h2><p>根据第一节的描述，我们一一验证一下</p>
+<p><strong>2.1 理解词法作用域</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> value = <span class="number">1</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> value = <span class="number">2</span>;</span><br><span class="line">    foo();</span><br><span class="line">&#125;</span><br><span class="line">bar();</span><br></pre></td></tr></table></figure>
+
+<p>我们结合定义去分析：</p>
+<ul>
+<li>执行<code>bar</code>函数，函数内部形成了局部作用域；</li>
+<li>声明value变量，并赋值2</li>
+<li>执行<code>foo</code>函数，函数foo的作用域内没有<code>value</code>这个变量，它会向外查找</li>
+<li>根据词法作用域的规则，函数定义时，<code>foo</code>的外部作用域为全局作用域</li>
+<li>打印<strong>结果是1</strong></li>
+</ul>
+<p>如果是动态作用域的话：结果<strong>就是2</strong>，不知道你是否想明白了？</p>
+<p><strong>2.2 全局变量</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;全局变量&#x27;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(str+<span class="number">1</span>);</span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		<span class="built_in">console</span>.log(str+<span class="number">2</span>);</span><br><span class="line">		<span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">			<span class="built_in">console</span>.log(str+<span class="number">3</span>);</span><br><span class="line">		&#125;;</span><br><span class="line">		fn();</span><br><span class="line">	&#125;;</span><br><span class="line">	childFn();</span><br><span class="line">&#125;</span><br><span class="line">func();</span><br><span class="line"><span class="comment">// 全局变量1</span></span><br><span class="line"><span class="comment">// 全局变量2</span></span><br><span class="line"><span class="comment">// 全局变量3</span></span><br></pre></td></tr></table></figure>
+
+<p>再来分析下面的代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line"><span class="comment">// a2- 100 // 在当前作用域下查找变量a =&gt; 100</span></span><br><span class="line"><span class="comment">// a1- 1000 // 函数执行时，全局变量a已经被重新赋值</span></span><br><span class="line"><span class="comment">// a3- 1000 // 全局变量a =&gt; 1000</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>2.3 局部作用域</strong></p>
+<p>局部作用域一般只在固定的代码片段内可访问到，最常见的就是以函数为单位的：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name=<span class="string">&quot;高原&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(name);</span><br><span class="line">    &#125;</span><br><span class="line">    childFn(); <span class="comment">// 高原</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// name is not defined</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="三、作用域链"><a href="#三、作用域链" class="headerlink" title="三、作用域链"></a>三、作用域链</h2><p><strong>3.1 当查找变量的时候都发生了什么？</strong></p>
+<ul>
+<li>会先从当前<strong>上下文的变量对象</strong>中查找；</li>
+<li>如果没有找到，就会从父级(词法层面上的父级)<strong>执行上下文</strong>的变量对象中查找；</li>
+<li>一直找到全局上下文的变量对象，也就是全局对象；</li>
+<li>作用域链的顶端就是全局对象；</li>
+</ul>
+<p>这样<strong>由多个执行上下文的变量对象构成的链表就叫做作用域链</strong>，从某种意义上很类似原型和原型链。</p>
+<p><strong>3.2 作用域链和原型继承查找时的区别：</strong></p>
+<ul>
+<li>查找一个普通对象的属性，但是在当前对象和其原型中都找不到时，会返回<code>undefined</code></li>
+<li>查找的属性在作用域链中不存在的话就会抛出<code>ReferenceError</code>。</li>
+</ul>
+<p><strong>3.3 作用域嵌套</strong></p>
+<p>既然每一个函数就可以形成一个作用域（<code>词法作用域</code> || <code>块级作用域</code>），那么当然也会存在多个作用域嵌套的情况，他们遵循这样的查询规则：</p>
+<ul>
+<li>内部作用域有权访问外部作用域;</li>
+<li>外部作用域无法访问内部作用域;（真是是这样吗？）</li>
+<li>兄弟作用域不可互相访问;</li>
+</ul>
+<p>在《你不知道的Js》中，希望读者可以将作用域的嵌套和作用域链想象成这样：</p>
+<p><img data-src="https://img-blog.csdnimg.cn/2020060915193493.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="四、思考与总结"><a href="#四、思考与总结" class="headerlink" title="四、思考与总结"></a>四、思考与总结</h2><p><strong>4.1 总结</strong></p>
+<p><img data-src="https://img-blog.csdnimg.cn/20200609160809565.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p><strong>4.2 思考</strong></p>
+<p>最后，让我们看一个《JavaScript权威指南》中的两段代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f(); <span class="comment">// 注意</span></span><br><span class="line">&#125;</span><br><span class="line">checkscope1();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope2</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line">checkscope2()();</span><br></pre></td></tr></table></figure>
+
+<p>两段代码的结果都是”local scope”，书中的回答是：JavaScript 函数的执行用到了作用域链，这个作用域链是在函数定义的时候创建的。嵌套的函数 f() 定义在这个作用域链里，其中的变量 scope 一定是局部变量，不管何时何地执行函数 f()，这种绑定在执行 f() 时依然有效。</p>
+<p>但是它们内部经历的事情是一样的吗？</p>
+]]></content>
+      <categories>
+        <category>javascript</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>JavaScript基础（二）从原型到原型链</title>
+    <url>/2021/03/21/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%E4%BB%8E%E5%8E%9F%E5%9E%8B%E5%88%B0%E5%8E%9F%E5%9E%8B%E9%93%BE/</url>
+    <content><![CDATA[<blockquote>
+<p>本文主要从构造函数 -&gt; 原型（隐式原型+显示原型）-&gt; 原型链的顺序，渐进式讲解，希望对你有所做帮助，共勉～</p>
+</blockquote>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>又到了回忆过去的时候了，知识就是这样，原型和原型链在我之前的实习生涯中用到的很少——几乎没有（噗！我菜我摊牌了），但是它和this指向问题一样，是初级、中级前端开发在面试时永远绕不开的话题。是不是大家每次看面经的时候都会去搜索原型相关的知识点？</p>
+<p>你看这知识，总是在考的时候，才能知道它的重要，就好像曾经有一段贼拉真挚的面试题摆在我面前…话题拉回来，今天我们就收了这个<strong>孽障</strong>！</p>
+<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/src=http___img.wxcha.com_file_201711_22_e1655873d2.jpg&refer=http___img.wxcha.jpeg" style="zoom:50%;" />
+
+<span id="more"></span>
+
+<h2 id="一、构造函数"><a href="#一、构造函数" class="headerlink" title="一、构造函数"></a>一、构造函数</h2><h3 id="1-1-什么是构造函数？"><a href="#1-1-什么是构造函数？" class="headerlink" title="1.1 什么是构造函数？"></a>1.1 什么是构造函数？</h3><p>构造函数本身就是一个函数，与普通函数没有任何区别，不过<strong>为了规范一般将其首字母大写</strong>。构造函数和普通函数的区别在于，使用<strong>new</strong>生成实例的函数就是构造函数，直接调用的就是普通函数。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="built_in">console</span>.log(person.name) <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中，Person 就是一个构造函数。</p>
+<h3 id="1-2-constructor？"><a href="#1-2-constructor？" class="headerlink" title="1.2 constructor？"></a>1.2 constructor？</h3><p><code>constructor</code> 返回创建实例对象时构造函数的引用。此属性的值是对函数本身的引用，而不是一个包含函数名称的字符串。</p>
+<p><img data-src="https://img-blog.csdnimg.cn/20200604185358168.png" alt="被构造出来的person的"> 可以看到实例对象的constructor指向了它的构造函数，而它和原型的关系我们在之后会链接到一起。</p>
+<h3 id="1-3-都有哪些数据类型或者函数拥有constructor呢？"><a href="#1-3-都有哪些数据类型或者函数拥有constructor呢？" class="headerlink" title="1.3 都有哪些数据类型或者函数拥有constructor呢？"></a>1.3 都有哪些数据类型或者函数拥有<code>constructor</code>呢？</h3><p>在JavaScript中，每个具有<strong>原型</strong>的对象都会自动获得constructor属性。除了：<code>arguments</code>、<code>Enumerator</code>、<code>Error</code>、<code>Global</code>、<code>Math</code>、<code>RegExp</code>等一些特殊对象之外，其他所有的JavaScript内置对象都具备constructor属性。例如：<code>Array</code>、<code>Boolean</code>、<code>Date</code>、<code>Function</code>、<code>Number</code>、<code>Object</code>、<code>String</code>等。所有主流浏览器均支持该属性。打开控制台我们可以验证一下</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 字符串</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;str&#x27;</span>.constructor) <span class="comment">// ƒ String() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;str&#x27;</span>.constructor === <span class="built_in">String</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 数组</span></span><br><span class="line"><span class="built_in">console</span>.log([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].constructor) <span class="comment">// ƒ Array() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].constructor === <span class="built_in">Array</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 数字</span></span><br><span class="line"><span class="keyword">var</span> num = <span class="number">1</span></span><br><span class="line"><span class="built_in">console</span>.log(num.constructor) <span class="comment">// ƒ Number() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(num.constructor === <span class="built_in">Number</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Date</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">new</span> <span class="built_in">Date</span>().constructor) <span class="comment">// ƒ Date() &#123; [native code] &#125;</span></span><br><span class="line"><span class="comment">// 注意！！！不要混淆哦</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">new</span> <span class="built_in">Date</span>().getTime().constructor) <span class="comment">// ƒ Number() &#123; [native code] &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Boolean</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">true</span>.constructor) <span class="comment">// ƒ Boolean() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">true</span>.constructor === <span class="built_in">Boolean</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">console</span>.log(show.constructor) <span class="comment">// ƒ Function() &#123; [native code] &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义构造函数，无返回值</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = name;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> p = <span class="keyword">new</span> Person()</span><br><span class="line"><span class="built_in">console</span>.log(p.constructor) <span class="comment">// ƒ Person()</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 有返回值</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = name;</span><br><span class="line">	<span class="keyword">return</span> &#123;</span><br><span class="line">		name: <span class="string">&#x27;gaoyuan&#x27;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> p = Person()</span><br><span class="line"><span class="built_in">console</span>.log(p1.constructor) <span class="comment">// ƒ Object() &#123; [native code] &#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-4-模拟实现一个new"><a href="#1-4-模拟实现一个new" class="headerlink" title="1.4 模拟实现一个new"></a>1.4 模拟实现一个new</h3><p>既然构造函数与普通函数的区别仅仅在于调用方式上，我们就应该了解new。</p>
+<ul>
+<li>当调用<code>new</code>运算符时，该函数总会返回一个对象；</li>
+<li>通常情况下，构造器里的this就指向返回的这个对象；</li>
+</ul>
+<p>代码如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">通常情况下</span><br><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass();</span><br><span class="line">obj.name; <span class="comment">// gaoyuan</span></span><br><span class="line"></span><br><span class="line">特殊情况</span><br><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">	<span class="keyword">return</span> &#123;</span><br><span class="line">		name: <span class="string">&#x27;老王&#x27;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass();</span><br><span class="line">obj.name <span class="comment">// 老王</span></span><br></pre></td></tr></table></figure>
+
+<p>我们利用 <code>__proto__</code>（隐式原型，下文会提到）属性来模拟一下new 调用构造函数的过程：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> objectNew = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="comment">// 从object.prototype上克隆一个空的对象</span></span><br><span class="line">    <span class="keyword">var</span> obj = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">    <span class="comment">// 取得外部传入的构造器，这里是Person</span></span><br><span class="line">    <span class="keyword">var</span> Constructor = [].shift.call( <span class="built_in">arguments</span> );</span><br><span class="line">    <span class="comment">// 更新，指向正确的原型</span></span><br><span class="line">    obj.__proto__ = Constructor.prototype; <span class="comment">//知识点，要考、要考、要考</span></span><br><span class="line">    <span class="comment">// 借用外部传入的构造器给obj设置属性</span></span><br><span class="line">    <span class="keyword">var</span> ret = Constructor.apply(obj, <span class="built_in">arguments</span>);</span><br><span class="line">    <span class="comment">// 确保构造器总是返回一个对象</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">typeof</span> ref === <span class="string">&#x27;object&#x27;</span> ? ret : obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&fm=26&gp=0.jpeg" style="zoom: 67%;" />
+
+<h2 id="二、原型"><a href="#二、原型" class="headerlink" title="二、原型"></a>二、原型</h2><h3 id="2-1-prototype-显式原型"><a href="#2-1-prototype-显式原型" class="headerlink" title="2.1 prototype(显式原型)"></a>2.1 prototype(显式原型)</h3><p>JavaScript 是一种基于原型的语言 (prototype-based language)，在设计的时候模仿了Java的两套类型机制：<code>基本类型</code> 和 <code>对象类型</code>。可见原型很重要！</p>
+<p>每个对象都拥有一个原型对象，类是以函数的形式来定义的。prototype表示该函数的原型，也表示一个类的成员的集合。看下图： <img data-src="https://img-blog.csdnimg.cn/20200605140618427.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"> 可以发现Person函数自己的原型都有什么：</p>
+<ul>
+<li><code>constructor</code> (Person.prototype.constructor =&gt; Person)</li>
+<li><code>__proto__</code> （我们称它为隐式原型）</li>
+</ul>
+<p>此时我们得到了第一张表示构造函数和实例原型之间的关系图：</p>
+<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTEucG5n?x-oss-process=image/format,png" alt="构造函数和实例原型的关系图"></p>
+<p>那么我们该怎么表示实例与构造函数原型，也就是 person 和 Person.prototype 之间的关系呢，这时候我们就要讲到第二个属性：</p>
+<h3 id="2-2-proto-隐式原型"><a href="#2-2-proto-隐式原型" class="headerlink" title="2.2 proto(隐式原型)"></a>2.2 <strong>proto</strong>(隐式原型)</h3><p>这是每一个JavaScript对象(除了 null )都具有的一个属性，叫<code>__proto__</code>，这是一个访问器属性（即 getter 函数和 setter 函数），通过它可以访问到对象的内部<code>[[Prototype]]</code> (一个对象或 null )。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="built_in">console</span>.log(person.__proto__ === Person.prototype); <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<p>于是我们更新下关系图：</p>
+<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTIucG5n?x-oss-process=image/format,png" alt="实例与实例原型的关系图"></p>
+<p><strong>小结：</strong> 每个引用类型的隐式原型都指向它的构造函数的显式原型</p>
+<h3 id="2-3-constructor"><a href="#2-3-constructor" class="headerlink" title="2.3 constructor"></a>2.3 constructor</h3><p>前文提到了<code>constructor</code>，它与原型的关系也可以添加到这张图里，更新下关系图：</p>
+<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTMucG5n?x-oss-process=image/format,png" alt="实例原型与构造函数的关系图"> 根据上图的关系，下面这段的结果，大家就一目了然了：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(person.__proto__ == Person.prototype) <span class="comment">// true</span></span><br><span class="line"><span class="built_in">console</span>.log(Person.prototype.constructor == Person) <span class="comment">// true</span></span><br><span class="line"><span class="comment">// 顺便学习一个ES5的方法,可以获得对象的原型</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">Object</span>.getPrototypeOf(person) === Person.prototype) <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<p>接下来我们要继续思考实例和原型的关系：</p>
+<h2 id="三、实例与原型"><a href="#三、实例与原型" class="headerlink" title="三、实例与原型"></a>三、实例与原型</h2><p>当读取实例的属性时，如果找不到，就会查找与对象关联的原型中的属性，如果还查不到，就去找原型的原型，一直找到最顶层为止。这样一个查找过程</p>
+<p>举个例子：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line">Person.prototype.name = <span class="string">&#x27;老王&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line">person.name = <span class="string">&#x27;余光&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(person.name) <span class="comment">// 余光</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span> person.name;</span><br><span class="line"><span class="built_in">console</span>.log(person.name) <span class="comment">// 老王</span></span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中，我们给实例对象 person 添加了 name 属性，当我们打印 person.name 的时候，结果自然为 余光（is me）。</p>
+<p><strong>描述：</strong></p>
+<p>但是当我们删除了 person 的 name 属性后，再次读取 person.name，从 person 对象中找不到 name 属性就会从 person 的原型也就是 person.<strong>proto</strong> ，也就是 Person.prototype中查找，幸运的是我们找到了 name 属性，结果为 老王（这…）</p>
+<p><strong>总结：</strong></p>
+<ul>
+<li>尝试遍历<code>实例a</code>中的所有属性，但没有找到目标属性；</li>
+<li>查找<code>name</code>属性的这个请求被委托给该<code>实例a</code>的构造器(<code>A</code>)的原型，它被<code>a.__proto__</code> 记录着并且指向A.prototype；</li>
+<li>A.prototype存在目标属性，返回他的值；</li>
+</ul>
+<p>但是万一还没有找到呢？原型的原型又是什么呢？</p>
+<h2 id="四、原型的原型"><a href="#四、原型的原型" class="headerlink" title="四、原型的原型"></a>四、原型的原型</h2><p>在前面，我们已经讲了原型也是一个对象，既然是对象，我们就可以用最原始的方式创建它，那就是：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">obj.name = <span class="string">&#x27;余光&#x27;</span></span><br><span class="line"><span class="built_in">console</span>.log(obj.name) <span class="comment">// 余光</span></span><br></pre></td></tr></table></figure>
+
+<p>其实原型对象就是通过<code>Object</code>构造函数生成的，结合之前所讲，实例的 <code>__proto__</code> 指向构造函数的 <code>prototype</code> ，可以理解成，<code>Object.prototype()</code>是所有对象的根对象，所以我们再次更新下关系图：</p>
+<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTQucG5n?x-oss-process=image/format,png" alt="原型的原型关系图"></p>
+<h2 id="五、原型链"><a href="#五、原型链" class="headerlink" title="五、原型链"></a>五、原型链</h2><p>每个对象拥有一个原型对象，通过 <code>__proto__</code> 指针指向上一个原型 ，并从中继承方法和属性，同时原型对象也可能拥有原型，这样一层一层，最终指向 <code>null</code>。<strong>这种关系被称为原型链</strong> (prototype chain)，通过原型链一个对象会拥有定义在其他对象中的属性和方法。</p>
+<p>这个链条存在着终点，是因为：Object.prototype 的原型是——null，引用阮一峰老师的 <a href="http://www.ruanyifeng.com/blog/2014/03/undefined-vs-null.html">《undefined与null的区别》 (opens new window)</a>就是：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">null 表示“没有对象”，即该处不应该有值。这句话也意味着 Object.prototype 没有原型</span><br></pre></td></tr></table></figure>
+
+<p>我们最后更新一次关系图，蓝色线条就可以表示原型链这种关系。</p>
+<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTUucG5n?x-oss-process=image/format,png" alt="原型链示意图"></p>
+<h3 id="补充，易错点"><a href="#补充，易错点" class="headerlink" title="补充，易错点"></a>补充，易错点</h3><p><strong>1.constructor</strong> 首先是 constructor 属性，我们看个例子：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="built_in">console</span>.log(person.constructor === Person); <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<p>当获取 person.constructor 时，其实 person 中并没有 constructor 属性,当不能读取到constructor 属性时，会从 person 的原型也就是 Person.prototype 中读取，正好原型中有该属性，所以：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">person.constructor === Person.prototype.constructor</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.<code>__proto__</code></strong></p>
+<p>其次是 <strong>proto</strong> ，绝大部分浏览器都支持这个非标准的方法访问原型，然而它并不存在于 Person.prototype 中，实际上，它是来自于 Object.prototype ，与其说是一个属性，不如说是一个 getter/setter，当使用 obj.<strong>proto</strong> 时，可以理解成返回了 Object.getPrototypeOf(obj)。</p>
+<p><strong>3.真的是继承吗？</strong></p>
+<p>最后是关于继承，前面我们讲到“每一个对象都会从原型‘继承’属性”，实际上，继承是一个十分具有迷惑性的说法，引用《你不知道的JavaScript》中的话，就是：</p>
+<p>继承意味着复制操作，然而 JavaScript 默认并不会复制对象的属性，相反，JavaScript 只是在两个对象之间创建一个关联，这样，一个对象就可以通过委托访问另一个对象的属性和函数，所以与其叫继承，<strong>委托</strong>的说法反而更准确些。</p>
+<h2 id="六、总结"><a href="#六、总结" class="headerlink" title="六、总结"></a>六、总结</h2><ul>
+<li>使用<strong>new</strong>生成实例的函数就是构造函数，直接调用的就是普通函数；</li>
+<li>每个对象都拥有一个原型对象；</li>
+<li>每个引用类型的隐式原型都指向它的构造函数的显式原型；</li>
+<li>Object.prototype是所有对象的根对象；</li>
+<li>原型链存在终点，不会无限查找下去；</li>
+</ul>
+]]></content>
+      <categories>
+        <category>javascript</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>JavaScript基础（一）this</title>
     <url>/2021/03/20/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89this/</url>
     <content><![CDATA[<h3 id="一、this的指向"><a href="#一、this的指向" class="headerlink" title="一、this的指向"></a>一、this的指向</h3><p>百度、谷歌上输入“this的指向”关键字，大几千条文章肯定是有的，总不至于为了全方面、无死角的掌握它就要将所有的文章都看一遍吧？所以不如梳理出一个稳固的框架，我们一起来填充它。</p>
@@ -335,318 +545,6 @@
       </tags>
   </entry>
   <entry>
-    <title>JavaScript基础（三）作用域</title>
-    <url>/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89%E4%BD%9C%E7%94%A8%E5%9F%9F/</url>
-    <content><![CDATA[<blockquote>
-<p>作用域的篇幅不会太长，作为自己对Js总结的第三篇文章，主要是承上启下。 之后会涉及到执行上下文，闭包等相关专题，为了避免内容过多，作用域这一部分单独总结。</p>
-</blockquote>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/%E4%B8%8B%E8%BD%BD.jpeg" style="zoom:67%;" />
-
-<span id="more"></span>
-
-<h2 id="一、作用域的定义"><a href="#一、作用域的定义" class="headerlink" title="一、作用域的定义"></a>一、作用域的定义</h2><p><strong>一张导图概括本节内容</strong> <img data-src="https://img-blog.csdnimg.cn/20200609102448438.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"> <strong>1.1 常见的解释</strong></p>
-<ol>
-<li>一段程序代码中所用到的<strong>名字</strong>并不总是有效，而限定它的可用性的范围就是这个名字的作用域；</li>
-<li>作用域规定了<strong>如何查找变量</strong>，也就是确定当前执行代码对变量的访问权限；</li>
-<li>通俗的讲作用域就是<strong>一套规则</strong>，用于确定在何处以及如何查找<strong>某个变量</strong>的规则</li>
-</ol>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(a); <span class="comment">// 100</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(a) <span class="comment">// a is not defined a变量并不是任何地方都可以被找到的</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>1.2 JavaScript中作用域工作模型</strong></p>
-<p>JavaScript 采用是词法作用域(lexical scoping)，也就是静态作用域：</p>
-<ul>
-<li>函数的作用域在函数定义的时候就决定了</li>
-</ul>
-<p>与之对应的还有一个动态作用域：</p>
-<ul>
-<li>函数的作用域是在函数调用的时候才决定的；</li>
-</ul>
-<p><strong>1.3 全局变量和局部变量</strong></p>
-<p>根据定义变量的方式又可以分为：</p>
-<p>局部变量：只能在函数中访问，该函数外不可访问；</p>
-<ul>
-<li>定义在函数中的变量</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(name);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br><span class="line">fn(); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
-
-<p>全局：任何地方都能访问到的对象拥有全局作用域。</p>
-<ul>
-<li>函数外定义的变量</li>
-<li>所有末定义直接赋值的变量自动声明为拥有全局作用域</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a4-&#x27;</span>,a);</span><br></pre></td></tr></table></figure>
-
-<p>注意：在ES6之后又提出了块级作用域，它们之间的区别我们之后再来讨论。</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=2659298556,3987226078&fm=26&gp=0.jpeg"></p>
-<h2 id="二、理解作用域"><a href="#二、理解作用域" class="headerlink" title="二、理解作用域"></a>二、理解作用域</h2><p>根据第一节的描述，我们一一验证一下</p>
-<p><strong>2.1 理解词法作用域</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> value = <span class="number">1</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> value = <span class="number">2</span>;</span><br><span class="line">    foo();</span><br><span class="line">&#125;</span><br><span class="line">bar();</span><br></pre></td></tr></table></figure>
-
-<p>我们结合定义去分析：</p>
-<ul>
-<li>执行<code>bar</code>函数，函数内部形成了局部作用域；</li>
-<li>声明value变量，并赋值2</li>
-<li>执行<code>foo</code>函数，函数foo的作用域内没有<code>value</code>这个变量，它会向外查找</li>
-<li>根据词法作用域的规则，函数定义时，<code>foo</code>的外部作用域为全局作用域</li>
-<li>打印<strong>结果是1</strong></li>
-</ul>
-<p>如果是动态作用域的话：结果<strong>就是2</strong>，不知道你是否想明白了？</p>
-<p><strong>2.2 全局变量</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;全局变量&#x27;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(str+<span class="number">1</span>);</span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		<span class="built_in">console</span>.log(str+<span class="number">2</span>);</span><br><span class="line">		<span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">			<span class="built_in">console</span>.log(str+<span class="number">3</span>);</span><br><span class="line">		&#125;;</span><br><span class="line">		fn();</span><br><span class="line">	&#125;;</span><br><span class="line">	childFn();</span><br><span class="line">&#125;</span><br><span class="line">func();</span><br><span class="line"><span class="comment">// 全局变量1</span></span><br><span class="line"><span class="comment">// 全局变量2</span></span><br><span class="line"><span class="comment">// 全局变量3</span></span><br></pre></td></tr></table></figure>
-
-<p>再来分析下面的代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line"><span class="comment">// a2- 100 // 在当前作用域下查找变量a =&gt; 100</span></span><br><span class="line"><span class="comment">// a1- 1000 // 函数执行时，全局变量a已经被重新赋值</span></span><br><span class="line"><span class="comment">// a3- 1000 // 全局变量a =&gt; 1000</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>2.3 局部作用域</strong></p>
-<p>局部作用域一般只在固定的代码片段内可访问到，最常见的就是以函数为单位的：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name=<span class="string">&quot;高原&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(name);</span><br><span class="line">    &#125;</span><br><span class="line">    childFn(); <span class="comment">// 高原</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// name is not defined</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="三、作用域链"><a href="#三、作用域链" class="headerlink" title="三、作用域链"></a>三、作用域链</h2><p><strong>3.1 当查找变量的时候都发生了什么？</strong></p>
-<ul>
-<li>会先从当前<strong>上下文的变量对象</strong>中查找；</li>
-<li>如果没有找到，就会从父级(词法层面上的父级)<strong>执行上下文</strong>的变量对象中查找；</li>
-<li>一直找到全局上下文的变量对象，也就是全局对象；</li>
-<li>作用域链的顶端就是全局对象；</li>
-</ul>
-<p>这样<strong>由多个执行上下文的变量对象构成的链表就叫做作用域链</strong>，从某种意义上很类似原型和原型链。</p>
-<p><strong>3.2 作用域链和原型继承查找时的区别：</strong></p>
-<ul>
-<li>查找一个普通对象的属性，但是在当前对象和其原型中都找不到时，会返回<code>undefined</code></li>
-<li>查找的属性在作用域链中不存在的话就会抛出<code>ReferenceError</code>。</li>
-</ul>
-<p><strong>3.3 作用域嵌套</strong></p>
-<p>既然每一个函数就可以形成一个作用域（<code>词法作用域</code> || <code>块级作用域</code>），那么当然也会存在多个作用域嵌套的情况，他们遵循这样的查询规则：</p>
-<ul>
-<li>内部作用域有权访问外部作用域;</li>
-<li>外部作用域无法访问内部作用域;（真是是这样吗？）</li>
-<li>兄弟作用域不可互相访问;</li>
-</ul>
-<p>在《你不知道的Js》中，希望读者可以将作用域的嵌套和作用域链想象成这样：</p>
-<p><img data-src="https://img-blog.csdnimg.cn/2020060915193493.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<h2 id="四、思考与总结"><a href="#四、思考与总结" class="headerlink" title="四、思考与总结"></a>四、思考与总结</h2><p><strong>4.1 总结</strong></p>
-<p><img data-src="https://img-blog.csdnimg.cn/20200609160809565.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<p><strong>4.2 思考</strong></p>
-<p>最后，让我们看一个《JavaScript权威指南》中的两段代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f(); <span class="comment">// 注意</span></span><br><span class="line">&#125;</span><br><span class="line">checkscope1();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope2</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line">checkscope2()();</span><br></pre></td></tr></table></figure>
-
-<p>两段代码的结果都是”local scope”，书中的回答是：JavaScript 函数的执行用到了作用域链，这个作用域链是在函数定义的时候创建的。嵌套的函数 f() 定义在这个作用域链里，其中的变量 scope 一定是局部变量，不管何时何地执行函数 f()，这种绑定在执行 f() 时依然有效。</p>
-<p>但是它们内部经历的事情是一样的吗？</p>
-]]></content>
-      <categories>
-        <category>javascript</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>JavaScript基础（五）闭包</title>
-    <url>/2021/03/25/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%94%EF%BC%89%E9%97%AD%E5%8C%85/</url>
-    <content><![CDATA[<h2 id="一、什么是闭包"><a href="#一、什么是闭包" class="headerlink" title="一、什么是闭包"></a>一、什么是闭包</h2><p>顾名思义，遇见问题先问为什么是我们一贯的思维方式，我们尝试回答一下：</p>
-<ol>
-<li>闭包就是函数内部的子函数—— <code>等于没说</code></li>
-<li>当函数可以记住并访问所在的词法作用域时，就产生了闭包，即使函数是在当前词法作用域之外执行。——<code>靠谱</code></li>
-<li>闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁——<code>靠谱</code></li>
-<li>函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）——<code>很靠谱</code></li>
-</ol>
-<p>我们试着用代码来描述一下上面的回答，看看你最<strong>中意</strong>哪一个～</p>
-<span id="more"></span>
-
-<h3 id="1-1-闭包是函数内部的子函数"><a href="#1-1-闭包是函数内部的子函数" class="headerlink" title="1.1 闭包是函数内部的子函数"></a>1.1 闭包是函数内部的子函数</h3><p>先看这段代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(a);</span><br><span class="line">    &#125;</span><br><span class="line">    bar()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-
-<p>基于词法作用域的查找规则，<code>bar函数</code>可以成功的打印<code>a</code>变量，并且它也是<code>foo</code>的子函数，但严格来说它并没有清晰的表达出闭包这一概念，说它表达的是<strong>嵌套函数可以访问声明于大外部作用域的变量</strong>更准确一些。</p>
-<h3 id="1-2-闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁"><a href="#1-2-闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁" class="headerlink" title="1.2 闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁"></a>1.2 闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁</h3><p>再来看下面的例子：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(a);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> bar;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> res = foo();</span><br><span class="line">res(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-
-<p>结果一致，这是因为此时<code>res</code>是执行<code>foo</code>函数时返回的<code>bar</code>引用，bar函数得以保存了它饿词法环境。</p>
-<h3 id="1-3-函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）"><a href="#1-3-函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）" class="headerlink" title="1.3 函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）"></a>1.3 函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）</h3><p>我们来看下面代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(name); <span class="comment">// gaoyuan</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">//gaoyuan</span></span><br></pre></td></tr></table></figure>
-
-<p>foo的上下文被静态的保存了下来，而且是在该函数创建的时候就保存了。下面我们来验证一下：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(name); <span class="comment">// gaoyuan</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params">func</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;老王&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    func()</span><br><span class="line">&#125;)(foo); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-
-<p>这里我们就可以理解——函数被创建后就形成了闭包，他们保存了上层上下文的作用域链，并且保存在<code>[[scope]]</code>中，如果你对<code>[[scope]]</code>的概念已经模糊了，不妨花几分钟看看《JavaScript中的执行上下文》这篇文章。</p>
-<h3 id="1-4-总结"><a href="#1-4-总结" class="headerlink" title="1.4 总结"></a>1.4 总结</h3><p><strong>注意：闭包是函数内部的返回的子函数这句话本身没错</strong>，但要看从什么角度出发：</p>
-<p>ECMAScript中，闭包指的是：</p>
-<ol>
-<li>从理论角度：所有的函数。因为它们都在创建的时候就将上层上下文的数据保存起来了。哪怕是简单的全局变量也是如此，因为函数中访问全局变量就相当于是在访问自由变量，这个时候使用最外层的作用域。</li>
-<li>从实践角度：以下函数才算是闭包：<ul>
-<li>即使创建它的上下文已经销毁，它仍然存在（比如，内部函数从父函数中返回）</li>
-<li>在代码中引用了自由变量</li>
-</ul>
-</li>
-</ol>
-<p><strong>总结：</strong></p>
-<ul>
-<li>闭包代码块创建该代码块的上下文中数据的结合</li>
-<li>闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁</li>
-<li>不同的角度对闭包的解释不同的</li>
-</ul>
-<p>注意：这些并不是闭包的全部，就好像当你被问到——闭包是什么的时候，你的上述回答并不能结束这个话题，往往会引申出更多的话题。</p>
-<h2 id="二、尝试分析闭包"><a href="#二、尝试分析闭包" class="headerlink" title="二、尝试分析闭包"></a>二、尝试分析闭包</h2><p>还是那段经典代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = checkscope();</span><br><span class="line">foo(); <span class="comment">// local scope</span></span><br></pre></td></tr></table></figure>
-
-<p>首先我们要分析一下这段代码中执行上下文栈和执行上下文的变化情况。</p>
-<ol>
-<li>进入全局代码，创建全局执行上下文，全局执行上下文压入执行上下文栈</li>
-<li>全局执行上下文初始化</li>
-<li>执行 checkscope 函数，创建 checkscope 函数执行上下文，checkscope 执行上下文被压入执行上下文栈</li>
-<li>checkscope 执行上下文初始化，创建变量对象、作用域链、this等</li>
-<li>checkscope 函数执行完毕，checkscope 执行上下文从执行上下文栈中弹出</li>
-<li>执行 f 函数，创建 f 函数执行上下文，f 执行上下文被压入执行上下文栈</li>
-<li>f 执行上下文初始化，创建变量对象、作用域链、this等</li>
-<li>f 函数执行完毕，f 函数上下文从执行上下文栈中弹出</li>
-</ol>
-<p><img data-src="https://img-blog.csdnimg.cn/20200628152924827.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<p>当 <code>f</code> 函数执行的时候，<code>checkscope</code> 函数上下文已经被销毁了啊(即从执行上下文栈中被弹出)，怎么还会读取到 <code>checkscope</code> 作用域下的 <code>scope</code> 值呢？</p>
-<p>当我们了解了具体的执行过程后，我们知道 f 执行上下文维护了一个作用域链：</p>
-<p>因为这个作用域链：</p>
-<ul>
-<li><code>f 函数</code>依然可以读取到 <code>checkscopeContext.AO</code> 的值；</li>
-<li>当 <code>f 函数</code>引用了 <code>checkscopeContext.AO</code> 中的值的时候，即使 <code>checkscopeContext</code> 被销毁了，JavaScript 依然会让 <code>checkscopeContext.AO</code> 活在内存中;</li>
-<li><code>f 函数</code>依然可以通过 <code>f 函数</code>的作用域链找到它，正是因为 JavaScript 做到了这一点，从而实现了闭包这个概念。</li>
-</ul>
-<p>多么浪漫的思想——只要你需要我，那我我本应该被销毁，你也能找到我～</p>
-<h2 id="三、经典问题"><a href="#三、经典问题" class="headerlink" title="三、经典问题"></a>三、经典问题</h2><h3 id="3-1-多个对象引用同一个-Scope-，你遇到过吗？"><a href="#3-1-多个对象引用同一个-Scope-，你遇到过吗？" class="headerlink" title="3.1 多个对象引用同一个[[Scope]]，你遇到过吗？"></a>3.1 多个对象引用同一个[[Scope]]，你遇到过吗？</h3><p>直接上代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> child1;</span><br><span class="line"><span class="keyword">var</span> child2;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">parent</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> x = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    child1 = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(++x)</span><br><span class="line">    &#125;;</span><br><span class="line">    child2 = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(--x)</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line">parent();</span><br><span class="line">child1(); <span class="comment">// 2</span></span><br><span class="line">child1(); <span class="comment">// 3</span></span><br><span class="line">child2(); <span class="comment">// 2</span></span><br></pre></td></tr></table></figure>
-
-<p>大家可能不理解，<code>child1</code>和<code>child</code>他们两个函数在创建后都保存了上层上下文，万万没想到，<strong>同一个上下文创建的闭包是共用一个<code>[[scope]]</code>属性的</strong>，某个闭包对其中[[Scope]]的变量做修改会影响到其他闭包对其变量的读取。</p>
-<h3 id="3-2-闭包轻松解决的经典问题"><a href="#3-2-闭包轻松解决的经典问题" class="headerlink" title="3.2 闭包轻松解决的经典问题"></a>3.2 闭包轻松解决的经典问题</h3><p>大家一定对下面这段代码很眼熟：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = []</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">    arr[i] = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(i)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">arr[<span class="number">0</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">1</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">2</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">3</span>](); <span class="comment">// 10</span></span><br></pre></td></tr></table></figure>
-
-<p>我们这么解释它：<strong>同一个上下文中创建的闭包是共用一个[[Scope]]属性的</strong>。</p>
-<p>因此上层上下文中的变量<code>i</code>是可以很容易就被改变的。</p>
-<p>arr[0],arr[1]…arr[9]他们共用一个[[scope]]，最终执行的时候结果当然一样。</p>
-<p><strong>如何利用闭包来解决这个问题呢？</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = []</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">    arr[i] = (<span class="function"><span class="keyword">function</span> (<span class="params">i</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)(i)</span><br><span class="line">&#125;</span><br><span class="line">arr[<span class="number">0</span>](); <span class="comment">// 0</span></span><br><span class="line">arr[<span class="number">1</span>](); <span class="comment">// 1</span></span><br><span class="line">arr[<span class="number">2</span>](); <span class="comment">// 2</span></span><br><span class="line">arr[<span class="number">3</span>](); <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
-
-<p>我们通过立即执行匿名函数的方式隔离了作用域，当执行 arr[0] 函数的时候，arr[0] 函数的作用域链发生了改变：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">arr[<span class="number">0</span>]Context = &#123;</span><br><span class="line">    Scope: [AO, 匿名函数Context.AO globalContext.VO]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>匿名函数执行上下文的AO为：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">匿名函数Context = &#123;</span><br><span class="line">    AO: &#123;</span><br><span class="line">        <span class="built_in">arguments</span>: &#123;</span><br><span class="line">            <span class="number">0</span>: <span class="number">0</span>,</span><br><span class="line">            length: <span class="number">1</span></span><br><span class="line">        &#125;,</span><br><span class="line">        i: <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>我们看到，这时函数的<code>[[Scope]]</code>属性就有了真正想要的值了，为了达到这样的目的，我们不得不在<code>[[Scope]]</code>中创建额外的变量对象。要注意的是，在返回的函数中，如果要获取<code>i</code>的值，那么该值还是会是10。</p>
-<h3 id="3-3-总结"><a href="#3-3-总结" class="headerlink" title="3.3 总结"></a>3.3 总结</h3><ul>
-<li>函数内的所有内部函数都共享一个父作用域，因此创建的闭包是共用的。</li>
-<li>利用闭包隔离作用域的特性可以解决共享作用域的问题</li>
-</ul>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&fm=26&gp=0.jpeg"></p>
-]]></content>
-      <categories>
-        <category>javascript</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>JavaScript基础（二）从原型到原型链</title>
-    <url>/2021/03/21/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%E4%BB%8E%E5%8E%9F%E5%9E%8B%E5%88%B0%E5%8E%9F%E5%9E%8B%E9%93%BE/</url>
-    <content><![CDATA[<blockquote>
-<p>本文主要从构造函数 -&gt; 原型（隐式原型+显示原型）-&gt; 原型链的顺序，渐进式讲解，希望对你有所做帮助，共勉～</p>
-</blockquote>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>又到了回忆过去的时候了，知识就是这样，原型和原型链在我之前的实习生涯中用到的很少——几乎没有（噗！我菜我摊牌了），但是它和this指向问题一样，是初级、中级前端开发在面试时永远绕不开的话题。是不是大家每次看面经的时候都会去搜索原型相关的知识点？</p>
-<p>你看这知识，总是在考的时候，才能知道它的重要，就好像曾经有一段贼拉真挚的面试题摆在我面前…话题拉回来，今天我们就收了这个<strong>孽障</strong>！</p>
-<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/src=http___img.wxcha.com_file_201711_22_e1655873d2.jpg&refer=http___img.wxcha.jpeg" style="zoom:50%;" />
-
-<span id="more"></span>
-
-<h2 id="一、构造函数"><a href="#一、构造函数" class="headerlink" title="一、构造函数"></a>一、构造函数</h2><h3 id="1-1-什么是构造函数？"><a href="#1-1-什么是构造函数？" class="headerlink" title="1.1 什么是构造函数？"></a>1.1 什么是构造函数？</h3><p>构造函数本身就是一个函数，与普通函数没有任何区别，不过<strong>为了规范一般将其首字母大写</strong>。构造函数和普通函数的区别在于，使用<strong>new</strong>生成实例的函数就是构造函数，直接调用的就是普通函数。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="built_in">console</span>.log(person.name) <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-
-<p>在这个例子中，Person 就是一个构造函数。</p>
-<h3 id="1-2-constructor？"><a href="#1-2-constructor？" class="headerlink" title="1.2 constructor？"></a>1.2 constructor？</h3><p><code>constructor</code> 返回创建实例对象时构造函数的引用。此属性的值是对函数本身的引用，而不是一个包含函数名称的字符串。</p>
-<p><img data-src="https://img-blog.csdnimg.cn/20200604185358168.png" alt="被构造出来的person的"> 可以看到实例对象的constructor指向了它的构造函数，而它和原型的关系我们在之后会链接到一起。</p>
-<h3 id="1-3-都有哪些数据类型或者函数拥有constructor呢？"><a href="#1-3-都有哪些数据类型或者函数拥有constructor呢？" class="headerlink" title="1.3 都有哪些数据类型或者函数拥有constructor呢？"></a>1.3 都有哪些数据类型或者函数拥有<code>constructor</code>呢？</h3><p>在JavaScript中，每个具有<strong>原型</strong>的对象都会自动获得constructor属性。除了：<code>arguments</code>、<code>Enumerator</code>、<code>Error</code>、<code>Global</code>、<code>Math</code>、<code>RegExp</code>等一些特殊对象之外，其他所有的JavaScript内置对象都具备constructor属性。例如：<code>Array</code>、<code>Boolean</code>、<code>Date</code>、<code>Function</code>、<code>Number</code>、<code>Object</code>、<code>String</code>等。所有主流浏览器均支持该属性。打开控制台我们可以验证一下</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 字符串</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;str&#x27;</span>.constructor) <span class="comment">// ƒ String() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;str&#x27;</span>.constructor === <span class="built_in">String</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 数组</span></span><br><span class="line"><span class="built_in">console</span>.log([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].constructor) <span class="comment">// ƒ Array() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].constructor === <span class="built_in">Array</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 数字</span></span><br><span class="line"><span class="keyword">var</span> num = <span class="number">1</span></span><br><span class="line"><span class="built_in">console</span>.log(num.constructor) <span class="comment">// ƒ Number() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(num.constructor === <span class="built_in">Number</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Date</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">new</span> <span class="built_in">Date</span>().constructor) <span class="comment">// ƒ Date() &#123; [native code] &#125;</span></span><br><span class="line"><span class="comment">// 注意！！！不要混淆哦</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">new</span> <span class="built_in">Date</span>().getTime().constructor) <span class="comment">// ƒ Number() &#123; [native code] &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Boolean</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">true</span>.constructor) <span class="comment">// ƒ Boolean() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">true</span>.constructor === <span class="built_in">Boolean</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">console</span>.log(show.constructor) <span class="comment">// ƒ Function() &#123; [native code] &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义构造函数，无返回值</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = name;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> p = <span class="keyword">new</span> Person()</span><br><span class="line"><span class="built_in">console</span>.log(p.constructor) <span class="comment">// ƒ Person()</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 有返回值</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = name;</span><br><span class="line">	<span class="keyword">return</span> &#123;</span><br><span class="line">		name: <span class="string">&#x27;gaoyuan&#x27;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> p = Person()</span><br><span class="line"><span class="built_in">console</span>.log(p1.constructor) <span class="comment">// ƒ Object() &#123; [native code] &#125;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="1-4-模拟实现一个new"><a href="#1-4-模拟实现一个new" class="headerlink" title="1.4 模拟实现一个new"></a>1.4 模拟实现一个new</h3><p>既然构造函数与普通函数的区别仅仅在于调用方式上，我们就应该了解new。</p>
-<ul>
-<li>当调用<code>new</code>运算符时，该函数总会返回一个对象；</li>
-<li>通常情况下，构造器里的this就指向返回的这个对象；</li>
-</ul>
-<p>代码如下：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">通常情况下</span><br><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass();</span><br><span class="line">obj.name; <span class="comment">// gaoyuan</span></span><br><span class="line"></span><br><span class="line">特殊情况</span><br><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">	<span class="keyword">return</span> &#123;</span><br><span class="line">		name: <span class="string">&#x27;老王&#x27;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass();</span><br><span class="line">obj.name <span class="comment">// 老王</span></span><br></pre></td></tr></table></figure>
-
-<p>我们利用 <code>__proto__</code>（隐式原型，下文会提到）属性来模拟一下new 调用构造函数的过程：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> objectNew = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="comment">// 从object.prototype上克隆一个空的对象</span></span><br><span class="line">    <span class="keyword">var</span> obj = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">    <span class="comment">// 取得外部传入的构造器，这里是Person</span></span><br><span class="line">    <span class="keyword">var</span> Constructor = [].shift.call( <span class="built_in">arguments</span> );</span><br><span class="line">    <span class="comment">// 更新，指向正确的原型</span></span><br><span class="line">    obj.__proto__ = Constructor.prototype; <span class="comment">//知识点，要考、要考、要考</span></span><br><span class="line">    <span class="comment">// 借用外部传入的构造器给obj设置属性</span></span><br><span class="line">    <span class="keyword">var</span> ret = Constructor.apply(obj, <span class="built_in">arguments</span>);</span><br><span class="line">    <span class="comment">// 确保构造器总是返回一个对象</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">typeof</span> ref === <span class="string">&#x27;object&#x27;</span> ? ret : obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&fm=26&gp=0.jpeg" style="zoom: 67%;" />
-
-<h2 id="二、原型"><a href="#二、原型" class="headerlink" title="二、原型"></a>二、原型</h2><h3 id="2-1-prototype-显式原型"><a href="#2-1-prototype-显式原型" class="headerlink" title="2.1 prototype(显式原型)"></a>2.1 prototype(显式原型)</h3><p>JavaScript 是一种基于原型的语言 (prototype-based language)，在设计的时候模仿了Java的两套类型机制：<code>基本类型</code> 和 <code>对象类型</code>。可见原型很重要！</p>
-<p>每个对象都拥有一个原型对象，类是以函数的形式来定义的。prototype表示该函数的原型，也表示一个类的成员的集合。看下图： <img data-src="https://img-blog.csdnimg.cn/20200605140618427.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"> 可以发现Person函数自己的原型都有什么：</p>
-<ul>
-<li><code>constructor</code> (Person.prototype.constructor =&gt; Person)</li>
-<li><code>__proto__</code> （我们称它为隐式原型）</li>
-</ul>
-<p>此时我们得到了第一张表示构造函数和实例原型之间的关系图：</p>
-<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTEucG5n?x-oss-process=image/format,png" alt="构造函数和实例原型的关系图"></p>
-<p>那么我们该怎么表示实例与构造函数原型，也就是 person 和 Person.prototype 之间的关系呢，这时候我们就要讲到第二个属性：</p>
-<h3 id="2-2-proto-隐式原型"><a href="#2-2-proto-隐式原型" class="headerlink" title="2.2 proto(隐式原型)"></a>2.2 <strong>proto</strong>(隐式原型)</h3><p>这是每一个JavaScript对象(除了 null )都具有的一个属性，叫<code>__proto__</code>，这是一个访问器属性（即 getter 函数和 setter 函数），通过它可以访问到对象的内部<code>[[Prototype]]</code> (一个对象或 null )。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="built_in">console</span>.log(person.__proto__ === Person.prototype); <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
-
-<p>于是我们更新下关系图：</p>
-<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTIucG5n?x-oss-process=image/format,png" alt="实例与实例原型的关系图"></p>
-<p><strong>小结：</strong> 每个引用类型的隐式原型都指向它的构造函数的显式原型</p>
-<h3 id="2-3-constructor"><a href="#2-3-constructor" class="headerlink" title="2.3 constructor"></a>2.3 constructor</h3><p>前文提到了<code>constructor</code>，它与原型的关系也可以添加到这张图里，更新下关系图：</p>
-<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTMucG5n?x-oss-process=image/format,png" alt="实例原型与构造函数的关系图"> 根据上图的关系，下面这段的结果，大家就一目了然了：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(person.__proto__ == Person.prototype) <span class="comment">// true</span></span><br><span class="line"><span class="built_in">console</span>.log(Person.prototype.constructor == Person) <span class="comment">// true</span></span><br><span class="line"><span class="comment">// 顺便学习一个ES5的方法,可以获得对象的原型</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">Object</span>.getPrototypeOf(person) === Person.prototype) <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
-
-<p>接下来我们要继续思考实例和原型的关系：</p>
-<h2 id="三、实例与原型"><a href="#三、实例与原型" class="headerlink" title="三、实例与原型"></a>三、实例与原型</h2><p>当读取实例的属性时，如果找不到，就会查找与对象关联的原型中的属性，如果还查不到，就去找原型的原型，一直找到最顶层为止。这样一个查找过程</p>
-<p>举个例子：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line">Person.prototype.name = <span class="string">&#x27;老王&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line">person.name = <span class="string">&#x27;余光&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(person.name) <span class="comment">// 余光</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span> person.name;</span><br><span class="line"><span class="built_in">console</span>.log(person.name) <span class="comment">// 老王</span></span><br></pre></td></tr></table></figure>
-
-<p>在这个例子中，我们给实例对象 person 添加了 name 属性，当我们打印 person.name 的时候，结果自然为 余光（is me）。</p>
-<p><strong>描述：</strong></p>
-<p>但是当我们删除了 person 的 name 属性后，再次读取 person.name，从 person 对象中找不到 name 属性就会从 person 的原型也就是 person.<strong>proto</strong> ，也就是 Person.prototype中查找，幸运的是我们找到了 name 属性，结果为 老王（这…）</p>
-<p><strong>总结：</strong></p>
-<ul>
-<li>尝试遍历<code>实例a</code>中的所有属性，但没有找到目标属性；</li>
-<li>查找<code>name</code>属性的这个请求被委托给该<code>实例a</code>的构造器(<code>A</code>)的原型，它被<code>a.__proto__</code> 记录着并且指向A.prototype；</li>
-<li>A.prototype存在目标属性，返回他的值；</li>
-</ul>
-<p>但是万一还没有找到呢？原型的原型又是什么呢？</p>
-<h2 id="四、原型的原型"><a href="#四、原型的原型" class="headerlink" title="四、原型的原型"></a>四、原型的原型</h2><p>在前面，我们已经讲了原型也是一个对象，既然是对象，我们就可以用最原始的方式创建它，那就是：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">obj.name = <span class="string">&#x27;余光&#x27;</span></span><br><span class="line"><span class="built_in">console</span>.log(obj.name) <span class="comment">// 余光</span></span><br></pre></td></tr></table></figure>
-
-<p>其实原型对象就是通过<code>Object</code>构造函数生成的，结合之前所讲，实例的 <code>__proto__</code> 指向构造函数的 <code>prototype</code> ，可以理解成，<code>Object.prototype()</code>是所有对象的根对象，所以我们再次更新下关系图：</p>
-<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTQucG5n?x-oss-process=image/format,png" alt="原型的原型关系图"></p>
-<h2 id="五、原型链"><a href="#五、原型链" class="headerlink" title="五、原型链"></a>五、原型链</h2><p>每个对象拥有一个原型对象，通过 <code>__proto__</code> 指针指向上一个原型 ，并从中继承方法和属性，同时原型对象也可能拥有原型，这样一层一层，最终指向 <code>null</code>。<strong>这种关系被称为原型链</strong> (prototype chain)，通过原型链一个对象会拥有定义在其他对象中的属性和方法。</p>
-<p>这个链条存在着终点，是因为：Object.prototype 的原型是——null，引用阮一峰老师的 <a href="http://www.ruanyifeng.com/blog/2014/03/undefined-vs-null.html">《undefined与null的区别》 (opens new window)</a>就是：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">null 表示“没有对象”，即该处不应该有值。这句话也意味着 Object.prototype 没有原型</span><br></pre></td></tr></table></figure>
-
-<p>我们最后更新一次关系图，蓝色线条就可以表示原型链这种关系。</p>
-<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTUucG5n?x-oss-process=image/format,png" alt="原型链示意图"></p>
-<h3 id="补充，易错点"><a href="#补充，易错点" class="headerlink" title="补充，易错点"></a>补充，易错点</h3><p><strong>1.constructor</strong> 首先是 constructor 属性，我们看个例子：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="built_in">console</span>.log(person.constructor === Person); <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
-
-<p>当获取 person.constructor 时，其实 person 中并没有 constructor 属性,当不能读取到constructor 属性时，会从 person 的原型也就是 Person.prototype 中读取，正好原型中有该属性，所以：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">person.constructor === Person.prototype.constructor</span><br></pre></td></tr></table></figure>
-
-<p><strong>2.<code>__proto__</code></strong></p>
-<p>其次是 <strong>proto</strong> ，绝大部分浏览器都支持这个非标准的方法访问原型，然而它并不存在于 Person.prototype 中，实际上，它是来自于 Object.prototype ，与其说是一个属性，不如说是一个 getter/setter，当使用 obj.<strong>proto</strong> 时，可以理解成返回了 Object.getPrototypeOf(obj)。</p>
-<p><strong>3.真的是继承吗？</strong></p>
-<p>最后是关于继承，前面我们讲到“每一个对象都会从原型‘继承’属性”，实际上，继承是一个十分具有迷惑性的说法，引用《你不知道的JavaScript》中的话，就是：</p>
-<p>继承意味着复制操作，然而 JavaScript 默认并不会复制对象的属性，相反，JavaScript 只是在两个对象之间创建一个关联，这样，一个对象就可以通过委托访问另一个对象的属性和函数，所以与其叫继承，<strong>委托</strong>的说法反而更准确些。</p>
-<h2 id="六、总结"><a href="#六、总结" class="headerlink" title="六、总结"></a>六、总结</h2><ul>
-<li>使用<strong>new</strong>生成实例的函数就是构造函数，直接调用的就是普通函数；</li>
-<li>每个对象都拥有一个原型对象；</li>
-<li>每个引用类型的隐式原型都指向它的构造函数的显式原型；</li>
-<li>Object.prototype是所有对象的根对象；</li>
-<li>原型链存在终点，不会无限查找下去；</li>
-</ul>
-]]></content>
-      <categories>
-        <category>javascript</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>JavaScript基础（四）立即调用函数</title>
     <url>/2021/03/24/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%9B%9B%EF%BC%89%E7%AB%8B%E5%8D%B3%E8%B0%83%E7%94%A8%E5%87%BD%E6%95%B0/</url>
     <content><![CDATA[<blockquote>
@@ -755,6 +653,56 @@
       </categories>
       <tags>
         <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>VUE组件之间通信的6种方式</title>
+    <url>/2021/02/20/VUE%E7%BB%84%E4%BB%B6%E4%B9%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E7%9A%846%E7%A7%8D%E6%96%B9%E5%BC%8F/</url>
+    <content><![CDATA[<h3 id="1-方法一：props和-emit"><a href="#1-方法一：props和-emit" class="headerlink" title="1.方法一：props和**$emit**"></a>1.方法一：<strong>props</strong>和**$emit**</h3><p>父组件通过props向下传递数据给子组件，子组件通过event给父组件发送消息，实际上就是子组件把自己的数据发送给父组件。</p>
+<h3 id="2-方法二：-attrs和-listeners"><a href="#2-方法二：-attrs和-listeners" class="headerlink" title="2.方法二：**$attrs和$listeners**"></a>2.方法二：**$attrs<strong>和</strong>$listeners**</h3><p>​    第一种方式处理父子组件之间的数据传输有一个问题：如果父组件A下面有子组件B，组件B下面有组件C,这时如果组件A想传递数据给组件C怎么办呢？ 如果采用第一种方法，我们必须让组件A通过prop传递消息给组件B，组件B在通过prop传递消息给组件C；要是组件A和组件C之间有更多的组件，那采用这种方式就很复杂了。Vue 2.4开始提供了$attrs和$listeners来解决这个问题，能够让组件A之间传递消息给组件C。</p>
+<span id="more"></span>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件C--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">        &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;$attrs.messagec&quot; @input&#x3D;&quot;passCData($attrs.messagec)&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;C&#39;,</span><br><span class="line">    data () &#123;</span><br><span class="line">      return &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passCData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发父组件A中的事件,把从A得到的数据hello C还给A组件</span><br><span class="line">        this.$emit(&#39;getCData&#39;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @input&#x3D;&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">    &lt;!-- C组件中能直接触发getCData的原因在于 B组件调用C组件时 使用 v-on 绑定了$listeners 属性 --&gt;</span><br><span class="line">    &lt;!-- 通过v-bind 绑定$attrs属性，C组件可以直接获取到A组件中传递下来的props（除了B组件中props声明的） --&gt;</span><br><span class="line">    &lt;C v-bind&#x3D;&quot;$attrs&quot; v-on&#x3D;&quot;$listeners&quot;&gt;&lt;&#x2F;C&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;B&#39;,</span><br><span class="line">    props:[</span><br><span class="line">      message:&#123;</span><br><span class="line">        type: String,</span><br><span class="line">        default: null</span><br><span class="line">      &#125;</span><br><span class="line">    ],&#x2F;&#x2F;得到父组件A传递过来的数据,hello B</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发父组件中的事件,把message给组件A</span><br><span class="line">        this.$emit(&#39;getChildData&#39;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;B </span><br><span class="line">     :messagec&#x3D;&quot;messagec&quot; </span><br><span class="line">     :message&#x3D;&quot;message&quot; </span><br><span class="line">     :getCData&#x3D;&quot;getCData&quot;</span><br><span class="line">     :getChildData&#x3D;&quot;getChildData&quot;&gt;&lt;&#x2F;B&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;A&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#39;hello B&#39;,</span><br><span class="line">        messagec:&#39;hello C&#39; &#x2F;&#x2F;传递给c组件的数据</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      getChildData(val)&#123;</span><br><span class="line">        console.log(&#39;这是来自B组件的数据&#39;,val) &#x2F;&#x2F;打印hello B</span><br><span class="line">      &#125;,</span><br><span class="line">      &#x2F;&#x2F;执行C子组件触发的事件</span><br><span class="line">      getCData(val)&#123;</span><br><span class="line">        console.log(&quot;这是来自C组件的数据：&quot;, val) &#x2F;&#x2F;打印hello C</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-方法3：provide和-inject"><a href="#3-方法3：provide和-inject" class="headerlink" title="3.方法3：provide和 inject"></a>3.方法3：<strong>provide</strong>和 <strong>inject</strong></h3><p>在 Vue.js 的 <code>2.2.0+</code> 版本中添加加了 provide 和 inject 选项。他们成对出现，用于父级组件向下传递数据。</p>
+<p>父组件中通过provide来提供变量，然后在子组件中通过inject来注入变量。不论子组件有多深，只要调用了inject那么就可以注入provide中的数据。而不是局限于只能从当前父组件的prop属性来获取数据，只要在父组件的生命周期内，子组件都可以调用。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--父组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;child&gt;&lt;&#x2F;child&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;parent&#39;,</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#39;这是要个子组件的数据&#39;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#39;hello&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--子组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;child&#39;,</span><br><span class="line">    inject:[&#39;forChidrenData&#39;], &#x2F;&#x2F;得到父组件传递过来的数据</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#39;这是要个子组件的数据&#39;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:this.forChidrenData</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-方法四：vuex处理组件之间的数据交互"><a href="#4-方法四：vuex处理组件之间的数据交互" class="headerlink" title="4.方法四：vuex处理组件之间的数据交互"></a>4.方法四：<strong>vuex处理组件之间的数据交互</strong></h3><p>​    如果业务逻辑复杂，很多组件之间需要同时处理一些公共的数据，这个时候才有上面这一些方法可能不利于项目的维护，vuex的做法就是将这一些公共的数据抽离出来，然后其他组件就可以对这个公共数据进行读写操作，这样达到了解耦的目的。</p>
+<h3 id="5-方法五：中央事件总线"><a href="#5-方法五：中央事件总线" class="headerlink" title="5.方法五：中央事件总线"></a>5.方法五：<strong>中央事件总线</strong></h3><p>​    如果两个组件不是父子关系呢？这种情况下可以使用中央事件总线的方式。新建一个Vue事件bus对象，然后通过bus.$emit触发事件，bus.$on监听触发的事件。</p>
+<blockquote>
+<p>公共事件总线eventBus的实质就是创建一个vue实例，通过一个空的vue实例作为桥梁实现vue组件间的通信。它是实现非父子组件通信的一种解决方案。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother1 compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @input&#x3D;&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;brother1&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:&#39;hello brother1&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发全局事件globalEvent</span><br><span class="line">        bus.$emit(&#39;globalEvent&#39;, val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother2 compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;p&gt;brother1传递过来的数据：&#123;&#123;brothermessage&#125;&#125;&lt;&#x2F;p&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;brother2&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        brothermessage:&#39;&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    mounted()&#123;</span><br><span class="line">      &#x2F;&#x2F;绑定全局事件globalEvent</span><br><span class="line">      bus.$on(&#39;globalEvent&#39;,(val)&#x3D;&gt;&#123;</span><br><span class="line">        this.brothermessage &#x3D; val;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;中央事件总线</span><br><span class="line">var bus&#x3D;new Vue();</span><br><span class="line">var app&#x3D;new Vue(&#123;</span><br><span class="line">  el:&#39;#app&#39;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;brother1&gt;&lt;&#x2F;brother1&gt;</span><br><span class="line">      &lt;brother2&gt;&lt;&#x2F;brother2&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;,</span><br><span class="line">   beforeDestroy()&#123;</span><br><span class="line">sd     bus.$off(&#39;globalEvent&#39;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="6-方法六：-parent和-children"><a href="#6-方法六：-parent和-children" class="headerlink" title="6.方法六：**$parent和$children**"></a>6.方法六：**$parent<strong>和</strong>$children**</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Vue.component(&#39;child&#39;,&#123;</span><br><span class="line">  props:&#123;</span><br><span class="line">    value:String, &#x2F;&#x2F;v-model会自动传递一个字段为value的prop属性</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      mymessage:this.value</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeValue()&#123;</span><br><span class="line">      this.$parent.message &#x3D; this.mymessage;&#x2F;&#x2F;通过如此调用可以改变父组件的值</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @change&#x3D;&quot;changeValue&quot;&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;&#96;</span><br><span class="line">&#125;)</span><br><span class="line">  </span><br><span class="line">Vue.component(&#39;parent&#39;,&#123;</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">      &lt;button @click&#x3D;&quot;changeChildValue&quot;&gt;test&lt;&#x2F;button &gt;</span><br><span class="line">      &lt;child&gt;&lt;&#x2F;child&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeChildValue()&#123;</span><br><span class="line">      this.$children[0].mymessage &#x3D; &#39;hello&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      message:&#39;hello&#39;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">var app&#x3D;new Vue(&#123;</span><br><span class="line">  el:&#39;#app&#39;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;parent&gt;&lt;&#x2F;parent&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>vue</category>
+      </categories>
+      <tags>
+        <tag>vue</tag>
       </tags>
   </entry>
   <entry>
@@ -869,53 +817,141 @@
       </tags>
   </entry>
   <entry>
-    <title>VUE组件之间通信的6种方式</title>
-    <url>/2021/02/20/VUE%E7%BB%84%E4%BB%B6%E4%B9%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E7%9A%846%E7%A7%8D%E6%96%B9%E5%BC%8F/</url>
-    <content><![CDATA[<h3 id="1-方法一：props和-emit"><a href="#1-方法一：props和-emit" class="headerlink" title="1.方法一：props和**$emit**"></a>1.方法一：<strong>props</strong>和**$emit**</h3><p>父组件通过props向下传递数据给子组件，子组件通过event给父组件发送消息，实际上就是子组件把自己的数据发送给父组件。</p>
-<h3 id="2-方法二：-attrs和-listeners"><a href="#2-方法二：-attrs和-listeners" class="headerlink" title="2.方法二：**$attrs和$listeners**"></a>2.方法二：**$attrs<strong>和</strong>$listeners**</h3><p>​    第一种方式处理父子组件之间的数据传输有一个问题：如果父组件A下面有子组件B，组件B下面有组件C,这时如果组件A想传递数据给组件C怎么办呢？ 如果采用第一种方法，我们必须让组件A通过prop传递消息给组件B，组件B在通过prop传递消息给组件C；要是组件A和组件C之间有更多的组件，那采用这种方式就很复杂了。Vue 2.4开始提供了$attrs和$listeners来解决这个问题，能够让组件A之间传递消息给组件C。</p>
+    <title>vue项目打包优化策略</title>
+    <url>/2020/11/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</url>
+    <content><![CDATA[<p>使用vue-cli部署生产包时，发现资源包很大，打包后的<code>vendor.js</code>达到了1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？</p>
+<h3 id="1-组件按需加载"><a href="#1-组件按需加载" class="headerlink" title="1.组件按需加载"></a>1.组件按需加载</h3><p>这是首先可以优化的点。如果频繁使用了第三方组件/UI库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。</p>
+<p>示例如下：</p>
+<h4 id="1-1-element-ui"><a href="#1-1-element-ui" class="headerlink" title="1.1 element-ui"></a>1.1 element-ui</h4><p>首先，安装 babel-plugin-component：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
+
 <span id="more"></span>
 
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件C--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">        &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;$attrs.messagec&quot; @input&#x3D;&quot;passCData($attrs.messagec)&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;C&#39;,</span><br><span class="line">    data () &#123;</span><br><span class="line">      return &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passCData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发父组件A中的事件,把从A得到的数据hello C还给A组件</span><br><span class="line">        this.$emit(&#39;getCData&#39;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+<p>然后，将.babelrc 修改为：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; main.js</span><br><span class="line">import Vue from &#39;vue&#39;</span><br><span class="line">import &#123; Dialog, Loading &#125; from &#39;element-ui&#39;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading &#x3D; Loading.service</span><br><span class="line">&#x2F;&#x2F; 然后正常使用组件</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @input&#x3D;&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">    &lt;!-- C组件中能直接触发getCData的原因在于 B组件调用C组件时 使用 v-on 绑定了$listeners 属性 --&gt;</span><br><span class="line">    &lt;!-- 通过v-bind 绑定$attrs属性，C组件可以直接获取到A组件中传递下来的props（除了B组件中props声明的） --&gt;</span><br><span class="line">    &lt;C v-bind&#x3D;&quot;$attrs&quot; v-on&#x3D;&quot;$listeners&quot;&gt;&lt;&#x2F;C&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;B&#39;,</span><br><span class="line">    props:[</span><br><span class="line">      message:&#123;</span><br><span class="line">        type: String,</span><br><span class="line">        default: null</span><br><span class="line">      &#125;</span><br><span class="line">    ],&#x2F;&#x2F;得到父组件A传递过来的数据,hello B</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发父组件中的事件,把message给组件A</span><br><span class="line">        this.$emit(&#39;getChildData&#39;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;B </span><br><span class="line">     :messagec&#x3D;&quot;messagec&quot; </span><br><span class="line">     :message&#x3D;&quot;message&quot; </span><br><span class="line">     :getCData&#x3D;&quot;getCData&quot;</span><br><span class="line">     :getChildData&#x3D;&quot;getChildData&quot;&gt;&lt;&#x2F;B&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;A&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#39;hello B&#39;,</span><br><span class="line">        messagec:&#39;hello C&#39; &#x2F;&#x2F;传递给c组件的数据</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      getChildData(val)&#123;</span><br><span class="line">        console.log(&#39;这是来自B组件的数据&#39;,val) &#x2F;&#x2F;打印hello B</span><br><span class="line">      &#125;,</span><br><span class="line">      &#x2F;&#x2F;执行C子组件触发的事件</span><br><span class="line">      getCData(val)&#123;</span><br><span class="line">        console.log(&quot;这是来自C组件的数据：&quot;, val) &#x2F;&#x2F;打印hello C</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="3-方法3：provide和-inject"><a href="#3-方法3：provide和-inject" class="headerlink" title="3.方法3：provide和 inject"></a>3.方法3：<strong>provide</strong>和 <strong>inject</strong></h3><p>在 Vue.js 的 <code>2.2.0+</code> 版本中添加加了 provide 和 inject 选项。他们成对出现，用于父级组件向下传递数据。</p>
-<p>父组件中通过provide来提供变量，然后在子组件中通过inject来注入变量。不论子组件有多深，只要调用了inject那么就可以注入provide中的数据。而不是局限于只能从当前父组件的prop属性来获取数据，只要在父组件的生命周期内，子组件都可以调用。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--父组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;child&gt;&lt;&#x2F;child&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;parent&#39;,</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#39;这是要个子组件的数据&#39;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#39;hello&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="1-2-mint-ui"><a href="#1-2-mint-ui" class="headerlink" title="1.2 mint-ui"></a>1.2 mint-ui</h4><p>由于mint-ui是element-ui的移动端组件，所以它的使用和引入几乎和element-ui一样。</p>
+<p>首先，安装 babel-plugin-component：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
 
 
 
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--子组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;child&#39;,</span><br><span class="line">    inject:[&#39;forChidrenData&#39;], &#x2F;&#x2F;得到父组件传递过来的数据</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#39;这是要个子组件的数据&#39;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:this.forChidrenData</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+<p>然后，将.babelrc 修改为：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;presets&quot;: [</span><br><span class="line">    [&quot;es2015&quot;, &#123; &quot;modules&quot;: false &#125;]</span><br><span class="line">  ],</span><br><span class="line">  &quot;plugins&quot;: [[&quot;component&quot;, [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;libraryName&quot;: &quot;mint-ui&quot;,</span><br><span class="line">      &quot;style&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">  ]]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
 
-<h3 id="4-方法四：vuex处理组件之间的数据交互"><a href="#4-方法四：vuex处理组件之间的数据交互" class="headerlink" title="4.方法四：vuex处理组件之间的数据交互"></a>4.方法四：<strong>vuex处理组件之间的数据交互</strong></h3><p>​    如果业务逻辑复杂，很多组件之间需要同时处理一些公共的数据，这个时候才有上面这一些方法可能不利于项目的维护，vuex的做法就是将这一些公共的数据抽离出来，然后其他组件就可以对这个公共数据进行读写操作，这样达到了解耦的目的。</p>
-<h3 id="5-方法五：中央事件总线"><a href="#5-方法五：中央事件总线" class="headerlink" title="5.方法五：中央事件总线"></a>5.方法五：<strong>中央事件总线</strong></h3><p>​    如果两个组件不是父子关系呢？这种情况下可以使用中央事件总线的方式。新建一个Vue事件bus对象，然后通过bus.$emit触发事件，bus.$on监听触发的事件。</p>
-<blockquote>
-<p>公共事件总线eventBus的实质就是创建一个vue实例，通过一个空的vue实例作为桥梁实现vue组件间的通信。它是实现非父子组件通信的一种解决方案。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother1 compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @input&#x3D;&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;brother1&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:&#39;hello brother1&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发全局事件globalEvent</span><br><span class="line">        bus.$emit(&#39;globalEvent&#39;, val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+<p>然后引入部分组件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; main.js</span><br><span class="line">import Vue from &#39;vue&#39;</span><br><span class="line">import &#123; Toast, MessageBox &#125; from &#39;element-ui&#39;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading &#x3D; Loading.service</span><br><span class="line">&#x2F;&#x2F; 然后正常使用组件</span><br></pre></td></tr></table></figure>
+
+<p>注意，element-ui和mint-ui不能同时在.babelrc中进行插件设置，这种情况下，依然可以按需引入，但是不要在<code>.babelrc</code>中配置，在引入的地方同时引入css即可。</p>
+<h4 id="1-3-echarts"><a href="#1-3-echarts" class="headerlink" title="1.3 echarts"></a>1.3 echarts</h4><p>首先安装babel-plugin-equire</p>
+<p>npm i babel-plugin-equire -D</p>
+<p>然后，在<code>.babelrc</code>文件中添加该插件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;plugins&quot;: [</span><br><span class="line">       &#x2F;&#x2F; other plugins</span><br><span class="line">       ...</span><br><span class="line">       </span><br><span class="line">    &quot;equire&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
 
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother2 compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;p&gt;brother1传递过来的数据：&#123;&#123;brothermessage&#125;&#125;&lt;&#x2F;p&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;brother2&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        brothermessage:&#39;&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    mounted()&#123;</span><br><span class="line">      &#x2F;&#x2F;绑定全局事件globalEvent</span><br><span class="line">      bus.$on(&#39;globalEvent&#39;,(val)&#x3D;&gt;&#123;</span><br><span class="line">        this.brothermessage &#x3D; val;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+<p>创建一个js文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; echarts.js</span><br><span class="line">&#x2F;&#x2F; eslint-disable-next-line</span><br><span class="line">const echarts &#x3D; equire([</span><br><span class="line">  &#39;tooltip&#39;,</span><br><span class="line">  &#39;candlestick&#39;,</span><br><span class="line">  &#39;bar&#39;,</span><br><span class="line">  &#39;line&#39;,</span><br><span class="line">  &#39;axisPointer&#39;,</span><br><span class="line">  &#39;legend&#39;,</span><br><span class="line">  &#39;grid&#39;</span><br><span class="line">])</span><br><span class="line">export default echarts</span><br><span class="line">&#x2F;&#x2F; 业务组件，引入echarts</span><br><span class="line">import echarts from &#39;@&#x2F;assets&#x2F;lib&#x2F;echarts&#39;</span><br><span class="line">&#x2F;&#x2F; 使用与以前一样</span><br></pre></td></tr></table></figure>
 
 
 
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;中央事件总线</span><br><span class="line">var bus&#x3D;new Vue();</span><br><span class="line">var app&#x3D;new Vue(&#123;</span><br><span class="line">  el:&#39;#app&#39;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;brother1&gt;&lt;&#x2F;brother1&gt;</span><br><span class="line">      &lt;brother2&gt;&lt;&#x2F;brother2&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;,</span><br><span class="line">   beforeDestroy()&#123;</span><br><span class="line">sd     bus.$off(&#39;globalEvent&#39;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>按需加载echarts</p>
+<p>解决vue-cli首屏加载慢的问题</p>
+<h3 id="2-路由懒加载"><a href="#2-路由懒加载" class="headerlink" title="2.路由懒加载"></a>2.路由懒加载</h3><p>这里需要一个插件</p>
+<p>vue-router官方推荐syntax-dynamic-import插件，不过它要求同时安装@bable/core^7.0.0，如果你安装了babel-core6，是会有版本冲突的。我的做法如下</p>
+<p>npm install babel-plugin-syntax-dynamic-import –save-dev(^6.18.0)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; router.js</span><br><span class="line">const login &#x3D; () &#x3D;&gt; import(&#39;@&#x2F;components&#x2F;login&#39;)</span><br><span class="line">const router &#x3D; new VueRouter(&#123;</span><br><span class="line">  routes: [</span><br><span class="line">    &#123; path: &#39;&#x2F;login&#39;, component: login &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 
 
 
-<h3 id="6-方法六：-parent和-children"><a href="#6-方法六：-parent和-children" class="headerlink" title="6.方法六：**$parent和$children**"></a>6.方法六：**$parent<strong>和</strong>$children**</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Vue.component(&#39;child&#39;,&#123;</span><br><span class="line">  props:&#123;</span><br><span class="line">    value:String, &#x2F;&#x2F;v-model会自动传递一个字段为value的prop属性</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      mymessage:this.value</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeValue()&#123;</span><br><span class="line">      this.$parent.message &#x3D; this.mymessage;&#x2F;&#x2F;通过如此调用可以改变父组件的值</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @change&#x3D;&quot;changeValue&quot;&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;&#96;</span><br><span class="line">&#125;)</span><br><span class="line">  </span><br><span class="line">Vue.component(&#39;parent&#39;,&#123;</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">      &lt;button @click&#x3D;&quot;changeChildValue&quot;&gt;test&lt;&#x2F;button &gt;</span><br><span class="line">      &lt;child&gt;&lt;&#x2F;child&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeChildValue()&#123;</span><br><span class="line">      this.$children[0].mymessage &#x3D; &#39;hello&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      message:&#39;hello&#39;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">var app&#x3D;new Vue(&#123;</span><br><span class="line">  el:&#39;#app&#39;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;parent&gt;&lt;&#x2F;parent&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>]]></content>
+<p>还有一种魔法注释用法</p>
+<p>有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack &gt; 2.4)。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const Foo &#x3D; () &#x3D;&gt; import(&#x2F;* webpackChunkName: &quot;group-foo&quot; *&#x2F; &#39;.&#x2F;Foo.vue&#39;)</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="3-异步组件"><a href="#3-异步组件" class="headerlink" title="3.异步组件"></a>3.异步组件</h3><p>如果组件在页面加载时不需要，只在调用时用到，这时可以使用异步组件的写法。仅仅是引入和组件注册写法不同</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; template</span><br><span class="line">&lt;test v-if&#x3D;&quot;showTest&quot;&gt;&lt;&#x2F;test&gt;</span><br><span class="line">&#x2F;&#x2F; script</span><br><span class="line">  components: &#123;</span><br><span class="line">    test: () &#x3D;&gt; import(&#39;.&#x2F;test&#39;) &#x2F;&#x2F; 将组件异步引入，告诉webpack，将该部分代码分割打包</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">      clickTest () &#123;</span><br><span class="line">          this.showTest &#x3D; !this.showTest</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-图片的压缩合并"><a href="#4-图片的压缩合并" class="headerlink" title="4.图片的压缩合并"></a>4.图片的压缩合并</h3><p>如有可能，将图片制作成精灵图</p>
+<h3 id="5-CDN加速"><a href="#5-CDN加速" class="headerlink" title="5.CDN加速"></a>5.CDN加速</h3><p>在index.html中引入cdn资源</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;div id&#x3D;&quot;app&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">  &lt;!-- built files will be auto injected --&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue&#x2F;2.5.2&#x2F;vue.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue-router&#x2F;3.0.1&#x2F;vue-router.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vuex&#x2F;3.0.1&#x2F;vuex.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue-resource&#x2F;1.5.1&#x2F;vue-resource.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+
+
+<p>修改 build/webpack.base.conf.js</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">module.exports &#x3D; &#123;</span><br><span class="line">  context: path.resolve(__dirname, &#39;..&#x2F;&#39;),</span><br><span class="line">  entry: &#123;</span><br><span class="line">    app: &#39;.&#x2F;src&#x2F;main.js&#39;</span><br><span class="line">  &#125;,</span><br><span class="line">  externals:&#123;</span><br><span class="line">    &#39;vue&#39;: &#39;Vue&#39;,</span><br><span class="line">    &#39;vue-router&#39;: &#39;VueRouter&#39;,</span><br><span class="line">    &#39;vuex&#39;:&#39;Vuex&#39;,</span><br><span class="line">    &#39;vue-resource&#39;: &#39;VueResource&#39;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>修改src/main.js src/router/index.js 注释掉import引入的vue,vue-resource</p>
+<p>// import Vue from ‘vue’</p>
+<p>// import VueResource from ‘vue-resource’</p>
+<p>// Vue.use(VueResource)</p>
+<h3 id="6-压缩代码"><a href="#6-压缩代码" class="headerlink" title="6.压缩代码"></a>6.压缩代码</h3><p>vue-cli已经使用UglifyJsPlugin 插件来压缩代码，可以设置成如下配置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">new webpack.optimize.UglifyJsPlugin(&#123;</span><br><span class="line">  compress: &#123;</span><br><span class="line">    warnings: false,</span><br><span class="line">    drop_console: true,</span><br><span class="line">    pure_funcs: [&#39;console.log&#39;]</span><br><span class="line">  &#125;,</span><br><span class="line">  sourceMap: false</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>其中sourceMap: false是禁用除错功能。</p>
+<p>如果设为true，在部署包中会生成.map结尾的js文件。它用于在代码混淆压缩的情况下仍可进行调试。这个功能虽好，但会大大增加整体资源包的体积，所以将其禁用。</p>
+]]></content>
       <categories>
         <category>vue</category>
       </categories>
       <tags>
         <tag>vue</tag>
+        <tag>webpack</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Hbuilder快速打包一个app</title>
+    <url>/2018/07/12/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/</url>
+    <content><![CDATA[<p>HBuilder提供的打包有云端打包和本地打包两种，云端打包的特点是DCloud官方配置好了原生的打包环境，可以把HTML等文件编译为原生安装包。</p>
+<p>优点：速度快，所需要的环境少，加快了开发者速度，不会因为各种JDK，java，Android环境而无法打包生成apk或ipa头疼，大大减少了开发繁琐操作。</p>
+<p>方法步骤：</p>
+<span id="more"></span>
+
+<p>1.下载HBuilder，注册并登陆。首先打开“文件”-“新建”-“移动APP”，输入“应用名称”，“位置”可以根据需要自己选择即可，“选择模板”建议选择空模板，如下图所示：</p>
+<p>​​<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712163802432"></p>
+<p>2.新建完成后， 在项目管理器会显示新建的项目目录，其中css，img，js和index.html这几个文件可删可改可替换。<br>unpackage文件夹是放置app图标和启动界面的图片。</p>
+<p>manifest.json文件是移动App的配置文件，用于指定应用的显示名称、图标、应用入口文件地址及需要使用的设备权限等信息，用户可通过HBuilder的可视化界面视图或者源码视图来配置移动App的信息，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164108624"></p>
+<p>3.如果删除了css，img，js文件夹和index.html文件，就把其他自己打包好的的项目文件对应复制到文件夹中，注意html文件中的引用路径需要保持正确，如下图自己拷贝的项目（我的是项目打包后的build文件和index.html文件，其中css/js/img都在build文件夹下）：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164250660"></p>
+<p>4.文件复制完成后，刷新更新下，双击打开manifest.json文件来配置App。</p>
+<p>appid：点击云端获取。版本号：根据需要来编辑。页面入口：默认是index.html，根据自己项目需要，更改APP的启动页面。应用描述：自己随便填。应用是否全屏显示：勾上就全屏显示，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164915305"></p>
+<p>5.图标配置：点击页面下方的图标配置，配置APP显示图标。</p>
+<p>点击”+”号的正方形方框，选择图标素材的路径找到图标素材，再点击” 自动生成所有图标并替换”按钮，完成图标生成和替换，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165506582"></p>
+<p>生成的图标自动在unpackage文件夹下，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165618254"></p>
+<p>6.在启动图片设置里点击”选择”，找到刚放进来的启动图片，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165842174"></p>
+<p>7.SDK配置：有需要就配置，没有就默认就行。</p>
+<p>   模块权限配置：有需要就配置，没有就默认就行。</p>
+<p>8.云端打包：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170045185"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170127683"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170219731"></p>
+<p>然后等待几分钟，刷新状态，就可以看到制作完成，是否下载？点击下载。然后将apk发送到手机上安装就可以正常运行了！</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712171021649"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2018071217113978"></p>
+<p>以下是apk安装后再模拟器上运行效果：</p>
+<p><img data-src="https://img-blog.csdn.net/20180712171240702?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
+<p><img data-src="https://img-blog.csdn.net/20180712171322289?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
+<p><img data-src="https://img-blog.csdn.net/20180712171518460?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
+]]></content>
+      <categories>
+        <category>Hbuilder</category>
+      </categories>
+      <tags>
+        <tag>Hbuilder</tag>
       </tags>
   </entry>
   <entry>
@@ -971,50 +1007,6 @@
       </categories>
       <tags>
         <tag>HTTP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>学习之AJAX</title>
-    <url>/2019/03/20/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
-    <content><![CDATA[<p>对于AJAX这个玩意儿，一开始学习的时候，根本不知道这是什么，我连AJAX有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙B的状态。那么在学习一段时间的AJAX之后，我总结了一些我自己对AJAX的理解，一起共勉。</p>
-<p>一、页面访问方式</p>
-<p>在学习AJAX之前，我们首先就需要了解页面的访问方式。页面的访问方式有如下两种同步访问和异步访问：</p>
-<p>①同步访问：在访问服务器时，只能等待服务器的响应，不能做其他事情。</p>
-<p>②异步访问：在向服务器发送请求时，不耽误用户在网页其他操作。相当于在同一时间，用户能做多个事情。</p>
-<span id="more"></span>
-
-
-<p>光从字面上理解同步和异步不算太难，下面我为用图打个比方有助于更加深层次的理解同步和异步：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730181503984"></p>
-<p>上图反之是同步访问的图解，异步访问我就不再作图了，反之，你想买煎饼和稀饭，你走到卖煎饼的铺子时候，老板说：好的，你的煎饼5分钟后好，你可以5分钟后过来拿。这个时候你就可以在这五分钟去买你要的稀饭，这就是异步访问。</p>
-<p>二、什么是AJAX</p>
-<p>AJAX的英文全名是：Asynchronous  Javascript  And  Xml</p>
-<p> 异步的  JS     和    xml</p>
-<p> 其中的本质：使用JS中XMLHttpRequext(xhr)对象异步的向服务器发送请求，服务器响应回来的部分数据而不是原完整的页面，并可以以“无刷新”的效果来更改页面中的局部内容。为了方便理解，作以下用户名验证的例子图助于理解：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730183958321"></p>
-<p>三、获取ＡＪＡＸ对象　——XMLHttpRequest</p>
-<p>在主流浏览器中：new　XMLHttpRequest( );</p>
-<p>注意：在IE8以下的浏览器不支持XMLHttpRequest</p>
-<p>在IE8以下的浏览器中：</p>
-<p>new  ActiveXObject(“Microsoft.XMLHttp”);</p>
-<p>tip:如果想测试你使用的浏览器是否支持XMLHttpRequest，可以进行如下操作：</p>
-<p>1.打开你的浏览器，例如谷歌、360、火狐、欧朋….;</p>
-<p>2.按F12，使用开发者工具，在console一栏中输入：console.log(window.XMLHttpRequest);</p>
-<p>3.如果浏览器不支持XMLHttpRequest,以上会打印null。</p>
-<p>//创建ajax对象</p>
-<p> var  xhr;</p>
-<p>   if(window.XMLHttpRequest){</p>
-<p>xhr = new  XMLHttpRequest();</p>
-<p> }else{</p>
-<p>xhr = new ActiveXObject(“Microsoft.XMLHttp”);</p>
-<p>}</p>
-<p>tip：这段函在编写代码的时候使用的次数很多，通常我们将它封装成函数单独创建一个JS文件，命名为common.js，要使用的时候调用者个js文件就可以了。</p>
-]]></content>
-      <categories>
-        <category>HTTP</category>
-      </categories>
-      <tags>
-        <tag>AJAX</tag>
       </tags>
   </entry>
   <entry>
@@ -1171,6 +1163,50 @@
       </tags>
   </entry>
   <entry>
+    <title>学习之AJAX</title>
+    <url>/2019/03/20/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
+    <content><![CDATA[<p>对于AJAX这个玩意儿，一开始学习的时候，根本不知道这是什么，我连AJAX有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙B的状态。那么在学习一段时间的AJAX之后，我总结了一些我自己对AJAX的理解，一起共勉。</p>
+<p>一、页面访问方式</p>
+<p>在学习AJAX之前，我们首先就需要了解页面的访问方式。页面的访问方式有如下两种同步访问和异步访问：</p>
+<p>①同步访问：在访问服务器时，只能等待服务器的响应，不能做其他事情。</p>
+<p>②异步访问：在向服务器发送请求时，不耽误用户在网页其他操作。相当于在同一时间，用户能做多个事情。</p>
+<span id="more"></span>
+
+
+<p>光从字面上理解同步和异步不算太难，下面我为用图打个比方有助于更加深层次的理解同步和异步：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730181503984"></p>
+<p>上图反之是同步访问的图解，异步访问我就不再作图了，反之，你想买煎饼和稀饭，你走到卖煎饼的铺子时候，老板说：好的，你的煎饼5分钟后好，你可以5分钟后过来拿。这个时候你就可以在这五分钟去买你要的稀饭，这就是异步访问。</p>
+<p>二、什么是AJAX</p>
+<p>AJAX的英文全名是：Asynchronous  Javascript  And  Xml</p>
+<p> 异步的  JS     和    xml</p>
+<p> 其中的本质：使用JS中XMLHttpRequext(xhr)对象异步的向服务器发送请求，服务器响应回来的部分数据而不是原完整的页面，并可以以“无刷新”的效果来更改页面中的局部内容。为了方便理解，作以下用户名验证的例子图助于理解：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730183958321"></p>
+<p>三、获取ＡＪＡＸ对象　——XMLHttpRequest</p>
+<p>在主流浏览器中：new　XMLHttpRequest( );</p>
+<p>注意：在IE8以下的浏览器不支持XMLHttpRequest</p>
+<p>在IE8以下的浏览器中：</p>
+<p>new  ActiveXObject(“Microsoft.XMLHttp”);</p>
+<p>tip:如果想测试你使用的浏览器是否支持XMLHttpRequest，可以进行如下操作：</p>
+<p>1.打开你的浏览器，例如谷歌、360、火狐、欧朋….;</p>
+<p>2.按F12，使用开发者工具，在console一栏中输入：console.log(window.XMLHttpRequest);</p>
+<p>3.如果浏览器不支持XMLHttpRequest,以上会打印null。</p>
+<p>//创建ajax对象</p>
+<p> var  xhr;</p>
+<p>   if(window.XMLHttpRequest){</p>
+<p>xhr = new  XMLHttpRequest();</p>
+<p> }else{</p>
+<p>xhr = new ActiveXObject(“Microsoft.XMLHttp”);</p>
+<p>}</p>
+<p>tip：这段函在编写代码的时候使用的次数很多，通常我们将它封装成函数单独创建一个JS文件，命名为common.js，要使用的时候调用者个js文件就可以了。</p>
+]]></content>
+      <categories>
+        <category>HTTP</category>
+      </categories>
+      <tags>
+        <tag>AJAX</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>开发小技巧</title>
     <url>/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
     <content><![CDATA[<h2 id="阻止单击事件冒泡"><a href="#阻止单击事件冒泡" class="headerlink" title="阻止单击事件冒泡"></a>阻止单击事件冒泡</h2><p><code>&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;</code></p>
@@ -1216,98 +1252,6 @@
       </categories>
       <tags>
         <tag>note</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>vue项目打包优化策略</title>
-    <url>/2020/11/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</url>
-    <content><![CDATA[<p>使用vue-cli部署生产包时，发现资源包很大，打包后的<code>vendor.js</code>达到了1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？</p>
-<h3 id="1-组件按需加载"><a href="#1-组件按需加载" class="headerlink" title="1.组件按需加载"></a>1.组件按需加载</h3><p>这是首先可以优化的点。如果频繁使用了第三方组件/UI库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。</p>
-<p>示例如下：</p>
-<h4 id="1-1-element-ui"><a href="#1-1-element-ui" class="headerlink" title="1.1 element-ui"></a>1.1 element-ui</h4><p>首先，安装 babel-plugin-component：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<p>然后，将.babelrc 修改为：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; main.js</span><br><span class="line">import Vue from &#39;vue&#39;</span><br><span class="line">import &#123; Dialog, Loading &#125; from &#39;element-ui&#39;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading &#x3D; Loading.service</span><br><span class="line">&#x2F;&#x2F; 然后正常使用组件</span><br></pre></td></tr></table></figure>
-
-<h4 id="1-2-mint-ui"><a href="#1-2-mint-ui" class="headerlink" title="1.2 mint-ui"></a>1.2 mint-ui</h4><p>由于mint-ui是element-ui的移动端组件，所以它的使用和引入几乎和element-ui一样。</p>
-<p>首先，安装 babel-plugin-component：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
-
-
-
-<p>然后，将.babelrc 修改为：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;presets&quot;: [</span><br><span class="line">    [&quot;es2015&quot;, &#123; &quot;modules&quot;: false &#125;]</span><br><span class="line">  ],</span><br><span class="line">  &quot;plugins&quot;: [[&quot;component&quot;, [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;libraryName&quot;: &quot;mint-ui&quot;,</span><br><span class="line">      &quot;style&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">  ]]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>然后引入部分组件</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; main.js</span><br><span class="line">import Vue from &#39;vue&#39;</span><br><span class="line">import &#123; Toast, MessageBox &#125; from &#39;element-ui&#39;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading &#x3D; Loading.service</span><br><span class="line">&#x2F;&#x2F; 然后正常使用组件</span><br></pre></td></tr></table></figure>
-
-<p>注意，element-ui和mint-ui不能同时在.babelrc中进行插件设置，这种情况下，依然可以按需引入，但是不要在<code>.babelrc</code>中配置，在引入的地方同时引入css即可。</p>
-<h4 id="1-3-echarts"><a href="#1-3-echarts" class="headerlink" title="1.3 echarts"></a>1.3 echarts</h4><p>首先安装babel-plugin-equire</p>
-<p>npm i babel-plugin-equire -D</p>
-<p>然后，在<code>.babelrc</code>文件中添加该插件</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;plugins&quot;: [</span><br><span class="line">       &#x2F;&#x2F; other plugins</span><br><span class="line">       ...</span><br><span class="line">       </span><br><span class="line">    &quot;equire&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>创建一个js文件</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; echarts.js</span><br><span class="line">&#x2F;&#x2F; eslint-disable-next-line</span><br><span class="line">const echarts &#x3D; equire([</span><br><span class="line">  &#39;tooltip&#39;,</span><br><span class="line">  &#39;candlestick&#39;,</span><br><span class="line">  &#39;bar&#39;,</span><br><span class="line">  &#39;line&#39;,</span><br><span class="line">  &#39;axisPointer&#39;,</span><br><span class="line">  &#39;legend&#39;,</span><br><span class="line">  &#39;grid&#39;</span><br><span class="line">])</span><br><span class="line">export default echarts</span><br><span class="line">&#x2F;&#x2F; 业务组件，引入echarts</span><br><span class="line">import echarts from &#39;@&#x2F;assets&#x2F;lib&#x2F;echarts&#39;</span><br><span class="line">&#x2F;&#x2F; 使用与以前一样</span><br></pre></td></tr></table></figure>
-
-
-
-<p>按需加载echarts</p>
-<p>解决vue-cli首屏加载慢的问题</p>
-<h3 id="2-路由懒加载"><a href="#2-路由懒加载" class="headerlink" title="2.路由懒加载"></a>2.路由懒加载</h3><p>这里需要一个插件</p>
-<p>vue-router官方推荐syntax-dynamic-import插件，不过它要求同时安装@bable/core^7.0.0，如果你安装了babel-core6，是会有版本冲突的。我的做法如下</p>
-<p>npm install babel-plugin-syntax-dynamic-import –save-dev(^6.18.0)</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; router.js</span><br><span class="line">const login &#x3D; () &#x3D;&gt; import(&#39;@&#x2F;components&#x2F;login&#39;)</span><br><span class="line">const router &#x3D; new VueRouter(&#123;</span><br><span class="line">  routes: [</span><br><span class="line">    &#123; path: &#39;&#x2F;login&#39;, component: login &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-
-
-<p>还有一种魔法注释用法</p>
-<p>有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack &gt; 2.4)。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const Foo &#x3D; () &#x3D;&gt; import(&#x2F;* webpackChunkName: &quot;group-foo&quot; *&#x2F; &#39;.&#x2F;Foo.vue&#39;)</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<h3 id="3-异步组件"><a href="#3-异步组件" class="headerlink" title="3.异步组件"></a>3.异步组件</h3><p>如果组件在页面加载时不需要，只在调用时用到，这时可以使用异步组件的写法。仅仅是引入和组件注册写法不同</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; template</span><br><span class="line">&lt;test v-if&#x3D;&quot;showTest&quot;&gt;&lt;&#x2F;test&gt;</span><br><span class="line">&#x2F;&#x2F; script</span><br><span class="line">  components: &#123;</span><br><span class="line">    test: () &#x3D;&gt; import(&#39;.&#x2F;test&#39;) &#x2F;&#x2F; 将组件异步引入，告诉webpack，将该部分代码分割打包</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">      clickTest () &#123;</span><br><span class="line">          this.showTest &#x3D; !this.showTest</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="4-图片的压缩合并"><a href="#4-图片的压缩合并" class="headerlink" title="4.图片的压缩合并"></a>4.图片的压缩合并</h3><p>如有可能，将图片制作成精灵图</p>
-<h3 id="5-CDN加速"><a href="#5-CDN加速" class="headerlink" title="5.CDN加速"></a>5.CDN加速</h3><p>在index.html中引入cdn资源</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;div id&#x3D;&quot;app&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">  &lt;!-- built files will be auto injected --&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue&#x2F;2.5.2&#x2F;vue.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue-router&#x2F;3.0.1&#x2F;vue-router.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vuex&#x2F;3.0.1&#x2F;vuex.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">  &lt;script src&#x3D;&quot;https:&#x2F;&#x2F;cdn.bootcss.com&#x2F;vue-resource&#x2F;1.5.1&#x2F;vue-resource.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-
-
-<p>修改 build/webpack.base.conf.js</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">module.exports &#x3D; &#123;</span><br><span class="line">  context: path.resolve(__dirname, &#39;..&#x2F;&#39;),</span><br><span class="line">  entry: &#123;</span><br><span class="line">    app: &#39;.&#x2F;src&#x2F;main.js&#39;</span><br><span class="line">  &#125;,</span><br><span class="line">  externals:&#123;</span><br><span class="line">    &#39;vue&#39;: &#39;Vue&#39;,</span><br><span class="line">    &#39;vue-router&#39;: &#39;VueRouter&#39;,</span><br><span class="line">    &#39;vuex&#39;:&#39;Vuex&#39;,</span><br><span class="line">    &#39;vue-resource&#39;: &#39;VueResource&#39;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>修改src/main.js src/router/index.js 注释掉import引入的vue,vue-resource</p>
-<p>// import Vue from ‘vue’</p>
-<p>// import VueResource from ‘vue-resource’</p>
-<p>// Vue.use(VueResource)</p>
-<h3 id="6-压缩代码"><a href="#6-压缩代码" class="headerlink" title="6.压缩代码"></a>6.压缩代码</h3><p>vue-cli已经使用UglifyJsPlugin 插件来压缩代码，可以设置成如下配置：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">new webpack.optimize.UglifyJsPlugin(&#123;</span><br><span class="line">  compress: &#123;</span><br><span class="line">    warnings: false,</span><br><span class="line">    drop_console: true,</span><br><span class="line">    pure_funcs: [&#39;console.log&#39;]</span><br><span class="line">  &#125;,</span><br><span class="line">  sourceMap: false</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<p>其中sourceMap: false是禁用除错功能。</p>
-<p>如果设为true，在部署包中会生成.map结尾的js文件。它用于在代码混淆压缩的情况下仍可进行调试。这个功能虽好，但会大大增加整体资源包的体积，所以将其禁用。</p>
-]]></content>
-      <categories>
-        <category>vue</category>
-      </categories>
-      <tags>
-        <tag>vue</tag>
-        <tag>webpack</tag>
       </tags>
   </entry>
   <entry>
@@ -1397,49 +1341,105 @@
       </tags>
   </entry>
   <entry>
-    <title>使用Hbuilder快速打包一个app</title>
-    <url>/2018/07/12/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/</url>
-    <content><![CDATA[<p>HBuilder提供的打包有云端打包和本地打包两种，云端打包的特点是DCloud官方配置好了原生的打包环境，可以把HTML等文件编译为原生安装包。</p>
-<p>优点：速度快，所需要的环境少，加快了开发者速度，不会因为各种JDK，java，Android环境而无法打包生成apk或ipa头疼，大大减少了开发繁琐操作。</p>
-<p>方法步骤：</p>
+    <title>JavaScript基础（五）闭包</title>
+    <url>/2021/03/25/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%94%EF%BC%89%E9%97%AD%E5%8C%85/</url>
+    <content><![CDATA[<h2 id="一、什么是闭包"><a href="#一、什么是闭包" class="headerlink" title="一、什么是闭包"></a>一、什么是闭包</h2><p>顾名思义，遇见问题先问为什么是我们一贯的思维方式，我们尝试回答一下：</p>
+<ol>
+<li>闭包就是函数内部的子函数—— <code>等于没说</code></li>
+<li>当函数可以记住并访问所在的词法作用域时，就产生了闭包，即使函数是在当前词法作用域之外执行。——<code>靠谱</code></li>
+<li>闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁——<code>靠谱</code></li>
+<li>函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）——<code>很靠谱</code></li>
+</ol>
+<p>我们试着用代码来描述一下上面的回答，看看你最<strong>中意</strong>哪一个～</p>
 <span id="more"></span>
 
-<p>1.下载HBuilder，注册并登陆。首先打开“文件”-“新建”-“移动APP”，输入“应用名称”，“位置”可以根据需要自己选择即可，“选择模板”建议选择空模板，如下图所示：</p>
-<p>​​<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712163802432"></p>
-<p>2.新建完成后， 在项目管理器会显示新建的项目目录，其中css，img，js和index.html这几个文件可删可改可替换。<br>unpackage文件夹是放置app图标和启动界面的图片。</p>
-<p>manifest.json文件是移动App的配置文件，用于指定应用的显示名称、图标、应用入口文件地址及需要使用的设备权限等信息，用户可通过HBuilder的可视化界面视图或者源码视图来配置移动App的信息，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164108624"></p>
-<p>3.如果删除了css，img，js文件夹和index.html文件，就把其他自己打包好的的项目文件对应复制到文件夹中，注意html文件中的引用路径需要保持正确，如下图自己拷贝的项目（我的是项目打包后的build文件和index.html文件，其中css/js/img都在build文件夹下）：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164250660"></p>
-<p>4.文件复制完成后，刷新更新下，双击打开manifest.json文件来配置App。</p>
-<p>appid：点击云端获取。版本号：根据需要来编辑。页面入口：默认是index.html，根据自己项目需要，更改APP的启动页面。应用描述：自己随便填。应用是否全屏显示：勾上就全屏显示，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164915305"></p>
-<p>5.图标配置：点击页面下方的图标配置，配置APP显示图标。</p>
-<p>点击”+”号的正方形方框，选择图标素材的路径找到图标素材，再点击” 自动生成所有图标并替换”按钮，完成图标生成和替换，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165506582"></p>
-<p>生成的图标自动在unpackage文件夹下，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165618254"></p>
-<p>6.在启动图片设置里点击”选择”，找到刚放进来的启动图片，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165842174"></p>
-<p>7.SDK配置：有需要就配置，没有就默认就行。</p>
-<p>   模块权限配置：有需要就配置，没有就默认就行。</p>
-<p>8.云端打包：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170045185"></p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170127683"></p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170219731"></p>
-<p>然后等待几分钟，刷新状态，就可以看到制作完成，是否下载？点击下载。然后将apk发送到手机上安装就可以正常运行了！</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712171021649"></p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2018071217113978"></p>
-<p>以下是apk安装后再模拟器上运行效果：</p>
-<p><img data-src="https://img-blog.csdn.net/20180712171240702?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
-<p><img data-src="https://img-blog.csdn.net/20180712171322289?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
-<p><img data-src="https://img-blog.csdn.net/20180712171518460?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
+<h3 id="1-1-闭包是函数内部的子函数"><a href="#1-1-闭包是函数内部的子函数" class="headerlink" title="1.1 闭包是函数内部的子函数"></a>1.1 闭包是函数内部的子函数</h3><p>先看这段代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(a);</span><br><span class="line">    &#125;</span><br><span class="line">    bar()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+
+<p>基于词法作用域的查找规则，<code>bar函数</code>可以成功的打印<code>a</code>变量，并且它也是<code>foo</code>的子函数，但严格来说它并没有清晰的表达出闭包这一概念，说它表达的是<strong>嵌套函数可以访问声明于大外部作用域的变量</strong>更准确一些。</p>
+<h3 id="1-2-闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁"><a href="#1-2-闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁" class="headerlink" title="1.2 闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁"></a>1.2 闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁</h3><p>再来看下面的例子：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(a);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> bar;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> res = foo();</span><br><span class="line">res(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+
+<p>结果一致，这是因为此时<code>res</code>是执行<code>foo</code>函数时返回的<code>bar</code>引用，bar函数得以保存了它饿词法环境。</p>
+<h3 id="1-3-函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）"><a href="#1-3-函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）" class="headerlink" title="1.3 函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）"></a>1.3 函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）</h3><p>我们来看下面代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(name); <span class="comment">// gaoyuan</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">//gaoyuan</span></span><br></pre></td></tr></table></figure>
+
+<p>foo的上下文被静态的保存了下来，而且是在该函数创建的时候就保存了。下面我们来验证一下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(name); <span class="comment">// gaoyuan</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params">func</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;老王&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    func()</span><br><span class="line">&#125;)(foo); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+
+<p>这里我们就可以理解——函数被创建后就形成了闭包，他们保存了上层上下文的作用域链，并且保存在<code>[[scope]]</code>中，如果你对<code>[[scope]]</code>的概念已经模糊了，不妨花几分钟看看《JavaScript中的执行上下文》这篇文章。</p>
+<h3 id="1-4-总结"><a href="#1-4-总结" class="headerlink" title="1.4 总结"></a>1.4 总结</h3><p><strong>注意：闭包是函数内部的返回的子函数这句话本身没错</strong>，但要看从什么角度出发：</p>
+<p>ECMAScript中，闭包指的是：</p>
+<ol>
+<li>从理论角度：所有的函数。因为它们都在创建的时候就将上层上下文的数据保存起来了。哪怕是简单的全局变量也是如此，因为函数中访问全局变量就相当于是在访问自由变量，这个时候使用最外层的作用域。</li>
+<li>从实践角度：以下函数才算是闭包：<ul>
+<li>即使创建它的上下文已经销毁，它仍然存在（比如，内部函数从父函数中返回）</li>
+<li>在代码中引用了自由变量</li>
+</ul>
+</li>
+</ol>
+<p><strong>总结：</strong></p>
+<ul>
+<li>闭包代码块创建该代码块的上下文中数据的结合</li>
+<li>闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁</li>
+<li>不同的角度对闭包的解释不同的</li>
+</ul>
+<p>注意：这些并不是闭包的全部，就好像当你被问到——闭包是什么的时候，你的上述回答并不能结束这个话题，往往会引申出更多的话题。</p>
+<h2 id="二、尝试分析闭包"><a href="#二、尝试分析闭包" class="headerlink" title="二、尝试分析闭包"></a>二、尝试分析闭包</h2><p>还是那段经典代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = checkscope();</span><br><span class="line">foo(); <span class="comment">// local scope</span></span><br></pre></td></tr></table></figure>
+
+<p>首先我们要分析一下这段代码中执行上下文栈和执行上下文的变化情况。</p>
+<ol>
+<li>进入全局代码，创建全局执行上下文，全局执行上下文压入执行上下文栈</li>
+<li>全局执行上下文初始化</li>
+<li>执行 checkscope 函数，创建 checkscope 函数执行上下文，checkscope 执行上下文被压入执行上下文栈</li>
+<li>checkscope 执行上下文初始化，创建变量对象、作用域链、this等</li>
+<li>checkscope 函数执行完毕，checkscope 执行上下文从执行上下文栈中弹出</li>
+<li>执行 f 函数，创建 f 函数执行上下文，f 执行上下文被压入执行上下文栈</li>
+<li>f 执行上下文初始化，创建变量对象、作用域链、this等</li>
+<li>f 函数执行完毕，f 函数上下文从执行上下文栈中弹出</li>
+</ol>
+<p><img data-src="https://img-blog.csdnimg.cn/20200628152924827.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>当 <code>f</code> 函数执行的时候，<code>checkscope</code> 函数上下文已经被销毁了啊(即从执行上下文栈中被弹出)，怎么还会读取到 <code>checkscope</code> 作用域下的 <code>scope</code> 值呢？</p>
+<p>当我们了解了具体的执行过程后，我们知道 f 执行上下文维护了一个作用域链：</p>
+<p>因为这个作用域链：</p>
+<ul>
+<li><code>f 函数</code>依然可以读取到 <code>checkscopeContext.AO</code> 的值；</li>
+<li>当 <code>f 函数</code>引用了 <code>checkscopeContext.AO</code> 中的值的时候，即使 <code>checkscopeContext</code> 被销毁了，JavaScript 依然会让 <code>checkscopeContext.AO</code> 活在内存中;</li>
+<li><code>f 函数</code>依然可以通过 <code>f 函数</code>的作用域链找到它，正是因为 JavaScript 做到了这一点，从而实现了闭包这个概念。</li>
+</ul>
+<p>多么浪漫的思想——只要你需要我，那我我本应该被销毁，你也能找到我～</p>
+<h2 id="三、经典问题"><a href="#三、经典问题" class="headerlink" title="三、经典问题"></a>三、经典问题</h2><h3 id="3-1-多个对象引用同一个-Scope-，你遇到过吗？"><a href="#3-1-多个对象引用同一个-Scope-，你遇到过吗？" class="headerlink" title="3.1 多个对象引用同一个[[Scope]]，你遇到过吗？"></a>3.1 多个对象引用同一个[[Scope]]，你遇到过吗？</h3><p>直接上代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> child1;</span><br><span class="line"><span class="keyword">var</span> child2;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">parent</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> x = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    child1 = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(++x)</span><br><span class="line">    &#125;;</span><br><span class="line">    child2 = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(--x)</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line">parent();</span><br><span class="line">child1(); <span class="comment">// 2</span></span><br><span class="line">child1(); <span class="comment">// 3</span></span><br><span class="line">child2(); <span class="comment">// 2</span></span><br></pre></td></tr></table></figure>
+
+<p>大家可能不理解，<code>child1</code>和<code>child</code>他们两个函数在创建后都保存了上层上下文，万万没想到，<strong>同一个上下文创建的闭包是共用一个<code>[[scope]]</code>属性的</strong>，某个闭包对其中[[Scope]]的变量做修改会影响到其他闭包对其变量的读取。</p>
+<h3 id="3-2-闭包轻松解决的经典问题"><a href="#3-2-闭包轻松解决的经典问题" class="headerlink" title="3.2 闭包轻松解决的经典问题"></a>3.2 闭包轻松解决的经典问题</h3><p>大家一定对下面这段代码很眼熟：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = []</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">    arr[i] = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(i)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">arr[<span class="number">0</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">1</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">2</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">3</span>](); <span class="comment">// 10</span></span><br></pre></td></tr></table></figure>
+
+<p>我们这么解释它：<strong>同一个上下文中创建的闭包是共用一个[[Scope]]属性的</strong>。</p>
+<p>因此上层上下文中的变量<code>i</code>是可以很容易就被改变的。</p>
+<p>arr[0],arr[1]…arr[9]他们共用一个[[scope]]，最终执行的时候结果当然一样。</p>
+<p><strong>如何利用闭包来解决这个问题呢？</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = []</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">    arr[i] = (<span class="function"><span class="keyword">function</span> (<span class="params">i</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)(i)</span><br><span class="line">&#125;</span><br><span class="line">arr[<span class="number">0</span>](); <span class="comment">// 0</span></span><br><span class="line">arr[<span class="number">1</span>](); <span class="comment">// 1</span></span><br><span class="line">arr[<span class="number">2</span>](); <span class="comment">// 2</span></span><br><span class="line">arr[<span class="number">3</span>](); <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+
+<p>我们通过立即执行匿名函数的方式隔离了作用域，当执行 arr[0] 函数的时候，arr[0] 函数的作用域链发生了改变：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">arr[<span class="number">0</span>]Context = &#123;</span><br><span class="line">    Scope: [AO, 匿名函数Context.AO globalContext.VO]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>匿名函数执行上下文的AO为：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">匿名函数Context = &#123;</span><br><span class="line">    AO: &#123;</span><br><span class="line">        <span class="built_in">arguments</span>: &#123;</span><br><span class="line">            <span class="number">0</span>: <span class="number">0</span>,</span><br><span class="line">            length: <span class="number">1</span></span><br><span class="line">        &#125;,</span><br><span class="line">        i: <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们看到，这时函数的<code>[[Scope]]</code>属性就有了真正想要的值了，为了达到这样的目的，我们不得不在<code>[[Scope]]</code>中创建额外的变量对象。要注意的是，在返回的函数中，如果要获取<code>i</code>的值，那么该值还是会是10。</p>
+<h3 id="3-3-总结"><a href="#3-3-总结" class="headerlink" title="3.3 总结"></a>3.3 总结</h3><ul>
+<li>函数内的所有内部函数都共享一个父作用域，因此创建的闭包是共用的。</li>
+<li>利用闭包隔离作用域的特性可以解决共享作用域的问题</li>
+</ul>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&fm=26&gp=0.jpeg"></p>
 ]]></content>
       <categories>
-        <category>Hbuilder</category>
+        <category>javascript</category>
       </categories>
       <tags>
-        <tag>Hbuilder</tag>
+        <tag>javascript</tag>
       </tags>
   </entry>
 </search>
