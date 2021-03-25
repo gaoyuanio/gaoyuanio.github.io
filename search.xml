@@ -713,6 +713,51 @@
       </tags>
   </entry>
   <entry>
+    <title>MySQL列类型和列上约束</title>
+    <url>/2017/08/06/MySQL%E5%88%97%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%88%97%E4%B8%8A%E7%BA%A6%E6%9D%9F/</url>
+    <content><![CDATA[<h2 id="1-常用SQL命令"><a href="#1-常用SQL命令" class="headerlink" title="1.常用SQL命令"></a>1.常用SQL命令</h2><h3 id="（1）添加数据："><a href="#（1）添加数据：" class="headerlink" title="（1）添加数据："></a>（1）添加数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">INSERT</span>  <span class="keyword">INTO</span> 表名 <span class="keyword">VALUES</span>(….);</span><br></pre></td></tr></table></figure>
+
+<h3 id="（2）删除数据："><a href="#（2）删除数据：" class="headerlink" title="（2）删除数据："></a>（2）删除数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DELETE</span>  <span class="keyword">FROM</span> 表名;		#删除所有的记录行，慎用！</span><br><span class="line"><span class="keyword">DELETE</span>	<span class="keyword">FROM</span>	表名	<span class="keyword">WHERE</span>	列<span class="operator">=</span>值;		#删除满足条件的行</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+
+<h3 id="（3）修改数据："><a href="#（3）修改数据：" class="headerlink" title="（3）修改数据："></a>（3）修改数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">UPDATE 	表名	<span class="keyword">SET</span>  列<span class="operator">=</span>值，列<span class="operator">=</span>值；		#删除所有记录行，慎用</span><br><span class="line">UPDATE	表名	<span class="keyword">SET</span>	 列<span class="operator">=</span>值，列<span class="operator">=</span>值  <span class="keyword">WHERE</span>   列<span class="operator">=</span>值；</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-MySQL中的列类型"><a href="#2-MySQL中的列类型" class="headerlink" title="2.MySQL中的列类型"></a>2.MySQL中的列类型</h2><h3 id="（1）数字类型"><a href="#（1）数字类型" class="headerlink" title="（1）数字类型"></a>（1）数字类型</h3><h4 id="整型："><a href="#整型：" class="headerlink" title="整型："></a>整型：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">TINYINT: 占1个字节 -128~127。</span><br><span class="line">SMALLINT: 占2个字节 -32768~32767。</span><br><span class="line">INT: 占4个字节 -2147483648~2147483647。</span><br><span class="line">BIGINT: 占4/8个字节。</span><br></pre></td></tr></table></figure>
+
+<h4 id="小数型："><a href="#小数型：" class="headerlink" title="小数型："></a>小数型：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">FLOAT(M-M位有效数字,D-小数点后面D位小数):单精度浮点型，占4个字节。</span><br><span class="line">DOUBLE(M,D):双精度浮点型，占8个字节。</span><br><span class="line">DECIMAL(M,D):严格定点数，用于精确运算，如货币金额。</span><br></pre></td></tr></table></figure>
+
+<h3 id="（2）字符串类型"><a href="#（2）字符串类型" class="headerlink" title="（2）字符串类型"></a>（2）字符串类型</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">CHAR(M) : M不能超过255。</span><br><span class="line">VARCHAR(M) : M不能超过65535。</span><br><span class="line">TEXT(M) : M不能超过2^32,即40亿个字符。</span><br></pre></td></tr></table></figure>
+
+<p><strong>面试问题</strong>：CHAR(8)和VARCHAR(8)的区别?<br>user_name  CHAR(8)：定长字符串，可能产生空间浪费，但读取速度快</p>
+<blockquote>
+<p>‘a’  实际存储为： ‘a\0\0\0\0\0\0\0’<br>‘ab’实际存储为： ‘ab\0\0\0\0\0\0’<br>‘abc’实际存储为： ‘abc\0\0\0\0\0’<br>‘abcd’实际存储为： ‘abcd\0\0\0\0’<br>‘abcde’实际存储为： ‘abcde\0\0\0’<br>‘abcdef’实际存储为： ‘abcdef\0\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’</p>
+</blockquote>
+<p>user_name  VARCHAR(8)：   变长字符串，不会产生空间浪费，但读取速度稍慢</p>
+<blockquote>
+<p> ‘a’  实际存储为： ‘a\0’<br> ‘ab’实际存储为： ‘ab\0’<br> ‘abc’实际存储为： ‘abc\0’<br> ‘abcd’实际存储为： ‘abcd\0’<br>‘abcde’实际存储为： ‘abcde\0’<br>‘abcdef’实际存储为： ‘abcdef\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’　</p>
+</blockquote>
+<h3 id="（3）日期时间类型"><a href="#（3）日期时间类型" class="headerlink" title="（3）日期时间类型"></a>（3）日期时间类型</h3><p>​    DATE : 日期类型，必须用引号括起来，采用’yyyy-mm-dd’格式。<br>​    TIME : 时间类型，必须用引号括起来，采用’hh:mi:ss’格式。<br>​    DATETIME : 时期时间类型，必须用引号括起来，采用’yyyy-mm-dd hh:mi:ss’格式。</p>
+<h3 id="（4）布尔类型"><a href="#（4）布尔类型" class="headerlink" title="（4）布尔类型"></a>（4）布尔类型</h3><p>​    BOOL/BOOLEAN : 智能表示TRUE(等价于1)或FLASE(等价于0)。</p>
+<h2 id="3-列上的约束"><a href="#3-列上的约束" class="headerlink" title="3.列上的约束"></a>3.列上的约束</h2><h3 id="1-Constraint约束"><a href="#1-Constraint约束" class="headerlink" title="(1)Constraint约束"></a>(1)Constraint约束</h3><p>列上的值往往是有限制，如：</p>
+<p>性别:只能取男或者女<br>政治面貌：只能取党员，团员，群众之一</p>
+<h3 id="2-主键约束-PRIMARY-KEY"><a href="#2-主键约束-PRIMARY-KEY" class="headerlink" title="(2)主键约束(PRIMARY  KEY)"></a>(2)主键约束(PRIMARY  KEY)</h3><p>语法：列名 类型 PRIMARY KEY<br>声明为”主键”的列上不能出现null值，且不能重复，如商品编号；表中所有的记录行会自动按照主键列上的值进行排序——一个表至多只能声明一个主键列。</p>
+<h3 id="3-唯一约束-UNIQUE"><a href="#3-唯一约束-UNIQUE" class="headerlink" title="(3)唯一约束(UNIQUE)"></a>(3)唯一约束(UNIQUE)</h3><p>语法：列名 类型 UNIQUE<br>声明为”唯一”约束的列上不能出现重复值，但可以出现多个NULL</p>
+<h3 id="4-非空约束-NOT-NULL"><a href="#4-非空约束-NOT-NULL" class="headerlink" title="(4)非空约束(NOT  NULL)"></a>(4)非空约束(NOT  NULL)</h3><p>语法：列名 类型 NOT  NULL<br>声明为”非空”约束的列上不能出现NULL，但可以重复。</p>
+<h3 id="5-检查约束——MySQL不支持"><a href="#5-检查约束——MySQL不支持" class="headerlink" title="(5)检查约束——MySQL不支持"></a>(5)检查约束——MySQL不支持</h3><h3 id="6-默认值约束-DEFAULT"><a href="#6-默认值约束-DEFAULT" class="headerlink" title="(6)默认值约束(DEFAULT)"></a>(6)默认值约束(DEFAULT)</h3><p>语法：列名 类型 DEFAULT 值<br>声明了默认值的列若未指定值，则使用默认值；若指定的特定值的值，则使用指定的值。</p>
+<h3 id="7-外键约束"><a href="#7-外键约束" class="headerlink" title="(7)外键约束"></a>(7)外键约束</h3><p>外键：POREIGN  KEY,可重复可为空，外键列上出现的值必须正另一个表的主键列上。</p>
+]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>VUE组件之间通信的6种方式</title>
     <url>/2021/02/20/VUE%E7%BB%84%E4%BB%B6%E4%B9%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E7%9A%846%E7%A7%8D%E6%96%B9%E5%BC%8F/</url>
     <content><![CDATA[<h3 id="1-方法一：props和-emit"><a href="#1-方法一：props和-emit" class="headerlink" title="1.方法一：props和**$emit**"></a>1.方法一：<strong>props</strong>和**$emit**</h3><p>父组件通过props向下传递数据给子组件，子组件通过event给父组件发送消息，实际上就是子组件把自己的数据发送给父组件。</p>
@@ -760,51 +805,6 @@
       </categories>
       <tags>
         <tag>vue</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MySQL列类型和列上约束</title>
-    <url>/2017/08/06/MySQL%E5%88%97%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%88%97%E4%B8%8A%E7%BA%A6%E6%9D%9F/</url>
-    <content><![CDATA[<h2 id="1-常用SQL命令"><a href="#1-常用SQL命令" class="headerlink" title="1.常用SQL命令"></a>1.常用SQL命令</h2><h3 id="（1）添加数据："><a href="#（1）添加数据：" class="headerlink" title="（1）添加数据："></a>（1）添加数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">INSERT</span>  <span class="keyword">INTO</span> 表名 <span class="keyword">VALUES</span>(….);</span><br></pre></td></tr></table></figure>
-
-<h3 id="（2）删除数据："><a href="#（2）删除数据：" class="headerlink" title="（2）删除数据："></a>（2）删除数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DELETE</span>  <span class="keyword">FROM</span> 表名;		#删除所有的记录行，慎用！</span><br><span class="line"><span class="keyword">DELETE</span>	<span class="keyword">FROM</span>	表名	<span class="keyword">WHERE</span>	列<span class="operator">=</span>值;		#删除满足条件的行</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-
-<h3 id="（3）修改数据："><a href="#（3）修改数据：" class="headerlink" title="（3）修改数据："></a>（3）修改数据：</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">UPDATE 	表名	<span class="keyword">SET</span>  列<span class="operator">=</span>值，列<span class="operator">=</span>值；		#删除所有记录行，慎用</span><br><span class="line">UPDATE	表名	<span class="keyword">SET</span>	 列<span class="operator">=</span>值，列<span class="operator">=</span>值  <span class="keyword">WHERE</span>   列<span class="operator">=</span>值；</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="2-MySQL中的列类型"><a href="#2-MySQL中的列类型" class="headerlink" title="2.MySQL中的列类型"></a>2.MySQL中的列类型</h2><h3 id="（1）数字类型"><a href="#（1）数字类型" class="headerlink" title="（1）数字类型"></a>（1）数字类型</h3><h4 id="整型："><a href="#整型：" class="headerlink" title="整型："></a>整型：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">TINYINT: 占1个字节 -128~127。</span><br><span class="line">SMALLINT: 占2个字节 -32768~32767。</span><br><span class="line">INT: 占4个字节 -2147483648~2147483647。</span><br><span class="line">BIGINT: 占4/8个字节。</span><br></pre></td></tr></table></figure>
-
-<h4 id="小数型："><a href="#小数型：" class="headerlink" title="小数型："></a>小数型：</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">FLOAT(M-M位有效数字,D-小数点后面D位小数):单精度浮点型，占4个字节。</span><br><span class="line">DOUBLE(M,D):双精度浮点型，占8个字节。</span><br><span class="line">DECIMAL(M,D):严格定点数，用于精确运算，如货币金额。</span><br></pre></td></tr></table></figure>
-
-<h3 id="（2）字符串类型"><a href="#（2）字符串类型" class="headerlink" title="（2）字符串类型"></a>（2）字符串类型</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">CHAR(M) : M不能超过255。</span><br><span class="line">VARCHAR(M) : M不能超过65535。</span><br><span class="line">TEXT(M) : M不能超过2^32,即40亿个字符。</span><br></pre></td></tr></table></figure>
-
-<p><strong>面试问题</strong>：CHAR(8)和VARCHAR(8)的区别?<br>user_name  CHAR(8)：定长字符串，可能产生空间浪费，但读取速度快</p>
-<blockquote>
-<p>‘a’  实际存储为： ‘a\0\0\0\0\0\0\0’<br>‘ab’实际存储为： ‘ab\0\0\0\0\0\0’<br>‘abc’实际存储为： ‘abc\0\0\0\0\0’<br>‘abcd’实际存储为： ‘abcd\0\0\0\0’<br>‘abcde’实际存储为： ‘abcde\0\0\0’<br>‘abcdef’实际存储为： ‘abcdef\0\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’</p>
-</blockquote>
-<p>user_name  VARCHAR(8)：   变长字符串，不会产生空间浪费，但读取速度稍慢</p>
-<blockquote>
-<p> ‘a’  实际存储为： ‘a\0’<br> ‘ab’实际存储为： ‘ab\0’<br> ‘abc’实际存储为： ‘abc\0’<br> ‘abcd’实际存储为： ‘abcd\0’<br>‘abcde’实际存储为： ‘abcde\0’<br>‘abcdef’实际存储为： ‘abcdef\0’<br>‘abcdefg’实际存储为： ‘abcdefg\0’<br>‘abcdefgh’实际存储为： ‘abcdefgh’<br>‘abcdefghi’实际存储为： ‘abcdefgh’　</p>
-</blockquote>
-<h3 id="（3）日期时间类型"><a href="#（3）日期时间类型" class="headerlink" title="（3）日期时间类型"></a>（3）日期时间类型</h3><p>​    DATE : 日期类型，必须用引号括起来，采用’yyyy-mm-dd’格式。<br>​    TIME : 时间类型，必须用引号括起来，采用’hh:mi:ss’格式。<br>​    DATETIME : 时期时间类型，必须用引号括起来，采用’yyyy-mm-dd hh:mi:ss’格式。</p>
-<h3 id="（4）布尔类型"><a href="#（4）布尔类型" class="headerlink" title="（4）布尔类型"></a>（4）布尔类型</h3><p>​    BOOL/BOOLEAN : 智能表示TRUE(等价于1)或FLASE(等价于0)。</p>
-<h2 id="3-列上的约束"><a href="#3-列上的约束" class="headerlink" title="3.列上的约束"></a>3.列上的约束</h2><h3 id="1-Constraint约束"><a href="#1-Constraint约束" class="headerlink" title="(1)Constraint约束"></a>(1)Constraint约束</h3><p>列上的值往往是有限制，如：</p>
-<p>性别:只能取男或者女<br>政治面貌：只能取党员，团员，群众之一</p>
-<h3 id="2-主键约束-PRIMARY-KEY"><a href="#2-主键约束-PRIMARY-KEY" class="headerlink" title="(2)主键约束(PRIMARY  KEY)"></a>(2)主键约束(PRIMARY  KEY)</h3><p>语法：列名 类型 PRIMARY KEY<br>声明为”主键”的列上不能出现null值，且不能重复，如商品编号；表中所有的记录行会自动按照主键列上的值进行排序——一个表至多只能声明一个主键列。</p>
-<h3 id="3-唯一约束-UNIQUE"><a href="#3-唯一约束-UNIQUE" class="headerlink" title="(3)唯一约束(UNIQUE)"></a>(3)唯一约束(UNIQUE)</h3><p>语法：列名 类型 UNIQUE<br>声明为”唯一”约束的列上不能出现重复值，但可以出现多个NULL</p>
-<h3 id="4-非空约束-NOT-NULL"><a href="#4-非空约束-NOT-NULL" class="headerlink" title="(4)非空约束(NOT  NULL)"></a>(4)非空约束(NOT  NULL)</h3><p>语法：列名 类型 NOT  NULL<br>声明为”非空”约束的列上不能出现NULL，但可以重复。</p>
-<h3 id="5-检查约束——MySQL不支持"><a href="#5-检查约束——MySQL不支持" class="headerlink" title="(5)检查约束——MySQL不支持"></a>(5)检查约束——MySQL不支持</h3><h3 id="6-默认值约束-DEFAULT"><a href="#6-默认值约束-DEFAULT" class="headerlink" title="(6)默认值约束(DEFAULT)"></a>(6)默认值约束(DEFAULT)</h3><p>语法：列名 类型 DEFAULT 值<br>声明了默认值的列若未指定值，则使用默认值；若指定的特定值的值，则使用指定的值。</p>
-<h3 id="7-外键约束"><a href="#7-外键约束" class="headerlink" title="(7)外键约束"></a>(7)外键约束</h3><p>外键：POREIGN  KEY,可重复可为空，外键列上出现的值必须正另一个表的主键列上。</p>
-]]></content>
-      <categories>
-        <category>MySQL</category>
-      </categories>
-      <tags>
-        <tag>MySQL</tag>
       </tags>
   </entry>
   <entry>
@@ -1112,159 +1112,6 @@
       </tags>
   </entry>
   <entry>
-    <title>函数防抖与节流</title>
-    <url>/2021/03/19/%E5%87%BD%E6%95%B0%E9%98%B2%E6%8A%96%E4%B8%8E%E8%8A%82%E6%B5%81/</url>
-    <content><![CDATA[<h2 id="函数防抖"><a href="#函数防抖" class="headerlink" title="函数防抖"></a>函数防抖</h2><h3 id="一、为什么需要防抖"><a href="#一、为什么需要防抖" class="headerlink" title="一、为什么需要防抖"></a>一、为什么需要防抖</h3><ul>
-<li>高频的函数操作可能产生不好的影响</li>
-<li>如：resize、scroll、mousedown、mousemove、keyup、keydown……</li>
-</ul>
-<p>为此，我们举个示例代码来了解事件如何频繁的触发：</p>
-<p>我们写一个 index.html 文件：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;html lang&#x3D;&quot;en&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;meta charset&#x3D;&quot;UTF-8&quot;&gt;</span><br><span class="line">    &lt;meta name&#x3D;&quot;viewport&quot; content&#x3D;&quot;width&#x3D;device-width, initial-scale&#x3D;1.0&quot;&gt;</span><br><span class="line">    &lt;meta http-equiv&#x3D;&quot;X-UA-Compatible&quot; content&#x3D;&quot;ie&#x3D;edge&quot;&gt;</span><br><span class="line">    &lt;title&gt;Document&lt;&#x2F;title&gt;</span><br><span class="line">    &lt;title&gt;debounce&lt;&#x2F;title&gt;</span><br><span class="line">    &lt;style&gt;</span><br><span class="line">        #wrapper &#123;</span><br><span class="line">            width: 100%;</span><br><span class="line">            height: 200px;</span><br><span class="line">            line-height: 200px;</span><br><span class="line">            text-align: center;</span><br><span class="line">            color: #fff;</span><br><span class="line">            background-color: #444;</span><br><span class="line">            font-size: 30px;</span><br><span class="line">        &#125;</span><br><span class="line">    &lt;&#x2F;style&gt;</span><br><span class="line">&lt;&#x2F;head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;div id&#x3D;&quot;wrapper&quot;&gt;&lt;&#x2F;div&gt;</span><br><span class="line">    &lt;script&gt;</span><br><span class="line">        var count &#x3D; 1;</span><br><span class="line">        var oDiv &#x3D; document.getElementById(&quot;wrapper&quot;);</span><br><span class="line">        function getUserAction() &#123;</span><br><span class="line">            oDiv.innerHTML &#x3D; count++;</span><br><span class="line">        &#125;</span><br><span class="line">        oDiv.onmousemove &#x3D; getUserAction;</span><br><span class="line">    &lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<p>从左边滑到右边就触发了近100次<code>getUserAction</code> 函数！看如下Gif：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740408456-269506ee-a343-41c8-86b8-e80da9304d8e.gif"></p>
-<p>因为这个例子很简单，所以浏览器完全反应的过来，但假设：</p>
-<ul>
-<li>它的触发频次极高，1分钟2000次，且涉及到大量的位置计算、DOM 操作等工作，</li>
-<li>存在接口请求，单个函数执行时间较长，但每个函数触发的间隔很近。</li>
-</ul>
-<p>这种在一瞬间（短时间内）对浏览器或服务器造成了过多压力的交互就需要进行优化了，为了解决这个问题，一般有两种解决方案：</p>
-<ul>
-<li>debounce 防抖</li>
-<li>throttle 节流</li>
-</ul>
-<p>他们的目的都是：<strong>降低一个函数的触发频率，以提高性能或避免资源浪费。</strong></p>
-<h3 id="二、防抖的原理"><a href="#二、防抖的原理" class="headerlink" title="二、防抖的原理"></a>二、防抖的原理</h3><p>今天重点讲讲防抖的实现。</p>
-<p>防抖的原理就是：你尽管触发事件，但是我一定在事件触发<code>n秒无操作后</code>才执行。举个例子：</p>
-<p>我们规定<code>3s</code>为防抖的标准，那么:</p>
-<ol>
-<li>第一次要求执行事件 - 此时倒计时3s</li>
-<li>倒计时2s</li>
-<li>倒计时1s</li>
-<li>0.5s时事件再次被触发 - 此时倒计时3s</li>
-<li>…3s内无事发生</li>
-<li>执行事件，共用了5.5s</li>
-</ol>
-<h3 id="三、自己实现一个防抖"><a href="#三、自己实现一个防抖" class="headerlink" title="三、自己实现一个防抖"></a>三、自己实现一个防抖</h3><h4 id="3-1-第一版"><a href="#3-1-第一版" class="headerlink" title="3.1 第一版"></a>3.1 第一版</h4><p>我们根据上一节提到的核心思想，实现第一版代码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function debounce(func, wait) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    return function () &#123;</span><br><span class="line">        clearTimeout(timer)</span><br><span class="line">        timer &#x3D; setTimeout(func, wait);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>如果我们要使用它，第一节的例子为例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">oDiv.onmousemove &#x3D; debounce(getUserAction, 2000);</span><br></pre></td></tr></table></figure>
-
-<p>此时大家可以再次测试一下，事件持续发生时，只有在完全停止2s后，才会触发事件：</p>
-<p>写到这里，作为针对部分高频事件的需求来说，已经结束了。我们来看看他的效果：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740408554-b0245fd8-1c4d-4085-80da-f91d8be8da6f.gif"></p>
-<h4 id="3-2-第二版"><a href="#3-2-第二版" class="headerlink" title="3.2 第二版"></a>3.2 第二版</h4><p>大家都知道，dom节点在触发事件的时候，this指向它本身，本例中则指向<code>oDiv</code>，但是在本例中：我们看一下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var count &#x3D; 1;</span><br><span class="line">var oDiv &#x3D; document.getElementById(&quot;oDiv&quot;);</span><br><span class="line">function getUserAction() &#123;</span><br><span class="line">    oDiv.innerHTML &#x3D; count++;</span><br><span class="line">    console.log(&#39;this&#39;, this); &#x2F;&#x2F; 此时输出 Window...</span><br><span class="line">&#125;</span><br><span class="line">oDiv.onmousemove &#x3D; debounce(getUserAction, 2000);</span><br><span class="line">function debounce(func, wait) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    return function () &#123;</span><br><span class="line">        clearTimeout(timer)</span><br><span class="line">        timer &#x3D; setTimeout(func, wait);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>毕竟经过了一层匿名函数的包裹，this已经指向了window，为了减少影响，我们尝试修正它</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function debounce(func, wait) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    return function () &#123;</span><br><span class="line">        var _this &#x3D; this; &#x2F;&#x2F; 记录当前this</span><br><span class="line">        clearTimeout(timer)</span><br><span class="line">        timer &#x3D; setTimeout(function()&#123;</span><br><span class="line">            func.apply(_this); &#x2F;&#x2F;将 func的this改为_this</span><br><span class="line">        &#125;, wait);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="3-3-第三版"><a href="#3-3-第三版" class="headerlink" title="3.3 第三版"></a>3.3 第三版</h4><p>解决的this指向问题，我们的函数仍然不够“完美”，JavaScript中，事件处理函数会提供<code>event</code>对象，我们简称为e。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 使用了 debouce 函数</span><br><span class="line">function getUserAction(e) &#123;</span><br><span class="line">    console.log(e); &#x2F;&#x2F; undefined</span><br><span class="line">    oDiv.innerHTML &#x3D; count++;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>为了保证它的原汁原味，我们再改第三版：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var count &#x3D; 1;</span><br><span class="line">var oDiv &#x3D; document.getElementById(&quot;oDiv&quot;);</span><br><span class="line">function getUserAction(e) &#123;</span><br><span class="line">    oDiv.innerHTML &#x3D; count++;</span><br><span class="line">    console.log(&#39;e&#39;, e); &#x2F;&#x2F; MouseEvent</span><br><span class="line">&#125;</span><br><span class="line">oDiv.onmousemove &#x3D; debounce(getUserAction, 2000);</span><br><span class="line">function debounce(func, wait) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    return function () &#123;</span><br><span class="line">        var _this &#x3D; this; &#x2F;&#x2F; 记录当前this</span><br><span class="line">        var arg &#x3D; arguments; &#x2F;&#x2F; 记录参数</span><br><span class="line">        clearTimeout(timer)</span><br><span class="line">        timer &#x3D; setTimeout(function () &#123;</span><br><span class="line">            func.apply(_this, arg); &#x2F;&#x2F;将 func的this改为_this</span><br><span class="line">        &#125;, wait);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>到此为止，我们在尽可能保留Dom事件原有能力的情况下，给函数加上了防抖效果，它可以解决大部分我们日常开发的防抖问题，但我们需要更“完美”</p>
-<h3 id="四、防抖进阶"><a href="#四、防抖进阶" class="headerlink" title="四、防抖进阶"></a>四、防抖进阶</h3><h4 id="4-1-立即执行"><a href="#4-1-立即执行" class="headerlink" title="4.1 立即执行"></a>4.1 立即执行</h4><p>这个需求就是：</p>
-<ul>
-<li>立即执行</li>
-<li>保持<code>n</code>秒空白期</li>
-<li>将<code>n</code>秒空白期置后</li>
-</ul>
-<p>想想这个需求也是很有道理的嘛，那我们加个<code>immediate</code>参数判断是否是立刻执行。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function debounce(func, wait, immediate) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    return function () &#123;</span><br><span class="line">        var _this &#x3D; this;</span><br><span class="line">        var args &#x3D; arguments;</span><br><span class="line">        if (timer) clearTimeout(timer); &#x2F;&#x2F; 常规流程，间隔内触发时清掉重置定时</span><br><span class="line">        if (immediate) &#123;</span><br><span class="line">            &#x2F;&#x2F; 如果已经执行过，不再执行</span><br><span class="line">            var callNow &#x3D; !timer; &#x2F;&#x2F; 1. callNow 初始值是 true, 同步立即执行；随后 timer 才开始执行</span><br><span class="line">            timer &#x3D; setTimeout(function()&#123;</span><br><span class="line">                timer &#x3D; null; &#x2F;&#x2F; wait 期间，timer 是一个 ID 数字，所以 callNow 为 false，func 在此期间永远不会执行</span><br><span class="line">            &#125;, wait) &#x2F;&#x2F; wait 之后，timer 赋值 null，callNow 为 true，func 又开始立即执行。</span><br><span class="line">            if (callNow) func.apply(_this, args)</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            timer &#x3D; setTimeout(function()&#123;</span><br><span class="line">                func.apply(_this, args)</span><br><span class="line">            &#125;, wait);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>再来看下此时他是什么效果：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740408487-78c69123-24ec-4893-b442-366d3117eda2.gif"></p>
-<h4 id="4-2-添加简单验证"><a href="#4-2-添加简单验证" class="headerlink" title="4.2 添加简单验证"></a>4.2 添加简单验证</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function debounce(func, wait, immediate) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    &#x2F;&#x2F; 检查函数</span><br><span class="line">    if (typeof func !&#x3D;&#x3D; &#39;function&#39;) &#123;</span><br><span class="line">        throw new TypeError(&#39;Expected a function&#39;);</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F; 保证wait存在</span><br><span class="line">    wait &#x3D; +wait || 0;</span><br><span class="line">    const debounced &#x3D; function () &#123;</span><br><span class="line">        var _this &#x3D; this;</span><br><span class="line">        var args &#x3D; arguments;</span><br><span class="line">        if (timer) clearTimeout(timer); &#x2F;&#x2F; 常规流程，间隔内触发时清掉重置定时</span><br><span class="line">        if (immediate) &#123;</span><br><span class="line">            &#x2F;&#x2F; 如果已经执行过，不再执行</span><br><span class="line">            var callNow &#x3D; !timer; &#x2F;&#x2F; 如果不存在定时器，则callNow为true</span><br><span class="line">            timer &#x3D; setTimeout(function () &#123;</span><br><span class="line">                timer &#x3D; null; &#x2F;&#x2F; 为了保证之后的时效性，手动添加timer</span><br><span class="line">            &#125;, wait)</span><br><span class="line">            &#x2F;&#x2F; 因为不存在timer，证明是首次执行，所以直接调用</span><br><span class="line">            if (callNow) func.apply(_this, args)</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            timer &#x3D; setTimeout(function () &#123;</span><br><span class="line">                func.apply(_this, args)</span><br><span class="line">            &#125;, wait);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return debounced</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="4-3-添加取消事件方法"><a href="#4-3-添加取消事件方法" class="headerlink" title="4.3 添加取消事件方法"></a>4.3 添加取消事件方法</h4><p>如果你希望能取消被防抖的事件，我们可以这样写：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function debounce(func, wait, immediate) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    &#x2F;&#x2F; 检查函数</span><br><span class="line">    if (typeof func !&#x3D;&#x3D; &#39;function&#39;) &#123;</span><br><span class="line">        throw new TypeError(&#39;Expected a function&#39;);</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F; 保证wait存在</span><br><span class="line">    wait &#x3D; +wait || 0;</span><br><span class="line">    const debounced &#x3D; function () &#123;</span><br><span class="line">        var _this &#x3D; this;</span><br><span class="line">        var args &#x3D; arguments;</span><br><span class="line">        if (timer) clearTimeout(timer); &#x2F;&#x2F; 常规流程，间隔内触发时清掉重置定时</span><br><span class="line">        if (immediate) &#123;</span><br><span class="line">            &#x2F;&#x2F; 如果已经执行过，不再执行</span><br><span class="line">            var callNow &#x3D; !timer; &#x2F;&#x2F; 如果不存在定时器，则callNow为true</span><br><span class="line">            timer &#x3D; setTimeout(function () &#123;</span><br><span class="line">                timer &#x3D; null; &#x2F;&#x2F; 为了保证之后的时效性，手动添加timer</span><br><span class="line">            &#125;, wait)</span><br><span class="line">            &#x2F;&#x2F; 因为不存在timer，证明是首次执行，所以直接调用</span><br><span class="line">            if (callNow) func.apply(_this, args)</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            timer &#x3D; setTimeout(function () &#123;</span><br><span class="line">                func.apply(_this, args)</span><br><span class="line">            &#125;, wait);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    const cancel &#x3D; function()&#123;</span><br><span class="line">        clearTimeout(timer);</span><br><span class="line">        timer &#x3D; null;</span><br><span class="line">    &#125;</span><br><span class="line">    const pending &#x3D; function()&#123;</span><br><span class="line">        return timer !&#x3D;&#x3D; undefined;</span><br><span class="line">    &#125;</span><br><span class="line">    debounced.cancel &#x3D; cancel;</span><br><span class="line">    debounced.pending &#x3D; pending;</span><br><span class="line">    return debounced</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>我们再来看看效果：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740408427-b468ccd4-99ff-4eee-821a-290d95e04071.gif"></p>
-<h2 id="函数节流"><a href="#函数节流" class="headerlink" title="函数节流"></a>函数节流</h2><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>我们还是以移动事件举例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html lang&#x3D;&quot;en&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;meta charset&#x3D;&quot;UTF-8&quot;&gt;</span><br><span class="line">    &lt;meta name&#x3D;&quot;viewport&quot; content&#x3D;&quot;width&#x3D;device-width, initial-scale&#x3D;1.0&quot;&gt;</span><br><span class="line">    &lt;meta http-equiv&#x3D;&quot;X-UA-Compatible&quot; content&#x3D;&quot;ie&#x3D;edge&quot;&gt;</span><br><span class="line">    &lt;title&gt;Document&lt;&#x2F;title&gt;</span><br><span class="line">    &lt;style&gt;</span><br><span class="line">        #wrapper &#123;</span><br><span class="line">            width: 100%;</span><br><span class="line">            height: 140px;</span><br><span class="line">            background: rgba(0, 0, 0, 0.8);</span><br><span class="line">            color: #fff;</span><br><span class="line">            font-size: 30px;</span><br><span class="line">            font-weight: bold;</span><br><span class="line">            line-height: 140px;</span><br><span class="line">            text-align: center;</span><br><span class="line">        &#125;</span><br><span class="line">    &lt;&#x2F;style&gt;</span><br><span class="line">&lt;&#x2F;head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;div id&#x3D;&quot;wrapper&quot;&gt;&lt;&#x2F;div&gt;</span><br><span class="line">    &lt;script&gt;</span><br><span class="line">        var count &#x3D; 1;</span><br><span class="line">        function moveAction () &#123;</span><br><span class="line">            oWrapper.innerHTML &#x3D; count++;</span><br><span class="line">        &#125;</span><br><span class="line">        var oWrapper &#x3D; document.querySelector(&#39;#wrapper&#39;);</span><br><span class="line">        oWrapper.onmousemove &#x3D; moveAction;</span><br><span class="line">    &lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
-
-<p>它的效果是这样：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740551747-de70166f-f851-412c-ba2a-5a116a194f3d.gif"></p>
-<h3 id="一、核心和基本实现"><a href="#一、核心和基本实现" class="headerlink" title="一、核心和基本实现"></a>一、核心和基本实现</h3><p>节流的原理很简单：<strong>如果你持续触发某个事件，特定的时间间隔内，只执行一次。</strong></p>
-<p><strong>关于节流的实现，有两种主流的实现方式：</strong></p>
-<ol>
-<li>时间戳思路</li>
-<li>定时器思路</li>
-</ol>
-<h4 id="1-1-时间戳思路"><a href="#1-1-时间戳思路" class="headerlink" title="1.1 时间戳思路"></a>1.1 时间戳思路</h4><p>顾名思义，通过两个时间戳来控制时间间隔，当触发事件的时候：</p>
-<ol>
-<li>我们取出当前的时间戳 <code>now</code>；</li>
-<li>然后减去之前<strong>执行时</strong>的时间戳(首次值为 0 ) <code>prev</code>；</li>
-<li>如果大<code>now - prev &gt; wait</code>，证明时间区间维护结束，执行指定事件，更新<code>prev</code>；</li>
-</ol>
-<p>根据这一思路，我们就可以实现第一版代码了：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">oWrapper.onmousemove &#x3D; throttle(moveAction, 1000);</span><br><span class="line">function throttle(func, wait) &#123;</span><br><span class="line">    var _this, arg;</span><br><span class="line">    var prev &#x3D; 0; &#x2F;&#x2F; 上一次触发的时间，第一次默认为0</span><br><span class="line">    return function () &#123;</span><br><span class="line">        var now &#x3D; Date.now(); &#x2F;&#x2F; 触发时的时间</span><br><span class="line">        _this &#x3D; this;</span><br><span class="line">        if (now - prev &gt; wait) &#123;</span><br><span class="line">            func.apply(_this, arg); &#x2F;&#x2F; 允许传入参数，并修正this</span><br><span class="line">            prev &#x3D; now; &#x2F;&#x2F; 更新上一次触发的时间</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>来看看借助它，效果是什么样的：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740552204-2bb5f2b1-3807-4d26-b3eb-d34e798ab60a.gif"></p>
-<p>我们可以看到：</p>
-<ol>
-<li>当鼠标移入的时候，<strong>事件立刻执行</strong></li>
-<li>每过 1s 会执行一次，且移动2.5s会执行2次，意味着动作<strong>停止后不会再执行</strong>。</li>
-</ol>
-<h4 id="1-2-定时器思路"><a href="#1-2-定时器思路" class="headerlink" title="1.2 定时器思路"></a>1.2 定时器思路</h4><p>利用定时器来保证间隔时间内事件的触发次数</p>
-<ol>
-<li>创建定时器<code>timer</code>，记录当前是否在<strong>周期</strong>内；</li>
-<li>判断定时器是否存在，若存在则直接结束，否则执行事件；</li>
-<li><code>wait</code>时间之后再次执行，并清掉定时器；</li>
-</ol>
-<p>当触发事件的时候，我们设置一个定时器，再触发事件的时候，如果定时器存在，就不执行，直到定时器执行，然后执行函数，清空定时器，这样就可以设置下个定时器。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function throttle(func, wait) &#123;</span><br><span class="line">    var _this, arg;</span><br><span class="line">    var timer; &#x2F;&#x2F; 初始化</span><br><span class="line">    return function () &#123;</span><br><span class="line">        _this &#x3D; this; &#x2F;&#x2F; 记录this</span><br><span class="line">        arg &#x3D; arguments; &#x2F;&#x2F; 记录参数数组</span><br><span class="line">        if (timer) return; &#x2F;&#x2F; 时候未到</span><br><span class="line">        timer &#x3D; setTimeout(() &#x3D;&gt; &#123;</span><br><span class="line">            func.apply(_this, arg); &#x2F;&#x2F; 允许传入参数，并修正this</span><br><span class="line">            timer &#x3D; null;</span><br><span class="line">        &#125;, wait);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>来看看借助它，效果是什么样的：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740551861-12bc2cce-f80a-45ff-9913-7798160b3438.gif"></p>
-<p>但是，我们可以看到：</p>
-<ol>
-<li>当鼠标移入的时候，事件不会立刻执行;</li>
-<li>鼠标定制后<code>wait</code>间隔后会执行一次</li>
-</ol>
-<h4 id="1-3-两种思路的区别"><a href="#1-3-两种思路的区别" class="headerlink" title="1.3 两种思路的区别"></a>1.3 两种思路的区别</h4><table>
-<thead>
-<tr>
-<th></th>
-<th>时间戳</th>
-<th>定时器</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>“起点”</td>
-<td>立即执行</td>
-<td>n 秒后执行</td>
-</tr>
-<tr>
-<td>“终点”</td>
-<td>停止后不会执行</td>
-<td>停止会再执行一次</td>
-</tr>
-</tbody></table>
-<h3 id="二、节流进阶"><a href="#二、节流进阶" class="headerlink" title="二、节流进阶"></a>二、节流进阶</h3><p>结合两种思想完成一个可以立即执行，且停止触发后再执行一次的节流方法：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 第三版</span><br><span class="line">function throttle(func, wait) &#123;</span><br><span class="line">    var timeout, context, args, result;</span><br><span class="line">    var previous &#x3D; 0;</span><br><span class="line">    var later &#x3D; function() &#123;</span><br><span class="line">        previous &#x3D; +new Date();</span><br><span class="line">        timeout &#x3D; null;</span><br><span class="line">        func.apply(context, args)</span><br><span class="line">    &#125;;</span><br><span class="line">    var throttled &#x3D; function() &#123;</span><br><span class="line">        var now &#x3D; +new Date();</span><br><span class="line">        &#x2F;&#x2F;下次触发 func 剩余的时间</span><br><span class="line">        var remaining &#x3D; wait - (now - previous);</span><br><span class="line">        context &#x3D; this;</span><br><span class="line">        args &#x3D; arguments;</span><br><span class="line">         &#x2F;&#x2F; 如果没有剩余的时间了或者你改了系统时间</span><br><span class="line">        if (remaining &lt;&#x3D; 0 || remaining &gt; wait) &#123;</span><br><span class="line">            if (timeout) &#123;</span><br><span class="line">                clearTimeout(timeout);</span><br><span class="line">                timeout &#x3D; null;</span><br><span class="line">            &#125;</span><br><span class="line">            previous &#x3D; now;</span><br><span class="line">            func.apply(context, args);</span><br><span class="line">        &#125; else if (!timeout) &#123;</span><br><span class="line">            timeout &#x3D; setTimeout(later, remaining);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    return throttled;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>效果演示如下：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740551783-4d2e4584-8e32-4ca2-a1de-c2ab865a882c.gif"></p>
-<p>我在看代码的时候，我是反复打印数据才理解为什么会这样做，一起加油～</p>
-]]></content>
-      <categories>
-        <category>javascript</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>学习之AJAX</title>
     <url>/2019/03/20/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
     <content><![CDATA[<p>对于AJAX这个玩意儿，一开始学习的时候，根本不知道这是什么，我连AJAX有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙B的状态。那么在学习一段时间的AJAX之后，我总结了一些我自己对AJAX的理解，一起共勉。</p>
@@ -1440,6 +1287,159 @@
       </categories>
       <tags>
         <tag>CSS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>函数防抖与节流</title>
+    <url>/2021/03/19/%E5%87%BD%E6%95%B0%E9%98%B2%E6%8A%96%E4%B8%8E%E8%8A%82%E6%B5%81/</url>
+    <content><![CDATA[<h2 id="函数防抖"><a href="#函数防抖" class="headerlink" title="函数防抖"></a>函数防抖</h2><h3 id="一、为什么需要防抖"><a href="#一、为什么需要防抖" class="headerlink" title="一、为什么需要防抖"></a>一、为什么需要防抖</h3><ul>
+<li>高频的函数操作可能产生不好的影响</li>
+<li>如：resize、scroll、mousedown、mousemove、keyup、keydown……</li>
+</ul>
+<p>为此，我们举个示例代码来了解事件如何频繁的触发：</p>
+<p>我们写一个 index.html 文件：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;html lang&#x3D;&quot;en&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;meta charset&#x3D;&quot;UTF-8&quot;&gt;</span><br><span class="line">    &lt;meta name&#x3D;&quot;viewport&quot; content&#x3D;&quot;width&#x3D;device-width, initial-scale&#x3D;1.0&quot;&gt;</span><br><span class="line">    &lt;meta http-equiv&#x3D;&quot;X-UA-Compatible&quot; content&#x3D;&quot;ie&#x3D;edge&quot;&gt;</span><br><span class="line">    &lt;title&gt;Document&lt;&#x2F;title&gt;</span><br><span class="line">    &lt;title&gt;debounce&lt;&#x2F;title&gt;</span><br><span class="line">    &lt;style&gt;</span><br><span class="line">        #wrapper &#123;</span><br><span class="line">            width: 100%;</span><br><span class="line">            height: 200px;</span><br><span class="line">            line-height: 200px;</span><br><span class="line">            text-align: center;</span><br><span class="line">            color: #fff;</span><br><span class="line">            background-color: #444;</span><br><span class="line">            font-size: 30px;</span><br><span class="line">        &#125;</span><br><span class="line">    &lt;&#x2F;style&gt;</span><br><span class="line">&lt;&#x2F;head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;div id&#x3D;&quot;wrapper&quot;&gt;&lt;&#x2F;div&gt;</span><br><span class="line">    &lt;script&gt;</span><br><span class="line">        var count &#x3D; 1;</span><br><span class="line">        var oDiv &#x3D; document.getElementById(&quot;wrapper&quot;);</span><br><span class="line">        function getUserAction() &#123;</span><br><span class="line">            oDiv.innerHTML &#x3D; count++;</span><br><span class="line">        &#125;</span><br><span class="line">        oDiv.onmousemove &#x3D; getUserAction;</span><br><span class="line">    &lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<p>从左边滑到右边就触发了近100次<code>getUserAction</code> 函数！看如下Gif：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740408456-269506ee-a343-41c8-86b8-e80da9304d8e.gif"></p>
+<p>因为这个例子很简单，所以浏览器完全反应的过来，但假设：</p>
+<ul>
+<li>它的触发频次极高，1分钟2000次，且涉及到大量的位置计算、DOM 操作等工作，</li>
+<li>存在接口请求，单个函数执行时间较长，但每个函数触发的间隔很近。</li>
+</ul>
+<p>这种在一瞬间（短时间内）对浏览器或服务器造成了过多压力的交互就需要进行优化了，为了解决这个问题，一般有两种解决方案：</p>
+<ul>
+<li>debounce 防抖</li>
+<li>throttle 节流</li>
+</ul>
+<p>他们的目的都是：<strong>降低一个函数的触发频率，以提高性能或避免资源浪费。</strong></p>
+<h3 id="二、防抖的原理"><a href="#二、防抖的原理" class="headerlink" title="二、防抖的原理"></a>二、防抖的原理</h3><p>今天重点讲讲防抖的实现。</p>
+<p>防抖的原理就是：你尽管触发事件，但是我一定在事件触发<code>n秒无操作后</code>才执行。举个例子：</p>
+<p>我们规定<code>3s</code>为防抖的标准，那么:</p>
+<ol>
+<li>第一次要求执行事件 - 此时倒计时3s</li>
+<li>倒计时2s</li>
+<li>倒计时1s</li>
+<li>0.5s时事件再次被触发 - 此时倒计时3s</li>
+<li>…3s内无事发生</li>
+<li>执行事件，共用了5.5s</li>
+</ol>
+<h3 id="三、自己实现一个防抖"><a href="#三、自己实现一个防抖" class="headerlink" title="三、自己实现一个防抖"></a>三、自己实现一个防抖</h3><h4 id="3-1-第一版"><a href="#3-1-第一版" class="headerlink" title="3.1 第一版"></a>3.1 第一版</h4><p>我们根据上一节提到的核心思想，实现第一版代码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function debounce(func, wait) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    return function () &#123;</span><br><span class="line">        clearTimeout(timer)</span><br><span class="line">        timer &#x3D; setTimeout(func, wait);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果我们要使用它，第一节的例子为例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">oDiv.onmousemove &#x3D; debounce(getUserAction, 2000);</span><br></pre></td></tr></table></figure>
+
+<p>此时大家可以再次测试一下，事件持续发生时，只有在完全停止2s后，才会触发事件：</p>
+<p>写到这里，作为针对部分高频事件的需求来说，已经结束了。我们来看看他的效果：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740408554-b0245fd8-1c4d-4085-80da-f91d8be8da6f.gif"></p>
+<h4 id="3-2-第二版"><a href="#3-2-第二版" class="headerlink" title="3.2 第二版"></a>3.2 第二版</h4><p>大家都知道，dom节点在触发事件的时候，this指向它本身，本例中则指向<code>oDiv</code>，但是在本例中：我们看一下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var count &#x3D; 1;</span><br><span class="line">var oDiv &#x3D; document.getElementById(&quot;oDiv&quot;);</span><br><span class="line">function getUserAction() &#123;</span><br><span class="line">    oDiv.innerHTML &#x3D; count++;</span><br><span class="line">    console.log(&#39;this&#39;, this); &#x2F;&#x2F; 此时输出 Window...</span><br><span class="line">&#125;</span><br><span class="line">oDiv.onmousemove &#x3D; debounce(getUserAction, 2000);</span><br><span class="line">function debounce(func, wait) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    return function () &#123;</span><br><span class="line">        clearTimeout(timer)</span><br><span class="line">        timer &#x3D; setTimeout(func, wait);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>毕竟经过了一层匿名函数的包裹，this已经指向了window，为了减少影响，我们尝试修正它</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function debounce(func, wait) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    return function () &#123;</span><br><span class="line">        var _this &#x3D; this; &#x2F;&#x2F; 记录当前this</span><br><span class="line">        clearTimeout(timer)</span><br><span class="line">        timer &#x3D; setTimeout(function()&#123;</span><br><span class="line">            func.apply(_this); &#x2F;&#x2F;将 func的this改为_this</span><br><span class="line">        &#125;, wait);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-3-第三版"><a href="#3-3-第三版" class="headerlink" title="3.3 第三版"></a>3.3 第三版</h4><p>解决的this指向问题，我们的函数仍然不够“完美”，JavaScript中，事件处理函数会提供<code>event</code>对象，我们简称为e。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 使用了 debouce 函数</span><br><span class="line">function getUserAction(e) &#123;</span><br><span class="line">    console.log(e); &#x2F;&#x2F; undefined</span><br><span class="line">    oDiv.innerHTML &#x3D; count++;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>为了保证它的原汁原味，我们再改第三版：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var count &#x3D; 1;</span><br><span class="line">var oDiv &#x3D; document.getElementById(&quot;oDiv&quot;);</span><br><span class="line">function getUserAction(e) &#123;</span><br><span class="line">    oDiv.innerHTML &#x3D; count++;</span><br><span class="line">    console.log(&#39;e&#39;, e); &#x2F;&#x2F; MouseEvent</span><br><span class="line">&#125;</span><br><span class="line">oDiv.onmousemove &#x3D; debounce(getUserAction, 2000);</span><br><span class="line">function debounce(func, wait) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    return function () &#123;</span><br><span class="line">        var _this &#x3D; this; &#x2F;&#x2F; 记录当前this</span><br><span class="line">        var arg &#x3D; arguments; &#x2F;&#x2F; 记录参数</span><br><span class="line">        clearTimeout(timer)</span><br><span class="line">        timer &#x3D; setTimeout(function () &#123;</span><br><span class="line">            func.apply(_this, arg); &#x2F;&#x2F;将 func的this改为_this</span><br><span class="line">        &#125;, wait);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>到此为止，我们在尽可能保留Dom事件原有能力的情况下，给函数加上了防抖效果，它可以解决大部分我们日常开发的防抖问题，但我们需要更“完美”</p>
+<h3 id="四、防抖进阶"><a href="#四、防抖进阶" class="headerlink" title="四、防抖进阶"></a>四、防抖进阶</h3><h4 id="4-1-立即执行"><a href="#4-1-立即执行" class="headerlink" title="4.1 立即执行"></a>4.1 立即执行</h4><p>这个需求就是：</p>
+<ul>
+<li>立即执行</li>
+<li>保持<code>n</code>秒空白期</li>
+<li>将<code>n</code>秒空白期置后</li>
+</ul>
+<p>想想这个需求也是很有道理的嘛，那我们加个<code>immediate</code>参数判断是否是立刻执行。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function debounce(func, wait, immediate) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    return function () &#123;</span><br><span class="line">        var _this &#x3D; this;</span><br><span class="line">        var args &#x3D; arguments;</span><br><span class="line">        if (timer) clearTimeout(timer); &#x2F;&#x2F; 常规流程，间隔内触发时清掉重置定时</span><br><span class="line">        if (immediate) &#123;</span><br><span class="line">            &#x2F;&#x2F; 如果已经执行过，不再执行</span><br><span class="line">            var callNow &#x3D; !timer; &#x2F;&#x2F; 1. callNow 初始值是 true, 同步立即执行；随后 timer 才开始执行</span><br><span class="line">            timer &#x3D; setTimeout(function()&#123;</span><br><span class="line">                timer &#x3D; null; &#x2F;&#x2F; wait 期间，timer 是一个 ID 数字，所以 callNow 为 false，func 在此期间永远不会执行</span><br><span class="line">            &#125;, wait) &#x2F;&#x2F; wait 之后，timer 赋值 null，callNow 为 true，func 又开始立即执行。</span><br><span class="line">            if (callNow) func.apply(_this, args)</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            timer &#x3D; setTimeout(function()&#123;</span><br><span class="line">                func.apply(_this, args)</span><br><span class="line">            &#125;, wait);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>再来看下此时他是什么效果：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740408487-78c69123-24ec-4893-b442-366d3117eda2.gif"></p>
+<h4 id="4-2-添加简单验证"><a href="#4-2-添加简单验证" class="headerlink" title="4.2 添加简单验证"></a>4.2 添加简单验证</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function debounce(func, wait, immediate) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    &#x2F;&#x2F; 检查函数</span><br><span class="line">    if (typeof func !&#x3D;&#x3D; &#39;function&#39;) &#123;</span><br><span class="line">        throw new TypeError(&#39;Expected a function&#39;);</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F; 保证wait存在</span><br><span class="line">    wait &#x3D; +wait || 0;</span><br><span class="line">    const debounced &#x3D; function () &#123;</span><br><span class="line">        var _this &#x3D; this;</span><br><span class="line">        var args &#x3D; arguments;</span><br><span class="line">        if (timer) clearTimeout(timer); &#x2F;&#x2F; 常规流程，间隔内触发时清掉重置定时</span><br><span class="line">        if (immediate) &#123;</span><br><span class="line">            &#x2F;&#x2F; 如果已经执行过，不再执行</span><br><span class="line">            var callNow &#x3D; !timer; &#x2F;&#x2F; 如果不存在定时器，则callNow为true</span><br><span class="line">            timer &#x3D; setTimeout(function () &#123;</span><br><span class="line">                timer &#x3D; null; &#x2F;&#x2F; 为了保证之后的时效性，手动添加timer</span><br><span class="line">            &#125;, wait)</span><br><span class="line">            &#x2F;&#x2F; 因为不存在timer，证明是首次执行，所以直接调用</span><br><span class="line">            if (callNow) func.apply(_this, args)</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            timer &#x3D; setTimeout(function () &#123;</span><br><span class="line">                func.apply(_this, args)</span><br><span class="line">            &#125;, wait);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return debounced</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-3-添加取消事件方法"><a href="#4-3-添加取消事件方法" class="headerlink" title="4.3 添加取消事件方法"></a>4.3 添加取消事件方法</h4><p>如果你希望能取消被防抖的事件，我们可以这样写：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function debounce(func, wait, immediate) &#123;</span><br><span class="line">    var timer;</span><br><span class="line">    &#x2F;&#x2F; 检查函数</span><br><span class="line">    if (typeof func !&#x3D;&#x3D; &#39;function&#39;) &#123;</span><br><span class="line">        throw new TypeError(&#39;Expected a function&#39;);</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F; 保证wait存在</span><br><span class="line">    wait &#x3D; +wait || 0;</span><br><span class="line">    const debounced &#x3D; function () &#123;</span><br><span class="line">        var _this &#x3D; this;</span><br><span class="line">        var args &#x3D; arguments;</span><br><span class="line">        if (timer) clearTimeout(timer); &#x2F;&#x2F; 常规流程，间隔内触发时清掉重置定时</span><br><span class="line">        if (immediate) &#123;</span><br><span class="line">            &#x2F;&#x2F; 如果已经执行过，不再执行</span><br><span class="line">            var callNow &#x3D; !timer; &#x2F;&#x2F; 如果不存在定时器，则callNow为true</span><br><span class="line">            timer &#x3D; setTimeout(function () &#123;</span><br><span class="line">                timer &#x3D; null; &#x2F;&#x2F; 为了保证之后的时效性，手动添加timer</span><br><span class="line">            &#125;, wait)</span><br><span class="line">            &#x2F;&#x2F; 因为不存在timer，证明是首次执行，所以直接调用</span><br><span class="line">            if (callNow) func.apply(_this, args)</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            timer &#x3D; setTimeout(function () &#123;</span><br><span class="line">                func.apply(_this, args)</span><br><span class="line">            &#125;, wait);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    const cancel &#x3D; function()&#123;</span><br><span class="line">        clearTimeout(timer);</span><br><span class="line">        timer &#x3D; null;</span><br><span class="line">    &#125;</span><br><span class="line">    const pending &#x3D; function()&#123;</span><br><span class="line">        return timer !&#x3D;&#x3D; undefined;</span><br><span class="line">    &#125;</span><br><span class="line">    debounced.cancel &#x3D; cancel;</span><br><span class="line">    debounced.pending &#x3D; pending;</span><br><span class="line">    return debounced</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们再来看看效果：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740408427-b468ccd4-99ff-4eee-821a-290d95e04071.gif"></p>
+<h2 id="函数节流"><a href="#函数节流" class="headerlink" title="函数节流"></a>函数节流</h2><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>我们还是以移动事件举例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html lang&#x3D;&quot;en&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;meta charset&#x3D;&quot;UTF-8&quot;&gt;</span><br><span class="line">    &lt;meta name&#x3D;&quot;viewport&quot; content&#x3D;&quot;width&#x3D;device-width, initial-scale&#x3D;1.0&quot;&gt;</span><br><span class="line">    &lt;meta http-equiv&#x3D;&quot;X-UA-Compatible&quot; content&#x3D;&quot;ie&#x3D;edge&quot;&gt;</span><br><span class="line">    &lt;title&gt;Document&lt;&#x2F;title&gt;</span><br><span class="line">    &lt;style&gt;</span><br><span class="line">        #wrapper &#123;</span><br><span class="line">            width: 100%;</span><br><span class="line">            height: 140px;</span><br><span class="line">            background: rgba(0, 0, 0, 0.8);</span><br><span class="line">            color: #fff;</span><br><span class="line">            font-size: 30px;</span><br><span class="line">            font-weight: bold;</span><br><span class="line">            line-height: 140px;</span><br><span class="line">            text-align: center;</span><br><span class="line">        &#125;</span><br><span class="line">    &lt;&#x2F;style&gt;</span><br><span class="line">&lt;&#x2F;head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;div id&#x3D;&quot;wrapper&quot;&gt;&lt;&#x2F;div&gt;</span><br><span class="line">    &lt;script&gt;</span><br><span class="line">        var count &#x3D; 1;</span><br><span class="line">        function moveAction () &#123;</span><br><span class="line">            oWrapper.innerHTML &#x3D; count++;</span><br><span class="line">        &#125;</span><br><span class="line">        var oWrapper &#x3D; document.querySelector(&#39;#wrapper&#39;);</span><br><span class="line">        oWrapper.onmousemove &#x3D; moveAction;</span><br><span class="line">    &lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+
+<p>它的效果是这样：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740551747-de70166f-f851-412c-ba2a-5a116a194f3d.gif"></p>
+<h3 id="一、核心和基本实现"><a href="#一、核心和基本实现" class="headerlink" title="一、核心和基本实现"></a>一、核心和基本实现</h3><p>节流的原理很简单：<strong>如果你持续触发某个事件，特定的时间间隔内，只执行一次。</strong></p>
+<p><strong>关于节流的实现，有两种主流的实现方式：</strong></p>
+<ol>
+<li>时间戳思路</li>
+<li>定时器思路</li>
+</ol>
+<h4 id="1-1-时间戳思路"><a href="#1-1-时间戳思路" class="headerlink" title="1.1 时间戳思路"></a>1.1 时间戳思路</h4><p>顾名思义，通过两个时间戳来控制时间间隔，当触发事件的时候：</p>
+<ol>
+<li>我们取出当前的时间戳 <code>now</code>；</li>
+<li>然后减去之前<strong>执行时</strong>的时间戳(首次值为 0 ) <code>prev</code>；</li>
+<li>如果大<code>now - prev &gt; wait</code>，证明时间区间维护结束，执行指定事件，更新<code>prev</code>；</li>
+</ol>
+<p>根据这一思路，我们就可以实现第一版代码了：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">oWrapper.onmousemove &#x3D; throttle(moveAction, 1000);</span><br><span class="line">function throttle(func, wait) &#123;</span><br><span class="line">    var _this, arg;</span><br><span class="line">    var prev &#x3D; 0; &#x2F;&#x2F; 上一次触发的时间，第一次默认为0</span><br><span class="line">    return function () &#123;</span><br><span class="line">        var now &#x3D; Date.now(); &#x2F;&#x2F; 触发时的时间</span><br><span class="line">        _this &#x3D; this;</span><br><span class="line">        if (now - prev &gt; wait) &#123;</span><br><span class="line">            func.apply(_this, arg); &#x2F;&#x2F; 允许传入参数，并修正this</span><br><span class="line">            prev &#x3D; now; &#x2F;&#x2F; 更新上一次触发的时间</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>来看看借助它，效果是什么样的：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740552204-2bb5f2b1-3807-4d26-b3eb-d34e798ab60a.gif"></p>
+<p>我们可以看到：</p>
+<ol>
+<li>当鼠标移入的时候，<strong>事件立刻执行</strong></li>
+<li>每过 1s 会执行一次，且移动2.5s会执行2次，意味着动作<strong>停止后不会再执行</strong>。</li>
+</ol>
+<h4 id="1-2-定时器思路"><a href="#1-2-定时器思路" class="headerlink" title="1.2 定时器思路"></a>1.2 定时器思路</h4><p>利用定时器来保证间隔时间内事件的触发次数</p>
+<ol>
+<li>创建定时器<code>timer</code>，记录当前是否在<strong>周期</strong>内；</li>
+<li>判断定时器是否存在，若存在则直接结束，否则执行事件；</li>
+<li><code>wait</code>时间之后再次执行，并清掉定时器；</li>
+</ol>
+<p>当触发事件的时候，我们设置一个定时器，再触发事件的时候，如果定时器存在，就不执行，直到定时器执行，然后执行函数，清空定时器，这样就可以设置下个定时器。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function throttle(func, wait) &#123;</span><br><span class="line">    var _this, arg;</span><br><span class="line">    var timer; &#x2F;&#x2F; 初始化</span><br><span class="line">    return function () &#123;</span><br><span class="line">        _this &#x3D; this; &#x2F;&#x2F; 记录this</span><br><span class="line">        arg &#x3D; arguments; &#x2F;&#x2F; 记录参数数组</span><br><span class="line">        if (timer) return; &#x2F;&#x2F; 时候未到</span><br><span class="line">        timer &#x3D; setTimeout(() &#x3D;&gt; &#123;</span><br><span class="line">            func.apply(_this, arg); &#x2F;&#x2F; 允许传入参数，并修正this</span><br><span class="line">            timer &#x3D; null;</span><br><span class="line">        &#125;, wait);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>来看看借助它，效果是什么样的：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740551861-12bc2cce-f80a-45ff-9913-7798160b3438.gif"></p>
+<p>但是，我们可以看到：</p>
+<ol>
+<li>当鼠标移入的时候，事件不会立刻执行;</li>
+<li>鼠标定制后<code>wait</code>间隔后会执行一次</li>
+</ol>
+<h4 id="1-3-两种思路的区别"><a href="#1-3-两种思路的区别" class="headerlink" title="1.3 两种思路的区别"></a>1.3 两种思路的区别</h4><table>
+<thead>
+<tr>
+<th></th>
+<th>时间戳</th>
+<th>定时器</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>“起点”</td>
+<td>立即执行</td>
+<td>n 秒后执行</td>
+</tr>
+<tr>
+<td>“终点”</td>
+<td>停止后不会执行</td>
+<td>停止会再执行一次</td>
+</tr>
+</tbody></table>
+<h3 id="二、节流进阶"><a href="#二、节流进阶" class="headerlink" title="二、节流进阶"></a>二、节流进阶</h3><p>结合两种思想完成一个可以立即执行，且停止触发后再执行一次的节流方法：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 第三版</span><br><span class="line">function throttle(func, wait) &#123;</span><br><span class="line">    var timeout, context, args, result;</span><br><span class="line">    var previous &#x3D; 0;</span><br><span class="line">    var later &#x3D; function() &#123;</span><br><span class="line">        previous &#x3D; +new Date();</span><br><span class="line">        timeout &#x3D; null;</span><br><span class="line">        func.apply(context, args)</span><br><span class="line">    &#125;;</span><br><span class="line">    var throttled &#x3D; function() &#123;</span><br><span class="line">        var now &#x3D; +new Date();</span><br><span class="line">        &#x2F;&#x2F;下次触发 func 剩余的时间</span><br><span class="line">        var remaining &#x3D; wait - (now - previous);</span><br><span class="line">        context &#x3D; this;</span><br><span class="line">        args &#x3D; arguments;</span><br><span class="line">         &#x2F;&#x2F; 如果没有剩余的时间了或者你改了系统时间</span><br><span class="line">        if (remaining &lt;&#x3D; 0 || remaining &gt; wait) &#123;</span><br><span class="line">            if (timeout) &#123;</span><br><span class="line">                clearTimeout(timeout);</span><br><span class="line">                timeout &#x3D; null;</span><br><span class="line">            &#125;</span><br><span class="line">            previous &#x3D; now;</span><br><span class="line">            func.apply(context, args);</span><br><span class="line">        &#125; else if (!timeout) &#123;</span><br><span class="line">            timeout &#x3D; setTimeout(later, remaining);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    return throttled;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>效果演示如下：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1614740551783-4d2e4584-8e32-4ca2-a1de-c2ab865a882c.gif"></p>
+<p>我在看代码的时候，我是反复打印数据才理解为什么会这样做，一起加油～</p>
+]]></content>
+      <categories>
+        <category>javascript</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
       </tags>
   </entry>
 </search>
