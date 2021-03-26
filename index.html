@@ -133,7 +133,7 @@
         <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
         <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">10</span></a></li>
         <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">7</span></a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">17</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">18</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -205,7 +205,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-count">18</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -279,6 +279,111 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/26/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%85%AD%EF%BC%89%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="高原">
+      <meta itemprop="description" content="一枚微不足道的前端攻城狮">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GaoYuan's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/26/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%85%AD%EF%BC%89%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" class="post-title-link" itemprop="url">JavaScript基础（六）基本数据类型</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-03-26 11:20:16 / 修改时间：11:24:45" itemprop="dateCreated datePublished" datetime="2021-03-26T11:20:16+08:00">2021-03-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="一、类型"><a href="#一、类型" class="headerlink" title="一、类型"></a>一、类型</h2><p>可能许多习惯了C++、C#这类静态语言（强类型）语言的小伙伴们在编写Js代码时，会很不习惯，因为相对于静态语言来说，Js甚至没有类型的”概念“。</p>
+<p>而且Js中吐槽较多的恰恰就包含类型转换，在我们日常写代码时总是遇到或显示或隐示的类型转换，比如：</p>
+<p>你要获取数字<code>123</code>的个位十位百位，你会怎么做？</p>
+<ul>
+<li>toSrting()后通过下标获取？</li>
+<li>取整取余？</li>
+</ul>
+<p>使用类型转换形式多样。有些方式简明易懂，也很安全，然而稍不留神，就会出现意想不到的结果。</p>
+<p>为了学习和掌握类型转换，现在先让我们来深入了解一下值和类型。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/26/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%85%AD%EF%BC%89%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1229,109 +1334,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/26/vuex%E7%AC%94%E8%AE%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="高原">
-      <meta itemprop="description" content="一枚微不足道的前端攻城狮">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GaoYuan's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/12/26/vuex%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">vuex笔记</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-12-26 21:43:23" itemprop="dateCreated datePublished" datetime="2020-12-26T21:43:23+08:00">2020-12-26</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-23 21:22:54" itemprop="dateModified" datetime="2021-03-23T21:22:54+08:00">2021-03-23</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/vue/" itemprop="url" rel="index"><span itemprop="name">vue</span></a>
-        </span>
-    </span>
-
-  
-      </div>
-      <div class="post-meta">
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>3.6k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="Vuex笔记"><a href="#Vuex笔记" class="headerlink" title="Vuex笔记"></a>Vuex笔记</h1><h3 id="Vuex概述"><a href="#Vuex概述" class="headerlink" title="Vuex概述"></a>Vuex概述</h3><h4 id="vuex是什么"><a href="#vuex是什么" class="headerlink" title="vuex是什么"></a>vuex是什么</h4><p>​    vuex是实现组件全局状态（数据）管理的一种机制，可以方便实现组件之间数据的共享<br><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/image-20201221091304337.png"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/26/vuex%E7%AC%94%E8%AE%B0/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
@@ -1381,13 +1383,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">72k</span>
+    <span title="站点总字数">76k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:06</span>
+    <span title="站点阅读时长">1:09</span>
   </span>
 </div>
 <div class="busuanzi-count">
