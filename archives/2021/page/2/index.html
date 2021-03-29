@@ -26,21 +26,19 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-<meta name="description" content="阻止单击事件冒泡&lt;a v-on:click.stop&#x3D;&quot;doThis&quot;&gt;&lt;&#x2F;a&gt; 提交事件不再重载页面&lt;form v-on:submit.prevent&#x3D;&quot;onSubmit&quot;&gt;&lt;&#x2F;form&gt; 修饰符可以串联&lt;a v-on:click.stop.prevent&#x3D;&quot;doThat&quot;&gt;">
-<meta property="og:type" content="article">
-<meta property="og:title" content="开发小技巧">
-<meta property="og:url" content="http://example.com/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/index.html">
+<meta name="description" content="一枚微不足道的前端攻城狮">
+<meta property="og:type" content="website">
+<meta property="og:title" content="GaoYuan&#39;s Blog">
+<meta property="og:url" content="http://example.com/archives/2021/page/2/index.html">
 <meta property="og:site_name" content="GaoYuan&#39;s Blog">
-<meta property="og:description" content="阻止单击事件冒泡&lt;a v-on:click.stop&#x3D;&quot;doThis&quot;&gt;&lt;&#x2F;a&gt; 提交事件不再重载页面&lt;form v-on:submit.prevent&#x3D;&quot;onSubmit&quot;&gt;&lt;&#x2F;form&gt; 修饰符可以串联&lt;a v-on:click.stop.prevent&#x3D;&quot;doThat&quot;&gt;">
+<meta property="og:description" content="一枚微不足道的前端攻城狮">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-05-01T13:55:23.000Z">
-<meta property="article:modified_time" content="2021-03-23T13:26:12.106Z">
 <meta property="article:author" content="高原">
-<meta property="article:tag" content="note">
+<meta property="article:tag" content="前端">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/">
+<link rel="canonical" href="http://example.com/archives/2021/page/2/">
 
 
 <script class="page-configurations">
@@ -48,11 +46,11 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : true,
+    isPost : false,
     lang   : 'zh-CN'
   };
 </script>
-<title>开发小技巧 | GaoYuan's Blog</title>
+<title>归档 | GaoYuan's Blog</title>
   
 
 
@@ -179,7 +177,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+    <div class="sidebar-inner sidebar-overview-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -192,7 +190,6 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%BB%E6%AD%A2%E5%8D%95%E5%87%BB%E4%BA%8B%E4%BB%B6%E5%86%92%E6%B3%A1"><span class="nav-text">阻止单击事件冒泡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E4%BA%A4%E4%BA%8B%E4%BB%B6%E4%B8%8D%E5%86%8D%E9%87%8D%E8%BD%BD%E9%A1%B5%E9%9D%A2"><span class="nav-text">提交事件不再重载页面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E9%A5%B0%E7%AC%A6%E5%8F%AF%E4%BB%A5%E4%B8%B2%E8%81%94"><span class="nav-text">修饰符可以串联</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AA%E6%9C%89%E4%BF%AE%E9%A5%B0%E7%AC%A6"><span class="nav-text">只有修饰符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mac%E8%B0%B7%E6%AD%8C%E8%B7%A8%E5%9F%9F%E5%91%BD%E4%BB%A4"><span class="nav-text">Mac谷歌跨域命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mac%E6%98%BE%E7%A4%BA%E9%9A%90%E8%97%8F%E6%96%87%E4%BB%B6%E5%91%BD%E4%BB%A4%EF%BC%9A"><span class="nav-text">Mac显示隐藏文件命令：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Jison%E8%A7%A3%E5%86%B3JS%E5%A4%84%E7%90%86%E5%90%8E%E7%AB%AF%E8%BF%94%E5%9B%9E%E7%9A%84Long%E5%9E%8B%E6%95%B0%E6%8D%AE%E7%B2%BE%E5%BA%A6%E4%B8%A2%E5%A4%B1%E9%97%AE%E9%A2%98"><span class="nav-text">Jison解决JS处理后端返回的Long型数据精度丢失问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%90%8E%E5%BC%95%E5%85%A5%E8%87%B3%E9%A1%B9%E7%9B%AE"><span class="nav-text">最后引入至项目</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mac%E7%BB%99%E6%96%87%E4%BB%B6%E5%A4%B9%E8%B5%8B%E4%BA%88%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90"><span class="nav-text">Mac给文件夹赋予管理员权限</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -281,166 +278,53 @@
 </noscript>
 
 
-    <div class="main-inner post posts-expand">
+    <div class="main-inner archive posts-collapse">
 
 
   
-
-
-<div class="post-block">
   
   
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="高原">
-      <meta itemprop="description" content="一枚微不足道的前端攻城狮">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GaoYuan's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          开发小技巧
-        </h1>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-05-01 21:55:23" itemprop="dateCreated datePublished" datetime="2020-05-01T21:55:23+08:00">2020-05-01</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-23 21:26:12" itemprop="dateModified" datetime="2021-03-23T21:26:12+08:00">2021-03-23</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">个人笔记</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-eye"></i>
-      </span>
-      <span class="post-meta-item-text">阅读次数：</span>
-      <span id="busuanzi_value_page_pv"></span>
-    </span>
+  <div class="post-block">
+    <div class="post-content">
+      <div class="collection-title">
+        <span class="collection-header">嗯..! 目前共计 19 篇日志。 继续努力。</span>
       </div>
-      <div class="post-meta">
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.5k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
 
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-        <h2 id="阻止单击事件冒泡"><a href="#阻止单击事件冒泡" class="headerlink" title="阻止单击事件冒泡"></a>阻止单击事件冒泡</h2><p><code>&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;</code></p>
-<h2 id="提交事件不再重载页面"><a href="#提交事件不再重载页面" class="headerlink" title="提交事件不再重载页面"></a>提交事件不再重载页面</h2><p><code>&lt;form v-on:submit.prevent=&quot;onSubmit&quot;&gt;&lt;/form&gt;</code></p>
-<h2 id="修饰符可以串联"><a href="#修饰符可以串联" class="headerlink" title="修饰符可以串联"></a>修饰符可以串联</h2><p><code>&lt;a v-on:click.stop.prevent=&quot;doThat&quot;&gt;</code></p>
-<span id="more"></span>
-
-
-<h2 id="只有修饰符"><a href="#只有修饰符" class="headerlink" title="只有修饰符"></a>只有修饰符</h2><p><code>&lt;form v-on:submit.prevent&gt;&lt;/form&gt;</code></p>
-<br>
-<br>
-<br>
-
-<h2 id="Mac谷歌跨域命令"><a href="#Mac谷歌跨域命令" class="headerlink" title="Mac谷歌跨域命令"></a>Mac谷歌跨域命令</h2><p><code>open -n /Applications/Google\ Chrome.app/ --args --disable-web-security  --user-data-dir=/Users/GaoYuan/Documents/MyChromeDevUserData</code></p>
-<br>
-<br>
-<br>
-
-<h2 id="Mac显示隐藏文件命令："><a href="#Mac显示隐藏文件命令：" class="headerlink" title="Mac显示隐藏文件命令："></a>Mac显示隐藏文件命令：</h2><p><strong>显示隐藏文件</strong></p>
-<p><code>defaults write com.apple.finder AppleShowAllFiles Yes &amp;&amp; killall Finder </code></p>
-<p><strong>不显示隐藏文件</strong></p>
-<p><code>defaults write com.apple.finder AppleShowAllFiles No &amp;&amp; killall Finder </code></p>
-<br>
-<br>
-
-<h2 id="Jison解决JS处理后端返回的Long型数据精度丢失问题"><a href="#Jison解决JS处理后端返回的Long型数据精度丢失问题" class="headerlink" title="Jison解决JS处理后端返回的Long型数据精度丢失问题"></a>Jison解决JS处理后端返回的Long型数据精度丢失问题</h2><p>原因：js是弱类型语言，所有的数字类型统称为Number类型，不区分int、long、double等。</p>
-<p><code>git clone git://github.com/zaach/jsonlint.git</code></p>
-<p>在src目录下提供了jsonlint.y（grammaFile）和jsonlint.l（lexFile)两个文件。使用这两个文件可以直接生成jsonlint.js。如下修改jsonlint.y：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">JSONNumber</span><br><span class="line"></span><br><span class="line">    : NUMBER</span><br><span class="line">    </span><br><span class="line">        &#123;$$ &#x3D; yytext &#x3D;&#x3D; String(Number(yytext))? Number(yytext): yytext;&#125;</span><br><span class="line">    ;</span><br></pre></td></tr></table></figure>
-
-<p> 然后：</p>
-<p><code>cd src</code></p>
-<p><code>jison jsonlint.y jsonlint.l</code></p>
-<h3 id="最后引入至项目"><a href="#最后引入至项目" class="headerlink" title="最后引入至项目"></a>最后引入至项目</h3><p>1.将自定义的 jsonlint.js 放到 static 目录下<br>2.在 index.html 中引入<br><code>&lt;script src=&quot;./static/jsonlint/jsonlint.js&quot;&gt;&lt;/script&gt;</code></p>
-<p>3、在我们请求的返回数据中，做一层拦截转换，此处以 axios 的实现方法为例：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;*transformResponse 选项允许我们在数据传送到 &#96;then&#x2F;catch&#96; 方法之前对数据进行改动*&#x2F;</span><br><span class="line">axios.defaults.transformResponse &#x3D; [</span><br><span class="line">  function(data) &#123;</span><br><span class="line">    return jsonlint.parse(data)</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>综上，定义JSON转化避免long类型数据溢出，可以实现long类型数据在前端正常显示</p>
-<h2 id="Mac给文件夹赋予管理员权限"><a href="#Mac给文件夹赋予管理员权限" class="headerlink" title="Mac给文件夹赋予管理员权限"></a>Mac给文件夹赋予管理员权限</h2><p><code>sudo chown -R gaoyuan ios</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if ($request_filename ~* .*index\.html$) &#123;</span><br><span class="line">     add_header Cache-Control &quot;private, no-store, no-cache, must-revalidate, proxy-revalidate&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    <div class="collection-year">
+      <span class="collection-header">2021</span>
     </div>
 
-    
-    
-    
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+      <div class="post-meta-container">
+        <time itemprop="dateCreated"
+              datetime="2021-02-11T09:19:04+08:00"
+              content="2021-02-11">
+          02-11
+        </time>
+      </div>
 
-    <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/note/" rel="tag"># note</a>
-          </div>
+      <div class="post-title">
+          <a class="post-title-link" href="/2021/02/11/JS%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9/" itemprop="url">
+            <span itemprop="name">JS实现图片压缩</span>
+          </a>
+      </div>
 
-        
-
-          <div class="post-nav">
-            <div class="post-nav-item">
-                <a href="/2019/03/20/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/" rel="prev" title="学习之AJAX">
-                  <i class="fa fa-chevron-left"></i> 学习之AJAX
-                </a>
-            </div>
-            <div class="post-nav-item">
-                <a href="/2020/11/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/" rel="next" title="vue项目打包优化策略">
-                  vue项目打包优化策略 <i class="fa fa-chevron-right"></i>
-                </a>
-            </div>
-          </div>
-    </footer>
+      
+    </header>
   </article>
-</div>
 
 
+    </div>
+  </div>
+  
+  
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/archives/2021/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/archives/2021/">1</a><span class="page-number current">2</span>
+  </nav>
 
-
-
-
-    <div class="comments gitalk-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -542,25 +426,6 @@
 
 
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
-
-<script>
-NexT.utils.loadComments('.gitalk-container', () => {
-  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
-    var gitalk = new Gitalk({
-      clientID    : 'b6854378950da6a4a9dc',
-      clientSecret: 'f0b9297f2f6d9fd6ac41e7e746a1b47747977a52',
-      repo        : 'gaoyuanio.github.io',
-      owner       : 'gaoyuanio',
-      admin       : ['gaoyuanio'],
-      id          : '2c0e705cfbfefcbee74480f75c43d246',
-        language: 'zh-CN',
-      distractionFreeMode: true
-    });
-    gitalk.render(document.querySelector('.gitalk-container'));
-  }, window.Gitalk);
-});
-</script>
 
 <script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":true,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
 </html>
