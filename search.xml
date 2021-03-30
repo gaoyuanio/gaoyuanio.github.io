@@ -1124,6 +1124,61 @@
       </tags>
   </entry>
   <entry>
+    <title>三次握手四次挥手的原理</title>
+    <url>/2021/03/01/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E7%9A%84%E5%8E%9F%E7%90%86/</url>
+    <content><![CDATA[<h2 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h2><p>  握手的过程：</p>
+<p>   1、第一次握手：客户端给服务器发送一个 SYN 报文。</p>
+<p>   2、第二次握手：服务器收到 SYN 报文之后，会应答一个 SYN+ACK 报文。</p>
+<p>   3、第三次握手：客户端收到 SYN+ACK 报文之后，会回应一个 ACK 报文。</p>
+<p>   4、服务器收到 ACK 报文之后，三次握手建立完成。</p>
+<p>   作用是为了确认双方的接收与发送能力是否正常。</p>
+   <span id="more"></span>
+
+<p>   <strong>这里我顺便解释一下为啥只有三次握手才能确认双方的接受与发送能力是否正常，而两次却不可以：</strong></p>
+<blockquote>
+<p>   第一次握手：客户端发送网络包，服务端收到了。这样服务端就能得出结论：客户端的发送能力、服务端的接收能力是正常的。<br>   第二次握手：服务端发包，客户端收到了。这样客户端就能得出结论：服务端的接收、发送能力，客户端的接收、发送能力是正常的。不过此时服务器并不能确认客户端的接收能力是否正常。<br>   第三次握手：客户端发包，服务端收到了。这样服务端就能得出结论：客户端的接收、发送能力正常，服务器自己的发送、接收能力也正常。</p>
+</blockquote>
+<p>   因此，需要三次握手才能确认双方的接收与发送能力是否正常。</p>
+<p>   这样回答其实也是可以的，但我觉得，这个过程的我们应该要描述的更<strong>详细一点</strong>，因为三次握手的过程中，双方是<strong>由很多状态的改变的</strong>，而这些状态，也是面试官可能会问的点。所以我觉得在回答三次握手的时候，我们应该要描述的详细一点，而且描述的详细一点意味着可以扯久一点。加分的描述我觉得应该是这样：</p>
+<p>   <strong>刚开始客户端处于 closed 的状态，服务端处于 listen 状态</strong>。然后<br>   1、第一次握手：客户端给服务端发一个 SYN 报文，并指明客户端的初始化序列号 <strong>ISN（c）</strong>。此时客户端处于 <strong>SYN_Send</strong> 状态。</p>
+<p>   2、第二次握手：服务器收到客户端的 SYN 报文之后，会以自己的 SYN 报文作为应答，并且也是指定了自己的初始化序列号 ISN(s)，同时会把客户端的 ISN + 1 作为 ACK 的值，表示自己已经收到了客户端的 SYN，此时服务器处于 <strong>SYN_REVD</strong> 的状态。</p>
+<p>   3、第三次握手：客户端收到 SYN 报文之后，会发送一个 ACK 报文，当然，也是一样把服务器的 ISN + 1 作为 ACK 的值，表示已经收到了服务端的 SYN 报文，此时客户端处于 <strong>establised</strong> 状态。</p>
+<p>   4、服务器收到 ACK 报文之后，也处于 <strong>establised 状态</strong>，此时，双方以建立起了链接。</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2019060815530363.png"></p>
+<h3 id="1、三次握手的作用"><a href="#1、三次握手的作用" class="headerlink" title="1、三次握手的作用"></a>1、三次握手的作用</h3><p>   三次握手的作用也是有好多的，多记住几个，保证不亏。例如：<br>   1、确认双方的接受能力、发送能力是否正常。<br>   2、指定自己的初始化序列号，为后面的可靠传送做准备。<br>   3、如果是 https 协议的话，三次握手这个过程，还会进行数字证书的验证以及加密密钥的生成到。</p>
+<h3 id="2、（ISN）是固定的吗？"><a href="#2、（ISN）是固定的吗？" class="headerlink" title="2、（ISN）是固定的吗？"></a>2、（ISN）是固定的吗？</h3><p>   三次握手的一个重要功能是客户端和服务端交换ISN(Initial Sequence Number), 以便让对方知道接下来接收数据的时候如何按序列号组装数据。</p>
+<p>   <strong>如果ISN是固定的，攻击者很容易猜出后续的确认号，因此 ISN 是动态生成的。</strong></p>
+<h3 id="3、什么是半连接队列"><a href="#3、什么是半连接队列" class="headerlink" title="3、什么是半连接队列"></a>3、什么是半连接队列</h3><p>   服务器第一次收到客户端的 SYN 之后，就会处于 SYN_RCVD 状态，此时双方还没有完全建立其连接，服务器会把此种状态下请求连接放在一个队列里，我们把这种队列称之为半连接队列。当然还有一个全连接队列，就是已经完成三次握手，建立起连接的就会放在全连接队列中。如果队列满了就有可能会出现丢包现象。</p>
+<blockquote>
+<p>   这里在补充一点关于SYN-ACK 重传次数的问题：　服务器发送完SYN－ACK包，如果未收到客户确认包，服务器进行首次重传，等待一段时间仍未收到客户确认包，进行第二次重传，如果重传次数超 过系统规定的最大重传次数，系统将该连接信息从半连接队列中删除。注意，每次重传等待的时间不一定相同，一般会是指数增长，例如间隔时间为 1s, 2s, 4s, 8s, …</p>
+</blockquote>
+<h3 id="4、三次握手过程中可以携带数据吗"><a href="#4、三次握手过程中可以携带数据吗" class="headerlink" title="4、三次握手过程中可以携带数据吗"></a>4、三次握手过程中可以携带数据吗</h3><p>   很多人可能会认为三次握手都不能携带数据，其实第三次握手的时候，是可以携带数据的。也就是说，第一次、第二次握手不可以携带数据，而第三次握手是可以携带数据的。</p>
+<p>为什么这样呢？大家可以想一个问题，假如第一次握手可以携带数据的话，如果有人要恶意攻击服务器，那他每次都在第一次握手中的 SYN 报文中放入大量的数据，因为攻击者根本就不理服务器的接收、发送能力是否正常，然后疯狂着重复发 SYN 报文的话，这会让服务器花费很多时间、内存空间来接收这些报文。也就是说，第一次握手可以放数据的话，其中一个简单的原因就是会让服务器更加容易受到攻击了。<br>而对于第三次的话，此时客户端已经处于 established 状态，也就是说，对于客户端来说，他已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的了，所以能携带数据页没啥毛病。</p>
+<h2 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h2><p>   <strong>四次挥手也一样，千万不要对方一个 FIN 报文，我方一个 ACK 报文，再我方一个 FIN 报文，我方一个 ACK 报文。然后结束，最好是说的详细一点，例如想下面这样就差不多了，要把每个阶段的状态记好。</strong></p>
+<p>   刚开始双方都处于 establised 状态，假如是客户端先发起关闭请求，则：</p>
+<p>   1、第一次挥手：客户端发送一个 FIN 报文，报文中会指定一个序列号。此时客户端处于<strong>FIN_WAIT1</strong>状态。</p>
+<p>   2、第二次握手：服务端收到 FIN 之后，会发送 ACK 报文，且把客户端的序列号值 + 1 作为 ACK 报文的序列号值，表明已经收到客户端的报文了，此时服务端处于 <strong>CLOSE_WAIT</strong>状态。</p>
+<p>   3、第三次挥手：如果服务端也想断开连接了，和客户端的第一次挥手一样，发给 FIN 报文，且指定一个序列号。此时服务端处于 <strong>LAST_ACK</strong> 的状态。</p>
+<p>   4、第四次挥手：客户端收到 FIN 之后，一样发送一个 ACK 报文作为应答，且把服务端的序列号值 + 1 作为自己 ACK 报文的序列号值，此时客户端处于 <strong>TIME_WAIT</strong> 状态。需要过一阵子以确保服务端收到自己的 ACK 报文之后才会进入 CLOSED 状态</p>
+<p>   5、服务端收到 ACK 报文之后，就处于关闭连接了，处于 CLOSED 状态。</p>
+<p><img data-src="https://img-blog.csdnimg.cn/20190608160051238.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RyZWFtaXNwb3NzaWJsZQ==,size_16,color_FFFFFF,t_70"></p>
+<p>   这里特别需要主要的就是TIME_WAIT这个状态了，这个是面试的高频考点，就是要理解，为什么客户端发送 ACK 之后不直接关闭，而是要等一阵子才关闭。这其中的原因就是，要确保服务器是否已经收到了我们的 ACK 报文，如果没有收到的话，服务器会重新发 FIN 报文给客户端，客户端再次收到 ACK 报文之后，就知道之前的 ACK 报文丢失了，然后再次发送 ACK 报文。</p>
+<p>   至于 TIME_WAIT 持续的时间至少是一个报文的来回时间。一般会设置一个计时，如果过了这个计时没有再次收到 FIN 报文，则代表对方成功就是 ACK 报文，此时处于 CLOSED 状态。</p>
+<p>   <strong>这里我给出每个状态所包含的含义，有兴趣的可以看看。</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LISTEN - 侦听来自远方TCP端口的连接请求； </span><br><span class="line">SYN-SENT -在发送连接请求后等待匹配的连接请求； </span><br><span class="line">SYN-RECEIVED - 在收到和发送一个连接请求后等待对连接请求的确认； </span><br><span class="line">ESTABLISHED- 代表一个打开的连接，数据可以传送给用户； </span><br><span class="line">FIN-WAIT-1 - 等待远程TCP的连接中断请求，或先前的连接中断请求的确认；</span><br><span class="line">FIN-WAIT-2 - 从远程TCP等待连接中断请求；</span><br><span class="line">CLOSE-WAIT - 等待从本地用户发来的连接中断请求； </span><br><span class="line">CLOSING -等待远程TCP对连接中断的确认； </span><br><span class="line">LAST-ACK - 等待原来发向远程TCP的连接中断请求的确认； </span><br><span class="line">TIME-WAIT -等待足够的时间以确保远程TCP接收到连接中断请求的确认； </span><br><span class="line">CLOSED - 没有任何连接状态；</span><br></pre></td></tr></table></figure>
+
+
+<p>   <strong>最后，在放张三次握手与四次挥手的图</strong></p>
+<p><img data-src="https://img-blog.csdnimg.cn/20190608160404569.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RyZWFtaXNwb3NzaWJsZQ==,size_16,color_FFFFFF,t_70"></p>
+]]></content>
+      <categories>
+        <category>HTTP</category>
+      </categories>
+      <tags>
+        <tag>HTTP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>vue项目打包优化策略</title>
     <url>/2020/11/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</url>
     <content><![CDATA[<p>使用vue-cli部署生产包时，发现资源包很大，打包后的<code>vendor.js</code>达到了1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？</p>
@@ -1213,107 +1268,6 @@
       <tags>
         <tag>vue</tag>
         <tag>webpack</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>三次握手四次挥手的原理</title>
-    <url>/2021/03/01/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E7%9A%84%E5%8E%9F%E7%90%86/</url>
-    <content><![CDATA[<h2 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h2><p>  握手的过程：</p>
-<p>   1、第一次握手：客户端给服务器发送一个 SYN 报文。</p>
-<p>   2、第二次握手：服务器收到 SYN 报文之后，会应答一个 SYN+ACK 报文。</p>
-<p>   3、第三次握手：客户端收到 SYN+ACK 报文之后，会回应一个 ACK 报文。</p>
-<p>   4、服务器收到 ACK 报文之后，三次握手建立完成。</p>
-<p>   作用是为了确认双方的接收与发送能力是否正常。</p>
-   <span id="more"></span>
-
-<p>   <strong>这里我顺便解释一下为啥只有三次握手才能确认双方的接受与发送能力是否正常，而两次却不可以：</strong></p>
-<blockquote>
-<p>   第一次握手：客户端发送网络包，服务端收到了。这样服务端就能得出结论：客户端的发送能力、服务端的接收能力是正常的。<br>   第二次握手：服务端发包，客户端收到了。这样客户端就能得出结论：服务端的接收、发送能力，客户端的接收、发送能力是正常的。不过此时服务器并不能确认客户端的接收能力是否正常。<br>   第三次握手：客户端发包，服务端收到了。这样服务端就能得出结论：客户端的接收、发送能力正常，服务器自己的发送、接收能力也正常。</p>
-</blockquote>
-<p>   因此，需要三次握手才能确认双方的接收与发送能力是否正常。</p>
-<p>   这样回答其实也是可以的，但我觉得，这个过程的我们应该要描述的更<strong>详细一点</strong>，因为三次握手的过程中，双方是<strong>由很多状态的改变的</strong>，而这些状态，也是面试官可能会问的点。所以我觉得在回答三次握手的时候，我们应该要描述的详细一点，而且描述的详细一点意味着可以扯久一点。加分的描述我觉得应该是这样：</p>
-<p>   <strong>刚开始客户端处于 closed 的状态，服务端处于 listen 状态</strong>。然后<br>   1、第一次握手：客户端给服务端发一个 SYN 报文，并指明客户端的初始化序列号 <strong>ISN（c）</strong>。此时客户端处于 <strong>SYN_Send</strong> 状态。</p>
-<p>   2、第二次握手：服务器收到客户端的 SYN 报文之后，会以自己的 SYN 报文作为应答，并且也是指定了自己的初始化序列号 ISN(s)，同时会把客户端的 ISN + 1 作为 ACK 的值，表示自己已经收到了客户端的 SYN，此时服务器处于 <strong>SYN_REVD</strong> 的状态。</p>
-<p>   3、第三次握手：客户端收到 SYN 报文之后，会发送一个 ACK 报文，当然，也是一样把服务器的 ISN + 1 作为 ACK 的值，表示已经收到了服务端的 SYN 报文，此时客户端处于 <strong>establised</strong> 状态。</p>
-<p>   4、服务器收到 ACK 报文之后，也处于 <strong>establised 状态</strong>，此时，双方以建立起了链接。</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2019060815530363.png"></p>
-<h3 id="1、三次握手的作用"><a href="#1、三次握手的作用" class="headerlink" title="1、三次握手的作用"></a>1、三次握手的作用</h3><p>   三次握手的作用也是有好多的，多记住几个，保证不亏。例如：<br>   1、确认双方的接受能力、发送能力是否正常。<br>   2、指定自己的初始化序列号，为后面的可靠传送做准备。<br>   3、如果是 https 协议的话，三次握手这个过程，还会进行数字证书的验证以及加密密钥的生成到。</p>
-<h3 id="2、（ISN）是固定的吗？"><a href="#2、（ISN）是固定的吗？" class="headerlink" title="2、（ISN）是固定的吗？"></a>2、（ISN）是固定的吗？</h3><p>   三次握手的一个重要功能是客户端和服务端交换ISN(Initial Sequence Number), 以便让对方知道接下来接收数据的时候如何按序列号组装数据。</p>
-<p>   <strong>如果ISN是固定的，攻击者很容易猜出后续的确认号，因此 ISN 是动态生成的。</strong></p>
-<h3 id="3、什么是半连接队列"><a href="#3、什么是半连接队列" class="headerlink" title="3、什么是半连接队列"></a>3、什么是半连接队列</h3><p>   服务器第一次收到客户端的 SYN 之后，就会处于 SYN_RCVD 状态，此时双方还没有完全建立其连接，服务器会把此种状态下请求连接放在一个队列里，我们把这种队列称之为半连接队列。当然还有一个全连接队列，就是已经完成三次握手，建立起连接的就会放在全连接队列中。如果队列满了就有可能会出现丢包现象。</p>
-<blockquote>
-<p>   这里在补充一点关于SYN-ACK 重传次数的问题：　服务器发送完SYN－ACK包，如果未收到客户确认包，服务器进行首次重传，等待一段时间仍未收到客户确认包，进行第二次重传，如果重传次数超 过系统规定的最大重传次数，系统将该连接信息从半连接队列中删除。注意，每次重传等待的时间不一定相同，一般会是指数增长，例如间隔时间为 1s, 2s, 4s, 8s, …</p>
-</blockquote>
-<h3 id="4、三次握手过程中可以携带数据吗"><a href="#4、三次握手过程中可以携带数据吗" class="headerlink" title="4、三次握手过程中可以携带数据吗"></a>4、三次握手过程中可以携带数据吗</h3><p>   很多人可能会认为三次握手都不能携带数据，其实第三次握手的时候，是可以携带数据的。也就是说，第一次、第二次握手不可以携带数据，而第三次握手是可以携带数据的。</p>
-<p>为什么这样呢？大家可以想一个问题，假如第一次握手可以携带数据的话，如果有人要恶意攻击服务器，那他每次都在第一次握手中的 SYN 报文中放入大量的数据，因为攻击者根本就不理服务器的接收、发送能力是否正常，然后疯狂着重复发 SYN 报文的话，这会让服务器花费很多时间、内存空间来接收这些报文。也就是说，第一次握手可以放数据的话，其中一个简单的原因就是会让服务器更加容易受到攻击了。<br>而对于第三次的话，此时客户端已经处于 established 状态，也就是说，对于客户端来说，他已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的了，所以能携带数据页没啥毛病。</p>
-<h2 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h2><p>   <strong>四次挥手也一样，千万不要对方一个 FIN 报文，我方一个 ACK 报文，再我方一个 FIN 报文，我方一个 ACK 报文。然后结束，最好是说的详细一点，例如想下面这样就差不多了，要把每个阶段的状态记好。</strong></p>
-<p>   刚开始双方都处于 establised 状态，假如是客户端先发起关闭请求，则：</p>
-<p>   1、第一次挥手：客户端发送一个 FIN 报文，报文中会指定一个序列号。此时客户端处于<strong>FIN_WAIT1</strong>状态。</p>
-<p>   2、第二次握手：服务端收到 FIN 之后，会发送 ACK 报文，且把客户端的序列号值 + 1 作为 ACK 报文的序列号值，表明已经收到客户端的报文了，此时服务端处于 <strong>CLOSE_WAIT</strong>状态。</p>
-<p>   3、第三次挥手：如果服务端也想断开连接了，和客户端的第一次挥手一样，发给 FIN 报文，且指定一个序列号。此时服务端处于 <strong>LAST_ACK</strong> 的状态。</p>
-<p>   4、第四次挥手：客户端收到 FIN 之后，一样发送一个 ACK 报文作为应答，且把服务端的序列号值 + 1 作为自己 ACK 报文的序列号值，此时客户端处于 <strong>TIME_WAIT</strong> 状态。需要过一阵子以确保服务端收到自己的 ACK 报文之后才会进入 CLOSED 状态</p>
-<p>   5、服务端收到 ACK 报文之后，就处于关闭连接了，处于 CLOSED 状态。</p>
-<p><img data-src="https://img-blog.csdnimg.cn/20190608160051238.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RyZWFtaXNwb3NzaWJsZQ==,size_16,color_FFFFFF,t_70"></p>
-<p>   这里特别需要主要的就是TIME_WAIT这个状态了，这个是面试的高频考点，就是要理解，为什么客户端发送 ACK 之后不直接关闭，而是要等一阵子才关闭。这其中的原因就是，要确保服务器是否已经收到了我们的 ACK 报文，如果没有收到的话，服务器会重新发 FIN 报文给客户端，客户端再次收到 ACK 报文之后，就知道之前的 ACK 报文丢失了，然后再次发送 ACK 报文。</p>
-<p>   至于 TIME_WAIT 持续的时间至少是一个报文的来回时间。一般会设置一个计时，如果过了这个计时没有再次收到 FIN 报文，则代表对方成功就是 ACK 报文，此时处于 CLOSED 状态。</p>
-<p>   <strong>这里我给出每个状态所包含的含义，有兴趣的可以看看。</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LISTEN - 侦听来自远方TCP端口的连接请求； </span><br><span class="line">SYN-SENT -在发送连接请求后等待匹配的连接请求； </span><br><span class="line">SYN-RECEIVED - 在收到和发送一个连接请求后等待对连接请求的确认； </span><br><span class="line">ESTABLISHED- 代表一个打开的连接，数据可以传送给用户； </span><br><span class="line">FIN-WAIT-1 - 等待远程TCP的连接中断请求，或先前的连接中断请求的确认；</span><br><span class="line">FIN-WAIT-2 - 从远程TCP等待连接中断请求；</span><br><span class="line">CLOSE-WAIT - 等待从本地用户发来的连接中断请求； </span><br><span class="line">CLOSING -等待远程TCP对连接中断的确认； </span><br><span class="line">LAST-ACK - 等待原来发向远程TCP的连接中断请求的确认； </span><br><span class="line">TIME-WAIT -等待足够的时间以确保远程TCP接收到连接中断请求的确认； </span><br><span class="line">CLOSED - 没有任何连接状态；</span><br></pre></td></tr></table></figure>
-
-
-<p>   <strong>最后，在放张三次握手与四次挥手的图</strong></p>
-<p><img data-src="https://img-blog.csdnimg.cn/20190608160404569.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RyZWFtaXNwb3NzaWJsZQ==,size_16,color_FFFFFF,t_70"></p>
-]]></content>
-      <categories>
-        <category>HTTP</category>
-      </categories>
-      <tags>
-        <tag>HTTP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用Hbuilder快速打包一个app</title>
-    <url>/2018/07/12/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/</url>
-    <content><![CDATA[<p>HBuilder提供的打包有云端打包和本地打包两种，云端打包的特点是DCloud官方配置好了原生的打包环境，可以把HTML等文件编译为原生安装包。</p>
-<p>优点：速度快，所需要的环境少，加快了开发者速度，不会因为各种JDK，java，Android环境而无法打包生成apk或ipa头疼，大大减少了开发繁琐操作。</p>
-<p>方法步骤：</p>
-<span id="more"></span>
-
-<p>1.下载HBuilder，注册并登陆。首先打开“文件”-“新建”-“移动APP”，输入“应用名称”，“位置”可以根据需要自己选择即可，“选择模板”建议选择空模板，如下图所示：</p>
-<p>​​<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712163802432"></p>
-<p>2.新建完成后， 在项目管理器会显示新建的项目目录，其中css，img，js和index.html这几个文件可删可改可替换。<br>unpackage文件夹是放置app图标和启动界面的图片。</p>
-<p>manifest.json文件是移动App的配置文件，用于指定应用的显示名称、图标、应用入口文件地址及需要使用的设备权限等信息，用户可通过HBuilder的可视化界面视图或者源码视图来配置移动App的信息，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164108624"></p>
-<p>3.如果删除了css，img，js文件夹和index.html文件，就把其他自己打包好的的项目文件对应复制到文件夹中，注意html文件中的引用路径需要保持正确，如下图自己拷贝的项目（我的是项目打包后的build文件和index.html文件，其中css/js/img都在build文件夹下）：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164250660"></p>
-<p>4.文件复制完成后，刷新更新下，双击打开manifest.json文件来配置App。</p>
-<p>appid：点击云端获取。版本号：根据需要来编辑。页面入口：默认是index.html，根据自己项目需要，更改APP的启动页面。应用描述：自己随便填。应用是否全屏显示：勾上就全屏显示，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164915305"></p>
-<p>5.图标配置：点击页面下方的图标配置，配置APP显示图标。</p>
-<p>点击”+”号的正方形方框，选择图标素材的路径找到图标素材，再点击” 自动生成所有图标并替换”按钮，完成图标生成和替换，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165506582"></p>
-<p>生成的图标自动在unpackage文件夹下，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165618254"></p>
-<p>6.在启动图片设置里点击”选择”，找到刚放进来的启动图片，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165842174"></p>
-<p>7.SDK配置：有需要就配置，没有就默认就行。</p>
-<p>   模块权限配置：有需要就配置，没有就默认就行。</p>
-<p>8.云端打包：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170045185"></p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170127683"></p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170219731"></p>
-<p>然后等待几分钟，刷新状态，就可以看到制作完成，是否下载？点击下载。然后将apk发送到手机上安装就可以正常运行了！</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712171021649"></p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2018071217113978"></p>
-<p>以下是apk安装后再模拟器上运行效果：</p>
-<p><img data-src="https://img-blog.csdn.net/20180712171240702?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
-<p><img data-src="https://img-blog.csdn.net/20180712171322289?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
-<p><img data-src="https://img-blog.csdn.net/20180712171518460?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
-]]></content>
-      <categories>
-        <category>Hbuilder</category>
-      </categories>
-      <tags>
-        <tag>Hbuilder</tag>
       </tags>
   </entry>
   <entry>
@@ -1467,6 +1421,52 @@
       </categories>
       <tags>
         <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Hbuilder快速打包一个app</title>
+    <url>/2018/07/12/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/</url>
+    <content><![CDATA[<p>HBuilder提供的打包有云端打包和本地打包两种，云端打包的特点是DCloud官方配置好了原生的打包环境，可以把HTML等文件编译为原生安装包。</p>
+<p>优点：速度快，所需要的环境少，加快了开发者速度，不会因为各种JDK，java，Android环境而无法打包生成apk或ipa头疼，大大减少了开发繁琐操作。</p>
+<p>方法步骤：</p>
+<span id="more"></span>
+
+<p>1.下载HBuilder，注册并登陆。首先打开“文件”-“新建”-“移动APP”，输入“应用名称”，“位置”可以根据需要自己选择即可，“选择模板”建议选择空模板，如下图所示：</p>
+<p>​​<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712163802432"></p>
+<p>2.新建完成后， 在项目管理器会显示新建的项目目录，其中css，img，js和index.html这几个文件可删可改可替换。<br>unpackage文件夹是放置app图标和启动界面的图片。</p>
+<p>manifest.json文件是移动App的配置文件，用于指定应用的显示名称、图标、应用入口文件地址及需要使用的设备权限等信息，用户可通过HBuilder的可视化界面视图或者源码视图来配置移动App的信息，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164108624"></p>
+<p>3.如果删除了css，img，js文件夹和index.html文件，就把其他自己打包好的的项目文件对应复制到文件夹中，注意html文件中的引用路径需要保持正确，如下图自己拷贝的项目（我的是项目打包后的build文件和index.html文件，其中css/js/img都在build文件夹下）：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164250660"></p>
+<p>4.文件复制完成后，刷新更新下，双击打开manifest.json文件来配置App。</p>
+<p>appid：点击云端获取。版本号：根据需要来编辑。页面入口：默认是index.html，根据自己项目需要，更改APP的启动页面。应用描述：自己随便填。应用是否全屏显示：勾上就全屏显示，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164915305"></p>
+<p>5.图标配置：点击页面下方的图标配置，配置APP显示图标。</p>
+<p>点击”+”号的正方形方框，选择图标素材的路径找到图标素材，再点击” 自动生成所有图标并替换”按钮，完成图标生成和替换，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165506582"></p>
+<p>生成的图标自动在unpackage文件夹下，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165618254"></p>
+<p>6.在启动图片设置里点击”选择”，找到刚放进来的启动图片，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165842174"></p>
+<p>7.SDK配置：有需要就配置，没有就默认就行。</p>
+<p>   模块权限配置：有需要就配置，没有就默认就行。</p>
+<p>8.云端打包：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170045185"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170127683"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170219731"></p>
+<p>然后等待几分钟，刷新状态，就可以看到制作完成，是否下载？点击下载。然后将apk发送到手机上安装就可以正常运行了！</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712171021649"></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2018071217113978"></p>
+<p>以下是apk安装后再模拟器上运行效果：</p>
+<p><img data-src="https://img-blog.csdn.net/20180712171240702?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
+<p><img data-src="https://img-blog.csdn.net/20180712171322289?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
+<p><img data-src="https://img-blog.csdn.net/20180712171518460?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
+]]></content>
+      <categories>
+        <category>Hbuilder</category>
+      </categories>
+      <tags>
+        <tag>Hbuilder</tag>
       </tags>
   </entry>
   <entry>
