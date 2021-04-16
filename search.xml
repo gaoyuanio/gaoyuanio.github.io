@@ -91,6 +91,202 @@
       </tags>
   </entry>
   <entry>
+    <title>JS实现图片压缩</title>
+    <url>/2021/02/11/JS%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9/</url>
+    <content><![CDATA[<blockquote>
+<p>说起图片压缩，大家想到的或者平时用到的很多工具都可以实现，例如，客户端类的有图片压缩工具 PPDuck3， JS 实现类的有插件 compression.js ，亦或是在线处理类的 OSS 上传，文件上传后，在访问文件时中也有图片的压缩配置选项，那能不能使用 JS 实现的图片压缩代码呢？当然可以，那我们先来理一下思路。</p>
+</blockquote>
+<h2 id="压缩思路"><a href="#压缩思路" class="headerlink" title="压缩思路"></a>压缩思路</h2><p>涉及到 JS 的图片压缩，我的想法是需要用到 Canvas 的绘图能力，通过调整图片的分辨率或者绘图质量来达到图片压缩的效果，实现思路如下：</p>
+<ul>
+<li>获取上传 Input 中的图片对象 File</li>
+<li>将图片转换成 base64 格式</li>
+<li>base64 编码的图片通过 Canvas 转换压缩，这里会用到的 Canvas 的 drawImage 以及 toDataURL 这两个 Api，一个调节图片的分辨率的，一个是调节图片压缩质量并且输出的，后续会有详细介绍</li>
+<li>转换后的图片生成对应的新图片，然后输出</li>
+<li></li>
+</ul>
+<h2 id="优缺点介绍"><a href="#优缺点介绍" class="headerlink" title="优缺点介绍"></a>优缺点介绍</h2><p>不过 Canvas 压缩的方式也有着自己的优缺点：</p>
+<ul>
+<li>优点：实现简单，参数可以配置化，自定义图片的尺寸，指定区域裁剪等等。</li>
+<li>缺点：只有 jpeg 、webp 支持原图尺寸下图片质量的调整来达到压缩图片的效果，其他图片格式，仅能通过调节尺寸来实现</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div class&#x3D;&quot;container&quot;&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;file&quot; id&#x3D;&quot;input-img&quot; @change&#x3D;&quot;compress&quot; &#x2F;&gt;</span><br><span class="line">    &lt;a :download&#x3D;&quot;fileName&quot; :href&#x3D;&quot;compressImg&quot; &gt;普通下载&lt;&#x2F;a&gt;</span><br><span class="line">    &lt;button @click&#x3D;&quot;downloadImg&quot;&gt;兼容 IE 下载&lt;&#x2F;button&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;img :src&#x3D;&quot;compressImg&quot; &#x2F;&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;export default &#123;</span><br><span class="line">  name: &#39;compress&#39;,</span><br><span class="line">  data: function() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      compressImg: null,</span><br><span class="line">      fileName: null,</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">  components: &#123;&#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    compress() &#123;</span><br><span class="line">      &#x2F;&#x2F; 获取文件对象</span><br><span class="line">      const fileObj &#x3D; document.querySelector(&#39;#input-img&#39;).files[0];</span><br><span class="line">      &#x2F;&#x2F; 获取文件名称，后续下载重命名</span><br><span class="line">      this.fileName &#x3D; &#96;$&#123;new Date().getTime()&#125;-$&#123;fileObj.name&#125;&#96;;</span><br><span class="line">      &#x2F;&#x2F; 获取文件后缀名</span><br><span class="line">      const fileNames &#x3D; fileObj.name.split(&#39;.&#39;);</span><br><span class="line">      const type &#x3D; fileNames[fileNames.length-1];</span><br><span class="line">      &#x2F;&#x2F; 压缩图片</span><br><span class="line">      this.handleCompressImage(fileObj, type);</span><br><span class="line">    &#125;,</span><br><span class="line">    handleCompressImage(img, type) &#123;</span><br><span class="line">      const vm &#x3D; this;</span><br><span class="line">      let reader &#x3D; new FileReader();</span><br><span class="line">      &#x2F;&#x2F; 读取文件</span><br><span class="line">      reader.readAsDataURL(img);</span><br><span class="line">      reader.onload &#x3D; function(e) &#123;</span><br><span class="line">        let image &#x3D; new Image(); &#x2F;&#x2F;新建一个img标签</span><br><span class="line">        image.src &#x3D; e.target.result;</span><br><span class="line">        image.onload &#x3D; function() &#123;</span><br><span class="line">          let canvas &#x3D; document.createElement(&#39;canvas&#39;);</span><br><span class="line">          let context &#x3D; canvas.getContext(&#39;2d&#39;);</span><br><span class="line">          &#x2F;&#x2F; 定义 canvas 大小，也就是压缩后下载的图片大小</span><br><span class="line">          let imageWidth &#x3D; image.width; &#x2F;&#x2F;压缩后图片的大小</span><br><span class="line">          let imageHeight &#x3D; image.height;</span><br><span class="line">          canvas.width &#x3D; imageWidth;</span><br><span class="line">          canvas.height &#x3D; imageHeight;</span><br><span class="line">          </span><br><span class="line">          &#x2F;&#x2F; 图片不压缩，全部加载展示</span><br><span class="line">          context.drawImage(image, 0, 0);</span><br><span class="line">          &#x2F;&#x2F; 图片按压缩尺寸载入</span><br><span class="line">          &#x2F;&#x2F; let imageWidth &#x3D; 500; &#x2F;&#x2F;压缩后图片的大小</span><br><span class="line">          &#x2F;&#x2F; let imageHeight &#x3D; 200;</span><br><span class="line">          &#x2F;&#x2F; context.drawImage(image, 0, 0, 500, 200);</span><br><span class="line">          &#x2F;&#x2F; 图片去截取指定位置载入</span><br><span class="line">          &#x2F;&#x2F; context.drawImage(image,100, 100, 100, 100, 0, 0, imageWidth, imageHeight);</span><br><span class="line">          vm.compressImg &#x3D; canvas.toDataURL(&#96;image&#x2F;$&#123;type&#125;&#96;);</span><br><span class="line">        &#125;;</span><br><span class="line">      &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#x2F;&#x2F; base64 图片转 blob 后下载</span><br><span class="line">    downloadImg() &#123;</span><br><span class="line">      let parts &#x3D; this.compressImg.split(&#39;;base64,&#39;);</span><br><span class="line">      let contentType &#x3D; parts[0].split(&#39;:&#39;)[1];</span><br><span class="line">      let raw &#x3D; window.atob(parts[1]);</span><br><span class="line">      let rawLength &#x3D; raw.length;</span><br><span class="line">      let uInt8Array &#x3D; new Uint8Array(rawLength);</span><br><span class="line">      for(let i &#x3D; 0; i &lt; rawLength; ++i) &#123;</span><br><span class="line">        uInt8Array[i] &#x3D; raw.charCodeAt(i);</span><br><span class="line">      &#125;</span><br><span class="line">      const blob &#x3D; new Blob([uInt8Array], &#123;type: contentType&#125;);</span><br><span class="line">      this.compressImg &#x3D; URL.createObjectURL(blob);</span><br><span class="line">      if (window.navigator.msSaveOrOpenBlob) &#123;</span><br><span class="line">        &#x2F;&#x2F; 兼容 ie 的下载方式</span><br><span class="line">        window.navigator.msSaveOrOpenBlob(blob, this.fileName);</span><br><span class="line">      &#125;else&#123;</span><br><span class="line">        const a &#x3D; document.createElement(&#39;a&#39;);</span><br><span class="line">        a.href &#x3D; this.compressImg;</span><br><span class="line">        a.setAttribute(&#39;download&#39;, this.fileName);</span><br><span class="line">        a.click();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h2><blockquote>
+<p>上面的代码是可以直接拿来看效果的，不喜欢用 Vue 的也可以把代码稍微调整一下，下面开始具体分解一下代码的实现思路</p>
+</blockquote>
+<h3 id="步骤一：Input-上传-File-处理"><a href="#步骤一：Input-上传-File-处理" class="headerlink" title="步骤一：Input 上传 File 处理"></a>步骤一：Input 上传 File 处理</h3><p>将 File 对象通过 <code>FileReader</code> 的 <code>readAsDataURL</code> 方法转换为URL格式的字符串（base64 编码）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const fileObj &#x3D; document.querySelector(&#39;#input-img&#39;).files[0];</span><br><span class="line">let reader &#x3D; new FileReader();</span><br><span class="line">&#x2F;&#x2F; 读取文件</span><br><span class="line">reader.readAsDataURL(fileObj);</span><br></pre></td></tr></table></figure>
+
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2><h3 id="步骤二：Canvas-处理-File-对象"><a href="#步骤二：Canvas-处理-File-对象" class="headerlink" title="步骤二：Canvas 处理 File 对象"></a>步骤二：Canvas 处理 File 对象</h3><p>建立一个 <code>Image</code> 对象，一个 <code>canvas</code> 画布，设定自己想要下载的图片尺寸，调用 <code>drawImage</code> 方法在 canvas 中绘制上传的图片</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">let image &#x3D; new Image(); &#x2F;&#x2F;新建一个img标签</span><br><span class="line">image.src &#x3D; e.target.result;</span><br><span class="line">let canvas &#x3D; document.createElement(&#39;canvas&#39;);</span><br><span class="line">let context &#x3D; canvas.getContext(&#39;2d&#39;);</span><br><span class="line">context.drawImage(image, 0, 0);</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="步骤三：Api-解析：drawImage"><a href="#步骤三：Api-解析：drawImage" class="headerlink" title="步骤三：Api 解析：drawImage"></a>步骤三：Api 解析：drawImage</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">context.drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);</span><br></pre></td></tr></table></figure>
+
+<p>**img:**就是图片对象，可以是页面上获取的 DOM 对象，也可以是虚拟 DOM 中的图片对象。</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1598786576273-20cc4996-634f-4a19-8fb8-68262d4313b0.webp"></p>
+<p><strong>（1）dx、dy、dWidth、dHeight：</strong></p>
+<p>表示在 <code>canvas</code> 画布上规划出一片区域用来放置图片，<code>dx, dy</code> 为绘图位置在 Canvas 元素的 X 轴、Y 轴坐标，<code>dWidth, dHeight</code> 指在 Canvas 元素上绘制图像的宽度和高度（如果不说明， 在绘制时图片的宽度和高度不会缩放）。</p>
+<p><strong>（2）sx、sy、swidth、sheight:</strong></p>
+<p>这 4 个参数是用来裁剪源图片的，表示图片在 <code>canvas</code> 画布上显示的大小和位置。<code>sx, sy</code> 表示在源图片上裁剪位置的 X 轴、Y 轴坐标，然后以 <code>swidth, sheight</code> 尺寸来选择一个区域范围，裁剪出来的图片作为最终在 Canvas 上显示的图片内容（ <code>swidth, sheight</code> 不说明的情况下，整个矩形（裁剪）从坐标的 <code>sx</code> 和 <code>sy</code> 开始，到图片的右下角结束）。</p>
+<p>以下为图片绘制的实例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">context.drawImage(image, 0, 0, 100, 100);</span><br><span class="line">context.drawImage(image, 300, 300, 200, 200);</span><br><span class="line">context.drawImage(image, 0, 100, 150, 150, 300, 0, 150, 150);</span><br></pre></td></tr></table></figure>
+
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1598786576278-66f315b0-3c36-45b3-825d-c8f3171672e1.webp"></p>
+<p>Api 中奇怪之处在于，sx、sy、swidth、sheight 为选填参数，但位置在 dx、dy、dWidth、dHeight 之前。</p>
+<h3 id="步骤四：Canvas-输出图片"><a href="#步骤四：Canvas-输出图片" class="headerlink" title="步骤四：Canvas 输出图片"></a>步骤四：Canvas 输出图片</h3><p>调用 <code>canvas</code> 的 <code>toDataURL</code> 方法可以输出 base64 格式的图片。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">canvas.toDataURL(&#96;image&#x2F;$&#123;type&#125;&#96;);</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="步骤五：Api-解析：toDataURL"><a href="#步骤五：Api-解析：toDataURL" class="headerlink" title="步骤五：Api 解析：toDataURL"></a>步骤五：Api 解析：toDataURL</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">canvas.toDataURL(type, encoderOptions);</span><br></pre></td></tr></table></figure>
+
+<p><strong>type （可选）：</strong>图片格式，默认为 image/png。</p>
+<p><strong>encoderOptions （可选）：</strong>在指定图片格式为 image/jpeg 或 image/webp 的情况下，可以从 0 到 1 的区间内选择图片的质量。如果超出取值范围，将会使用默认值 0.92。其他参数会被忽略。</p>
+<p><strong>a 标签的下载</strong>：调用 <code>&lt;a&gt;</code> 标签的 <code>download</code> 属性，即可完成图片的下载。</p>
+<h3 id="步骤六：Api-解析：download"><a href="#步骤六：Api-解析：download" class="headerlink" title="步骤六：Api 解析：download"></a>步骤六：Api 解析：download</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; href 下载必填</span><br><span class="line">&lt;a download&#x3D;&quot;filename&quot; href&#x3D;&quot;href&quot;&gt; 下载 &lt;&#x2F;a&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>filename：</strong>选填，规定作为文件名来使用的文本。</p>
+<p><strong>href：</strong>文件的下载地址。</p>
+<h3 id="步骤七：非主流浏览器下载处理"><a href="#步骤七：非主流浏览器下载处理" class="headerlink" title="步骤七：非主流浏览器下载处理"></a>步骤七：非主流浏览器下载处理</h3><p>这一步可以解决 Chroma 、 Firefox 和 Safari（自测支持） 浏览器的下载功能，因为 IE 等浏览器不支持 <code>download</code> 属性，所以需要进行其他方式的下载，也就有了代码中的后续内容</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; base64 图片转 blob 后下载</span><br><span class="line">downloadImg() &#123;</span><br><span class="line">  let parts &#x3D; this.compressImg.split(&#39;;base64,&#39;);</span><br><span class="line">  let contentType &#x3D; parts[0].split(&#39;:&#39;)[1];</span><br><span class="line">  let raw &#x3D; window.atob(parts[1]);</span><br><span class="line">  let rawLength &#x3D; raw.length;</span><br><span class="line">  let uInt8Array &#x3D; new Uint8Array(rawLength);</span><br><span class="line">  for(let i &#x3D; 0; i &lt; rawLength; ++i) &#123;</span><br><span class="line">    uInt8Array[i] &#x3D; raw.charCodeAt(i);</span><br><span class="line">  &#125;</span><br><span class="line">  const blob &#x3D; new Blob([uInt8Array], &#123;type: contentType&#125;);</span><br><span class="line">  this.compressImg &#x3D; URL.createObjectURL(blob);</span><br><span class="line">  if (window.navigator.msSaveOrOpenBlob) &#123;</span><br><span class="line">    &#x2F;&#x2F; 兼容 ie 的下载方式</span><br><span class="line">    window.navigator.msSaveOrOpenBlob(blob, this.fileName);</span><br><span class="line">  &#125;else&#123;</span><br><span class="line">    const a &#x3D; document.createElement(&#39;a&#39;);</span><br><span class="line">    a.href &#x3D; this.compressImg;</span><br><span class="line">    a.setAttribute(&#39;download&#39;, this.fileName);</span><br><span class="line">    a.click();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>将之前 <code>canvas</code> 生成的 base64 数据拆分后，通过 <code>atob</code> 方法解码</li>
+<li>将解码后的数据转换成 Uint8Array 格式的无符号整形数组</li>
+<li>转换后的数组来生成一个 Blob 数据对象，通过 <code>URL.createObjectURL(blob)</code> 来生成一个临时的 DOM 对象</li>
+<li>之后 IE 类浏览器可以调用 <code>window.navigator.msSaveOrOpenBlob</code> 方法来执行下载，其他浏览器也可以继续通过 <code>&lt;a&gt;</code> 标签的 <code>download</code> 属性来进行下载</li>
+</ul>
+<h3 id="步骤八：Api-解析：atob"><a href="#步骤八：Api-解析：atob" class="headerlink" title="步骤八：Api 解析：atob"></a>步骤八：Api 解析：atob</h3><p>base-64 解码使用方法是 atob()。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">window.atob(encodedStr)</span><br></pre></td></tr></table></figure>
+
+<p><strong>encodedStr：</strong>必需，是一个通过 btoa() 方法编码的字符串，btoa() 是 base64 编码的使用方法。</p>
+<h3 id="步骤九：Api-解析：Uint8Array"><a href="#步骤九：Api-解析：Uint8Array" class="headerlink" title="步骤九：Api 解析：Uint8Array"></a>步骤九：Api 解析：Uint8Array</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">new Uint8Array(length)</span><br></pre></td></tr></table></figure>
+
+<p><strong>length：</strong>创建初始化为 0 的，包含 length 个元素的无符号整型数组。</p>
+<h3 id="步骤十：Api-解析：Blob"><a href="#步骤十：Api-解析：Blob" class="headerlink" title="步骤十：Api 解析：Blob"></a>步骤十：Api 解析：Blob</h3><p><code>Blob</code> 对象表示一个不可变、原始数据的类文件对象。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 构造函数允许通过其它对象创建 Blob 对象</span><br><span class="line">new Blob([obj],&#123;type:createType&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><strong>obj：</strong>字符串内容</p>
+<p><strong>createType：</strong>要构造的类型，兼容性 IE 10 以上</p>
+<h3 id="步骤十一：Api-解析：createObjectURL"><a href="#步骤十一：Api-解析：createObjectURL" class="headerlink" title="步骤十一：Api 解析：createObjectURL"></a>步骤十一：Api 解析：createObjectURL</h3><p>静态方法会创建一个 DOMString。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">objectURL &#x3D; URL.createObjectURL(object);</span><br></pre></td></tr></table></figure>
+
+<p><strong>object：</strong>用于创建 URL 的 File 对象、Blob 对象或者 MediaSource 对象。</p>
+<h3 id="步骤十二：Api-解析：window-navigator"><a href="#步骤十二：Api-解析：window-navigator" class="headerlink" title="步骤十二：Api 解析：window.navigator"></a>步骤十二：Api 解析：window.navigator</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 官方已不建议使用的文件下载方式，仅针对 ie 且兼容性 10 以上</span><br><span class="line">&#x2F;&#x2F; msSaveBlob 仅提供下载</span><br><span class="line">&#x2F;&#x2F; msSaveOrOpenBlob 支持下载和打开</span><br><span class="line">window.navigator.msSaveOrOpenBlob(blob, fileName);</span><br></pre></td></tr></table></figure>
+
+<p><strong>blob：</strong>要下载的 blob 对象</p>
+<p><strong>fileName：</strong>下载后命名的文件名称。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本方法仅针对图片压缩介绍了一些思路，简单的使用场景可能如下介绍，当然也会引申出来更多的使用场景，这些还有待大家一起挖掘。</p>
+<ul>
+<li>上传存储图片如果需要对文件大小格式有要求的，可以统一压缩处理图片</li>
+<li>前台页面想要编辑图片，可以在 Canvas 处理图片的时候，加一些其他逻辑，例如添加文字，剪裁，拼图等等操作</li>
+</ul>
+<p>tip：因部分接口有 IE 兼容性问题，IE 浏览器方面，仅能支持 IE 10 以上版本进行下载。</p>
+]]></content>
+      <categories>
+        <category>javascript</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>JavaScript专题（一）变量与函数提升</title>
+    <url>/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/</url>
+    <content><![CDATA[<h2 id="一、有趣的现象"><a href="#一、有趣的现象" class="headerlink" title="一、有趣的现象"></a>一、有趣的现象</h2><p>按照大家的常识，JavaScript代码在执行是一定是自上而下的，你需要输出一个字符串，当然需要提前声明一个<code>保存string类型的变量</code>。如果深奥的道理我都能懂，于是我阅读了下面的代码。</p>
+<h3 id="1-1-我以为的开局"><a href="#1-1-我以为的开局" class="headerlink" title="1.1 我以为的开局"></a>1.1 我以为的开局</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// 123</span></span><br></pre></td></tr></table></figure>
+
+<p>我们调换一下代码的位置在再看：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// undefined</span></span><br><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<p><strong>我好像找到规律了!!!</strong></p>
+<p>当我看完了前两段代码并且进行了“深度思考”后，我好像找到规律了，那就是：在当前代码块后函数中，在变量声明和初始化<code>之前</code>使用变量，会拿不到正确的值。</p>
+<h3 id="1-2-实际上是这样的"><a href="#1-2-实际上是这样的" class="headerlink" title="1.2 实际上是这样的"></a>1.2 实际上是这样的</h3><p>带着上面的“结论”我来到了这里</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// 高原</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+
+<p>果然如此！，在<strong>变量声明和初始化之后</strong>耶稣也阻挡不了我拿到val的值，我说的！！！</p>
+<p>当我看到下面一段代码时，我已经产生了动摇，此事必要蹊跷。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> val = <span class="string">&#x27;测试&#x27;</span>;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+
+
+
+<p>这…我怂了，是什么原因导致这样的现象发生的呢？Js又是如果处理的呢？</p>
+<h2 id="二、Js的预解析"><a href="#二、Js的预解析" class="headerlink" title="二、Js的预解析"></a>二、Js的预解析</h2><p>在当前的作用域内，无论在哪里变量声明，在幕后，都会进行一次看不见的移动。</p>
+<p>注意：<strong>仅声明被“移动”</strong>。即声明和赋值在某些时候被动分开了。而这次看不见的移动实际上就是<code>Js在编译阶段的解析</code>。</p>
+<p>来看一段《你知不知道的Js》中经典的例子：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 未添加关键字（未声明），name为全局变量，，即window.name = &#x27;高原&#x27;</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 再次声明name，此时name未进行初始化，它的值是undefined吗？</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
+
+<p>结果是成功打印“高原”，这样<strong>看不见的移动</strong>就发生在Js预解析（编译）之中。</p>
+<h3 id="2-1-核心：预解析"><a href="#2-1-核心：预解析" class="headerlink" title="2.1 核心：预解析"></a>2.1 核心：预解析</h3><p>为了搞明白这个核心问题，我们需要回顾一下，引擎会在解释JavaScript代码之前首先对其进行编译。编译阶段中的一部分工作就是找到所有的声明，并用合适的作用域将它们关联起来。</p>
+<p>因此，发生这样的事情，包括<code>变量</code>和<code>函数</code>在内的所有声明都会在任何代码被执行前首先被处理。当你看到<code>var a = 2</code>；时，可能会认为这是一个声明。但JavaScript实际上会将其看成两个声明：var a；和a = 2;。</p>
+<ul>
+<li>第一个定义声明是在编译阶段进行的。</li>
+<li>第二个赋值声明会被留在原地等待执行阶段。</li>
+</ul>
+<p>即代码是这样写的：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 我们看到的代码：</span></span><br><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>但Js会将它解析成：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 声明(Declaration)</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明但未初始化，所以分配 undefined</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化(Initialization)</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化（赋值）</span></span><br></pre></td></tr></table></figure>
+
+<p>所以本小结的一段代码应该这样分析：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明name提到作用域顶部，并被分配了一个undefined</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 进行初始化操作</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// &#x27;高原&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-注意：只有声明被提升了"><a href="#2-2-注意：只有声明被提升了" class="headerlink" title="2.2 注意：只有声明被提升了"></a>2.2 注意：只有声明被提升了</h3><p><strong>只有声明会被提升，而赋值和其他代码逻辑会在执行到代码的位置时才会生效</strong>。所以会有下面的问题：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>函数被提升了，自然可以正常执行，但变量仅仅是声明被提升了。</p>
+<h3 id="2-3-每个作用域都会进行提升操作"><a href="#2-3-每个作用域都会进行提升操作" class="headerlink" title="2.3 每个作用域都会进行提升操作"></a>2.3 每个作用域都会进行提升操作</h3><p>还是上面的代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实际它在编译时是这样的：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name; <span class="comment">// 声明</span></span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化</span></span><br><span class="line">&#125;</span><br><span class="line">foo(); <span class="comment">// 函数执行</span></span><br></pre></td></tr></table></figure>
+
+<p><img data-src="https://img-blog.csdnimg.cn/20200716134005198.jpg" alt="img"></p>
+<h2 id="三、提升之间的优先级"><a href="#三、提升之间的优先级" class="headerlink" title="三、提升之间的优先级"></a>三、提升之间的优先级</h2><p>既然我们知道了<code>变量</code>和<code>函数</code>会被提升，他们之间又是如何判断优先级的呢？</p>
+<h3 id="3-1-函数会被首先提升，然后才是变量"><a href="#3-1-函数会被首先提升，然后才是变量" class="headerlink" title="3.1 函数会被首先提升，然后才是变量"></a>3.1 函数会被首先提升，然后才是变量</h3><p>我们分析下面的代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo; <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>本着函数优先提升的原则，他会被解析成这样：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">// 高原</span></span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意，<code>var foo</code> 因为是一个重复声明，且优先级<code>低于函数声明</code>所以它被忽略掉了。</p>
+<h3 id="3-2-函数字面量不会进行函数提升"><a href="#3-2-函数字面量不会进行函数提升" class="headerlink" title="3.2 函数字面量不会进行函数提升"></a>3.2 函数字面量不会进行函数提升</h3><p>最直观的例子，就是在函数字面量前调用该函数：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// TypeError: foo is not a function</span></span><br></pre></td></tr></table></figure>
+
+<p>这段程序中：</p>
+<ol>
+<li>变量标识符<code>foo()</code>被提升并分配给所在作用域（在这里是全局作用域），因此foo()<strong>不会导致ReferenceError</strong>。</li>
+<li>然后就是执行foo，foo此时并没有赋值（注意变量被提升了）。由于对undefined值进行函数调用而导致非法操作，因此抛出TypeError异常。</li>
+</ol>
+<h2 id="四、ES6和小结"><a href="#四、ES6和小结" class="headerlink" title="四、ES6和小结"></a>四、ES6和小结</h2><p>ES6新增了两个命令<code>let</code>和<code>const</code>，用来声明变量，有关它们完整的概念我会在《ES6基础系列》中总结，提起它们，是因为<strong>变量提升在它们身上不会存在</strong>。</p>
+<h3 id="4-1-变量提升是可以规避的"><a href="#4-1-变量提升是可以规避的" class="headerlink" title="4.1 变量提升是可以规避的"></a>4.1 变量提升是可以规避的</h3><p>let命令改变了语法行为，它所声明的变量一定要在声明后使用，否则报错。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// var 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(foo); <span class="comment">// 输出undefined</span></span><br><span class="line"><span class="keyword">var</span> foo = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// let 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(bar); <span class="comment">// 报错ReferenceError</span></span><br><span class="line"><span class="keyword">let</span> bar = <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+
+<p>上面代码中，变量foo用var命令声明，会发生变量提升，即脚本开始运行时，变量foo已经存在了，但是没有值，所以会输出undefined。变量bar用let命令声明，不会发生变量提升。这表示在声明它之前，变量bar是不存在的，这时如果用到它，就会抛出一个错误。</p>
+<p>在变量提升上，const和let一样，只在声明所在的块级作用域内有效，也不会变量提升</p>
+<h3 id="4-2-小结"><a href="#4-2-小结" class="headerlink" title="4.2 小结"></a>4.2 小结</h3><ol>
+<li>变量提升：函数声明和变量声明总是会被解释器悄悄地被”提升”到方法体的最顶部，但变量的初始化不会提升；</li>
+<li>函数提升：函数声明可以被看作是函数的整体被提升到了代码的顶部，但函数字面量表达式并不会引发函数提升；</li>
+<li>函数提升优先与变量提升；</li>
+<li>let和const可以有效的规避变量提升</li>
+</ol>
+<p>最后提炼一下《你不知道的JS》中的一段话：<strong>JavaScript引擎并不总是按照代码的顺序来进行解析。在编译阶段，无论作用域中的声明出现在什么地方，都将在代码本身被执行前首先进行处理，这个过程被称为提升。声明本身会被提升，而包括函数表达式的赋值在内的赋值操作并不会提升。</strong></p>
+]]></content>
+      <categories>
+        <category>javascript</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>JavaScript基础（一）this</title>
     <url>/2021/03/20/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89this/</url>
     <content><![CDATA[<h3 id="一、this的指向"><a href="#一、this的指向" class="headerlink" title="一、this的指向"></a>一、this的指向</h3><p>百度、谷歌上输入“this的指向”关键字，大几千条文章肯定是有的，总不至于为了全方面、无死角的掌握它就要将所有的文章都看一遍吧？所以不如梳理出一个稳固的框架，我们一起来填充它。</p>
@@ -222,110 +418,6 @@
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Function</span>.prototype.bind = <span class="function"><span class="keyword">function</span> (<span class="params">func</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> _this = <span class="built_in">this</span></span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> _this.apply(func, <span class="built_in">arguments</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="number">1</span>,</span><br><span class="line">    getName: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.name)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> func = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.name)</span><br><span class="line">&#125;</span><br><span class="line">func.bind(obj)</span><br></pre></td></tr></table></figure>
 
 <p>这样看上去，bind总会帮我们返回同样的<code>this</code>值，还是挺坚挺的哦～</p>
-]]></content>
-      <categories>
-        <category>javascript</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>JS实现图片压缩</title>
-    <url>/2021/02/11/JS%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9/</url>
-    <content><![CDATA[<blockquote>
-<p>说起图片压缩，大家想到的或者平时用到的很多工具都可以实现，例如，客户端类的有图片压缩工具 PPDuck3， JS 实现类的有插件 compression.js ，亦或是在线处理类的 OSS 上传，文件上传后，在访问文件时中也有图片的压缩配置选项，那能不能使用 JS 实现的图片压缩代码呢？当然可以，那我们先来理一下思路。</p>
-</blockquote>
-<h2 id="压缩思路"><a href="#压缩思路" class="headerlink" title="压缩思路"></a>压缩思路</h2><p>涉及到 JS 的图片压缩，我的想法是需要用到 Canvas 的绘图能力，通过调整图片的分辨率或者绘图质量来达到图片压缩的效果，实现思路如下：</p>
-<ul>
-<li>获取上传 Input 中的图片对象 File</li>
-<li>将图片转换成 base64 格式</li>
-<li>base64 编码的图片通过 Canvas 转换压缩，这里会用到的 Canvas 的 drawImage 以及 toDataURL 这两个 Api，一个调节图片的分辨率的，一个是调节图片压缩质量并且输出的，后续会有详细介绍</li>
-<li>转换后的图片生成对应的新图片，然后输出</li>
-<li></li>
-</ul>
-<h2 id="优缺点介绍"><a href="#优缺点介绍" class="headerlink" title="优缺点介绍"></a>优缺点介绍</h2><p>不过 Canvas 压缩的方式也有着自己的优缺点：</p>
-<ul>
-<li>优点：实现简单，参数可以配置化，自定义图片的尺寸，指定区域裁剪等等。</li>
-<li>缺点：只有 jpeg 、webp 支持原图尺寸下图片质量的调整来达到压缩图片的效果，其他图片格式，仅能通过调节尺寸来实现</li>
-</ul>
-<span id="more"></span>
-
-<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div class&#x3D;&quot;container&quot;&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;file&quot; id&#x3D;&quot;input-img&quot; @change&#x3D;&quot;compress&quot; &#x2F;&gt;</span><br><span class="line">    &lt;a :download&#x3D;&quot;fileName&quot; :href&#x3D;&quot;compressImg&quot; &gt;普通下载&lt;&#x2F;a&gt;</span><br><span class="line">    &lt;button @click&#x3D;&quot;downloadImg&quot;&gt;兼容 IE 下载&lt;&#x2F;button&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;img :src&#x3D;&quot;compressImg&quot; &#x2F;&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;export default &#123;</span><br><span class="line">  name: &#39;compress&#39;,</span><br><span class="line">  data: function() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      compressImg: null,</span><br><span class="line">      fileName: null,</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">  components: &#123;&#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    compress() &#123;</span><br><span class="line">      &#x2F;&#x2F; 获取文件对象</span><br><span class="line">      const fileObj &#x3D; document.querySelector(&#39;#input-img&#39;).files[0];</span><br><span class="line">      &#x2F;&#x2F; 获取文件名称，后续下载重命名</span><br><span class="line">      this.fileName &#x3D; &#96;$&#123;new Date().getTime()&#125;-$&#123;fileObj.name&#125;&#96;;</span><br><span class="line">      &#x2F;&#x2F; 获取文件后缀名</span><br><span class="line">      const fileNames &#x3D; fileObj.name.split(&#39;.&#39;);</span><br><span class="line">      const type &#x3D; fileNames[fileNames.length-1];</span><br><span class="line">      &#x2F;&#x2F; 压缩图片</span><br><span class="line">      this.handleCompressImage(fileObj, type);</span><br><span class="line">    &#125;,</span><br><span class="line">    handleCompressImage(img, type) &#123;</span><br><span class="line">      const vm &#x3D; this;</span><br><span class="line">      let reader &#x3D; new FileReader();</span><br><span class="line">      &#x2F;&#x2F; 读取文件</span><br><span class="line">      reader.readAsDataURL(img);</span><br><span class="line">      reader.onload &#x3D; function(e) &#123;</span><br><span class="line">        let image &#x3D; new Image(); &#x2F;&#x2F;新建一个img标签</span><br><span class="line">        image.src &#x3D; e.target.result;</span><br><span class="line">        image.onload &#x3D; function() &#123;</span><br><span class="line">          let canvas &#x3D; document.createElement(&#39;canvas&#39;);</span><br><span class="line">          let context &#x3D; canvas.getContext(&#39;2d&#39;);</span><br><span class="line">          &#x2F;&#x2F; 定义 canvas 大小，也就是压缩后下载的图片大小</span><br><span class="line">          let imageWidth &#x3D; image.width; &#x2F;&#x2F;压缩后图片的大小</span><br><span class="line">          let imageHeight &#x3D; image.height;</span><br><span class="line">          canvas.width &#x3D; imageWidth;</span><br><span class="line">          canvas.height &#x3D; imageHeight;</span><br><span class="line">          </span><br><span class="line">          &#x2F;&#x2F; 图片不压缩，全部加载展示</span><br><span class="line">          context.drawImage(image, 0, 0);</span><br><span class="line">          &#x2F;&#x2F; 图片按压缩尺寸载入</span><br><span class="line">          &#x2F;&#x2F; let imageWidth &#x3D; 500; &#x2F;&#x2F;压缩后图片的大小</span><br><span class="line">          &#x2F;&#x2F; let imageHeight &#x3D; 200;</span><br><span class="line">          &#x2F;&#x2F; context.drawImage(image, 0, 0, 500, 200);</span><br><span class="line">          &#x2F;&#x2F; 图片去截取指定位置载入</span><br><span class="line">          &#x2F;&#x2F; context.drawImage(image,100, 100, 100, 100, 0, 0, imageWidth, imageHeight);</span><br><span class="line">          vm.compressImg &#x3D; canvas.toDataURL(&#96;image&#x2F;$&#123;type&#125;&#96;);</span><br><span class="line">        &#125;;</span><br><span class="line">      &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#x2F;&#x2F; base64 图片转 blob 后下载</span><br><span class="line">    downloadImg() &#123;</span><br><span class="line">      let parts &#x3D; this.compressImg.split(&#39;;base64,&#39;);</span><br><span class="line">      let contentType &#x3D; parts[0].split(&#39;:&#39;)[1];</span><br><span class="line">      let raw &#x3D; window.atob(parts[1]);</span><br><span class="line">      let rawLength &#x3D; raw.length;</span><br><span class="line">      let uInt8Array &#x3D; new Uint8Array(rawLength);</span><br><span class="line">      for(let i &#x3D; 0; i &lt; rawLength; ++i) &#123;</span><br><span class="line">        uInt8Array[i] &#x3D; raw.charCodeAt(i);</span><br><span class="line">      &#125;</span><br><span class="line">      const blob &#x3D; new Blob([uInt8Array], &#123;type: contentType&#125;);</span><br><span class="line">      this.compressImg &#x3D; URL.createObjectURL(blob);</span><br><span class="line">      if (window.navigator.msSaveOrOpenBlob) &#123;</span><br><span class="line">        &#x2F;&#x2F; 兼容 ie 的下载方式</span><br><span class="line">        window.navigator.msSaveOrOpenBlob(blob, this.fileName);</span><br><span class="line">      &#125;else&#123;</span><br><span class="line">        const a &#x3D; document.createElement(&#39;a&#39;);</span><br><span class="line">        a.href &#x3D; this.compressImg;</span><br><span class="line">        a.setAttribute(&#39;download&#39;, this.fileName);</span><br><span class="line">        a.click();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h2><blockquote>
-<p>上面的代码是可以直接拿来看效果的，不喜欢用 Vue 的也可以把代码稍微调整一下，下面开始具体分解一下代码的实现思路</p>
-</blockquote>
-<h3 id="步骤一：Input-上传-File-处理"><a href="#步骤一：Input-上传-File-处理" class="headerlink" title="步骤一：Input 上传 File 处理"></a>步骤一：Input 上传 File 处理</h3><p>将 File 对象通过 <code>FileReader</code> 的 <code>readAsDataURL</code> 方法转换为URL格式的字符串（base64 编码）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const fileObj &#x3D; document.querySelector(&#39;#input-img&#39;).files[0];</span><br><span class="line">let reader &#x3D; new FileReader();</span><br><span class="line">&#x2F;&#x2F; 读取文件</span><br><span class="line">reader.readAsDataURL(fileObj);</span><br></pre></td></tr></table></figure>
-
-<h2 id=""><a href="#" class="headerlink" title=""></a></h2><h3 id="步骤二：Canvas-处理-File-对象"><a href="#步骤二：Canvas-处理-File-对象" class="headerlink" title="步骤二：Canvas 处理 File 对象"></a>步骤二：Canvas 处理 File 对象</h3><p>建立一个 <code>Image</code> 对象，一个 <code>canvas</code> 画布，设定自己想要下载的图片尺寸，调用 <code>drawImage</code> 方法在 canvas 中绘制上传的图片</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">let image &#x3D; new Image(); &#x2F;&#x2F;新建一个img标签</span><br><span class="line">image.src &#x3D; e.target.result;</span><br><span class="line">let canvas &#x3D; document.createElement(&#39;canvas&#39;);</span><br><span class="line">let context &#x3D; canvas.getContext(&#39;2d&#39;);</span><br><span class="line">context.drawImage(image, 0, 0);</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="步骤三：Api-解析：drawImage"><a href="#步骤三：Api-解析：drawImage" class="headerlink" title="步骤三：Api 解析：drawImage"></a>步骤三：Api 解析：drawImage</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">context.drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);</span><br></pre></td></tr></table></figure>
-
-<p>**img:**就是图片对象，可以是页面上获取的 DOM 对象，也可以是虚拟 DOM 中的图片对象。</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1598786576273-20cc4996-634f-4a19-8fb8-68262d4313b0.webp"></p>
-<p><strong>（1）dx、dy、dWidth、dHeight：</strong></p>
-<p>表示在 <code>canvas</code> 画布上规划出一片区域用来放置图片，<code>dx, dy</code> 为绘图位置在 Canvas 元素的 X 轴、Y 轴坐标，<code>dWidth, dHeight</code> 指在 Canvas 元素上绘制图像的宽度和高度（如果不说明， 在绘制时图片的宽度和高度不会缩放）。</p>
-<p><strong>（2）sx、sy、swidth、sheight:</strong></p>
-<p>这 4 个参数是用来裁剪源图片的，表示图片在 <code>canvas</code> 画布上显示的大小和位置。<code>sx, sy</code> 表示在源图片上裁剪位置的 X 轴、Y 轴坐标，然后以 <code>swidth, sheight</code> 尺寸来选择一个区域范围，裁剪出来的图片作为最终在 Canvas 上显示的图片内容（ <code>swidth, sheight</code> 不说明的情况下，整个矩形（裁剪）从坐标的 <code>sx</code> 和 <code>sy</code> 开始，到图片的右下角结束）。</p>
-<p>以下为图片绘制的实例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">context.drawImage(image, 0, 0, 100, 100);</span><br><span class="line">context.drawImage(image, 300, 300, 200, 200);</span><br><span class="line">context.drawImage(image, 0, 100, 150, 150, 300, 0, 150, 150);</span><br></pre></td></tr></table></figure>
-
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1598786576278-66f315b0-3c36-45b3-825d-c8f3171672e1.webp"></p>
-<p>Api 中奇怪之处在于，sx、sy、swidth、sheight 为选填参数，但位置在 dx、dy、dWidth、dHeight 之前。</p>
-<h3 id="步骤四：Canvas-输出图片"><a href="#步骤四：Canvas-输出图片" class="headerlink" title="步骤四：Canvas 输出图片"></a>步骤四：Canvas 输出图片</h3><p>调用 <code>canvas</code> 的 <code>toDataURL</code> 方法可以输出 base64 格式的图片。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">canvas.toDataURL(&#96;image&#x2F;$&#123;type&#125;&#96;);</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="步骤五：Api-解析：toDataURL"><a href="#步骤五：Api-解析：toDataURL" class="headerlink" title="步骤五：Api 解析：toDataURL"></a>步骤五：Api 解析：toDataURL</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">canvas.toDataURL(type, encoderOptions);</span><br></pre></td></tr></table></figure>
-
-<p><strong>type （可选）：</strong>图片格式，默认为 image/png。</p>
-<p><strong>encoderOptions （可选）：</strong>在指定图片格式为 image/jpeg 或 image/webp 的情况下，可以从 0 到 1 的区间内选择图片的质量。如果超出取值范围，将会使用默认值 0.92。其他参数会被忽略。</p>
-<p><strong>a 标签的下载</strong>：调用 <code>&lt;a&gt;</code> 标签的 <code>download</code> 属性，即可完成图片的下载。</p>
-<h3 id="步骤六：Api-解析：download"><a href="#步骤六：Api-解析：download" class="headerlink" title="步骤六：Api 解析：download"></a>步骤六：Api 解析：download</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; href 下载必填</span><br><span class="line">&lt;a download&#x3D;&quot;filename&quot; href&#x3D;&quot;href&quot;&gt; 下载 &lt;&#x2F;a&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>filename：</strong>选填，规定作为文件名来使用的文本。</p>
-<p><strong>href：</strong>文件的下载地址。</p>
-<h3 id="步骤七：非主流浏览器下载处理"><a href="#步骤七：非主流浏览器下载处理" class="headerlink" title="步骤七：非主流浏览器下载处理"></a>步骤七：非主流浏览器下载处理</h3><p>这一步可以解决 Chroma 、 Firefox 和 Safari（自测支持） 浏览器的下载功能，因为 IE 等浏览器不支持 <code>download</code> 属性，所以需要进行其他方式的下载，也就有了代码中的后续内容</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; base64 图片转 blob 后下载</span><br><span class="line">downloadImg() &#123;</span><br><span class="line">  let parts &#x3D; this.compressImg.split(&#39;;base64,&#39;);</span><br><span class="line">  let contentType &#x3D; parts[0].split(&#39;:&#39;)[1];</span><br><span class="line">  let raw &#x3D; window.atob(parts[1]);</span><br><span class="line">  let rawLength &#x3D; raw.length;</span><br><span class="line">  let uInt8Array &#x3D; new Uint8Array(rawLength);</span><br><span class="line">  for(let i &#x3D; 0; i &lt; rawLength; ++i) &#123;</span><br><span class="line">    uInt8Array[i] &#x3D; raw.charCodeAt(i);</span><br><span class="line">  &#125;</span><br><span class="line">  const blob &#x3D; new Blob([uInt8Array], &#123;type: contentType&#125;);</span><br><span class="line">  this.compressImg &#x3D; URL.createObjectURL(blob);</span><br><span class="line">  if (window.navigator.msSaveOrOpenBlob) &#123;</span><br><span class="line">    &#x2F;&#x2F; 兼容 ie 的下载方式</span><br><span class="line">    window.navigator.msSaveOrOpenBlob(blob, this.fileName);</span><br><span class="line">  &#125;else&#123;</span><br><span class="line">    const a &#x3D; document.createElement(&#39;a&#39;);</span><br><span class="line">    a.href &#x3D; this.compressImg;</span><br><span class="line">    a.setAttribute(&#39;download&#39;, this.fileName);</span><br><span class="line">    a.click();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>将之前 <code>canvas</code> 生成的 base64 数据拆分后，通过 <code>atob</code> 方法解码</li>
-<li>将解码后的数据转换成 Uint8Array 格式的无符号整形数组</li>
-<li>转换后的数组来生成一个 Blob 数据对象，通过 <code>URL.createObjectURL(blob)</code> 来生成一个临时的 DOM 对象</li>
-<li>之后 IE 类浏览器可以调用 <code>window.navigator.msSaveOrOpenBlob</code> 方法来执行下载，其他浏览器也可以继续通过 <code>&lt;a&gt;</code> 标签的 <code>download</code> 属性来进行下载</li>
-</ul>
-<h3 id="步骤八：Api-解析：atob"><a href="#步骤八：Api-解析：atob" class="headerlink" title="步骤八：Api 解析：atob"></a>步骤八：Api 解析：atob</h3><p>base-64 解码使用方法是 atob()。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">window.atob(encodedStr)</span><br></pre></td></tr></table></figure>
-
-<p><strong>encodedStr：</strong>必需，是一个通过 btoa() 方法编码的字符串，btoa() 是 base64 编码的使用方法。</p>
-<h3 id="步骤九：Api-解析：Uint8Array"><a href="#步骤九：Api-解析：Uint8Array" class="headerlink" title="步骤九：Api 解析：Uint8Array"></a>步骤九：Api 解析：Uint8Array</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">new Uint8Array(length)</span><br></pre></td></tr></table></figure>
-
-<p><strong>length：</strong>创建初始化为 0 的，包含 length 个元素的无符号整型数组。</p>
-<h3 id="步骤十：Api-解析：Blob"><a href="#步骤十：Api-解析：Blob" class="headerlink" title="步骤十：Api 解析：Blob"></a>步骤十：Api 解析：Blob</h3><p><code>Blob</code> 对象表示一个不可变、原始数据的类文件对象。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 构造函数允许通过其它对象创建 Blob 对象</span><br><span class="line">new Blob([obj],&#123;type:createType&#125;)</span><br></pre></td></tr></table></figure>
-
-<p><strong>obj：</strong>字符串内容</p>
-<p><strong>createType：</strong>要构造的类型，兼容性 IE 10 以上</p>
-<h3 id="步骤十一：Api-解析：createObjectURL"><a href="#步骤十一：Api-解析：createObjectURL" class="headerlink" title="步骤十一：Api 解析：createObjectURL"></a>步骤十一：Api 解析：createObjectURL</h3><p>静态方法会创建一个 DOMString。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">objectURL &#x3D; URL.createObjectURL(object);</span><br></pre></td></tr></table></figure>
-
-<p><strong>object：</strong>用于创建 URL 的 File 对象、Blob 对象或者 MediaSource 对象。</p>
-<h3 id="步骤十二：Api-解析：window-navigator"><a href="#步骤十二：Api-解析：window-navigator" class="headerlink" title="步骤十二：Api 解析：window.navigator"></a>步骤十二：Api 解析：window.navigator</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 官方已不建议使用的文件下载方式，仅针对 ie 且兼容性 10 以上</span><br><span class="line">&#x2F;&#x2F; msSaveBlob 仅提供下载</span><br><span class="line">&#x2F;&#x2F; msSaveOrOpenBlob 支持下载和打开</span><br><span class="line">window.navigator.msSaveOrOpenBlob(blob, fileName);</span><br></pre></td></tr></table></figure>
-
-<p><strong>blob：</strong>要下载的 blob 对象</p>
-<p><strong>fileName：</strong>下载后命名的文件名称。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本方法仅针对图片压缩介绍了一些思路，简单的使用场景可能如下介绍，当然也会引申出来更多的使用场景，这些还有待大家一起挖掘。</p>
-<ul>
-<li>上传存储图片如果需要对文件大小格式有要求的，可以统一压缩处理图片</li>
-<li>前台页面想要编辑图片，可以在 Canvas 处理图片的时候，加一些其他逻辑，例如添加文字，剪裁，拼图等等操作</li>
-</ul>
-<p>tip：因部分接口有 IE 兼容性问题，IE 浏览器方面，仅能支持 IE 10 以上版本进行下载。</p>
 ]]></content>
       <categories>
         <category>javascript</category>
@@ -647,98 +739,6 @@
       </tags>
   </entry>
   <entry>
-    <title>JavaScript专题（一）变量与函数提升</title>
-    <url>/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/</url>
-    <content><![CDATA[<h2 id="一、有趣的现象"><a href="#一、有趣的现象" class="headerlink" title="一、有趣的现象"></a>一、有趣的现象</h2><p>按照大家的常识，JavaScript代码在执行是一定是自上而下的，你需要输出一个字符串，当然需要提前声明一个<code>保存string类型的变量</code>。如果深奥的道理我都能懂，于是我阅读了下面的代码。</p>
-<h3 id="1-1-我以为的开局"><a href="#1-1-我以为的开局" class="headerlink" title="1.1 我以为的开局"></a>1.1 我以为的开局</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// 123</span></span><br></pre></td></tr></table></figure>
-
-<p>我们调换一下代码的位置在再看：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// undefined</span></span><br><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<p><strong>我好像找到规律了!!!</strong></p>
-<p>当我看完了前两段代码并且进行了“深度思考”后，我好像找到规律了，那就是：在当前代码块后函数中，在变量声明和初始化<code>之前</code>使用变量，会拿不到正确的值。</p>
-<h3 id="1-2-实际上是这样的"><a href="#1-2-实际上是这样的" class="headerlink" title="1.2 实际上是这样的"></a>1.2 实际上是这样的</h3><p>带着上面的“结论”我来到了这里</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// 高原</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
-
-<p>果然如此！，在<strong>变量声明和初始化之后</strong>耶稣也阻挡不了我拿到val的值，我说的！！！</p>
-<p>当我看到下面一段代码时，我已经产生了动摇，此事必要蹊跷。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> val = <span class="string">&#x27;测试&#x27;</span>;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
-
-
-
-<p>这…我怂了，是什么原因导致这样的现象发生的呢？Js又是如果处理的呢？</p>
-<h2 id="二、Js的预解析"><a href="#二、Js的预解析" class="headerlink" title="二、Js的预解析"></a>二、Js的预解析</h2><p>在当前的作用域内，无论在哪里变量声明，在幕后，都会进行一次看不见的移动。</p>
-<p>注意：<strong>仅声明被“移动”</strong>。即声明和赋值在某些时候被动分开了。而这次看不见的移动实际上就是<code>Js在编译阶段的解析</code>。</p>
-<p>来看一段《你知不知道的Js》中经典的例子：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 未添加关键字（未声明），name为全局变量，，即window.name = &#x27;高原&#x27;</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 再次声明name，此时name未进行初始化，它的值是undefined吗？</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
-
-<p>结果是成功打印“高原”，这样<strong>看不见的移动</strong>就发生在Js预解析（编译）之中。</p>
-<h3 id="2-1-核心：预解析"><a href="#2-1-核心：预解析" class="headerlink" title="2.1 核心：预解析"></a>2.1 核心：预解析</h3><p>为了搞明白这个核心问题，我们需要回顾一下，引擎会在解释JavaScript代码之前首先对其进行编译。编译阶段中的一部分工作就是找到所有的声明，并用合适的作用域将它们关联起来。</p>
-<p>因此，发生这样的事情，包括<code>变量</code>和<code>函数</code>在内的所有声明都会在任何代码被执行前首先被处理。当你看到<code>var a = 2</code>；时，可能会认为这是一个声明。但JavaScript实际上会将其看成两个声明：var a；和a = 2;。</p>
-<ul>
-<li>第一个定义声明是在编译阶段进行的。</li>
-<li>第二个赋值声明会被留在原地等待执行阶段。</li>
-</ul>
-<p>即代码是这样写的：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 我们看到的代码：</span></span><br><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br></pre></td></tr></table></figure>
-
-<p>但Js会将它解析成：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 声明(Declaration)</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明但未初始化，所以分配 undefined</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化(Initialization)</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化（赋值）</span></span><br></pre></td></tr></table></figure>
-
-<p>所以本小结的一段代码应该这样分析：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明name提到作用域顶部，并被分配了一个undefined</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 进行初始化操作</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// &#x27;高原&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="2-2-注意：只有声明被提升了"><a href="#2-2-注意：只有声明被提升了" class="headerlink" title="2.2 注意：只有声明被提升了"></a>2.2 注意：只有声明被提升了</h3><p><strong>只有声明会被提升，而赋值和其他代码逻辑会在执行到代码的位置时才会生效</strong>。所以会有下面的问题：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>函数被提升了，自然可以正常执行，但变量仅仅是声明被提升了。</p>
-<h3 id="2-3-每个作用域都会进行提升操作"><a href="#2-3-每个作用域都会进行提升操作" class="headerlink" title="2.3 每个作用域都会进行提升操作"></a>2.3 每个作用域都会进行提升操作</h3><p>还是上面的代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>实际它在编译时是这样的：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name; <span class="comment">// 声明</span></span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化</span></span><br><span class="line">&#125;</span><br><span class="line">foo(); <span class="comment">// 函数执行</span></span><br></pre></td></tr></table></figure>
-
-<p><img data-src="https://img-blog.csdnimg.cn/20200716134005198.jpg" alt="img"></p>
-<h2 id="三、提升之间的优先级"><a href="#三、提升之间的优先级" class="headerlink" title="三、提升之间的优先级"></a>三、提升之间的优先级</h2><p>既然我们知道了<code>变量</code>和<code>函数</code>会被提升，他们之间又是如何判断优先级的呢？</p>
-<h3 id="3-1-函数会被首先提升，然后才是变量"><a href="#3-1-函数会被首先提升，然后才是变量" class="headerlink" title="3.1 函数会被首先提升，然后才是变量"></a>3.1 函数会被首先提升，然后才是变量</h3><p>我们分析下面的代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo; <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>本着函数优先提升的原则，他会被解析成这样：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">// 高原</span></span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>注意，<code>var foo</code> 因为是一个重复声明，且优先级<code>低于函数声明</code>所以它被忽略掉了。</p>
-<h3 id="3-2-函数字面量不会进行函数提升"><a href="#3-2-函数字面量不会进行函数提升" class="headerlink" title="3.2 函数字面量不会进行函数提升"></a>3.2 函数字面量不会进行函数提升</h3><p>最直观的例子，就是在函数字面量前调用该函数：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// TypeError: foo is not a function</span></span><br></pre></td></tr></table></figure>
-
-<p>这段程序中：</p>
-<ol>
-<li>变量标识符<code>foo()</code>被提升并分配给所在作用域（在这里是全局作用域），因此foo()<strong>不会导致ReferenceError</strong>。</li>
-<li>然后就是执行foo，foo此时并没有赋值（注意变量被提升了）。由于对undefined值进行函数调用而导致非法操作，因此抛出TypeError异常。</li>
-</ol>
-<h2 id="四、ES6和小结"><a href="#四、ES6和小结" class="headerlink" title="四、ES6和小结"></a>四、ES6和小结</h2><p>ES6新增了两个命令<code>let</code>和<code>const</code>，用来声明变量，有关它们完整的概念我会在《ES6基础系列》中总结，提起它们，是因为<strong>变量提升在它们身上不会存在</strong>。</p>
-<h3 id="4-1-变量提升是可以规避的"><a href="#4-1-变量提升是可以规避的" class="headerlink" title="4.1 变量提升是可以规避的"></a>4.1 变量提升是可以规避的</h3><p>let命令改变了语法行为，它所声明的变量一定要在声明后使用，否则报错。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// var 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(foo); <span class="comment">// 输出undefined</span></span><br><span class="line"><span class="keyword">var</span> foo = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// let 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(bar); <span class="comment">// 报错ReferenceError</span></span><br><span class="line"><span class="keyword">let</span> bar = <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
-
-<p>上面代码中，变量foo用var命令声明，会发生变量提升，即脚本开始运行时，变量foo已经存在了，但是没有值，所以会输出undefined。变量bar用let命令声明，不会发生变量提升。这表示在声明它之前，变量bar是不存在的，这时如果用到它，就会抛出一个错误。</p>
-<p>在变量提升上，const和let一样，只在声明所在的块级作用域内有效，也不会变量提升</p>
-<h3 id="4-2-小结"><a href="#4-2-小结" class="headerlink" title="4.2 小结"></a>4.2 小结</h3><ol>
-<li>变量提升：函数声明和变量声明总是会被解释器悄悄地被”提升”到方法体的最顶部，但变量的初始化不会提升；</li>
-<li>函数提升：函数声明可以被看作是函数的整体被提升到了代码的顶部，但函数字面量表达式并不会引发函数提升；</li>
-<li>函数提升优先与变量提升；</li>
-<li>let和const可以有效的规避变量提升</li>
-</ol>
-<p>最后提炼一下《你不知道的JS》中的一段话：<strong>JavaScript引擎并不总是按照代码的顺序来进行解析。在编译阶段，无论作用域中的声明出现在什么地方，都将在代码本身被执行前首先进行处理，这个过程被称为提升。声明本身会被提升，而包括函数表达式的赋值在内的赋值操作并不会提升。</strong></p>
-]]></content>
-      <categories>
-        <category>javascript</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>JavaScript基础（六）基本数据类型</title>
     <url>/2021/03/26/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%85%AD%EF%BC%89%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</url>
     <content><![CDATA[<h2 id="一、类型"><a href="#一、类型" class="headerlink" title="一、类型"></a>一、类型</h2><p>可能许多习惯了C++、C#这类静态语言（强类型）语言的小伙伴们在编写Js代码时，会很不习惯，因为相对于静态语言来说，Js甚至没有类型的”概念“。</p>
@@ -993,56 +993,6 @@
       </tags>
   </entry>
   <entry>
-    <title>VUE组件之间通信的6种方式</title>
-    <url>/2021/02/20/VUE%E7%BB%84%E4%BB%B6%E4%B9%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E7%9A%846%E7%A7%8D%E6%96%B9%E5%BC%8F/</url>
-    <content><![CDATA[<h3 id="1-方法一：props和-emit"><a href="#1-方法一：props和-emit" class="headerlink" title="1.方法一：props和**$emit**"></a>1.方法一：<strong>props</strong>和**$emit**</h3><p>父组件通过props向下传递数据给子组件，子组件通过event给父组件发送消息，实际上就是子组件把自己的数据发送给父组件。</p>
-<h3 id="2-方法二：-attrs和-listeners"><a href="#2-方法二：-attrs和-listeners" class="headerlink" title="2.方法二：**$attrs和$listeners**"></a>2.方法二：**$attrs<strong>和</strong>$listeners**</h3><p>​    第一种方式处理父子组件之间的数据传输有一个问题：如果父组件A下面有子组件B，组件B下面有组件C,这时如果组件A想传递数据给组件C怎么办呢？ 如果采用第一种方法，我们必须让组件A通过prop传递消息给组件B，组件B在通过prop传递消息给组件C；要是组件A和组件C之间有更多的组件，那采用这种方式就很复杂了。Vue 2.4开始提供了$attrs和$listeners来解决这个问题，能够让组件A之间传递消息给组件C。</p>
-<span id="more"></span>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件C--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">        &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;$attrs.messagec&quot; @input&#x3D;&quot;passCData($attrs.messagec)&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;C&#39;,</span><br><span class="line">    data () &#123;</span><br><span class="line">      return &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passCData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发父组件A中的事件,把从A得到的数据hello C还给A组件</span><br><span class="line">        this.$emit(&#39;getCData&#39;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @input&#x3D;&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">    &lt;!-- C组件中能直接触发getCData的原因在于 B组件调用C组件时 使用 v-on 绑定了$listeners 属性 --&gt;</span><br><span class="line">    &lt;!-- 通过v-bind 绑定$attrs属性，C组件可以直接获取到A组件中传递下来的props（除了B组件中props声明的） --&gt;</span><br><span class="line">    &lt;C v-bind&#x3D;&quot;$attrs&quot; v-on&#x3D;&quot;$listeners&quot;&gt;&lt;&#x2F;C&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;B&#39;,</span><br><span class="line">    props:[</span><br><span class="line">      message:&#123;</span><br><span class="line">        type: String,</span><br><span class="line">        default: null</span><br><span class="line">      &#125;</span><br><span class="line">    ],&#x2F;&#x2F;得到父组件A传递过来的数据,hello B</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发父组件中的事件,把message给组件A</span><br><span class="line">        this.$emit(&#39;getChildData&#39;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;B </span><br><span class="line">     :messagec&#x3D;&quot;messagec&quot; </span><br><span class="line">     :message&#x3D;&quot;message&quot; </span><br><span class="line">     :getCData&#x3D;&quot;getCData&quot;</span><br><span class="line">     :getChildData&#x3D;&quot;getChildData&quot;&gt;&lt;&#x2F;B&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;A&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#39;hello B&#39;,</span><br><span class="line">        messagec:&#39;hello C&#39; &#x2F;&#x2F;传递给c组件的数据</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      getChildData(val)&#123;</span><br><span class="line">        console.log(&#39;这是来自B组件的数据&#39;,val) &#x2F;&#x2F;打印hello B</span><br><span class="line">      &#125;,</span><br><span class="line">      &#x2F;&#x2F;执行C子组件触发的事件</span><br><span class="line">      getCData(val)&#123;</span><br><span class="line">        console.log(&quot;这是来自C组件的数据：&quot;, val) &#x2F;&#x2F;打印hello C</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="3-方法3：provide和-inject"><a href="#3-方法3：provide和-inject" class="headerlink" title="3.方法3：provide和 inject"></a>3.方法3：<strong>provide</strong>和 <strong>inject</strong></h3><p>在 Vue.js 的 <code>2.2.0+</code> 版本中添加加了 provide 和 inject 选项。他们成对出现，用于父级组件向下传递数据。</p>
-<p>父组件中通过provide来提供变量，然后在子组件中通过inject来注入变量。不论子组件有多深，只要调用了inject那么就可以注入provide中的数据。而不是局限于只能从当前父组件的prop属性来获取数据，只要在父组件的生命周期内，子组件都可以调用。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--父组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;child&gt;&lt;&#x2F;child&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;parent&#39;,</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#39;这是要个子组件的数据&#39;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#39;hello&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--子组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;child&#39;,</span><br><span class="line">    inject:[&#39;forChidrenData&#39;], &#x2F;&#x2F;得到父组件传递过来的数据</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#39;这是要个子组件的数据&#39;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:this.forChidrenData</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="4-方法四：vuex处理组件之间的数据交互"><a href="#4-方法四：vuex处理组件之间的数据交互" class="headerlink" title="4.方法四：vuex处理组件之间的数据交互"></a>4.方法四：<strong>vuex处理组件之间的数据交互</strong></h3><p>​    如果业务逻辑复杂，很多组件之间需要同时处理一些公共的数据，这个时候才有上面这一些方法可能不利于项目的维护，vuex的做法就是将这一些公共的数据抽离出来，然后其他组件就可以对这个公共数据进行读写操作，这样达到了解耦的目的。</p>
-<h3 id="5-方法五：中央事件总线"><a href="#5-方法五：中央事件总线" class="headerlink" title="5.方法五：中央事件总线"></a>5.方法五：<strong>中央事件总线</strong></h3><p>​    如果两个组件不是父子关系呢？这种情况下可以使用中央事件总线的方式。新建一个Vue事件bus对象，然后通过bus.$emit触发事件，bus.$on监听触发的事件。</p>
-<blockquote>
-<p>公共事件总线eventBus的实质就是创建一个vue实例，通过一个空的vue实例作为桥梁实现vue组件间的通信。它是实现非父子组件通信的一种解决方案。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother1 compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @input&#x3D;&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;brother1&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:&#39;hello brother1&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发全局事件globalEvent</span><br><span class="line">        bus.$emit(&#39;globalEvent&#39;, val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother2 compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;p&gt;brother1传递过来的数据：&#123;&#123;brothermessage&#125;&#125;&lt;&#x2F;p&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;brother2&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        brothermessage:&#39;&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    mounted()&#123;</span><br><span class="line">      &#x2F;&#x2F;绑定全局事件globalEvent</span><br><span class="line">      bus.$on(&#39;globalEvent&#39;,(val)&#x3D;&gt;&#123;</span><br><span class="line">        this.brothermessage &#x3D; val;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;中央事件总线</span><br><span class="line">var bus&#x3D;new Vue();</span><br><span class="line">var app&#x3D;new Vue(&#123;</span><br><span class="line">  el:&#39;#app&#39;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;brother1&gt;&lt;&#x2F;brother1&gt;</span><br><span class="line">      &lt;brother2&gt;&lt;&#x2F;brother2&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;,</span><br><span class="line">   beforeDestroy()&#123;</span><br><span class="line">sd     bus.$off(&#39;globalEvent&#39;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="6-方法六：-parent和-children"><a href="#6-方法六：-parent和-children" class="headerlink" title="6.方法六：**$parent和$children**"></a>6.方法六：**$parent<strong>和</strong>$children**</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Vue.component(&#39;child&#39;,&#123;</span><br><span class="line">  props:&#123;</span><br><span class="line">    value:String, &#x2F;&#x2F;v-model会自动传递一个字段为value的prop属性</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      mymessage:this.value</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeValue()&#123;</span><br><span class="line">      this.$parent.message &#x3D; this.mymessage;&#x2F;&#x2F;通过如此调用可以改变父组件的值</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @change&#x3D;&quot;changeValue&quot;&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;&#96;</span><br><span class="line">&#125;)</span><br><span class="line">  </span><br><span class="line">Vue.component(&#39;parent&#39;,&#123;</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">      &lt;button @click&#x3D;&quot;changeChildValue&quot;&gt;test&lt;&#x2F;button &gt;</span><br><span class="line">      &lt;child&gt;&lt;&#x2F;child&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeChildValue()&#123;</span><br><span class="line">      this.$children[0].mymessage &#x3D; &#39;hello&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      message:&#39;hello&#39;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">var app&#x3D;new Vue(&#123;</span><br><span class="line">  el:&#39;#app&#39;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;parent&gt;&lt;&#x2F;parent&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>vue</category>
-      </categories>
-      <tags>
-        <tag>vue</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>vuex笔记</title>
     <url>/2020/12/26/vuex%E7%AC%94%E8%AE%B0/</url>
     <content><![CDATA[<h1 id="Vuex笔记"><a href="#Vuex笔记" class="headerlink" title="Vuex笔记"></a>Vuex笔记</h1><h3 id="Vuex概述"><a href="#Vuex概述" class="headerlink" title="Vuex概述"></a>Vuex概述</h3><h4 id="vuex是什么"><a href="#vuex是什么" class="headerlink" title="vuex是什么"></a>vuex是什么</h4><p>​    vuex是实现组件全局状态（数据）管理的一种机制，可以方便实现组件之间数据的共享<br><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/image-20201221091304337.png"></p>
@@ -1213,6 +1163,56 @@
       <tags>
         <tag>vue</tag>
         <tag>axios</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>VUE组件之间通信的6种方式</title>
+    <url>/2021/02/20/VUE%E7%BB%84%E4%BB%B6%E4%B9%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E7%9A%846%E7%A7%8D%E6%96%B9%E5%BC%8F/</url>
+    <content><![CDATA[<h3 id="1-方法一：props和-emit"><a href="#1-方法一：props和-emit" class="headerlink" title="1.方法一：props和**$emit**"></a>1.方法一：<strong>props</strong>和**$emit**</h3><p>父组件通过props向下传递数据给子组件，子组件通过event给父组件发送消息，实际上就是子组件把自己的数据发送给父组件。</p>
+<h3 id="2-方法二：-attrs和-listeners"><a href="#2-方法二：-attrs和-listeners" class="headerlink" title="2.方法二：**$attrs和$listeners**"></a>2.方法二：**$attrs<strong>和</strong>$listeners**</h3><p>​    第一种方式处理父子组件之间的数据传输有一个问题：如果父组件A下面有子组件B，组件B下面有组件C,这时如果组件A想传递数据给组件C怎么办呢？ 如果采用第一种方法，我们必须让组件A通过prop传递消息给组件B，组件B在通过prop传递消息给组件C；要是组件A和组件C之间有更多的组件，那采用这种方式就很复杂了。Vue 2.4开始提供了$attrs和$listeners来解决这个问题，能够让组件A之间传递消息给组件C。</p>
+<span id="more"></span>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件C--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">        &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;$attrs.messagec&quot; @input&#x3D;&quot;passCData($attrs.messagec)&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;C&#39;,</span><br><span class="line">    data () &#123;</span><br><span class="line">      return &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passCData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发父组件A中的事件,把从A得到的数据hello C还给A组件</span><br><span class="line">        this.$emit(&#39;getCData&#39;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @input&#x3D;&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">    &lt;!-- C组件中能直接触发getCData的原因在于 B组件调用C组件时 使用 v-on 绑定了$listeners 属性 --&gt;</span><br><span class="line">    &lt;!-- 通过v-bind 绑定$attrs属性，C组件可以直接获取到A组件中传递下来的props（除了B组件中props声明的） --&gt;</span><br><span class="line">    &lt;C v-bind&#x3D;&quot;$attrs&quot; v-on&#x3D;&quot;$listeners&quot;&gt;&lt;&#x2F;C&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;B&#39;,</span><br><span class="line">    props:[</span><br><span class="line">      message:&#123;</span><br><span class="line">        type: String,</span><br><span class="line">        default: null</span><br><span class="line">      &#125;</span><br><span class="line">    ],&#x2F;&#x2F;得到父组件A传递过来的数据,hello B</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发父组件中的事件,把message给组件A</span><br><span class="line">        this.$emit(&#39;getChildData&#39;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;B </span><br><span class="line">     :messagec&#x3D;&quot;messagec&quot; </span><br><span class="line">     :message&#x3D;&quot;message&quot; </span><br><span class="line">     :getCData&#x3D;&quot;getCData&quot;</span><br><span class="line">     :getChildData&#x3D;&quot;getChildData&quot;&gt;&lt;&#x2F;B&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;A&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#39;hello B&#39;,</span><br><span class="line">        messagec:&#39;hello C&#39; &#x2F;&#x2F;传递给c组件的数据</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      getChildData(val)&#123;</span><br><span class="line">        console.log(&#39;这是来自B组件的数据&#39;,val) &#x2F;&#x2F;打印hello B</span><br><span class="line">      &#125;,</span><br><span class="line">      &#x2F;&#x2F;执行C子组件触发的事件</span><br><span class="line">      getCData(val)&#123;</span><br><span class="line">        console.log(&quot;这是来自C组件的数据：&quot;, val) &#x2F;&#x2F;打印hello C</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-方法3：provide和-inject"><a href="#3-方法3：provide和-inject" class="headerlink" title="3.方法3：provide和 inject"></a>3.方法3：<strong>provide</strong>和 <strong>inject</strong></h3><p>在 Vue.js 的 <code>2.2.0+</code> 版本中添加加了 provide 和 inject 选项。他们成对出现，用于父级组件向下传递数据。</p>
+<p>父组件中通过provide来提供变量，然后在子组件中通过inject来注入变量。不论子组件有多深，只要调用了inject那么就可以注入provide中的数据。而不是局限于只能从当前父组件的prop属性来获取数据，只要在父组件的生命周期内，子组件都可以调用。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--父组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;child&gt;&lt;&#x2F;child&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;parent&#39;,</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#39;这是要个子组件的数据&#39;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#39;hello&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--子组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;child&#39;,</span><br><span class="line">    inject:[&#39;forChidrenData&#39;], &#x2F;&#x2F;得到父组件传递过来的数据</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#39;这是要个子组件的数据&#39;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:this.forChidrenData</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-方法四：vuex处理组件之间的数据交互"><a href="#4-方法四：vuex处理组件之间的数据交互" class="headerlink" title="4.方法四：vuex处理组件之间的数据交互"></a>4.方法四：<strong>vuex处理组件之间的数据交互</strong></h3><p>​    如果业务逻辑复杂，很多组件之间需要同时处理一些公共的数据，这个时候才有上面这一些方法可能不利于项目的维护，vuex的做法就是将这一些公共的数据抽离出来，然后其他组件就可以对这个公共数据进行读写操作，这样达到了解耦的目的。</p>
+<h3 id="5-方法五：中央事件总线"><a href="#5-方法五：中央事件总线" class="headerlink" title="5.方法五：中央事件总线"></a>5.方法五：<strong>中央事件总线</strong></h3><p>​    如果两个组件不是父子关系呢？这种情况下可以使用中央事件总线的方式。新建一个Vue事件bus对象，然后通过bus.$emit触发事件，bus.$on监听触发的事件。</p>
+<blockquote>
+<p>公共事件总线eventBus的实质就是创建一个vue实例，通过一个空的vue实例作为桥梁实现vue组件间的通信。它是实现非父子组件通信的一种解决方案。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother1 compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @input&#x3D;&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;brother1&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:&#39;hello brother1&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发全局事件globalEvent</span><br><span class="line">        bus.$emit(&#39;globalEvent&#39;, val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother2 compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;p&gt;brother1传递过来的数据：&#123;&#123;brothermessage&#125;&#125;&lt;&#x2F;p&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;brother2&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        brothermessage:&#39;&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    mounted()&#123;</span><br><span class="line">      &#x2F;&#x2F;绑定全局事件globalEvent</span><br><span class="line">      bus.$on(&#39;globalEvent&#39;,(val)&#x3D;&gt;&#123;</span><br><span class="line">        this.brothermessage &#x3D; val;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;中央事件总线</span><br><span class="line">var bus&#x3D;new Vue();</span><br><span class="line">var app&#x3D;new Vue(&#123;</span><br><span class="line">  el:&#39;#app&#39;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;brother1&gt;&lt;&#x2F;brother1&gt;</span><br><span class="line">      &lt;brother2&gt;&lt;&#x2F;brother2&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;,</span><br><span class="line">   beforeDestroy()&#123;</span><br><span class="line">sd     bus.$off(&#39;globalEvent&#39;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="6-方法六：-parent和-children"><a href="#6-方法六：-parent和-children" class="headerlink" title="6.方法六：**$parent和$children**"></a>6.方法六：**$parent<strong>和</strong>$children**</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Vue.component(&#39;child&#39;,&#123;</span><br><span class="line">  props:&#123;</span><br><span class="line">    value:String, &#x2F;&#x2F;v-model会自动传递一个字段为value的prop属性</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      mymessage:this.value</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeValue()&#123;</span><br><span class="line">      this.$parent.message &#x3D; this.mymessage;&#x2F;&#x2F;通过如此调用可以改变父组件的值</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @change&#x3D;&quot;changeValue&quot;&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;&#96;</span><br><span class="line">&#125;)</span><br><span class="line">  </span><br><span class="line">Vue.component(&#39;parent&#39;,&#123;</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">      &lt;button @click&#x3D;&quot;changeChildValue&quot;&gt;test&lt;&#x2F;button &gt;</span><br><span class="line">      &lt;child&gt;&lt;&#x2F;child&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeChildValue()&#123;</span><br><span class="line">      this.$children[0].mymessage &#x3D; &#39;hello&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      message:&#39;hello&#39;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">var app&#x3D;new Vue(&#123;</span><br><span class="line">  el:&#39;#app&#39;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;parent&gt;&lt;&#x2F;parent&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>vue</category>
+      </categories>
+      <tags>
+        <tag>vue</tag>
       </tags>
   </entry>
   <entry>
@@ -1409,6 +1409,81 @@
       </tags>
   </entry>
   <entry>
+    <title>学习之AJAX</title>
+    <url>/2019/03/20/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
+    <content><![CDATA[<p>对于AJAX这个玩意儿，一开始学习的时候，根本不知道这是什么，我连AJAX有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙B的状态。那么在学习一段时间的AJAX之后，我总结了一些我自己对AJAX的理解，一起共勉。</p>
+<p>一、页面访问方式</p>
+<p>在学习AJAX之前，我们首先就需要了解页面的访问方式。页面的访问方式有如下两种同步访问和异步访问：</p>
+<p>①同步访问：在访问服务器时，只能等待服务器的响应，不能做其他事情。</p>
+<p>②异步访问：在向服务器发送请求时，不耽误用户在网页其他操作。相当于在同一时间，用户能做多个事情。</p>
+<span id="more"></span>
+
+
+<p>光从字面上理解同步和异步不算太难，下面我为用图打个比方有助于更加深层次的理解同步和异步：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730181503984"></p>
+<p>上图反之是同步访问的图解，异步访问我就不再作图了，反之，你想买煎饼和稀饭，你走到卖煎饼的铺子时候，老板说：好的，你的煎饼5分钟后好，你可以5分钟后过来拿。这个时候你就可以在这五分钟去买你要的稀饭，这就是异步访问。</p>
+<p>二、什么是AJAX</p>
+<p>AJAX的英文全名是：Asynchronous  Javascript  And  Xml</p>
+<p> 异步的  JS     和    xml</p>
+<p> 其中的本质：使用JS中XMLHttpRequext(xhr)对象异步的向服务器发送请求，服务器响应回来的部分数据而不是原完整的页面，并可以以“无刷新”的效果来更改页面中的局部内容。为了方便理解，作以下用户名验证的例子图助于理解：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730183958321"></p>
+<p>三、获取ＡＪＡＸ对象　——XMLHttpRequest</p>
+<p>在主流浏览器中：new　XMLHttpRequest( );</p>
+<p>注意：在IE8以下的浏览器不支持XMLHttpRequest</p>
+<p>在IE8以下的浏览器中：</p>
+<p>new  ActiveXObject(“Microsoft.XMLHttp”);</p>
+<p>tip:如果想测试你使用的浏览器是否支持XMLHttpRequest，可以进行如下操作：</p>
+<p>1.打开你的浏览器，例如谷歌、360、火狐、欧朋….;</p>
+<p>2.按F12，使用开发者工具，在console一栏中输入：console.log(window.XMLHttpRequest);</p>
+<p>3.如果浏览器不支持XMLHttpRequest,以上会打印null。</p>
+<p>//创建ajax对象</p>
+<p> var  xhr;</p>
+<p>   if(window.XMLHttpRequest){</p>
+<p>xhr = new  XMLHttpRequest();</p>
+<p> }else{</p>
+<p>xhr = new ActiveXObject(“Microsoft.XMLHttp”);</p>
+<p>}</p>
+<p>tip：这段函在编写代码的时候使用的次数很多，通常我们将它封装成函数单独创建一个JS文件，命名为common.js，要使用的时候调用者个js文件就可以了。</p>
+]]></content>
+      <categories>
+        <category>HTTP</category>
+      </categories>
+      <tags>
+        <tag>AJAX</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>实现滚动动画—渐入动画</title>
+    <url>/2021/04/13/%E5%AE%9E%E7%8E%B0%E6%BB%9A%E5%8A%A8%E5%8A%A8%E7%94%BB%E2%80%94%E6%B8%90%E5%85%A5%E5%8A%A8%E7%94%BB/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Vue 和 React 版本其实区别不大，，，主要使用原生 js 就能实现，性能上就没考虑太多（可以在完成需求后，移除进入视区后的元素的类名，如：slide-item，lazy-img 等）</p>
+<h2 id="一、滚动动画：Vue-版本"><a href="#一、滚动动画：Vue-版本" class="headerlink" title="一、滚动动画：Vue 版本"></a>一、滚动动画：Vue 版本</h2><h3 id="给-HTML-元素添加-class"><a href="#给-HTML-元素添加-class" class="headerlink" title="给 HTML 元素添加 class"></a>给 HTML 元素添加 class</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;div class&#x3D;&quot;slide-item&quot;&gt;需要根据滚动条位置显示的元素&lt;&#x2F;div&gt;</span><br><span class="line">&lt;div class&#x3D;&quot;slide-item slide-delay&quot; data-delay&#x3D;&quot;200&quot;&gt;有延迟的元素&lt;&#x2F;div&gt;</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h3 id="css-和动画"><a href="#css-和动画" class="headerlink" title="css 和动画"></a>css 和动画</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.slide-item &#123; opacity: 0; &#125;</span><br><span class="line">.slide-up,</span><br><span class="line">.slide-up-200,</span><br><span class="line">.slide-up-400,</span><br><span class="line">.slide-up-600,</span><br><span class="line">.slide-up-800 &#123;</span><br><span class="line">    animation: slide-up .5s forwards;</span><br><span class="line">&#125;</span><br><span class="line">.slide-up-200 &#123; animation-delay: .2s; &#125;</span><br><span class="line">.slide-up-400 &#123; animation-delay: .4s;&#125;</span><br><span class="line">.slide-up-600 &#123; animation-delay: .6s;&#125;</span><br><span class="line">.slide-up-800 &#123; animation-delay: .8s; &#125;</span><br><span class="line"></span><br><span class="line">@keyframes slide-up &#123;</span><br><span class="line">    from &#123; opacity: 0; transform: translateY(50%); &#125;</span><br><span class="line">    to &#123; opacity: 1; transform: translateY(0); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="监听滚动"><a href="#监听滚动" class="headerlink" title="监听滚动"></a>监听滚动</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mounted() &#123;</span><br><span class="line">  window.addEventListener(&quot;scroll&quot;, this.onScroll);</span><br><span class="line">&#125;,</span><br><span class="line">beforeDestroy() &#123;</span><br><span class="line">  window.removeEventListener(&quot;scroll&quot;, this.onScroll);</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+
+<h3 id="滚动方法"><a href="#滚动方法" class="headerlink" title="滚动方法"></a>滚动方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 监听滚动</span><br><span class="line">onScroll() &#123;</span><br><span class="line">  const slideItems &#x3D; document.querySelectorAll(&#39;.slide-item&#39;);</span><br><span class="line">  &#x2F;&#x2F; 上滑</span><br><span class="line">  slideItems.forEach(item &#x3D;&gt; &#123;</span><br><span class="line">    let itemBCR &#x3D; item.getBoundingClientRect();</span><br><span class="line">    &#x2F;&#x2F; 进入视区或在视区之上</span><br><span class="line">    if (itemBCR.top &lt;&#x3D; window.innerHeight + 10) &#123;</span><br><span class="line">      if (Array.from(item.classList).includes(&#39;slide-delay&#39;)) &#123;</span><br><span class="line">        item.classList.add(&#96;slide-up-$&#123;item.dataset.delay&#125;&#96;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.add(&#39;slide-up&#39;);</span><br><span class="line">      &#125;</span><br><span class="line">      &#x2F;&#x2F; 可以在这里 remove 掉 slide-item 这个类名，优化性能</span><br><span class="line"></span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      &#x2F;&#x2F; 这里主要用来多次显示效果的，上面 remove 掉 slide-item 后将不再起作用</span><br><span class="line">      if (Array.from(item.classList).includes(&#39;slide-delay&#39;)) &#123;</span><br><span class="line">        item.classList.remove(&#96;slide-up-$&#123;item.dataset.delay&#125;&#96;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.remove(&#39;slide-up&#39;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、滚动动画：React-版本"><a href="#二、滚动动画：React-版本" class="headerlink" title="二、滚动动画：React 版本"></a>二、滚动动画：React 版本</h2><p>主要使用 hooks</p>
+<h3 id="给-HTML-元素添加-class-1"><a href="#给-HTML-元素添加-class-1" class="headerlink" title="给 HTML 元素添加 class"></a>给 HTML 元素添加 class</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;span className&#x3D;&#123;&#96;slide-item&#96;&#125;&gt;需要根据滚动条位置显示的元素&lt;&#x2F;span&gt;</span><br><span class="line">&lt;span className&#x3D;&#123;&#96;slide-item slide-delay&#96;&#125; data-delay&#x3D;&quot;200&quot;&gt;有延迟的元素&lt;&#x2F;span&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="css-和动画-1"><a href="#css-和动画-1" class="headerlink" title="css 和动画"></a>css 和动画</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.slide-item &#123; opacity: 0; &#125;</span><br><span class="line">.slide-up,</span><br><span class="line">.slide-up-200,</span><br><span class="line">.slide-up-400,</span><br><span class="line">.slide-up-600,</span><br><span class="line">.slide-up-800 &#123;</span><br><span class="line">    animation: slide-up .5s forwards;</span><br><span class="line">&#125;</span><br><span class="line">.slide-up-200 &#123; animation-delay: .2s; &#125;</span><br><span class="line">.slide-up-400 &#123; animation-delay: .4s;&#125;</span><br><span class="line">.slide-up-600 &#123; animation-delay: .6s;&#125;</span><br><span class="line">.slide-up-800 &#123; animation-delay: .8s; &#125;</span><br><span class="line"></span><br><span class="line">@keyframes slide-up &#123;</span><br><span class="line">    from &#123; opacity: 0; transform: translateY(50%); &#125;</span><br><span class="line">    to &#123; opacity: 1; transform: translateY(0); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="监听滚动-1"><a href="#监听滚动-1" class="headerlink" title="监听滚动"></a>监听滚动</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">useEffect(() &#x3D;&gt; &#123;</span><br><span class="line">  onScroll();</span><br><span class="line">  window.addEventListener(&#39;scroll&#39;, onScroll);</span><br><span class="line"></span><br><span class="line">  return () &#x3D;&gt; &#123;</span><br><span class="line">    window.removeEventListener(&#39;scroll&#39;, onScroll);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;, []);</span><br></pre></td></tr></table></figure>
+
+<h3 id="滚动方法-1"><a href="#滚动方法-1" class="headerlink" title="滚动方法"></a>滚动方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 监听滚动</span><br><span class="line">function onScroll(): void &#123;</span><br><span class="line">  const slideItems &#x3D; document.querySelectorAll(&#39;.slide-item&#39;);</span><br><span class="line"></span><br><span class="line">  slideItems.forEach((item: any) &#x3D;&gt; &#123;</span><br><span class="line">    let slideBCR &#x3D; item.getBoundingClientRect();</span><br><span class="line">    &#x2F;&#x2F; 进入视区或在视区之上</span><br><span class="line">    if (slideBCR.top &lt;&#x3D; window.innerHeight + 10) &#123;</span><br><span class="line">      if (Array.from(item.classList).includes(&#39;slide-delay&#39;)) &#123; &#x2F;&#x2F; 延迟</span><br><span class="line">        item.classList.add(&#96;slide-up-$&#123;item.dataset.delay&#125;&#96;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.add(&#39;slide-up&#39;);</span><br><span class="line">      &#125;</span><br><span class="line">      &#x2F;&#x2F; 可以在这里 remove 掉 slide-item 这个类名，优化性能</span><br><span class="line"></span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      &#x2F;&#x2F; 这里主要用来多次显示效果的，上面 remove 掉 slide-item 后将不再起作用</span><br><span class="line">      if (Array.from(item.classList).includes(&#39;slide-delay&#39;)) &#123; &#x2F;&#x2F; 延迟</span><br><span class="line">        item.classList.remove(&#96;slide-up-$&#123;item.dataset.delay&#125;&#96;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.remove(&#39;slide-up&#39;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>react</category>
+      </categories>
+      <tags>
+        <tag>vue</tag>
+        <tag>react</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>函数防抖与节流</title>
     <url>/2021/03/19/%E5%87%BD%E6%95%B0%E9%98%B2%E6%8A%96%E4%B8%8E%E8%8A%82%E6%B5%81/</url>
     <content><![CDATA[<h2 id="函数防抖"><a href="#函数防抖" class="headerlink" title="函数防抖"></a>函数防抖</h2><h3 id="一、为什么需要防抖"><a href="#一、为什么需要防抖" class="headerlink" title="一、为什么需要防抖"></a>一、为什么需要防抖</h3><ul>
@@ -1562,78 +1637,96 @@
       </tags>
   </entry>
   <entry>
-    <title>学习之AJAX</title>
-    <url>/2019/03/20/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
-    <content><![CDATA[<p>对于AJAX这个玩意儿，一开始学习的时候，根本不知道这是什么，我连AJAX有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙B的状态。那么在学习一段时间的AJAX之后，我总结了一些我自己对AJAX的理解，一起共勉。</p>
-<p>一、页面访问方式</p>
-<p>在学习AJAX之前，我们首先就需要了解页面的访问方式。页面的访问方式有如下两种同步访问和异步访问：</p>
-<p>①同步访问：在访问服务器时，只能等待服务器的响应，不能做其他事情。</p>
-<p>②异步访问：在向服务器发送请求时，不耽误用户在网页其他操作。相当于在同一时间，用户能做多个事情。</p>
+    <title>浏览器回流和重汇</title>
+    <url>/2021/04/16/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%9B%9E%E6%B5%81%E5%92%8C%E9%87%8D%E6%B1%87/</url>
+    <content><![CDATA[<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/640"></p>
 <span id="more"></span>
 
+<h2 id="一、是什么"><a href="#一、是什么" class="headerlink" title="一、是什么"></a>一、是什么</h2><p>在<code>HTML</code>中，每个元素都可以理解成一个盒子，在浏览器解析过程中，会涉及到回流与重绘：</p>
+<ul>
+<li>回流：布局引擎会根据各种样式计算每个盒子在页面上的大小与位置</li>
+<li>重绘：当计算好盒模型的位置、大小及其他属性后，浏览器根据每个盒子特性进行绘制</li>
+</ul>
+<p>具体的浏览器解析渲染机制如下所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20210416102029.png"></p>
+<ul>
+<li>解析 HTML，生成 DOM 树，解析 CSS，生成 CSSOM 树</li>
+<li>将 DOM 树和 CSSOM 树结合，生成渲染树(Render Tree)</li>
+<li>Layout(回流):根据生成的渲染树，进行回流(Layout)，得到节点的几何信息（位置，大小）</li>
+<li>Painting(重绘):根据渲染树以及回流得到的几何信息，得到节点的绝对像素</li>
+<li>Display:将像素发送给 GPU，展示在页面上</li>
+</ul>
+<p>在页面初始渲染阶段，回流不可避免的触发，可以理解成页面一开始是空白的元素，后面添加了新的元素使页面布局发生改变</p>
+<p>当我们对 <code>DOM</code> 的修改引发了 <code>DOM</code>几何尺寸的变化（比如修改元素的宽、高或隐藏元素等）时，浏览器需要重新计算元素的几何属性，然后再将计算的结果绘制出来</p>
+<p>当我们对 <code>DOM</code>的修改导致了样式的变化（<code>color</code>或<code>background-color</code>），却并未影响其几何属性时，浏览器不需重新计算元素的几何属性、直接为该元素绘制新的样式，这里就仅仅触发了重绘</p>
+<h2 id="二、如何触发"><a href="#二、如何触发" class="headerlink" title="二、如何触发"></a>二、如何触发</h2><p>要想减少回流和重绘的次数，首先要了解回流和重绘是如何触发的</p>
+<h3 id="回流触发时机"><a href="#回流触发时机" class="headerlink" title="回流触发时机"></a>回流触发时机</h3><p>回流这一阶段主要是计算节点的位置和几何信息，那么当页面布局和几何信息发生变化的时候，就需要回流，如下面情况：</p>
+<ul>
+<li>添加或删除可见的 DOM 元素</li>
+<li>元素的位置发生变化</li>
+<li>元素的尺寸发生变化（包括外边距、内边框、边框大小、高度和宽度等）</li>
+<li>内容发生变化，比如文本变化或图片被另一个不同尺寸的图片所替代</li>
+<li>页面一开始渲染的时候（这避免不了）</li>
+<li>浏览器的窗口尺寸变化（因为回流是根据视口的大小来计算元素的位置和大小的）</li>
+</ul>
+<p>还有一些容易被忽略的操作：获取一些特定属性的值</p>
+<blockquote>
+<p>❝</p>
+<p>offsetTop、offsetLeft、 offsetWidth、offsetHeight、scrollTop、scrollLeft、scrollWidth、scrollHeight、clientTop、clientLeft、clientWidth、clientHeight</p>
+<p>❞</p>
+</blockquote>
+<p>这些属性有一个共性，就是需要通过即时计算得到。因此浏览器为了获取这些值，也会进行回流</p>
+<p>除此还包括<code>getComputedStyle</code>方法，原理是一样的</p>
+<h3 id="重绘触发时机"><a href="#重绘触发时机" class="headerlink" title="重绘触发时机"></a>重绘触发时机</h3><p>触发回流一定会触发重绘</p>
+<p>可以把页面理解为一个黑板，黑板上有一朵画好的小花。现在我们要把这朵从左边移到了右边，那我们要先确定好右边的具体位置，画好形状（回流），再画上它原有的颜色（重绘）</p>
+<p>除此之外还有一些其他引起重绘行为：</p>
+<ul>
+<li>颜色的修改</li>
+<li>文本方向的修改</li>
+<li>阴影的修改</li>
+</ul>
+<h3 id="浏览器优化机制"><a href="#浏览器优化机制" class="headerlink" title="浏览器优化机制"></a>浏览器优化机制</h3><p>由于每次重排都会造成额外的计算消耗，因此大多数浏览器都会通过队列化修改并批量执行来优化重排过程。浏览器会将修改操作放入到队列里，直到过了一段时间或者操作达到了一个阈值，才清空队列</p>
+<p>当你获取布局信息的操作的时候，会强制队列刷新，包括前面讲到的<code>offsetTop</code>等方法都会返回最新的数据</p>
+<p>因此浏览器不得不清空队列，触发回流重绘来返回正确的值</p>
+<h2 id="三、如何减少"><a href="#三、如何减少" class="headerlink" title="三、如何减少"></a>三、如何减少</h2><p>我们了解了如何触发回流和重绘的场景，下面给出避免回流的经验：</p>
+<ul>
+<li>如果想设定元素的样式，通过改变元素的 <code>class</code> 类名 (尽可能在 DOM 树的最里层)</li>
+<li>避免设置多项内联样式</li>
+<li>应用元素的动画，使用 <code>position</code> 属性的 <code>fixed</code> 值或 <code>absolute</code> 值(如前文示例所提)</li>
+<li>避免使用 <code>table</code> 布局，<code>table</code> 中每个元素的大小以及内容的改动，都会导致整个 <code>table</code> 的重新计算</li>
+<li>对于那些复杂的动画，对其设置 <code>position: fixed/absolute</code>，尽可能地使元素脱离文档流，从而减少对其他元素的影响</li>
+<li>使用 css3 硬件加速，可以让<code>transform</code>、<code>opacity</code>、<code>filters</code>这些动画不会引起回流重绘</li>
+<li>避免使用 CSS 的 <code>JavaScript</code> 表达式</li>
+</ul>
+<p>在使用 <code>JavaScript</code> 动态插入多个节点时, 可以使用<code>DocumentFragment</code>. 创建后一次插入. 就能避免多次的渲染性能</p>
+<p>但有时候，我们会无可避免地进行回流或者重绘，我们可以更好使用它们</p>
+<p>例如，多次修改一个把元素布局的时候，我们很可能会如下操作</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const el &#x3D; document.getElementById(&#39;el&#39;)</span><br><span class="line">for(let i&#x3D;0;i&lt;10;i++) &#123;</span><br><span class="line">    el.style.top  &#x3D; el.offsetTop  + 10 + &quot;px&quot;;</span><br><span class="line">    el.style.left &#x3D; el.offsetLeft + 10 + &quot;px&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>光从字面上理解同步和异步不算太难，下面我为用图打个比方有助于更加深层次的理解同步和异步：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730181503984"></p>
-<p>上图反之是同步访问的图解，异步访问我就不再作图了，反之，你想买煎饼和稀饭，你走到卖煎饼的铺子时候，老板说：好的，你的煎饼5分钟后好，你可以5分钟后过来拿。这个时候你就可以在这五分钟去买你要的稀饭，这就是异步访问。</p>
-<p>二、什么是AJAX</p>
-<p>AJAX的英文全名是：Asynchronous  Javascript  And  Xml</p>
-<p> 异步的  JS     和    xml</p>
-<p> 其中的本质：使用JS中XMLHttpRequext(xhr)对象异步的向服务器发送请求，服务器响应回来的部分数据而不是原完整的页面，并可以以“无刷新”的效果来更改页面中的局部内容。为了方便理解，作以下用户名验证的例子图助于理解：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730183958321"></p>
-<p>三、获取ＡＪＡＸ对象　——XMLHttpRequest</p>
-<p>在主流浏览器中：new　XMLHttpRequest( );</p>
-<p>注意：在IE8以下的浏览器不支持XMLHttpRequest</p>
-<p>在IE8以下的浏览器中：</p>
-<p>new  ActiveXObject(“Microsoft.XMLHttp”);</p>
-<p>tip:如果想测试你使用的浏览器是否支持XMLHttpRequest，可以进行如下操作：</p>
-<p>1.打开你的浏览器，例如谷歌、360、火狐、欧朋….;</p>
-<p>2.按F12，使用开发者工具，在console一栏中输入：console.log(window.XMLHttpRequest);</p>
-<p>3.如果浏览器不支持XMLHttpRequest,以上会打印null。</p>
-<p>//创建ajax对象</p>
-<p> var  xhr;</p>
-<p>   if(window.XMLHttpRequest){</p>
-<p>xhr = new  XMLHttpRequest();</p>
-<p> }else{</p>
-<p>xhr = new ActiveXObject(“Microsoft.XMLHttp”);</p>
-<p>}</p>
-<p>tip：这段函在编写代码的时候使用的次数很多，通常我们将它封装成函数单独创建一个JS文件，命名为common.js，要使用的时候调用者个js文件就可以了。</p>
-]]></content>
+<p>每次循环都需要获取多次<code>offset</code>属性，比较糟糕，可以使用变量的形式缓存起来，待计算完毕再提交给浏览器发出重计算请求</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 缓存offsetLeft与offsetTop的值</span><br><span class="line">const el &#x3D; document.getElementById(&#39;el&#39;)</span><br><span class="line">let offLeft &#x3D; el.offsetLeft, offTop &#x3D; el.offsetTop</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 在JS层面进行计算</span><br><span class="line">for(let i&#x3D;0;i&lt;10;i++) &#123;</span><br><span class="line">  offLeft +&#x3D; 10</span><br><span class="line">  offTop  +&#x3D; 10</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 一次性将计算结果应用到DOM上</span><br><span class="line">el.style.left &#x3D; offLeft + &quot;px&quot;</span><br><span class="line">el.style.top &#x3D; offTop  + &quot;px&quot;</span><br></pre></td></tr></table></figure>
+
+<p>我们还可避免改变样式，使用类名去合并样式</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const container &#x3D; document.getElementById(&#39;container&#39;)</span><br><span class="line">container.style.width &#x3D; &#39;100px&#39;</span><br><span class="line">container.style.height &#x3D; &#39;200px&#39;</span><br><span class="line">container.style.border &#x3D; &#39;10px solid red&#39;</span><br><span class="line">container.style.color &#x3D; &#39;red&#39;</span><br></pre></td></tr></table></figure>
+
+<p>使用类名去合并样式</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;style&gt;</span><br><span class="line">    .basic_style &#123;</span><br><span class="line">        width: 100px;</span><br><span class="line">        height: 200px;</span><br><span class="line">        border: 10px solid red;</span><br><span class="line">        color: red;</span><br><span class="line">    &#125;</span><br><span class="line">&lt;&#x2F;style&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">    const container &#x3D; document.getElementById(&#39;container&#39;)</span><br><span class="line">    container.classList.add(&#39;basic_style&#39;)</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>前者每次单独操作，都去触发一次渲染树更改（新浏览器不会），</p>
+<p>都去触发一次渲染树更改，从而导致相应的回流与重绘过程</p>
+<p>合并之后，等于我们将所有的更改一次性发出</p>
+<p>我们还可以通过通过设置元素属性<code>display: none</code>，将其从页面上去掉，然后再进行后续操作，这些后续操作也不会触发回流与重绘，这个过程称为离线操作</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const container &#x3D; document.getElementById(&#39;container&#39;)</span><br><span class="line">container.style.width &#x3D; &#39;100px&#39;</span><br><span class="line">container.style.height &#x3D; &#39;200px&#39;</span><br><span class="line">container.style.border &#x3D; &#39;10px solid red&#39;</span><br><span class="line">container.style.color &#x3D; &#39;red&#39;</span><br></pre></td></tr></table></figure>
+
+<p>离线操作后</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">let container &#x3D; document.getElementById(&#39;container&#39;)</span><br><span class="line">container.style.display &#x3D; &#39;none&#39;</span><br><span class="line">container.style.width &#x3D; &#39;100px&#39;</span><br><span class="line">container.style.height &#x3D; &#39;200px&#39;</span><br><span class="line">container.style.border &#x3D; &#39;10px solid red&#39;</span><br><span class="line">container.style.color &#x3D; &#39;red&#39;</span><br><span class="line">...（省略了许多类似的后续操作）</span><br><span class="line">container.style.display &#x3D; &#39;block&#39;</span><br></pre></td></tr></table></figure>
+
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2>]]></content>
       <categories>
-        <category>HTTP</category>
+        <category>note</category>
       </categories>
       <tags>
-        <tag>AJAX</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>实现滚动动画—渐入动画</title>
-    <url>/2021/04/13/%E5%AE%9E%E7%8E%B0%E6%BB%9A%E5%8A%A8%E5%8A%A8%E7%94%BB%E2%80%94%E6%B8%90%E5%85%A5%E5%8A%A8%E7%94%BB/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Vue和React版本其实区别不大，，，主要使用原生js就能实现，性能上就没考虑太多（可以在完成需求后，移除进入视区后的元素的类名，如：slide-item，lazy-img等）</p>
-<h2 id="一、滚动动画：Vue版本"><a href="#一、滚动动画：Vue版本" class="headerlink" title="一、滚动动画：Vue版本"></a>一、滚动动画：Vue版本</h2><h3 id="给-HTML-元素添加-class"><a href="#给-HTML-元素添加-class" class="headerlink" title="给 HTML 元素添加 class"></a>给 HTML 元素添加 class</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;div class&#x3D;&quot;slide-item&quot;&gt;需要根据滚动条位置显示的元素&lt;&#x2F;div&gt;</span><br><span class="line">&lt;div class&#x3D;&quot;slide-item slide-delay&quot; data-delay&#x3D;&quot;200&quot;&gt;有延迟的元素&lt;&#x2F;div&gt;</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<h3 id="css和动画"><a href="#css和动画" class="headerlink" title="css和动画"></a>css和动画</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.slide-item &#123; opacity: 0; &#125;</span><br><span class="line">.slide-up,</span><br><span class="line">.slide-up-200,</span><br><span class="line">.slide-up-400,</span><br><span class="line">.slide-up-600,</span><br><span class="line">.slide-up-800 &#123;</span><br><span class="line">    animation: slide-up .5s forwards;</span><br><span class="line">&#125;</span><br><span class="line">.slide-up-200 &#123; animation-delay: .2s; &#125;</span><br><span class="line">.slide-up-400 &#123; animation-delay: .4s;&#125;</span><br><span class="line">.slide-up-600 &#123; animation-delay: .6s;&#125;</span><br><span class="line">.slide-up-800 &#123; animation-delay: .8s; &#125;</span><br><span class="line"></span><br><span class="line">@keyframes slide-up &#123;</span><br><span class="line">    from &#123; opacity: 0; transform: translateY(50%); &#125;</span><br><span class="line">    to &#123; opacity: 1; transform: translateY(0); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="监听滚动"><a href="#监听滚动" class="headerlink" title="监听滚动"></a>监听滚动</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mounted() &#123;</span><br><span class="line">  window.addEventListener(&quot;scroll&quot;, this.onScroll);</span><br><span class="line">&#125;,</span><br><span class="line">beforeDestroy() &#123;</span><br><span class="line">  window.removeEventListener(&quot;scroll&quot;, this.onScroll);</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
-
-<h3 id="滚动方法"><a href="#滚动方法" class="headerlink" title="滚动方法"></a>滚动方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 监听滚动</span><br><span class="line">onScroll() &#123;</span><br><span class="line">  const slideItems &#x3D; document.querySelectorAll(&#39;.slide-item&#39;);</span><br><span class="line">  &#x2F;&#x2F; 上滑</span><br><span class="line">  slideItems.forEach(item &#x3D;&gt; &#123;</span><br><span class="line">    let itemBCR &#x3D; item.getBoundingClientRect();</span><br><span class="line">    &#x2F;&#x2F; 进入视区或在视区之上</span><br><span class="line">    if (itemBCR.top &lt;&#x3D; window.innerHeight + 10) &#123;</span><br><span class="line">      if (Array.from(item.classList).includes(&#39;slide-delay&#39;)) &#123;</span><br><span class="line">        item.classList.add(&#96;slide-up-$&#123;item.dataset.delay&#125;&#96;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.add(&#39;slide-up&#39;);</span><br><span class="line">      &#125;</span><br><span class="line">      &#x2F;&#x2F; 可以在这里 remove 掉 slide-item 这个类名，优化性能</span><br><span class="line">      </span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      &#x2F;&#x2F; 这里主要用来多次显示效果的，上面 remove 掉 slide-item 后将不再起作用</span><br><span class="line">      if (Array.from(item.classList).includes(&#39;slide-delay&#39;)) &#123;</span><br><span class="line">        item.classList.remove(&#96;slide-up-$&#123;item.dataset.delay&#125;&#96;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.remove(&#39;slide-up&#39;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
-
-<h2 id="二、滚动动画：React版本"><a href="#二、滚动动画：React版本" class="headerlink" title="二、滚动动画：React版本"></a>二、滚动动画：React版本</h2><p>主要使用hooks</p>
-<h3 id="给-HTML-元素添加-class-1"><a href="#给-HTML-元素添加-class-1" class="headerlink" title="给 HTML 元素添加 class"></a>给 HTML 元素添加 class</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;span className&#x3D;&#123;&#96;slide-item&#96;&#125;&gt;需要根据滚动条位置显示的元素&lt;&#x2F;span&gt;</span><br><span class="line">&lt;span className&#x3D;&#123;&#96;slide-item slide-delay&#96;&#125; data-delay&#x3D;&quot;200&quot;&gt;有延迟的元素&lt;&#x2F;span&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="css和动画-1"><a href="#css和动画-1" class="headerlink" title="css和动画"></a>css和动画</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.slide-item &#123; opacity: 0; &#125;</span><br><span class="line">.slide-up,</span><br><span class="line">.slide-up-200,</span><br><span class="line">.slide-up-400,</span><br><span class="line">.slide-up-600,</span><br><span class="line">.slide-up-800 &#123;</span><br><span class="line">    animation: slide-up .5s forwards;</span><br><span class="line">&#125;</span><br><span class="line">.slide-up-200 &#123; animation-delay: .2s; &#125;</span><br><span class="line">.slide-up-400 &#123; animation-delay: .4s;&#125;</span><br><span class="line">.slide-up-600 &#123; animation-delay: .6s;&#125;</span><br><span class="line">.slide-up-800 &#123; animation-delay: .8s; &#125;</span><br><span class="line"></span><br><span class="line">@keyframes slide-up &#123;</span><br><span class="line">    from &#123; opacity: 0; transform: translateY(50%); &#125;</span><br><span class="line">    to &#123; opacity: 1; transform: translateY(0); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="监听滚动-1"><a href="#监听滚动-1" class="headerlink" title="监听滚动"></a>监听滚动</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">useEffect(() &#x3D;&gt; &#123;</span><br><span class="line">  onScroll();</span><br><span class="line">  window.addEventListener(&#39;scroll&#39;, onScroll);</span><br><span class="line"></span><br><span class="line">  return () &#x3D;&gt; &#123;</span><br><span class="line">    window.removeEventListener(&#39;scroll&#39;, onScroll);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;, []);</span><br></pre></td></tr></table></figure>
-
-<h3 id="滚动方法-1"><a href="#滚动方法-1" class="headerlink" title="滚动方法"></a>滚动方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 监听滚动</span><br><span class="line">function onScroll(): void &#123;</span><br><span class="line">  const slideItems &#x3D; document.querySelectorAll(&#39;.slide-item&#39;);</span><br><span class="line">  </span><br><span class="line">  slideItems.forEach((item: any) &#x3D;&gt; &#123;</span><br><span class="line">    let slideBCR &#x3D; item.getBoundingClientRect();</span><br><span class="line">    &#x2F;&#x2F; 进入视区或在视区之上</span><br><span class="line">    if (slideBCR.top &lt;&#x3D; window.innerHeight + 10) &#123;</span><br><span class="line">      if (Array.from(item.classList).includes(&#39;slide-delay&#39;)) &#123; &#x2F;&#x2F; 延迟</span><br><span class="line">        item.classList.add(&#96;slide-up-$&#123;item.dataset.delay&#125;&#96;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.add(&#39;slide-up&#39;);</span><br><span class="line">      &#125;</span><br><span class="line">      &#x2F;&#x2F; 可以在这里 remove 掉 slide-item 这个类名，优化性能</span><br><span class="line"></span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      &#x2F;&#x2F; 这里主要用来多次显示效果的，上面 remove 掉 slide-item 后将不再起作用</span><br><span class="line">      if (Array.from(item.classList).includes(&#39;slide-delay&#39;)) &#123; &#x2F;&#x2F; 延迟</span><br><span class="line">        item.classList.remove(&#96;slide-up-$&#123;item.dataset.delay&#125;&#96;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.remove(&#39;slide-up&#39;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>vue</category>
-        <category>react</category>
-      </categories>
-      <tags>
-        <tag>vue</tag>
-        <tag>react</tag>
+        <tag>note</tag>
       </tags>
   </entry>
   <entry>
