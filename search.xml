@@ -1308,61 +1308,6 @@
       </tags>
   </entry>
   <entry>
-    <title>三次握手四次挥手的原理</title>
-    <url>/2021/03/01/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E7%9A%84%E5%8E%9F%E7%90%86/</url>
-    <content><![CDATA[<h2 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h2><p>  握手的过程：</p>
-<p>   1、第一次握手：客户端给服务器发送一个 SYN 报文。</p>
-<p>   2、第二次握手：服务器收到 SYN 报文之后，会应答一个 SYN+ACK 报文。</p>
-<p>   3、第三次握手：客户端收到 SYN+ACK 报文之后，会回应一个 ACK 报文。</p>
-<p>   4、服务器收到 ACK 报文之后，三次握手建立完成。</p>
-<p>   作用是为了确认双方的接收与发送能力是否正常。</p>
-   <span id="more"></span>
-
-<p>   <strong>这里我顺便解释一下为啥只有三次握手才能确认双方的接受与发送能力是否正常，而两次却不可以：</strong></p>
-<blockquote>
-<p>   第一次握手：客户端发送网络包，服务端收到了。这样服务端就能得出结论：客户端的发送能力、服务端的接收能力是正常的。<br>   第二次握手：服务端发包，客户端收到了。这样客户端就能得出结论：服务端的接收、发送能力，客户端的接收、发送能力是正常的。不过此时服务器并不能确认客户端的接收能力是否正常。<br>   第三次握手：客户端发包，服务端收到了。这样服务端就能得出结论：客户端的接收、发送能力正常，服务器自己的发送、接收能力也正常。</p>
-</blockquote>
-<p>   因此，需要三次握手才能确认双方的接收与发送能力是否正常。</p>
-<p>   这样回答其实也是可以的，但我觉得，这个过程的我们应该要描述的更<strong>详细一点</strong>，因为三次握手的过程中，双方是<strong>由很多状态的改变的</strong>，而这些状态，也是面试官可能会问的点。所以我觉得在回答三次握手的时候，我们应该要描述的详细一点，而且描述的详细一点意味着可以扯久一点。加分的描述我觉得应该是这样：</p>
-<p>   <strong>刚开始客户端处于 closed 的状态，服务端处于 listen 状态</strong>。然后<br>   1、第一次握手：客户端给服务端发一个 SYN 报文，并指明客户端的初始化序列号 <strong>ISN（c）</strong>。此时客户端处于 <strong>SYN_Send</strong> 状态。</p>
-<p>   2、第二次握手：服务器收到客户端的 SYN 报文之后，会以自己的 SYN 报文作为应答，并且也是指定了自己的初始化序列号 ISN(s)，同时会把客户端的 ISN + 1 作为 ACK 的值，表示自己已经收到了客户端的 SYN，此时服务器处于 <strong>SYN_REVD</strong> 的状态。</p>
-<p>   3、第三次握手：客户端收到 SYN 报文之后，会发送一个 ACK 报文，当然，也是一样把服务器的 ISN + 1 作为 ACK 的值，表示已经收到了服务端的 SYN 报文，此时客户端处于 <strong>establised</strong> 状态。</p>
-<p>   4、服务器收到 ACK 报文之后，也处于 <strong>establised 状态</strong>，此时，双方以建立起了链接。</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2019060815530363.png"></p>
-<h3 id="1、三次握手的作用"><a href="#1、三次握手的作用" class="headerlink" title="1、三次握手的作用"></a>1、三次握手的作用</h3><p>   三次握手的作用也是有好多的，多记住几个，保证不亏。例如：<br>   1、确认双方的接受能力、发送能力是否正常。<br>   2、指定自己的初始化序列号，为后面的可靠传送做准备。<br>   3、如果是 https 协议的话，三次握手这个过程，还会进行数字证书的验证以及加密密钥的生成到。</p>
-<h3 id="2、（ISN）是固定的吗？"><a href="#2、（ISN）是固定的吗？" class="headerlink" title="2、（ISN）是固定的吗？"></a>2、（ISN）是固定的吗？</h3><p>   三次握手的一个重要功能是客户端和服务端交换ISN(Initial Sequence Number), 以便让对方知道接下来接收数据的时候如何按序列号组装数据。</p>
-<p>   <strong>如果ISN是固定的，攻击者很容易猜出后续的确认号，因此 ISN 是动态生成的。</strong></p>
-<h3 id="3、什么是半连接队列"><a href="#3、什么是半连接队列" class="headerlink" title="3、什么是半连接队列"></a>3、什么是半连接队列</h3><p>   服务器第一次收到客户端的 SYN 之后，就会处于 SYN_RCVD 状态，此时双方还没有完全建立其连接，服务器会把此种状态下请求连接放在一个队列里，我们把这种队列称之为半连接队列。当然还有一个全连接队列，就是已经完成三次握手，建立起连接的就会放在全连接队列中。如果队列满了就有可能会出现丢包现象。</p>
-<blockquote>
-<p>   这里在补充一点关于SYN-ACK 重传次数的问题：　服务器发送完SYN－ACK包，如果未收到客户确认包，服务器进行首次重传，等待一段时间仍未收到客户确认包，进行第二次重传，如果重传次数超 过系统规定的最大重传次数，系统将该连接信息从半连接队列中删除。注意，每次重传等待的时间不一定相同，一般会是指数增长，例如间隔时间为 1s, 2s, 4s, 8s, …</p>
-</blockquote>
-<h3 id="4、三次握手过程中可以携带数据吗"><a href="#4、三次握手过程中可以携带数据吗" class="headerlink" title="4、三次握手过程中可以携带数据吗"></a>4、三次握手过程中可以携带数据吗</h3><p>   很多人可能会认为三次握手都不能携带数据，其实第三次握手的时候，是可以携带数据的。也就是说，第一次、第二次握手不可以携带数据，而第三次握手是可以携带数据的。</p>
-<p>为什么这样呢？大家可以想一个问题，假如第一次握手可以携带数据的话，如果有人要恶意攻击服务器，那他每次都在第一次握手中的 SYN 报文中放入大量的数据，因为攻击者根本就不理服务器的接收、发送能力是否正常，然后疯狂着重复发 SYN 报文的话，这会让服务器花费很多时间、内存空间来接收这些报文。也就是说，第一次握手可以放数据的话，其中一个简单的原因就是会让服务器更加容易受到攻击了。<br>而对于第三次的话，此时客户端已经处于 established 状态，也就是说，对于客户端来说，他已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的了，所以能携带数据页没啥毛病。</p>
-<h2 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h2><p>   <strong>四次挥手也一样，千万不要对方一个 FIN 报文，我方一个 ACK 报文，再我方一个 FIN 报文，我方一个 ACK 报文。然后结束，最好是说的详细一点，例如想下面这样就差不多了，要把每个阶段的状态记好。</strong></p>
-<p>   刚开始双方都处于 establised 状态，假如是客户端先发起关闭请求，则：</p>
-<p>   1、第一次挥手：客户端发送一个 FIN 报文，报文中会指定一个序列号。此时客户端处于<strong>FIN_WAIT1</strong>状态。</p>
-<p>   2、第二次握手：服务端收到 FIN 之后，会发送 ACK 报文，且把客户端的序列号值 + 1 作为 ACK 报文的序列号值，表明已经收到客户端的报文了，此时服务端处于 <strong>CLOSE_WAIT</strong>状态。</p>
-<p>   3、第三次挥手：如果服务端也想断开连接了，和客户端的第一次挥手一样，发给 FIN 报文，且指定一个序列号。此时服务端处于 <strong>LAST_ACK</strong> 的状态。</p>
-<p>   4、第四次挥手：客户端收到 FIN 之后，一样发送一个 ACK 报文作为应答，且把服务端的序列号值 + 1 作为自己 ACK 报文的序列号值，此时客户端处于 <strong>TIME_WAIT</strong> 状态。需要过一阵子以确保服务端收到自己的 ACK 报文之后才会进入 CLOSED 状态</p>
-<p>   5、服务端收到 ACK 报文之后，就处于关闭连接了，处于 CLOSED 状态。</p>
-<p><img data-src="https://img-blog.csdnimg.cn/20190608160051238.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RyZWFtaXNwb3NzaWJsZQ==,size_16,color_FFFFFF,t_70"></p>
-<p>   这里特别需要主要的就是TIME_WAIT这个状态了，这个是面试的高频考点，就是要理解，为什么客户端发送 ACK 之后不直接关闭，而是要等一阵子才关闭。这其中的原因就是，要确保服务器是否已经收到了我们的 ACK 报文，如果没有收到的话，服务器会重新发 FIN 报文给客户端，客户端再次收到 ACK 报文之后，就知道之前的 ACK 报文丢失了，然后再次发送 ACK 报文。</p>
-<p>   至于 TIME_WAIT 持续的时间至少是一个报文的来回时间。一般会设置一个计时，如果过了这个计时没有再次收到 FIN 报文，则代表对方成功就是 ACK 报文，此时处于 CLOSED 状态。</p>
-<p>   <strong>这里我给出每个状态所包含的含义，有兴趣的可以看看。</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LISTEN - 侦听来自远方TCP端口的连接请求； </span><br><span class="line">SYN-SENT -在发送连接请求后等待匹配的连接请求； </span><br><span class="line">SYN-RECEIVED - 在收到和发送一个连接请求后等待对连接请求的确认； </span><br><span class="line">ESTABLISHED- 代表一个打开的连接，数据可以传送给用户； </span><br><span class="line">FIN-WAIT-1 - 等待远程TCP的连接中断请求，或先前的连接中断请求的确认；</span><br><span class="line">FIN-WAIT-2 - 从远程TCP等待连接中断请求；</span><br><span class="line">CLOSE-WAIT - 等待从本地用户发来的连接中断请求； </span><br><span class="line">CLOSING -等待远程TCP对连接中断的确认； </span><br><span class="line">LAST-ACK - 等待原来发向远程TCP的连接中断请求的确认； </span><br><span class="line">TIME-WAIT -等待足够的时间以确保远程TCP接收到连接中断请求的确认； </span><br><span class="line">CLOSED - 没有任何连接状态；</span><br></pre></td></tr></table></figure>
-
-
-<p>   <strong>最后，在放张三次握手与四次挥手的图</strong></p>
-<p><img data-src="https://img-blog.csdnimg.cn/20190608160404569.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RyZWFtaXNwb3NzaWJsZQ==,size_16,color_FFFFFF,t_70"></p>
-]]></content>
-      <categories>
-        <category>HTTP</category>
-      </categories>
-      <tags>
-        <tag>HTTP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>使用Hbuilder快速打包一个app</title>
     <url>/2018/07/12/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/</url>
     <content><![CDATA[<p>HBuilder提供的打包有云端打包和本地打包两种，云端打包的特点是DCloud官方配置好了原生的打包环境，可以把HTML等文件编译为原生安装包。</p>
@@ -1406,81 +1351,6 @@
       </categories>
       <tags>
         <tag>Hbuilder</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>学习之AJAX</title>
-    <url>/2019/03/20/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
-    <content><![CDATA[<p>对于AJAX这个玩意儿，一开始学习的时候，根本不知道这是什么，我连AJAX有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙B的状态。那么在学习一段时间的AJAX之后，我总结了一些我自己对AJAX的理解，一起共勉。</p>
-<p>一、页面访问方式</p>
-<p>在学习AJAX之前，我们首先就需要了解页面的访问方式。页面的访问方式有如下两种同步访问和异步访问：</p>
-<p>①同步访问：在访问服务器时，只能等待服务器的响应，不能做其他事情。</p>
-<p>②异步访问：在向服务器发送请求时，不耽误用户在网页其他操作。相当于在同一时间，用户能做多个事情。</p>
-<span id="more"></span>
-
-
-<p>光从字面上理解同步和异步不算太难，下面我为用图打个比方有助于更加深层次的理解同步和异步：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730181503984"></p>
-<p>上图反之是同步访问的图解，异步访问我就不再作图了，反之，你想买煎饼和稀饭，你走到卖煎饼的铺子时候，老板说：好的，你的煎饼5分钟后好，你可以5分钟后过来拿。这个时候你就可以在这五分钟去买你要的稀饭，这就是异步访问。</p>
-<p>二、什么是AJAX</p>
-<p>AJAX的英文全名是：Asynchronous  Javascript  And  Xml</p>
-<p> 异步的  JS     和    xml</p>
-<p> 其中的本质：使用JS中XMLHttpRequext(xhr)对象异步的向服务器发送请求，服务器响应回来的部分数据而不是原完整的页面，并可以以“无刷新”的效果来更改页面中的局部内容。为了方便理解，作以下用户名验证的例子图助于理解：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730183958321"></p>
-<p>三、获取ＡＪＡＸ对象　——XMLHttpRequest</p>
-<p>在主流浏览器中：new　XMLHttpRequest( );</p>
-<p>注意：在IE8以下的浏览器不支持XMLHttpRequest</p>
-<p>在IE8以下的浏览器中：</p>
-<p>new  ActiveXObject(“Microsoft.XMLHttp”);</p>
-<p>tip:如果想测试你使用的浏览器是否支持XMLHttpRequest，可以进行如下操作：</p>
-<p>1.打开你的浏览器，例如谷歌、360、火狐、欧朋….;</p>
-<p>2.按F12，使用开发者工具，在console一栏中输入：console.log(window.XMLHttpRequest);</p>
-<p>3.如果浏览器不支持XMLHttpRequest,以上会打印null。</p>
-<p>//创建ajax对象</p>
-<p> var  xhr;</p>
-<p>   if(window.XMLHttpRequest){</p>
-<p>xhr = new  XMLHttpRequest();</p>
-<p> }else{</p>
-<p>xhr = new ActiveXObject(“Microsoft.XMLHttp”);</p>
-<p>}</p>
-<p>tip：这段函在编写代码的时候使用的次数很多，通常我们将它封装成函数单独创建一个JS文件，命名为common.js，要使用的时候调用者个js文件就可以了。</p>
-]]></content>
-      <categories>
-        <category>HTTP</category>
-      </categories>
-      <tags>
-        <tag>AJAX</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>实现滚动动画—渐入动画</title>
-    <url>/2021/04/13/%E5%AE%9E%E7%8E%B0%E6%BB%9A%E5%8A%A8%E5%8A%A8%E7%94%BB%E2%80%94%E6%B8%90%E5%85%A5%E5%8A%A8%E7%94%BB/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Vue 和 React 版本其实区别不大，，，主要使用原生 js 就能实现，性能上就没考虑太多（可以在完成需求后，移除进入视区后的元素的类名，如：slide-item，lazy-img 等）</p>
-<h2 id="一、滚动动画：Vue-版本"><a href="#一、滚动动画：Vue-版本" class="headerlink" title="一、滚动动画：Vue 版本"></a>一、滚动动画：Vue 版本</h2><h3 id="给-HTML-元素添加-class"><a href="#给-HTML-元素添加-class" class="headerlink" title="给 HTML 元素添加 class"></a>给 HTML 元素添加 class</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;div class&#x3D;&quot;slide-item&quot;&gt;需要根据滚动条位置显示的元素&lt;&#x2F;div&gt;</span><br><span class="line">&lt;div class&#x3D;&quot;slide-item slide-delay&quot; data-delay&#x3D;&quot;200&quot;&gt;有延迟的元素&lt;&#x2F;div&gt;</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<h3 id="css-和动画"><a href="#css-和动画" class="headerlink" title="css 和动画"></a>css 和动画</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.slide-item &#123; opacity: 0; &#125;</span><br><span class="line">.slide-up,</span><br><span class="line">.slide-up-200,</span><br><span class="line">.slide-up-400,</span><br><span class="line">.slide-up-600,</span><br><span class="line">.slide-up-800 &#123;</span><br><span class="line">    animation: slide-up .5s forwards;</span><br><span class="line">&#125;</span><br><span class="line">.slide-up-200 &#123; animation-delay: .2s; &#125;</span><br><span class="line">.slide-up-400 &#123; animation-delay: .4s;&#125;</span><br><span class="line">.slide-up-600 &#123; animation-delay: .6s;&#125;</span><br><span class="line">.slide-up-800 &#123; animation-delay: .8s; &#125;</span><br><span class="line"></span><br><span class="line">@keyframes slide-up &#123;</span><br><span class="line">    from &#123; opacity: 0; transform: translateY(50%); &#125;</span><br><span class="line">    to &#123; opacity: 1; transform: translateY(0); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="监听滚动"><a href="#监听滚动" class="headerlink" title="监听滚动"></a>监听滚动</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mounted() &#123;</span><br><span class="line">  window.addEventListener(&quot;scroll&quot;, this.onScroll);</span><br><span class="line">&#125;,</span><br><span class="line">beforeDestroy() &#123;</span><br><span class="line">  window.removeEventListener(&quot;scroll&quot;, this.onScroll);</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
-
-<h3 id="滚动方法"><a href="#滚动方法" class="headerlink" title="滚动方法"></a>滚动方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 监听滚动</span><br><span class="line">onScroll() &#123;</span><br><span class="line">  const slideItems &#x3D; document.querySelectorAll(&#39;.slide-item&#39;);</span><br><span class="line">  &#x2F;&#x2F; 上滑</span><br><span class="line">  slideItems.forEach(item &#x3D;&gt; &#123;</span><br><span class="line">    let itemBCR &#x3D; item.getBoundingClientRect();</span><br><span class="line">    &#x2F;&#x2F; 进入视区或在视区之上</span><br><span class="line">    if (itemBCR.top &lt;&#x3D; window.innerHeight + 10) &#123;</span><br><span class="line">      if (Array.from(item.classList).includes(&#39;slide-delay&#39;)) &#123;</span><br><span class="line">        item.classList.add(&#96;slide-up-$&#123;item.dataset.delay&#125;&#96;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.add(&#39;slide-up&#39;);</span><br><span class="line">      &#125;</span><br><span class="line">      &#x2F;&#x2F; 可以在这里 remove 掉 slide-item 这个类名，优化性能</span><br><span class="line"></span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      &#x2F;&#x2F; 这里主要用来多次显示效果的，上面 remove 掉 slide-item 后将不再起作用</span><br><span class="line">      if (Array.from(item.classList).includes(&#39;slide-delay&#39;)) &#123;</span><br><span class="line">        item.classList.remove(&#96;slide-up-$&#123;item.dataset.delay&#125;&#96;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.remove(&#39;slide-up&#39;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
-
-<h2 id="二、滚动动画：React-版本"><a href="#二、滚动动画：React-版本" class="headerlink" title="二、滚动动画：React 版本"></a>二、滚动动画：React 版本</h2><p>主要使用 hooks</p>
-<h3 id="给-HTML-元素添加-class-1"><a href="#给-HTML-元素添加-class-1" class="headerlink" title="给 HTML 元素添加 class"></a>给 HTML 元素添加 class</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;span className&#x3D;&#123;&#96;slide-item&#96;&#125;&gt;需要根据滚动条位置显示的元素&lt;&#x2F;span&gt;</span><br><span class="line">&lt;span className&#x3D;&#123;&#96;slide-item slide-delay&#96;&#125; data-delay&#x3D;&quot;200&quot;&gt;有延迟的元素&lt;&#x2F;span&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="css-和动画-1"><a href="#css-和动画-1" class="headerlink" title="css 和动画"></a>css 和动画</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.slide-item &#123; opacity: 0; &#125;</span><br><span class="line">.slide-up,</span><br><span class="line">.slide-up-200,</span><br><span class="line">.slide-up-400,</span><br><span class="line">.slide-up-600,</span><br><span class="line">.slide-up-800 &#123;</span><br><span class="line">    animation: slide-up .5s forwards;</span><br><span class="line">&#125;</span><br><span class="line">.slide-up-200 &#123; animation-delay: .2s; &#125;</span><br><span class="line">.slide-up-400 &#123; animation-delay: .4s;&#125;</span><br><span class="line">.slide-up-600 &#123; animation-delay: .6s;&#125;</span><br><span class="line">.slide-up-800 &#123; animation-delay: .8s; &#125;</span><br><span class="line"></span><br><span class="line">@keyframes slide-up &#123;</span><br><span class="line">    from &#123; opacity: 0; transform: translateY(50%); &#125;</span><br><span class="line">    to &#123; opacity: 1; transform: translateY(0); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="监听滚动-1"><a href="#监听滚动-1" class="headerlink" title="监听滚动"></a>监听滚动</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">useEffect(() &#x3D;&gt; &#123;</span><br><span class="line">  onScroll();</span><br><span class="line">  window.addEventListener(&#39;scroll&#39;, onScroll);</span><br><span class="line"></span><br><span class="line">  return () &#x3D;&gt; &#123;</span><br><span class="line">    window.removeEventListener(&#39;scroll&#39;, onScroll);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;, []);</span><br></pre></td></tr></table></figure>
-
-<h3 id="滚动方法-1"><a href="#滚动方法-1" class="headerlink" title="滚动方法"></a>滚动方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 监听滚动</span><br><span class="line">function onScroll(): void &#123;</span><br><span class="line">  const slideItems &#x3D; document.querySelectorAll(&#39;.slide-item&#39;);</span><br><span class="line"></span><br><span class="line">  slideItems.forEach((item: any) &#x3D;&gt; &#123;</span><br><span class="line">    let slideBCR &#x3D; item.getBoundingClientRect();</span><br><span class="line">    &#x2F;&#x2F; 进入视区或在视区之上</span><br><span class="line">    if (slideBCR.top &lt;&#x3D; window.innerHeight + 10) &#123;</span><br><span class="line">      if (Array.from(item.classList).includes(&#39;slide-delay&#39;)) &#123; &#x2F;&#x2F; 延迟</span><br><span class="line">        item.classList.add(&#96;slide-up-$&#123;item.dataset.delay&#125;&#96;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.add(&#39;slide-up&#39;);</span><br><span class="line">      &#125;</span><br><span class="line">      &#x2F;&#x2F; 可以在这里 remove 掉 slide-item 这个类名，优化性能</span><br><span class="line"></span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      &#x2F;&#x2F; 这里主要用来多次显示效果的，上面 remove 掉 slide-item 后将不再起作用</span><br><span class="line">      if (Array.from(item.classList).includes(&#39;slide-delay&#39;)) &#123; &#x2F;&#x2F; 延迟</span><br><span class="line">        item.classList.remove(&#96;slide-up-$&#123;item.dataset.delay&#125;&#96;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.remove(&#39;slide-up&#39;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>react</category>
-      </categories>
-      <tags>
-        <tag>vue</tag>
-        <tag>react</tag>
       </tags>
   </entry>
   <entry>
@@ -1637,6 +1507,184 @@
       </tags>
   </entry>
   <entry>
+    <title>三次握手四次挥手的原理</title>
+    <url>/2021/03/01/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E7%9A%84%E5%8E%9F%E7%90%86/</url>
+    <content><![CDATA[<h2 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h2><p>  握手的过程：</p>
+<p>   1、第一次握手：客户端给服务器发送一个 SYN 报文。</p>
+<p>   2、第二次握手：服务器收到 SYN 报文之后，会应答一个 SYN+ACK 报文。</p>
+<p>   3、第三次握手：客户端收到 SYN+ACK 报文之后，会回应一个 ACK 报文。</p>
+<p>   4、服务器收到 ACK 报文之后，三次握手建立完成。</p>
+<p>   作用是为了确认双方的接收与发送能力是否正常。</p>
+   <span id="more"></span>
+
+<p>   <strong>这里我顺便解释一下为啥只有三次握手才能确认双方的接受与发送能力是否正常，而两次却不可以：</strong></p>
+<blockquote>
+<p>   第一次握手：客户端发送网络包，服务端收到了。这样服务端就能得出结论：客户端的发送能力、服务端的接收能力是正常的。<br>   第二次握手：服务端发包，客户端收到了。这样客户端就能得出结论：服务端的接收、发送能力，客户端的接收、发送能力是正常的。不过此时服务器并不能确认客户端的接收能力是否正常。<br>   第三次握手：客户端发包，服务端收到了。这样服务端就能得出结论：客户端的接收、发送能力正常，服务器自己的发送、接收能力也正常。</p>
+</blockquote>
+<p>   因此，需要三次握手才能确认双方的接收与发送能力是否正常。</p>
+<p>   这样回答其实也是可以的，但我觉得，这个过程的我们应该要描述的更<strong>详细一点</strong>，因为三次握手的过程中，双方是<strong>由很多状态的改变的</strong>，而这些状态，也是面试官可能会问的点。所以我觉得在回答三次握手的时候，我们应该要描述的详细一点，而且描述的详细一点意味着可以扯久一点。加分的描述我觉得应该是这样：</p>
+<p>   <strong>刚开始客户端处于 closed 的状态，服务端处于 listen 状态</strong>。然后<br>   1、第一次握手：客户端给服务端发一个 SYN 报文，并指明客户端的初始化序列号 <strong>ISN（c）</strong>。此时客户端处于 <strong>SYN_Send</strong> 状态。</p>
+<p>   2、第二次握手：服务器收到客户端的 SYN 报文之后，会以自己的 SYN 报文作为应答，并且也是指定了自己的初始化序列号 ISN(s)，同时会把客户端的 ISN + 1 作为 ACK 的值，表示自己已经收到了客户端的 SYN，此时服务器处于 <strong>SYN_REVD</strong> 的状态。</p>
+<p>   3、第三次握手：客户端收到 SYN 报文之后，会发送一个 ACK 报文，当然，也是一样把服务器的 ISN + 1 作为 ACK 的值，表示已经收到了服务端的 SYN 报文，此时客户端处于 <strong>establised</strong> 状态。</p>
+<p>   4、服务器收到 ACK 报文之后，也处于 <strong>establised 状态</strong>，此时，双方以建立起了链接。</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2019060815530363.png"></p>
+<h3 id="1、三次握手的作用"><a href="#1、三次握手的作用" class="headerlink" title="1、三次握手的作用"></a>1、三次握手的作用</h3><p>   三次握手的作用也是有好多的，多记住几个，保证不亏。例如：<br>   1、确认双方的接受能力、发送能力是否正常。<br>   2、指定自己的初始化序列号，为后面的可靠传送做准备。<br>   3、如果是 https 协议的话，三次握手这个过程，还会进行数字证书的验证以及加密密钥的生成到。</p>
+<h3 id="2、（ISN）是固定的吗？"><a href="#2、（ISN）是固定的吗？" class="headerlink" title="2、（ISN）是固定的吗？"></a>2、（ISN）是固定的吗？</h3><p>   三次握手的一个重要功能是客户端和服务端交换ISN(Initial Sequence Number), 以便让对方知道接下来接收数据的时候如何按序列号组装数据。</p>
+<p>   <strong>如果ISN是固定的，攻击者很容易猜出后续的确认号，因此 ISN 是动态生成的。</strong></p>
+<h3 id="3、什么是半连接队列"><a href="#3、什么是半连接队列" class="headerlink" title="3、什么是半连接队列"></a>3、什么是半连接队列</h3><p>   服务器第一次收到客户端的 SYN 之后，就会处于 SYN_RCVD 状态，此时双方还没有完全建立其连接，服务器会把此种状态下请求连接放在一个队列里，我们把这种队列称之为半连接队列。当然还有一个全连接队列，就是已经完成三次握手，建立起连接的就会放在全连接队列中。如果队列满了就有可能会出现丢包现象。</p>
+<blockquote>
+<p>   这里在补充一点关于SYN-ACK 重传次数的问题：　服务器发送完SYN－ACK包，如果未收到客户确认包，服务器进行首次重传，等待一段时间仍未收到客户确认包，进行第二次重传，如果重传次数超 过系统规定的最大重传次数，系统将该连接信息从半连接队列中删除。注意，每次重传等待的时间不一定相同，一般会是指数增长，例如间隔时间为 1s, 2s, 4s, 8s, …</p>
+</blockquote>
+<h3 id="4、三次握手过程中可以携带数据吗"><a href="#4、三次握手过程中可以携带数据吗" class="headerlink" title="4、三次握手过程中可以携带数据吗"></a>4、三次握手过程中可以携带数据吗</h3><p>   很多人可能会认为三次握手都不能携带数据，其实第三次握手的时候，是可以携带数据的。也就是说，第一次、第二次握手不可以携带数据，而第三次握手是可以携带数据的。</p>
+<p>为什么这样呢？大家可以想一个问题，假如第一次握手可以携带数据的话，如果有人要恶意攻击服务器，那他每次都在第一次握手中的 SYN 报文中放入大量的数据，因为攻击者根本就不理服务器的接收、发送能力是否正常，然后疯狂着重复发 SYN 报文的话，这会让服务器花费很多时间、内存空间来接收这些报文。也就是说，第一次握手可以放数据的话，其中一个简单的原因就是会让服务器更加容易受到攻击了。<br>而对于第三次的话，此时客户端已经处于 established 状态，也就是说，对于客户端来说，他已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的了，所以能携带数据页没啥毛病。</p>
+<h2 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h2><p>   <strong>四次挥手也一样，千万不要对方一个 FIN 报文，我方一个 ACK 报文，再我方一个 FIN 报文，我方一个 ACK 报文。然后结束，最好是说的详细一点，例如想下面这样就差不多了，要把每个阶段的状态记好。</strong></p>
+<p>   刚开始双方都处于 establised 状态，假如是客户端先发起关闭请求，则：</p>
+<p>   1、第一次挥手：客户端发送一个 FIN 报文，报文中会指定一个序列号。此时客户端处于<strong>FIN_WAIT1</strong>状态。</p>
+<p>   2、第二次握手：服务端收到 FIN 之后，会发送 ACK 报文，且把客户端的序列号值 + 1 作为 ACK 报文的序列号值，表明已经收到客户端的报文了，此时服务端处于 <strong>CLOSE_WAIT</strong>状态。</p>
+<p>   3、第三次挥手：如果服务端也想断开连接了，和客户端的第一次挥手一样，发给 FIN 报文，且指定一个序列号。此时服务端处于 <strong>LAST_ACK</strong> 的状态。</p>
+<p>   4、第四次挥手：客户端收到 FIN 之后，一样发送一个 ACK 报文作为应答，且把服务端的序列号值 + 1 作为自己 ACK 报文的序列号值，此时客户端处于 <strong>TIME_WAIT</strong> 状态。需要过一阵子以确保服务端收到自己的 ACK 报文之后才会进入 CLOSED 状态</p>
+<p>   5、服务端收到 ACK 报文之后，就处于关闭连接了，处于 CLOSED 状态。</p>
+<p><img data-src="https://img-blog.csdnimg.cn/20190608160051238.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RyZWFtaXNwb3NzaWJsZQ==,size_16,color_FFFFFF,t_70"></p>
+<p>   这里特别需要主要的就是TIME_WAIT这个状态了，这个是面试的高频考点，就是要理解，为什么客户端发送 ACK 之后不直接关闭，而是要等一阵子才关闭。这其中的原因就是，要确保服务器是否已经收到了我们的 ACK 报文，如果没有收到的话，服务器会重新发 FIN 报文给客户端，客户端再次收到 ACK 报文之后，就知道之前的 ACK 报文丢失了，然后再次发送 ACK 报文。</p>
+<p>   至于 TIME_WAIT 持续的时间至少是一个报文的来回时间。一般会设置一个计时，如果过了这个计时没有再次收到 FIN 报文，则代表对方成功就是 ACK 报文，此时处于 CLOSED 状态。</p>
+<p>   <strong>这里我给出每个状态所包含的含义，有兴趣的可以看看。</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LISTEN - 侦听来自远方TCP端口的连接请求； </span><br><span class="line">SYN-SENT -在发送连接请求后等待匹配的连接请求； </span><br><span class="line">SYN-RECEIVED - 在收到和发送一个连接请求后等待对连接请求的确认； </span><br><span class="line">ESTABLISHED- 代表一个打开的连接，数据可以传送给用户； </span><br><span class="line">FIN-WAIT-1 - 等待远程TCP的连接中断请求，或先前的连接中断请求的确认；</span><br><span class="line">FIN-WAIT-2 - 从远程TCP等待连接中断请求；</span><br><span class="line">CLOSE-WAIT - 等待从本地用户发来的连接中断请求； </span><br><span class="line">CLOSING -等待远程TCP对连接中断的确认； </span><br><span class="line">LAST-ACK - 等待原来发向远程TCP的连接中断请求的确认； </span><br><span class="line">TIME-WAIT -等待足够的时间以确保远程TCP接收到连接中断请求的确认； </span><br><span class="line">CLOSED - 没有任何连接状态；</span><br></pre></td></tr></table></figure>
+
+
+<p>   <strong>最后，在放张三次握手与四次挥手的图</strong></p>
+<p><img data-src="https://img-blog.csdnimg.cn/20190608160404569.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RyZWFtaXNwb3NzaWJsZQ==,size_16,color_FFFFFF,t_70"></p>
+]]></content>
+      <categories>
+        <category>HTTP</category>
+      </categories>
+      <tags>
+        <tag>HTTP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>学习之AJAX</title>
+    <url>/2019/03/20/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
+    <content><![CDATA[<p>对于AJAX这个玩意儿，一开始学习的时候，根本不知道这是什么，我连AJAX有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙B的状态。那么在学习一段时间的AJAX之后，我总结了一些我自己对AJAX的理解，一起共勉。</p>
+<p>一、页面访问方式</p>
+<p>在学习AJAX之前，我们首先就需要了解页面的访问方式。页面的访问方式有如下两种同步访问和异步访问：</p>
+<p>①同步访问：在访问服务器时，只能等待服务器的响应，不能做其他事情。</p>
+<p>②异步访问：在向服务器发送请求时，不耽误用户在网页其他操作。相当于在同一时间，用户能做多个事情。</p>
+<span id="more"></span>
+
+
+<p>光从字面上理解同步和异步不算太难，下面我为用图打个比方有助于更加深层次的理解同步和异步：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730181503984"></p>
+<p>上图反之是同步访问的图解，异步访问我就不再作图了，反之，你想买煎饼和稀饭，你走到卖煎饼的铺子时候，老板说：好的，你的煎饼5分钟后好，你可以5分钟后过来拿。这个时候你就可以在这五分钟去买你要的稀饭，这就是异步访问。</p>
+<p>二、什么是AJAX</p>
+<p>AJAX的英文全名是：Asynchronous  Javascript  And  Xml</p>
+<p> 异步的  JS     和    xml</p>
+<p> 其中的本质：使用JS中XMLHttpRequext(xhr)对象异步的向服务器发送请求，服务器响应回来的部分数据而不是原完整的页面，并可以以“无刷新”的效果来更改页面中的局部内容。为了方便理解，作以下用户名验证的例子图助于理解：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730183958321"></p>
+<p>三、获取ＡＪＡＸ对象　——XMLHttpRequest</p>
+<p>在主流浏览器中：new　XMLHttpRequest( );</p>
+<p>注意：在IE8以下的浏览器不支持XMLHttpRequest</p>
+<p>在IE8以下的浏览器中：</p>
+<p>new  ActiveXObject(“Microsoft.XMLHttp”);</p>
+<p>tip:如果想测试你使用的浏览器是否支持XMLHttpRequest，可以进行如下操作：</p>
+<p>1.打开你的浏览器，例如谷歌、360、火狐、欧朋….;</p>
+<p>2.按F12，使用开发者工具，在console一栏中输入：console.log(window.XMLHttpRequest);</p>
+<p>3.如果浏览器不支持XMLHttpRequest,以上会打印null。</p>
+<p>//创建ajax对象</p>
+<p> var  xhr;</p>
+<p>   if(window.XMLHttpRequest){</p>
+<p>xhr = new  XMLHttpRequest();</p>
+<p> }else{</p>
+<p>xhr = new ActiveXObject(“Microsoft.XMLHttp”);</p>
+<p>}</p>
+<p>tip：这段函在编写代码的时候使用的次数很多，通常我们将它封装成函数单独创建一个JS文件，命名为common.js，要使用的时候调用者个js文件就可以了。</p>
+]]></content>
+      <categories>
+        <category>HTTP</category>
+      </categories>
+      <tags>
+        <tag>AJAX</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>实现滚动动画—渐入动画</title>
+    <url>/2021/04/13/%E5%AE%9E%E7%8E%B0%E6%BB%9A%E5%8A%A8%E5%8A%A8%E7%94%BB%E2%80%94%E6%B8%90%E5%85%A5%E5%8A%A8%E7%94%BB/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Vue 和 React 版本其实区别不大，，，主要使用原生 js 就能实现，性能上就没考虑太多（可以在完成需求后，移除进入视区后的元素的类名，如：slide-item，lazy-img 等）</p>
+<h2 id="一、滚动动画：Vue-版本"><a href="#一、滚动动画：Vue-版本" class="headerlink" title="一、滚动动画：Vue 版本"></a>一、滚动动画：Vue 版本</h2><h3 id="给-HTML-元素添加-class"><a href="#给-HTML-元素添加-class" class="headerlink" title="给 HTML 元素添加 class"></a>给 HTML 元素添加 class</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;div class&#x3D;&quot;slide-item&quot;&gt;需要根据滚动条位置显示的元素&lt;&#x2F;div&gt;</span><br><span class="line">&lt;div class&#x3D;&quot;slide-item slide-delay&quot; data-delay&#x3D;&quot;200&quot;&gt;有延迟的元素&lt;&#x2F;div&gt;</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h3 id="css-和动画"><a href="#css-和动画" class="headerlink" title="css 和动画"></a>css 和动画</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.slide-item &#123; opacity: 0; &#125;</span><br><span class="line">.slide-up,</span><br><span class="line">.slide-up-200,</span><br><span class="line">.slide-up-400,</span><br><span class="line">.slide-up-600,</span><br><span class="line">.slide-up-800 &#123;</span><br><span class="line">    animation: slide-up .5s forwards;</span><br><span class="line">&#125;</span><br><span class="line">.slide-up-200 &#123; animation-delay: .2s; &#125;</span><br><span class="line">.slide-up-400 &#123; animation-delay: .4s;&#125;</span><br><span class="line">.slide-up-600 &#123; animation-delay: .6s;&#125;</span><br><span class="line">.slide-up-800 &#123; animation-delay: .8s; &#125;</span><br><span class="line"></span><br><span class="line">@keyframes slide-up &#123;</span><br><span class="line">    from &#123; opacity: 0; transform: translateY(50%); &#125;</span><br><span class="line">    to &#123; opacity: 1; transform: translateY(0); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="监听滚动"><a href="#监听滚动" class="headerlink" title="监听滚动"></a>监听滚动</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mounted() &#123;</span><br><span class="line">  window.addEventListener(&quot;scroll&quot;, this.onScroll);</span><br><span class="line">&#125;,</span><br><span class="line">beforeDestroy() &#123;</span><br><span class="line">  window.removeEventListener(&quot;scroll&quot;, this.onScroll);</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+
+<h3 id="滚动方法"><a href="#滚动方法" class="headerlink" title="滚动方法"></a>滚动方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 监听滚动</span><br><span class="line">onScroll() &#123;</span><br><span class="line">  const slideItems &#x3D; document.querySelectorAll(&#39;.slide-item&#39;);</span><br><span class="line">  &#x2F;&#x2F; 上滑</span><br><span class="line">  slideItems.forEach(item &#x3D;&gt; &#123;</span><br><span class="line">    let itemBCR &#x3D; item.getBoundingClientRect();</span><br><span class="line">    &#x2F;&#x2F; 进入视区或在视区之上</span><br><span class="line">    if (itemBCR.top &lt;&#x3D; window.innerHeight + 10) &#123;</span><br><span class="line">      if (Array.from(item.classList).includes(&#39;slide-delay&#39;)) &#123;</span><br><span class="line">        item.classList.add(&#96;slide-up-$&#123;item.dataset.delay&#125;&#96;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.add(&#39;slide-up&#39;);</span><br><span class="line">      &#125;</span><br><span class="line">      &#x2F;&#x2F; 可以在这里 remove 掉 slide-item 这个类名，优化性能</span><br><span class="line"></span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      &#x2F;&#x2F; 这里主要用来多次显示效果的，上面 remove 掉 slide-item 后将不再起作用</span><br><span class="line">      if (Array.from(item.classList).includes(&#39;slide-delay&#39;)) &#123;</span><br><span class="line">        item.classList.remove(&#96;slide-up-$&#123;item.dataset.delay&#125;&#96;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.remove(&#39;slide-up&#39;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、滚动动画：React-版本"><a href="#二、滚动动画：React-版本" class="headerlink" title="二、滚动动画：React 版本"></a>二、滚动动画：React 版本</h2><p>主要使用 hooks</p>
+<h3 id="给-HTML-元素添加-class-1"><a href="#给-HTML-元素添加-class-1" class="headerlink" title="给 HTML 元素添加 class"></a>给 HTML 元素添加 class</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;span className&#x3D;&#123;&#96;slide-item&#96;&#125;&gt;需要根据滚动条位置显示的元素&lt;&#x2F;span&gt;</span><br><span class="line">&lt;span className&#x3D;&#123;&#96;slide-item slide-delay&#96;&#125; data-delay&#x3D;&quot;200&quot;&gt;有延迟的元素&lt;&#x2F;span&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="css-和动画-1"><a href="#css-和动画-1" class="headerlink" title="css 和动画"></a>css 和动画</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.slide-item &#123; opacity: 0; &#125;</span><br><span class="line">.slide-up,</span><br><span class="line">.slide-up-200,</span><br><span class="line">.slide-up-400,</span><br><span class="line">.slide-up-600,</span><br><span class="line">.slide-up-800 &#123;</span><br><span class="line">    animation: slide-up .5s forwards;</span><br><span class="line">&#125;</span><br><span class="line">.slide-up-200 &#123; animation-delay: .2s; &#125;</span><br><span class="line">.slide-up-400 &#123; animation-delay: .4s;&#125;</span><br><span class="line">.slide-up-600 &#123; animation-delay: .6s;&#125;</span><br><span class="line">.slide-up-800 &#123; animation-delay: .8s; &#125;</span><br><span class="line"></span><br><span class="line">@keyframes slide-up &#123;</span><br><span class="line">    from &#123; opacity: 0; transform: translateY(50%); &#125;</span><br><span class="line">    to &#123; opacity: 1; transform: translateY(0); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="监听滚动-1"><a href="#监听滚动-1" class="headerlink" title="监听滚动"></a>监听滚动</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">useEffect(() &#x3D;&gt; &#123;</span><br><span class="line">  onScroll();</span><br><span class="line">  window.addEventListener(&#39;scroll&#39;, onScroll);</span><br><span class="line"></span><br><span class="line">  return () &#x3D;&gt; &#123;</span><br><span class="line">    window.removeEventListener(&#39;scroll&#39;, onScroll);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;, []);</span><br></pre></td></tr></table></figure>
+
+<h3 id="滚动方法-1"><a href="#滚动方法-1" class="headerlink" title="滚动方法"></a>滚动方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 监听滚动</span><br><span class="line">function onScroll(): void &#123;</span><br><span class="line">  const slideItems &#x3D; document.querySelectorAll(&#39;.slide-item&#39;);</span><br><span class="line"></span><br><span class="line">  slideItems.forEach((item: any) &#x3D;&gt; &#123;</span><br><span class="line">    let slideBCR &#x3D; item.getBoundingClientRect();</span><br><span class="line">    &#x2F;&#x2F; 进入视区或在视区之上</span><br><span class="line">    if (slideBCR.top &lt;&#x3D; window.innerHeight + 10) &#123;</span><br><span class="line">      if (Array.from(item.classList).includes(&#39;slide-delay&#39;)) &#123; &#x2F;&#x2F; 延迟</span><br><span class="line">        item.classList.add(&#96;slide-up-$&#123;item.dataset.delay&#125;&#96;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.add(&#39;slide-up&#39;);</span><br><span class="line">      &#125;</span><br><span class="line">      &#x2F;&#x2F; 可以在这里 remove 掉 slide-item 这个类名，优化性能</span><br><span class="line"></span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      &#x2F;&#x2F; 这里主要用来多次显示效果的，上面 remove 掉 slide-item 后将不再起作用</span><br><span class="line">      if (Array.from(item.classList).includes(&#39;slide-delay&#39;)) &#123; &#x2F;&#x2F; 延迟</span><br><span class="line">        item.classList.remove(&#96;slide-up-$&#123;item.dataset.delay&#125;&#96;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.remove(&#39;slide-up&#39;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>react</category>
+      </categories>
+      <tags>
+        <tag>vue</tag>
+        <tag>react</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>开发小技巧</title>
+    <url>/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
+    <content><![CDATA[<h2 id="阻止单击事件冒泡"><a href="#阻止单击事件冒泡" class="headerlink" title="阻止单击事件冒泡"></a>阻止单击事件冒泡</h2><p><code>&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;</code></p>
+<h2 id="提交事件不再重载页面"><a href="#提交事件不再重载页面" class="headerlink" title="提交事件不再重载页面"></a>提交事件不再重载页面</h2><p><code>&lt;form v-on:submit.prevent=&quot;onSubmit&quot;&gt;&lt;/form&gt;</code></p>
+<h2 id="修饰符可以串联"><a href="#修饰符可以串联" class="headerlink" title="修饰符可以串联"></a>修饰符可以串联</h2><p><code>&lt;a v-on:click.stop.prevent=&quot;doThat&quot;&gt;</code></p>
+<span id="more"></span>
+
+
+<h2 id="只有修饰符"><a href="#只有修饰符" class="headerlink" title="只有修饰符"></a>只有修饰符</h2><p><code>&lt;form v-on:submit.prevent&gt;&lt;/form&gt;</code></p>
+<br>
+<br>
+<br>
+
+<h2 id="Mac谷歌跨域命令"><a href="#Mac谷歌跨域命令" class="headerlink" title="Mac谷歌跨域命令"></a>Mac谷歌跨域命令</h2><p><code>open -n /Applications/Google\ Chrome.app/ --args --disable-web-security  --user-data-dir=/Users/GaoYuan/Documents/MyChromeDevUserData</code></p>
+<br>
+<br>
+<br>
+
+<h2 id="Mac显示隐藏文件命令："><a href="#Mac显示隐藏文件命令：" class="headerlink" title="Mac显示隐藏文件命令："></a>Mac显示隐藏文件命令：</h2><p><strong>显示隐藏文件</strong></p>
+<p><code>defaults write com.apple.finder AppleShowAllFiles Yes &amp;&amp; killall Finder </code></p>
+<p><strong>不显示隐藏文件</strong></p>
+<p><code>defaults write com.apple.finder AppleShowAllFiles No &amp;&amp; killall Finder </code></p>
+<br>
+<br>
+
+<h2 id="Jison解决JS处理后端返回的Long型数据精度丢失问题"><a href="#Jison解决JS处理后端返回的Long型数据精度丢失问题" class="headerlink" title="Jison解决JS处理后端返回的Long型数据精度丢失问题"></a>Jison解决JS处理后端返回的Long型数据精度丢失问题</h2><p>原因：js是弱类型语言，所有的数字类型统称为Number类型，不区分int、long、double等。</p>
+<p><code>git clone git://github.com/zaach/jsonlint.git</code></p>
+<p>在src目录下提供了jsonlint.y（grammaFile）和jsonlint.l（lexFile)两个文件。使用这两个文件可以直接生成jsonlint.js。如下修改jsonlint.y：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">JSONNumber</span><br><span class="line"></span><br><span class="line">    : NUMBER</span><br><span class="line">    </span><br><span class="line">        &#123;$$ &#x3D; yytext &#x3D;&#x3D; String(Number(yytext))? Number(yytext): yytext;&#125;</span><br><span class="line">    ;</span><br></pre></td></tr></table></figure>
+
+<p> 然后：</p>
+<p><code>cd src</code></p>
+<p><code>jison jsonlint.y jsonlint.l</code></p>
+<h3 id="最后引入至项目"><a href="#最后引入至项目" class="headerlink" title="最后引入至项目"></a>最后引入至项目</h3><p>1.将自定义的 jsonlint.js 放到 static 目录下<br>2.在 index.html 中引入<br><code>&lt;script src=&quot;./static/jsonlint/jsonlint.js&quot;&gt;&lt;/script&gt;</code></p>
+<p>3、在我们请求的返回数据中，做一层拦截转换，此处以 axios 的实现方法为例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;*transformResponse 选项允许我们在数据传送到 &#96;then&#x2F;catch&#96; 方法之前对数据进行改动*&#x2F;</span><br><span class="line">axios.defaults.transformResponse &#x3D; [</span><br><span class="line">  function(data) &#123;</span><br><span class="line">    return jsonlint.parse(data)</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>综上，定义JSON转化避免long类型数据溢出，可以实现long类型数据在前端正常显示</p>
+<h2 id="Mac给文件夹赋予管理员权限"><a href="#Mac给文件夹赋予管理员权限" class="headerlink" title="Mac给文件夹赋予管理员权限"></a>Mac给文件夹赋予管理员权限</h2><p><code>sudo chown -R gaoyuan ios</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if ($request_filename ~* .*index\.html$) &#123;</span><br><span class="line">     add_header Cache-Control &quot;private, no-store, no-cache, must-revalidate, proxy-revalidate&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>个人笔记</category>
+      </categories>
+      <tags>
+        <tag>note</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>浏览器回流和重汇</title>
     <url>/2021/04/16/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%9B%9E%E6%B5%81%E5%92%8C%E9%87%8D%E6%B1%87/</url>
     <content><![CDATA[<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/640"></p>
@@ -1724,54 +1772,6 @@
 <h2 id=""><a href="#" class="headerlink" title=""></a></h2>]]></content>
       <categories>
         <category>note</category>
-      </categories>
-      <tags>
-        <tag>note</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>开发小技巧</title>
-    <url>/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
-    <content><![CDATA[<h2 id="阻止单击事件冒泡"><a href="#阻止单击事件冒泡" class="headerlink" title="阻止单击事件冒泡"></a>阻止单击事件冒泡</h2><p><code>&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;</code></p>
-<h2 id="提交事件不再重载页面"><a href="#提交事件不再重载页面" class="headerlink" title="提交事件不再重载页面"></a>提交事件不再重载页面</h2><p><code>&lt;form v-on:submit.prevent=&quot;onSubmit&quot;&gt;&lt;/form&gt;</code></p>
-<h2 id="修饰符可以串联"><a href="#修饰符可以串联" class="headerlink" title="修饰符可以串联"></a>修饰符可以串联</h2><p><code>&lt;a v-on:click.stop.prevent=&quot;doThat&quot;&gt;</code></p>
-<span id="more"></span>
-
-
-<h2 id="只有修饰符"><a href="#只有修饰符" class="headerlink" title="只有修饰符"></a>只有修饰符</h2><p><code>&lt;form v-on:submit.prevent&gt;&lt;/form&gt;</code></p>
-<br>
-<br>
-<br>
-
-<h2 id="Mac谷歌跨域命令"><a href="#Mac谷歌跨域命令" class="headerlink" title="Mac谷歌跨域命令"></a>Mac谷歌跨域命令</h2><p><code>open -n /Applications/Google\ Chrome.app/ --args --disable-web-security  --user-data-dir=/Users/GaoYuan/Documents/MyChromeDevUserData</code></p>
-<br>
-<br>
-<br>
-
-<h2 id="Mac显示隐藏文件命令："><a href="#Mac显示隐藏文件命令：" class="headerlink" title="Mac显示隐藏文件命令："></a>Mac显示隐藏文件命令：</h2><p><strong>显示隐藏文件</strong></p>
-<p><code>defaults write com.apple.finder AppleShowAllFiles Yes &amp;&amp; killall Finder </code></p>
-<p><strong>不显示隐藏文件</strong></p>
-<p><code>defaults write com.apple.finder AppleShowAllFiles No &amp;&amp; killall Finder </code></p>
-<br>
-<br>
-
-<h2 id="Jison解决JS处理后端返回的Long型数据精度丢失问题"><a href="#Jison解决JS处理后端返回的Long型数据精度丢失问题" class="headerlink" title="Jison解决JS处理后端返回的Long型数据精度丢失问题"></a>Jison解决JS处理后端返回的Long型数据精度丢失问题</h2><p>原因：js是弱类型语言，所有的数字类型统称为Number类型，不区分int、long、double等。</p>
-<p><code>git clone git://github.com/zaach/jsonlint.git</code></p>
-<p>在src目录下提供了jsonlint.y（grammaFile）和jsonlint.l（lexFile)两个文件。使用这两个文件可以直接生成jsonlint.js。如下修改jsonlint.y：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">JSONNumber</span><br><span class="line"></span><br><span class="line">    : NUMBER</span><br><span class="line">    </span><br><span class="line">        &#123;$$ &#x3D; yytext &#x3D;&#x3D; String(Number(yytext))? Number(yytext): yytext;&#125;</span><br><span class="line">    ;</span><br></pre></td></tr></table></figure>
-
-<p> 然后：</p>
-<p><code>cd src</code></p>
-<p><code>jison jsonlint.y jsonlint.l</code></p>
-<h3 id="最后引入至项目"><a href="#最后引入至项目" class="headerlink" title="最后引入至项目"></a>最后引入至项目</h3><p>1.将自定义的 jsonlint.js 放到 static 目录下<br>2.在 index.html 中引入<br><code>&lt;script src=&quot;./static/jsonlint/jsonlint.js&quot;&gt;&lt;/script&gt;</code></p>
-<p>3、在我们请求的返回数据中，做一层拦截转换，此处以 axios 的实现方法为例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;*transformResponse 选项允许我们在数据传送到 &#96;then&#x2F;catch&#96; 方法之前对数据进行改动*&#x2F;</span><br><span class="line">axios.defaults.transformResponse &#x3D; [</span><br><span class="line">  function(data) &#123;</span><br><span class="line">    return jsonlint.parse(data)</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>综上，定义JSON转化避免long类型数据溢出，可以实现long类型数据在前端正常显示</p>
-<h2 id="Mac给文件夹赋予管理员权限"><a href="#Mac给文件夹赋予管理员权限" class="headerlink" title="Mac给文件夹赋予管理员权限"></a>Mac给文件夹赋予管理员权限</h2><p><code>sudo chown -R gaoyuan ios</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if ($request_filename ~* .*index\.html$) &#123;</span><br><span class="line">     add_header Cache-Control &quot;private, no-store, no-cache, must-revalidate, proxy-revalidate&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>个人笔记</category>
       </categories>
       <tags>
         <tag>note</tag>
