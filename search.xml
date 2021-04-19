@@ -427,111 +427,6 @@
       </tags>
   </entry>
   <entry>
-    <title>JavaScript基础（三）作用域</title>
-    <url>/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89%E4%BD%9C%E7%94%A8%E5%9F%9F/</url>
-    <content><![CDATA[<blockquote>
-<p>作用域的篇幅不会太长，作为自己对Js总结的第三篇文章，主要是承上启下。 之后会涉及到执行上下文，闭包等相关专题，为了避免内容过多，作用域这一部分单独总结。</p>
-</blockquote>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/%E4%B8%8B%E8%BD%BD.jpeg" style="zoom:67%;" />
-
-<span id="more"></span>
-
-<h2 id="一、作用域的定义"><a href="#一、作用域的定义" class="headerlink" title="一、作用域的定义"></a>一、作用域的定义</h2><p><strong>一张导图概括本节内容</strong> <img data-src="https://img-blog.csdnimg.cn/20200609102448438.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"> <strong>1.1 常见的解释</strong></p>
-<ol>
-<li>一段程序代码中所用到的<strong>名字</strong>并不总是有效，而限定它的可用性的范围就是这个名字的作用域；</li>
-<li>作用域规定了<strong>如何查找变量</strong>，也就是确定当前执行代码对变量的访问权限；</li>
-<li>通俗的讲作用域就是<strong>一套规则</strong>，用于确定在何处以及如何查找<strong>某个变量</strong>的规则</li>
-</ol>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(a); <span class="comment">// 100</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(a) <span class="comment">// a is not defined a变量并不是任何地方都可以被找到的</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>1.2 JavaScript中作用域工作模型</strong></p>
-<p>JavaScript 采用是词法作用域(lexical scoping)，也就是静态作用域：</p>
-<ul>
-<li>函数的作用域在函数定义的时候就决定了</li>
-</ul>
-<p>与之对应的还有一个动态作用域：</p>
-<ul>
-<li>函数的作用域是在函数调用的时候才决定的；</li>
-</ul>
-<p><strong>1.3 全局变量和局部变量</strong></p>
-<p>根据定义变量的方式又可以分为：</p>
-<p>局部变量：只能在函数中访问，该函数外不可访问；</p>
-<ul>
-<li>定义在函数中的变量</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(name);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br><span class="line">fn(); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
-
-<p>全局：任何地方都能访问到的对象拥有全局作用域。</p>
-<ul>
-<li>函数外定义的变量</li>
-<li>所有末定义直接赋值的变量自动声明为拥有全局作用域</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a4-&#x27;</span>,a);</span><br></pre></td></tr></table></figure>
-
-<p>注意：在ES6之后又提出了块级作用域，它们之间的区别我们之后再来讨论。</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=2659298556,3987226078&fm=26&gp=0.jpeg"></p>
-<h2 id="二、理解作用域"><a href="#二、理解作用域" class="headerlink" title="二、理解作用域"></a>二、理解作用域</h2><p>根据第一节的描述，我们一一验证一下</p>
-<p><strong>2.1 理解词法作用域</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> value = <span class="number">1</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> value = <span class="number">2</span>;</span><br><span class="line">    foo();</span><br><span class="line">&#125;</span><br><span class="line">bar();</span><br></pre></td></tr></table></figure>
-
-<p>我们结合定义去分析：</p>
-<ul>
-<li>执行<code>bar</code>函数，函数内部形成了局部作用域；</li>
-<li>声明value变量，并赋值2</li>
-<li>执行<code>foo</code>函数，函数foo的作用域内没有<code>value</code>这个变量，它会向外查找</li>
-<li>根据词法作用域的规则，函数定义时，<code>foo</code>的外部作用域为全局作用域</li>
-<li>打印<strong>结果是1</strong></li>
-</ul>
-<p>如果是动态作用域的话：结果<strong>就是2</strong>，不知道你是否想明白了？</p>
-<p><strong>2.2 全局变量</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;全局变量&#x27;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(str+<span class="number">1</span>);</span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		<span class="built_in">console</span>.log(str+<span class="number">2</span>);</span><br><span class="line">		<span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">			<span class="built_in">console</span>.log(str+<span class="number">3</span>);</span><br><span class="line">		&#125;;</span><br><span class="line">		fn();</span><br><span class="line">	&#125;;</span><br><span class="line">	childFn();</span><br><span class="line">&#125;</span><br><span class="line">func();</span><br><span class="line"><span class="comment">// 全局变量1</span></span><br><span class="line"><span class="comment">// 全局变量2</span></span><br><span class="line"><span class="comment">// 全局变量3</span></span><br></pre></td></tr></table></figure>
-
-<p>再来分析下面的代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line"><span class="comment">// a2- 100 // 在当前作用域下查找变量a =&gt; 100</span></span><br><span class="line"><span class="comment">// a1- 1000 // 函数执行时，全局变量a已经被重新赋值</span></span><br><span class="line"><span class="comment">// a3- 1000 // 全局变量a =&gt; 1000</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>2.3 局部作用域</strong></p>
-<p>局部作用域一般只在固定的代码片段内可访问到，最常见的就是以函数为单位的：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name=<span class="string">&quot;高原&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(name);</span><br><span class="line">    &#125;</span><br><span class="line">    childFn(); <span class="comment">// 高原</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// name is not defined</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="三、作用域链"><a href="#三、作用域链" class="headerlink" title="三、作用域链"></a>三、作用域链</h2><p><strong>3.1 当查找变量的时候都发生了什么？</strong></p>
-<ul>
-<li>会先从当前<strong>上下文的变量对象</strong>中查找；</li>
-<li>如果没有找到，就会从父级(词法层面上的父级)<strong>执行上下文</strong>的变量对象中查找；</li>
-<li>一直找到全局上下文的变量对象，也就是全局对象；</li>
-<li>作用域链的顶端就是全局对象；</li>
-</ul>
-<p>这样<strong>由多个执行上下文的变量对象构成的链表就叫做作用域链</strong>，从某种意义上很类似原型和原型链。</p>
-<p><strong>3.2 作用域链和原型继承查找时的区别：</strong></p>
-<ul>
-<li>查找一个普通对象的属性，但是在当前对象和其原型中都找不到时，会返回<code>undefined</code></li>
-<li>查找的属性在作用域链中不存在的话就会抛出<code>ReferenceError</code>。</li>
-</ul>
-<p><strong>3.3 作用域嵌套</strong></p>
-<p>既然每一个函数就可以形成一个作用域（<code>词法作用域</code> || <code>块级作用域</code>），那么当然也会存在多个作用域嵌套的情况，他们遵循这样的查询规则：</p>
-<ul>
-<li>内部作用域有权访问外部作用域;</li>
-<li>外部作用域无法访问内部作用域;（真是是这样吗？）</li>
-<li>兄弟作用域不可互相访问;</li>
-</ul>
-<p>在《你不知道的Js》中，希望读者可以将作用域的嵌套和作用域链想象成这样：</p>
-<p><img data-src="https://img-blog.csdnimg.cn/2020060915193493.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<h2 id="四、思考与总结"><a href="#四、思考与总结" class="headerlink" title="四、思考与总结"></a>四、思考与总结</h2><p><strong>4.1 总结</strong></p>
-<p><img data-src="https://img-blog.csdnimg.cn/20200609160809565.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<p><strong>4.2 思考</strong></p>
-<p>最后，让我们看一个《JavaScript权威指南》中的两段代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f(); <span class="comment">// 注意</span></span><br><span class="line">&#125;</span><br><span class="line">checkscope1();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope2</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line">checkscope2()();</span><br></pre></td></tr></table></figure>
-
-<p>两段代码的结果都是”local scope”，书中的回答是：JavaScript 函数的执行用到了作用域链，这个作用域链是在函数定义的时候创建的。嵌套的函数 f() 定义在这个作用域链里，其中的变量 scope 一定是局部变量，不管何时何地执行函数 f()，这种绑定在执行 f() 时依然有效。</p>
-<p>但是它们内部经历的事情是一样的吗？</p>
-]]></content>
-      <categories>
-        <category>javascript</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>JavaScript基础（二）从原型到原型链</title>
     <url>/2021/03/21/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%E4%BB%8E%E5%8E%9F%E5%9E%8B%E5%88%B0%E5%8E%9F%E5%9E%8B%E9%93%BE/</url>
     <content><![CDATA[<blockquote>
@@ -628,6 +523,111 @@
 <li>Object.prototype是所有对象的根对象；</li>
 <li>原型链存在终点，不会无限查找下去；</li>
 </ul>
+]]></content>
+      <categories>
+        <category>javascript</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>JavaScript基础（三）作用域</title>
+    <url>/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89%E4%BD%9C%E7%94%A8%E5%9F%9F/</url>
+    <content><![CDATA[<blockquote>
+<p>作用域的篇幅不会太长，作为自己对Js总结的第三篇文章，主要是承上启下。 之后会涉及到执行上下文，闭包等相关专题，为了避免内容过多，作用域这一部分单独总结。</p>
+</blockquote>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/%E4%B8%8B%E8%BD%BD.jpeg" style="zoom:67%;" />
+
+<span id="more"></span>
+
+<h2 id="一、作用域的定义"><a href="#一、作用域的定义" class="headerlink" title="一、作用域的定义"></a>一、作用域的定义</h2><p><strong>一张导图概括本节内容</strong> <img data-src="https://img-blog.csdnimg.cn/20200609102448438.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"> <strong>1.1 常见的解释</strong></p>
+<ol>
+<li>一段程序代码中所用到的<strong>名字</strong>并不总是有效，而限定它的可用性的范围就是这个名字的作用域；</li>
+<li>作用域规定了<strong>如何查找变量</strong>，也就是确定当前执行代码对变量的访问权限；</li>
+<li>通俗的讲作用域就是<strong>一套规则</strong>，用于确定在何处以及如何查找<strong>某个变量</strong>的规则</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(a); <span class="comment">// 100</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(a) <span class="comment">// a is not defined a变量并不是任何地方都可以被找到的</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>1.2 JavaScript中作用域工作模型</strong></p>
+<p>JavaScript 采用是词法作用域(lexical scoping)，也就是静态作用域：</p>
+<ul>
+<li>函数的作用域在函数定义的时候就决定了</li>
+</ul>
+<p>与之对应的还有一个动态作用域：</p>
+<ul>
+<li>函数的作用域是在函数调用的时候才决定的；</li>
+</ul>
+<p><strong>1.3 全局变量和局部变量</strong></p>
+<p>根据定义变量的方式又可以分为：</p>
+<p>局部变量：只能在函数中访问，该函数外不可访问；</p>
+<ul>
+<li>定义在函数中的变量</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(name);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br><span class="line">fn(); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
+
+<p>全局：任何地方都能访问到的对象拥有全局作用域。</p>
+<ul>
+<li>函数外定义的变量</li>
+<li>所有末定义直接赋值的变量自动声明为拥有全局作用域</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a4-&#x27;</span>,a);</span><br></pre></td></tr></table></figure>
+
+<p>注意：在ES6之后又提出了块级作用域，它们之间的区别我们之后再来讨论。</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=2659298556,3987226078&fm=26&gp=0.jpeg"></p>
+<h2 id="二、理解作用域"><a href="#二、理解作用域" class="headerlink" title="二、理解作用域"></a>二、理解作用域</h2><p>根据第一节的描述，我们一一验证一下</p>
+<p><strong>2.1 理解词法作用域</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> value = <span class="number">1</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> value = <span class="number">2</span>;</span><br><span class="line">    foo();</span><br><span class="line">&#125;</span><br><span class="line">bar();</span><br></pre></td></tr></table></figure>
+
+<p>我们结合定义去分析：</p>
+<ul>
+<li>执行<code>bar</code>函数，函数内部形成了局部作用域；</li>
+<li>声明value变量，并赋值2</li>
+<li>执行<code>foo</code>函数，函数foo的作用域内没有<code>value</code>这个变量，它会向外查找</li>
+<li>根据词法作用域的规则，函数定义时，<code>foo</code>的外部作用域为全局作用域</li>
+<li>打印<strong>结果是1</strong></li>
+</ul>
+<p>如果是动态作用域的话：结果<strong>就是2</strong>，不知道你是否想明白了？</p>
+<p><strong>2.2 全局变量</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;全局变量&#x27;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(str+<span class="number">1</span>);</span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		<span class="built_in">console</span>.log(str+<span class="number">2</span>);</span><br><span class="line">		<span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">			<span class="built_in">console</span>.log(str+<span class="number">3</span>);</span><br><span class="line">		&#125;;</span><br><span class="line">		fn();</span><br><span class="line">	&#125;;</span><br><span class="line">	childFn();</span><br><span class="line">&#125;</span><br><span class="line">func();</span><br><span class="line"><span class="comment">// 全局变量1</span></span><br><span class="line"><span class="comment">// 全局变量2</span></span><br><span class="line"><span class="comment">// 全局变量3</span></span><br></pre></td></tr></table></figure>
+
+<p>再来分析下面的代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line"><span class="comment">// a2- 100 // 在当前作用域下查找变量a =&gt; 100</span></span><br><span class="line"><span class="comment">// a1- 1000 // 函数执行时，全局变量a已经被重新赋值</span></span><br><span class="line"><span class="comment">// a3- 1000 // 全局变量a =&gt; 1000</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>2.3 局部作用域</strong></p>
+<p>局部作用域一般只在固定的代码片段内可访问到，最常见的就是以函数为单位的：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name=<span class="string">&quot;高原&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(name);</span><br><span class="line">    &#125;</span><br><span class="line">    childFn(); <span class="comment">// 高原</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// name is not defined</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="三、作用域链"><a href="#三、作用域链" class="headerlink" title="三、作用域链"></a>三、作用域链</h2><p><strong>3.1 当查找变量的时候都发生了什么？</strong></p>
+<ul>
+<li>会先从当前<strong>上下文的变量对象</strong>中查找；</li>
+<li>如果没有找到，就会从父级(词法层面上的父级)<strong>执行上下文</strong>的变量对象中查找；</li>
+<li>一直找到全局上下文的变量对象，也就是全局对象；</li>
+<li>作用域链的顶端就是全局对象；</li>
+</ul>
+<p>这样<strong>由多个执行上下文的变量对象构成的链表就叫做作用域链</strong>，从某种意义上很类似原型和原型链。</p>
+<p><strong>3.2 作用域链和原型继承查找时的区别：</strong></p>
+<ul>
+<li>查找一个普通对象的属性，但是在当前对象和其原型中都找不到时，会返回<code>undefined</code></li>
+<li>查找的属性在作用域链中不存在的话就会抛出<code>ReferenceError</code>。</li>
+</ul>
+<p><strong>3.3 作用域嵌套</strong></p>
+<p>既然每一个函数就可以形成一个作用域（<code>词法作用域</code> || <code>块级作用域</code>），那么当然也会存在多个作用域嵌套的情况，他们遵循这样的查询规则：</p>
+<ul>
+<li>内部作用域有权访问外部作用域;</li>
+<li>外部作用域无法访问内部作用域;（真是是这样吗？）</li>
+<li>兄弟作用域不可互相访问;</li>
+</ul>
+<p>在《你不知道的Js》中，希望读者可以将作用域的嵌套和作用域链想象成这样：</p>
+<p><img data-src="https://img-blog.csdnimg.cn/2020060915193493.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="四、思考与总结"><a href="#四、思考与总结" class="headerlink" title="四、思考与总结"></a>四、思考与总结</h2><p><strong>4.1 总结</strong></p>
+<p><img data-src="https://img-blog.csdnimg.cn/20200609160809565.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p><strong>4.2 思考</strong></p>
+<p>最后，让我们看一个《JavaScript权威指南》中的两段代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f(); <span class="comment">// 注意</span></span><br><span class="line">&#125;</span><br><span class="line">checkscope1();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope2</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line">checkscope2()();</span><br></pre></td></tr></table></figure>
+
+<p>两段代码的结果都是”local scope”，书中的回答是：JavaScript 函数的执行用到了作用域链，这个作用域链是在函数定义的时候创建的。嵌套的函数 f() 定义在这个作用域链里，其中的变量 scope 一定是局部变量，不管何时何地执行函数 f()，这种绑定在执行 f() 时依然有效。</p>
+<p>但是它们内部经历的事情是一样的吗？</p>
 ]]></content>
       <categories>
         <category>javascript</category>
@@ -1637,54 +1637,6 @@
       </tags>
   </entry>
   <entry>
-    <title>开发小技巧</title>
-    <url>/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
-    <content><![CDATA[<h2 id="阻止单击事件冒泡"><a href="#阻止单击事件冒泡" class="headerlink" title="阻止单击事件冒泡"></a>阻止单击事件冒泡</h2><p><code>&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;</code></p>
-<h2 id="提交事件不再重载页面"><a href="#提交事件不再重载页面" class="headerlink" title="提交事件不再重载页面"></a>提交事件不再重载页面</h2><p><code>&lt;form v-on:submit.prevent=&quot;onSubmit&quot;&gt;&lt;/form&gt;</code></p>
-<h2 id="修饰符可以串联"><a href="#修饰符可以串联" class="headerlink" title="修饰符可以串联"></a>修饰符可以串联</h2><p><code>&lt;a v-on:click.stop.prevent=&quot;doThat&quot;&gt;</code></p>
-<span id="more"></span>
-
-
-<h2 id="只有修饰符"><a href="#只有修饰符" class="headerlink" title="只有修饰符"></a>只有修饰符</h2><p><code>&lt;form v-on:submit.prevent&gt;&lt;/form&gt;</code></p>
-<br>
-<br>
-<br>
-
-<h2 id="Mac谷歌跨域命令"><a href="#Mac谷歌跨域命令" class="headerlink" title="Mac谷歌跨域命令"></a>Mac谷歌跨域命令</h2><p><code>open -n /Applications/Google\ Chrome.app/ --args --disable-web-security  --user-data-dir=/Users/GaoYuan/Documents/MyChromeDevUserData</code></p>
-<br>
-<br>
-<br>
-
-<h2 id="Mac显示隐藏文件命令："><a href="#Mac显示隐藏文件命令：" class="headerlink" title="Mac显示隐藏文件命令："></a>Mac显示隐藏文件命令：</h2><p><strong>显示隐藏文件</strong></p>
-<p><code>defaults write com.apple.finder AppleShowAllFiles Yes &amp;&amp; killall Finder </code></p>
-<p><strong>不显示隐藏文件</strong></p>
-<p><code>defaults write com.apple.finder AppleShowAllFiles No &amp;&amp; killall Finder </code></p>
-<br>
-<br>
-
-<h2 id="Jison解决JS处理后端返回的Long型数据精度丢失问题"><a href="#Jison解决JS处理后端返回的Long型数据精度丢失问题" class="headerlink" title="Jison解决JS处理后端返回的Long型数据精度丢失问题"></a>Jison解决JS处理后端返回的Long型数据精度丢失问题</h2><p>原因：js是弱类型语言，所有的数字类型统称为Number类型，不区分int、long、double等。</p>
-<p><code>git clone git://github.com/zaach/jsonlint.git</code></p>
-<p>在src目录下提供了jsonlint.y（grammaFile）和jsonlint.l（lexFile)两个文件。使用这两个文件可以直接生成jsonlint.js。如下修改jsonlint.y：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">JSONNumber</span><br><span class="line"></span><br><span class="line">    : NUMBER</span><br><span class="line">    </span><br><span class="line">        &#123;$$ &#x3D; yytext &#x3D;&#x3D; String(Number(yytext))? Number(yytext): yytext;&#125;</span><br><span class="line">    ;</span><br></pre></td></tr></table></figure>
-
-<p> 然后：</p>
-<p><code>cd src</code></p>
-<p><code>jison jsonlint.y jsonlint.l</code></p>
-<h3 id="最后引入至项目"><a href="#最后引入至项目" class="headerlink" title="最后引入至项目"></a>最后引入至项目</h3><p>1.将自定义的 jsonlint.js 放到 static 目录下<br>2.在 index.html 中引入<br><code>&lt;script src=&quot;./static/jsonlint/jsonlint.js&quot;&gt;&lt;/script&gt;</code></p>
-<p>3、在我们请求的返回数据中，做一层拦截转换，此处以 axios 的实现方法为例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;*transformResponse 选项允许我们在数据传送到 &#96;then&#x2F;catch&#96; 方法之前对数据进行改动*&#x2F;</span><br><span class="line">axios.defaults.transformResponse &#x3D; [</span><br><span class="line">  function(data) &#123;</span><br><span class="line">    return jsonlint.parse(data)</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>综上，定义JSON转化避免long类型数据溢出，可以实现long类型数据在前端正常显示</p>
-<h2 id="Mac给文件夹赋予管理员权限"><a href="#Mac给文件夹赋予管理员权限" class="headerlink" title="Mac给文件夹赋予管理员权限"></a>Mac给文件夹赋予管理员权限</h2><p><code>sudo chown -R gaoyuan ios</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if ($request_filename ~* .*index\.html$) &#123;</span><br><span class="line">     add_header Cache-Control &quot;private, no-store, no-cache, must-revalidate, proxy-revalidate&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>个人笔记</category>
-      </categories>
-      <tags>
-        <tag>note</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>浏览器回流和重汇</title>
     <url>/2021/04/16/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%9B%9E%E6%B5%81%E5%92%8C%E9%87%8D%E6%B1%87/</url>
     <content><![CDATA[<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/640"></p>
@@ -1772,6 +1724,54 @@
 <h2 id=""><a href="#" class="headerlink" title=""></a></h2>]]></content>
       <categories>
         <category>note</category>
+      </categories>
+      <tags>
+        <tag>note</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>开发小技巧</title>
+    <url>/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
+    <content><![CDATA[<h2 id="阻止单击事件冒泡"><a href="#阻止单击事件冒泡" class="headerlink" title="阻止单击事件冒泡"></a>阻止单击事件冒泡</h2><p><code>&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;</code></p>
+<h2 id="提交事件不再重载页面"><a href="#提交事件不再重载页面" class="headerlink" title="提交事件不再重载页面"></a>提交事件不再重载页面</h2><p><code>&lt;form v-on:submit.prevent=&quot;onSubmit&quot;&gt;&lt;/form&gt;</code></p>
+<h2 id="修饰符可以串联"><a href="#修饰符可以串联" class="headerlink" title="修饰符可以串联"></a>修饰符可以串联</h2><p><code>&lt;a v-on:click.stop.prevent=&quot;doThat&quot;&gt;</code></p>
+<span id="more"></span>
+
+
+<h2 id="只有修饰符"><a href="#只有修饰符" class="headerlink" title="只有修饰符"></a>只有修饰符</h2><p><code>&lt;form v-on:submit.prevent&gt;&lt;/form&gt;</code></p>
+<br>
+<br>
+<br>
+
+<h2 id="Mac谷歌跨域命令"><a href="#Mac谷歌跨域命令" class="headerlink" title="Mac谷歌跨域命令"></a>Mac谷歌跨域命令</h2><p><code>open -n /Applications/Google\ Chrome.app/ --args --disable-web-security  --user-data-dir=/Users/GaoYuan/Documents/MyChromeDevUserData</code></p>
+<br>
+<br>
+<br>
+
+<h2 id="Mac显示隐藏文件命令："><a href="#Mac显示隐藏文件命令：" class="headerlink" title="Mac显示隐藏文件命令："></a>Mac显示隐藏文件命令：</h2><p><strong>显示隐藏文件</strong></p>
+<p><code>defaults write com.apple.finder AppleShowAllFiles Yes &amp;&amp; killall Finder </code></p>
+<p><strong>不显示隐藏文件</strong></p>
+<p><code>defaults write com.apple.finder AppleShowAllFiles No &amp;&amp; killall Finder </code></p>
+<br>
+<br>
+
+<h2 id="Jison解决JS处理后端返回的Long型数据精度丢失问题"><a href="#Jison解决JS处理后端返回的Long型数据精度丢失问题" class="headerlink" title="Jison解决JS处理后端返回的Long型数据精度丢失问题"></a>Jison解决JS处理后端返回的Long型数据精度丢失问题</h2><p>原因：js是弱类型语言，所有的数字类型统称为Number类型，不区分int、long、double等。</p>
+<p><code>git clone git://github.com/zaach/jsonlint.git</code></p>
+<p>在src目录下提供了jsonlint.y（grammaFile）和jsonlint.l（lexFile)两个文件。使用这两个文件可以直接生成jsonlint.js。如下修改jsonlint.y：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">JSONNumber</span><br><span class="line"></span><br><span class="line">    : NUMBER</span><br><span class="line">    </span><br><span class="line">        &#123;$$ &#x3D; yytext &#x3D;&#x3D; String(Number(yytext))? Number(yytext): yytext;&#125;</span><br><span class="line">    ;</span><br></pre></td></tr></table></figure>
+
+<p> 然后：</p>
+<p><code>cd src</code></p>
+<p><code>jison jsonlint.y jsonlint.l</code></p>
+<h3 id="最后引入至项目"><a href="#最后引入至项目" class="headerlink" title="最后引入至项目"></a>最后引入至项目</h3><p>1.将自定义的 jsonlint.js 放到 static 目录下<br>2.在 index.html 中引入<br><code>&lt;script src=&quot;./static/jsonlint/jsonlint.js&quot;&gt;&lt;/script&gt;</code></p>
+<p>3、在我们请求的返回数据中，做一层拦截转换，此处以 axios 的实现方法为例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;*transformResponse 选项允许我们在数据传送到 &#96;then&#x2F;catch&#96; 方法之前对数据进行改动*&#x2F;</span><br><span class="line">axios.defaults.transformResponse &#x3D; [</span><br><span class="line">  function(data) &#123;</span><br><span class="line">    return jsonlint.parse(data)</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>综上，定义JSON转化避免long类型数据溢出，可以实现long类型数据在前端正常显示</p>
+<h2 id="Mac给文件夹赋予管理员权限"><a href="#Mac给文件夹赋予管理员权限" class="headerlink" title="Mac给文件夹赋予管理员权限"></a>Mac给文件夹赋予管理员权限</h2><p><code>sudo chown -R gaoyuan ios</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if ($request_filename ~* .*index\.html$) &#123;</span><br><span class="line">     add_header Cache-Control &quot;private, no-store, no-cache, must-revalidate, proxy-revalidate&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>个人笔记</category>
       </categories>
       <tags>
         <tag>note</tag>
