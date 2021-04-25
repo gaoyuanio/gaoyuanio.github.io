@@ -221,14 +221,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/tags/vue/</loc>
+    <loc>http://example.com/tags/vuex/</loc>
     <lastmod>2021-04-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://example.com/tags/vuex/</loc>
+    <loc>http://example.com/tags/vue/</loc>
     <lastmod>2021-04-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -342,14 +342,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/categories/CSS/</loc>
+    <loc>http://example.com/categories/note/</loc>
     <lastmod>2021-04-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://example.com/categories/note/</loc>
+    <loc>http://example.com/categories/CSS/</loc>
     <lastmod>2021-04-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
