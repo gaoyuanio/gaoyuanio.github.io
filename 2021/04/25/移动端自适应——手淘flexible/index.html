@@ -28,19 +28,21 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-<meta name="description" content="一枚微不足道的前端攻城狮">
-<meta property="og:type" content="website">
-<meta property="og:title" content="GaoYuan&#39;s Blog">
-<meta property="og:url" content="http://example.com/tags/vuex/index.html">
+<meta name="description" content="移动端自适应——手淘flexible熟悉移动端的自适应方案的朋友对 rem 适应方案，肯定不陌生，最出名的就是阿里的 lib-flexible 方案。 原理：flexible就是根据不同的屏幕算出html的font-size，通过js来动态写meta标签。 事实上他做了这几样事情：  动态改写&lt;meta&gt;标签 给&lt;html&gt;元素添加data-dpr属性，并且动态改写data">
+<meta property="og:type" content="article">
+<meta property="og:title" content="移动端自适应——手淘flexible">
+<meta property="og:url" content="http://example.com/2021/04/25/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible/index.html">
 <meta property="og:site_name" content="GaoYuan&#39;s Blog">
-<meta property="og:description" content="一枚微不足道的前端攻城狮">
+<meta property="og:description" content="移动端自适应——手淘flexible熟悉移动端的自适应方案的朋友对 rem 适应方案，肯定不陌生，最出名的就是阿里的 lib-flexible 方案。 原理：flexible就是根据不同的屏幕算出html的font-size，通过js来动态写meta标签。 事实上他做了这几样事情：  动态改写&lt;meta&gt;标签 给&lt;html&gt;元素添加data-dpr属性，并且动态改写data">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-04-25T03:21:51.000Z">
+<meta property="article:modified_time" content="2021-04-25T03:24:34.547Z">
 <meta property="article:author" content="高原">
-<meta property="article:tag" content="前端">
+<meta property="article:tag" content="移动端">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/tags/vuex/">
+<link rel="canonical" href="http://example.com/2021/04/25/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible/">
 
 
 <script class="page-configurations">
@@ -48,11 +50,11 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
-<title>标签: vuex | GaoYuan's Blog</title>
+<title>移动端自适应——手淘flexible | GaoYuan's Blog</title>
   
 
 
@@ -179,7 +181,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -192,6 +194,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible"><span class="nav-text">移动端自适应——手淘flexible</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vue%E4%B8%AD%E4%BD%BF%E7%94%A8rem"><span class="nav-text">vue中使用rem</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -280,51 +283,150 @@
 </noscript>
 
 
-    <div class="main-inner tag posts-collapse">
+    <div class="main-inner post posts-expand">
 
 
   
-  
-  
-  <div class="post-block">
-    <div class="post-content">
-      <div class="collection-title">
-        <h2 class="collection-header">vuex
-          <small>标签</small>
-        </h2>
-      </div>
 
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/25/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="高原">
+      <meta itemprop="description" content="一枚微不足道的前端攻城狮">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GaoYuan's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          移动端自适应——手淘flexible
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
       
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
+
+      <time title="创建时间：2021-04-25 11:21:51 / 修改时间：11:24:34" itemprop="dateCreated datePublished" datetime="2021-04-25T11:21:51+08:00">2021-04-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%A7%BB%E5%8A%A8%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">移动端</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="移动端自适应——手淘flexible"><a href="#移动端自适应——手淘flexible" class="headerlink" title="移动端自适应——手淘flexible"></a>移动端自适应——手淘flexible</h2><p>熟悉移动端的自适应方案的朋友对 rem 适应方案，肯定不陌生，最出名的就是阿里的 <a target="_blank" rel="noopener" href="https://github.com/amfe/lib-flexible">lib-flexible</a> 方案。</p>
+<p><strong>原理：</strong>flexible就是根据不同的屏幕算出html的font-size，通过js来动态写meta标签。</p>
+<p>事实上他做了这几样事情：</p>
+<ul>
+<li>动态改写<code>&lt;meta&gt;</code>标签</li>
+<li>给<code>&lt;html&gt;</code>元素添加<code>data-dpr</code>属性，并且动态改写<code>data-dpr</code>的值</li>
+<li>给<code>&lt;html&gt;</code>元素添加<code>font-size</code>属性，并且动态改写<code>font-size</code>的值</li>
+</ul>
+<p>比如我们在做移动端的时候，经常拿到的设计稿是640px或者750px。自己项目中就是640px，以此为例，自己在项目中为了计算方便，所以给html根元素设置的字体大小是100px，也就是在640px下面。这里注意，我们给html设置100px，这个是字体哦，所以最好在body设置一下字体大小。 </p>
+<span id="more"></span>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 设置html元素的字体大小为100px</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 所有的像素我们直接除以</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">640px  ——  6.4rem</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">64px —— 0.64rem</span><br></pre></td></tr></table></figure>
+
+<p>那么如果64px，对应我们写rem就是0.64rem，也不需要动用计算器去计算rem，需要多强的大脑呀（虽然有很多插件帮我们）</p>
+<p>修改flexible.js。640px下面的10就变成6.4</p>
+<p>![image-20210425112100315](/Users/gaoyuan/Library/Application Support/typora-user-images/image-20210425112100315.png)</p>
+<p>这样，我们页面直接把px换算成rem，就可以实现自适应。（记住，自己这里以640px设计稿为基础，如果是750px就是除以7.5）。</p>
+<p><strong>字号不使用rem</strong></p>
+<p>我们都知道chrome的最小显示的字体是12px，如果字体用rem，计算出来小于12px，那么就也会以12px显示，而且我们不希望出现13px或者15px这样的奇葩尺寸，所以字体最好是用px来表示，至于适应，我们可以写媒体查询。</p>
+<h2 id="vue中使用rem"><a href="#vue中使用rem" class="headerlink" title="vue中使用rem"></a>vue中使用rem</h2><p>vue现在正是火的势头上，作者说明年估计3.0要出来了。那么在vue我们如果做移动端自适应怎么弄呢？</p>
+<p><strong>安装flexible</strong></p>
+<p><em>在命令行中运行如下安装：</em></p>
+<blockquote>
+<p>npm i lib-flexible –save-dev</p>
+</blockquote>
+<p><strong>引入flexible</strong></p>
+<p><em>在项目入口文件 main.js 里 引入 lib-flexible</em></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&#x27;lib-flexible&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>对于我们的index.html，最好是不要meta标签，flexible会自动添加上的，因为有一个判断。当然了，懒惰果然是最大的生产力，有的人觉得换算rem太麻烦，就出现了插件<a target="_blank" rel="noopener" href="https://www.npmjs.com/package/px2rem-loader">px2rem-loader</a>，把px自动转化为对应的rem。但是呢，麻烦的就是如果引入外部的css文件，那么也会把px转化为rem。自己在项目中就是手动计算rem，用上面的方法，直接除以100，这个应该很简单吧，都是程序员，数学这个还是可以吧……</p>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2020-12-26T21:43:23+08:00"
-              content="2020-12-26">
-          12-26
-        </time>
-      </div>
+    
+    
+    
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/12/26/vuex%E7%AC%94%E8%AE%B0/" itemprop="url">
-            <span itemprop="name">vuex笔记</span>
-          </a>
-      </div>
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%A7%BB%E5%8A%A8%E7%AB%AF/" rel="tag"># 移动端</a>
+          </div>
 
-      
-    </header>
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/04/16/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%9B%9E%E6%B5%81%E5%92%8C%E9%87%8D%E6%B1%87/" rel="prev" title="浏览器回流和重汇">
+                  <i class="fa fa-chevron-left"></i> 浏览器回流和重汇
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
   </article>
+</div>
 
-    </div>
-  </div>
-  
-  
-  
 
+
+
+
+
+    <div class="comments gitalk-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -426,6 +528,25 @@
 
 
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('.gitalk-container', () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'b6854378950da6a4a9dc',
+      clientSecret: 'f0b9297f2f6d9fd6ac41e7e746a1b47747977a52',
+      repo        : 'gaoyuanio.github.io',
+      owner       : 'gaoyuanio',
+      admin       : ['gaoyuanio'],
+      id          : 'd856ec8f6a0ddf58aaba810c7a2b7a9f',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render(document.querySelector('.gitalk-container'));
+  }, window.Gitalk);
+});
+</script>
 
 <script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":true,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
 </html>

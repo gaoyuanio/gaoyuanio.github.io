@@ -1637,99 +1637,6 @@
       </tags>
   </entry>
   <entry>
-    <title>浏览器回流和重汇</title>
-    <url>/2021/04/16/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%9B%9E%E6%B5%81%E5%92%8C%E9%87%8D%E6%B1%87/</url>
-    <content><![CDATA[<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/640"></p>
-<span id="more"></span>
-
-<h2 id="一、是什么"><a href="#一、是什么" class="headerlink" title="一、是什么"></a>一、是什么</h2><p>在<code>HTML</code>中，每个元素都可以理解成一个盒子，在浏览器解析过程中，会涉及到回流与重绘：</p>
-<ul>
-<li>回流：布局引擎会根据各种样式计算每个盒子在页面上的大小与位置</li>
-<li>重绘：当计算好盒模型的位置、大小及其他属性后，浏览器根据每个盒子特性进行绘制</li>
-</ul>
-<p>具体的浏览器解析渲染机制如下所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20210416102029.png"></p>
-<ul>
-<li>解析 HTML，生成 DOM 树，解析 CSS，生成 CSSOM 树</li>
-<li>将 DOM 树和 CSSOM 树结合，生成渲染树(Render Tree)</li>
-<li>Layout(回流):根据生成的渲染树，进行回流(Layout)，得到节点的几何信息（位置，大小）</li>
-<li>Painting(重绘):根据渲染树以及回流得到的几何信息，得到节点的绝对像素</li>
-<li>Display:将像素发送给 GPU，展示在页面上</li>
-</ul>
-<p>在页面初始渲染阶段，回流不可避免的触发，可以理解成页面一开始是空白的元素，后面添加了新的元素使页面布局发生改变</p>
-<p>当我们对 <code>DOM</code> 的修改引发了 <code>DOM</code>几何尺寸的变化（比如修改元素的宽、高或隐藏元素等）时，浏览器需要重新计算元素的几何属性，然后再将计算的结果绘制出来</p>
-<p>当我们对 <code>DOM</code>的修改导致了样式的变化（<code>color</code>或<code>background-color</code>），却并未影响其几何属性时，浏览器不需重新计算元素的几何属性、直接为该元素绘制新的样式，这里就仅仅触发了重绘</p>
-<h2 id="二、如何触发"><a href="#二、如何触发" class="headerlink" title="二、如何触发"></a>二、如何触发</h2><p>要想减少回流和重绘的次数，首先要了解回流和重绘是如何触发的</p>
-<h3 id="回流触发时机"><a href="#回流触发时机" class="headerlink" title="回流触发时机"></a>回流触发时机</h3><p>回流这一阶段主要是计算节点的位置和几何信息，那么当页面布局和几何信息发生变化的时候，就需要回流，如下面情况：</p>
-<ul>
-<li>添加或删除可见的 DOM 元素</li>
-<li>元素的位置发生变化</li>
-<li>元素的尺寸发生变化（包括外边距、内边框、边框大小、高度和宽度等）</li>
-<li>内容发生变化，比如文本变化或图片被另一个不同尺寸的图片所替代</li>
-<li>页面一开始渲染的时候（这避免不了）</li>
-<li>浏览器的窗口尺寸变化（因为回流是根据视口的大小来计算元素的位置和大小的）</li>
-</ul>
-<p>还有一些容易被忽略的操作：获取一些特定属性的值</p>
-<blockquote>
-<p>❝</p>
-<p>offsetTop、offsetLeft、 offsetWidth、offsetHeight、scrollTop、scrollLeft、scrollWidth、scrollHeight、clientTop、clientLeft、clientWidth、clientHeight</p>
-<p>❞</p>
-</blockquote>
-<p>这些属性有一个共性，就是需要通过即时计算得到。因此浏览器为了获取这些值，也会进行回流</p>
-<p>除此还包括<code>getComputedStyle</code>方法，原理是一样的</p>
-<h3 id="重绘触发时机"><a href="#重绘触发时机" class="headerlink" title="重绘触发时机"></a>重绘触发时机</h3><p>触发回流一定会触发重绘</p>
-<p>可以把页面理解为一个黑板，黑板上有一朵画好的小花。现在我们要把这朵从左边移到了右边，那我们要先确定好右边的具体位置，画好形状（回流），再画上它原有的颜色（重绘）</p>
-<p>除此之外还有一些其他引起重绘行为：</p>
-<ul>
-<li>颜色的修改</li>
-<li>文本方向的修改</li>
-<li>阴影的修改</li>
-</ul>
-<h3 id="浏览器优化机制"><a href="#浏览器优化机制" class="headerlink" title="浏览器优化机制"></a>浏览器优化机制</h3><p>由于每次重排都会造成额外的计算消耗，因此大多数浏览器都会通过队列化修改并批量执行来优化重排过程。浏览器会将修改操作放入到队列里，直到过了一段时间或者操作达到了一个阈值，才清空队列</p>
-<p>当你获取布局信息的操作的时候，会强制队列刷新，包括前面讲到的<code>offsetTop</code>等方法都会返回最新的数据</p>
-<p>因此浏览器不得不清空队列，触发回流重绘来返回正确的值</p>
-<h2 id="三、如何减少"><a href="#三、如何减少" class="headerlink" title="三、如何减少"></a>三、如何减少</h2><p>我们了解了如何触发回流和重绘的场景，下面给出避免回流的经验：</p>
-<ul>
-<li>如果想设定元素的样式，通过改变元素的 <code>class</code> 类名 (尽可能在 DOM 树的最里层)</li>
-<li>避免设置多项内联样式</li>
-<li>应用元素的动画，使用 <code>position</code> 属性的 <code>fixed</code> 值或 <code>absolute</code> 值(如前文示例所提)</li>
-<li>避免使用 <code>table</code> 布局，<code>table</code> 中每个元素的大小以及内容的改动，都会导致整个 <code>table</code> 的重新计算</li>
-<li>对于那些复杂的动画，对其设置 <code>position: fixed/absolute</code>，尽可能地使元素脱离文档流，从而减少对其他元素的影响</li>
-<li>使用 css3 硬件加速，可以让<code>transform</code>、<code>opacity</code>、<code>filters</code>这些动画不会引起回流重绘</li>
-<li>避免使用 CSS 的 <code>JavaScript</code> 表达式</li>
-</ul>
-<p>在使用 <code>JavaScript</code> 动态插入多个节点时, 可以使用<code>DocumentFragment</code>. 创建后一次插入. 就能避免多次的渲染性能</p>
-<p>但有时候，我们会无可避免地进行回流或者重绘，我们可以更好使用它们</p>
-<p>例如，多次修改一个把元素布局的时候，我们很可能会如下操作</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const el &#x3D; document.getElementById(&#39;el&#39;)</span><br><span class="line">for(let i&#x3D;0;i&lt;10;i++) &#123;</span><br><span class="line">    el.style.top  &#x3D; el.offsetTop  + 10 + &quot;px&quot;;</span><br><span class="line">    el.style.left &#x3D; el.offsetLeft + 10 + &quot;px&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>每次循环都需要获取多次<code>offset</code>属性，比较糟糕，可以使用变量的形式缓存起来，待计算完毕再提交给浏览器发出重计算请求</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 缓存offsetLeft与offsetTop的值</span><br><span class="line">const el &#x3D; document.getElementById(&#39;el&#39;)</span><br><span class="line">let offLeft &#x3D; el.offsetLeft, offTop &#x3D; el.offsetTop</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 在JS层面进行计算</span><br><span class="line">for(let i&#x3D;0;i&lt;10;i++) &#123;</span><br><span class="line">  offLeft +&#x3D; 10</span><br><span class="line">  offTop  +&#x3D; 10</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 一次性将计算结果应用到DOM上</span><br><span class="line">el.style.left &#x3D; offLeft + &quot;px&quot;</span><br><span class="line">el.style.top &#x3D; offTop  + &quot;px&quot;</span><br></pre></td></tr></table></figure>
-
-<p>我们还可避免改变样式，使用类名去合并样式</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const container &#x3D; document.getElementById(&#39;container&#39;)</span><br><span class="line">container.style.width &#x3D; &#39;100px&#39;</span><br><span class="line">container.style.height &#x3D; &#39;200px&#39;</span><br><span class="line">container.style.border &#x3D; &#39;10px solid red&#39;</span><br><span class="line">container.style.color &#x3D; &#39;red&#39;</span><br></pre></td></tr></table></figure>
-
-<p>使用类名去合并样式</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;style&gt;</span><br><span class="line">    .basic_style &#123;</span><br><span class="line">        width: 100px;</span><br><span class="line">        height: 200px;</span><br><span class="line">        border: 10px solid red;</span><br><span class="line">        color: red;</span><br><span class="line">    &#125;</span><br><span class="line">&lt;&#x2F;style&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">    const container &#x3D; document.getElementById(&#39;container&#39;)</span><br><span class="line">    container.classList.add(&#39;basic_style&#39;)</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-<p>前者每次单独操作，都去触发一次渲染树更改（新浏览器不会），</p>
-<p>都去触发一次渲染树更改，从而导致相应的回流与重绘过程</p>
-<p>合并之后，等于我们将所有的更改一次性发出</p>
-<p>我们还可以通过通过设置元素属性<code>display: none</code>，将其从页面上去掉，然后再进行后续操作，这些后续操作也不会触发回流与重绘，这个过程称为离线操作</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const container &#x3D; document.getElementById(&#39;container&#39;)</span><br><span class="line">container.style.width &#x3D; &#39;100px&#39;</span><br><span class="line">container.style.height &#x3D; &#39;200px&#39;</span><br><span class="line">container.style.border &#x3D; &#39;10px solid red&#39;</span><br><span class="line">container.style.color &#x3D; &#39;red&#39;</span><br></pre></td></tr></table></figure>
-
-<p>离线操作后</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">let container &#x3D; document.getElementById(&#39;container&#39;)</span><br><span class="line">container.style.display &#x3D; &#39;none&#39;</span><br><span class="line">container.style.width &#x3D; &#39;100px&#39;</span><br><span class="line">container.style.height &#x3D; &#39;200px&#39;</span><br><span class="line">container.style.border &#x3D; &#39;10px solid red&#39;</span><br><span class="line">container.style.color &#x3D; &#39;red&#39;</span><br><span class="line">...（省略了许多类似的后续操作）</span><br><span class="line">container.style.display &#x3D; &#39;block&#39;</span><br></pre></td></tr></table></figure>
-
-<h2 id=""><a href="#" class="headerlink" title=""></a></h2>]]></content>
-      <categories>
-        <category>note</category>
-      </categories>
-      <tags>
-        <tag>note</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>开发小技巧</title>
     <url>/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
     <content><![CDATA[<h2 id="阻止单击事件冒泡"><a href="#阻止单击事件冒泡" class="headerlink" title="阻止单击事件冒泡"></a>阻止单击事件冒泡</h2><p><code>&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;</code></p>
@@ -1861,6 +1768,140 @@
       </categories>
       <tags>
         <tag>CSS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>浏览器回流和重汇</title>
+    <url>/2021/04/16/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%9B%9E%E6%B5%81%E5%92%8C%E9%87%8D%E6%B1%87/</url>
+    <content><![CDATA[<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/640"></p>
+<span id="more"></span>
+
+<h2 id="一、是什么"><a href="#一、是什么" class="headerlink" title="一、是什么"></a>一、是什么</h2><p>在<code>HTML</code>中，每个元素都可以理解成一个盒子，在浏览器解析过程中，会涉及到回流与重绘：</p>
+<ul>
+<li>回流：布局引擎会根据各种样式计算每个盒子在页面上的大小与位置</li>
+<li>重绘：当计算好盒模型的位置、大小及其他属性后，浏览器根据每个盒子特性进行绘制</li>
+</ul>
+<p>具体的浏览器解析渲染机制如下所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20210416102029.png"></p>
+<ul>
+<li>解析 HTML，生成 DOM 树，解析 CSS，生成 CSSOM 树</li>
+<li>将 DOM 树和 CSSOM 树结合，生成渲染树(Render Tree)</li>
+<li>Layout(回流):根据生成的渲染树，进行回流(Layout)，得到节点的几何信息（位置，大小）</li>
+<li>Painting(重绘):根据渲染树以及回流得到的几何信息，得到节点的绝对像素</li>
+<li>Display:将像素发送给 GPU，展示在页面上</li>
+</ul>
+<p>在页面初始渲染阶段，回流不可避免的触发，可以理解成页面一开始是空白的元素，后面添加了新的元素使页面布局发生改变</p>
+<p>当我们对 <code>DOM</code> 的修改引发了 <code>DOM</code>几何尺寸的变化（比如修改元素的宽、高或隐藏元素等）时，浏览器需要重新计算元素的几何属性，然后再将计算的结果绘制出来</p>
+<p>当我们对 <code>DOM</code>的修改导致了样式的变化（<code>color</code>或<code>background-color</code>），却并未影响其几何属性时，浏览器不需重新计算元素的几何属性、直接为该元素绘制新的样式，这里就仅仅触发了重绘</p>
+<h2 id="二、如何触发"><a href="#二、如何触发" class="headerlink" title="二、如何触发"></a>二、如何触发</h2><p>要想减少回流和重绘的次数，首先要了解回流和重绘是如何触发的</p>
+<h3 id="回流触发时机"><a href="#回流触发时机" class="headerlink" title="回流触发时机"></a>回流触发时机</h3><p>回流这一阶段主要是计算节点的位置和几何信息，那么当页面布局和几何信息发生变化的时候，就需要回流，如下面情况：</p>
+<ul>
+<li>添加或删除可见的 DOM 元素</li>
+<li>元素的位置发生变化</li>
+<li>元素的尺寸发生变化（包括外边距、内边框、边框大小、高度和宽度等）</li>
+<li>内容发生变化，比如文本变化或图片被另一个不同尺寸的图片所替代</li>
+<li>页面一开始渲染的时候（这避免不了）</li>
+<li>浏览器的窗口尺寸变化（因为回流是根据视口的大小来计算元素的位置和大小的）</li>
+</ul>
+<p>还有一些容易被忽略的操作：获取一些特定属性的值</p>
+<blockquote>
+<p>❝</p>
+<p>offsetTop、offsetLeft、 offsetWidth、offsetHeight、scrollTop、scrollLeft、scrollWidth、scrollHeight、clientTop、clientLeft、clientWidth、clientHeight</p>
+<p>❞</p>
+</blockquote>
+<p>这些属性有一个共性，就是需要通过即时计算得到。因此浏览器为了获取这些值，也会进行回流</p>
+<p>除此还包括<code>getComputedStyle</code>方法，原理是一样的</p>
+<h3 id="重绘触发时机"><a href="#重绘触发时机" class="headerlink" title="重绘触发时机"></a>重绘触发时机</h3><p>触发回流一定会触发重绘</p>
+<p>可以把页面理解为一个黑板，黑板上有一朵画好的小花。现在我们要把这朵从左边移到了右边，那我们要先确定好右边的具体位置，画好形状（回流），再画上它原有的颜色（重绘）</p>
+<p>除此之外还有一些其他引起重绘行为：</p>
+<ul>
+<li>颜色的修改</li>
+<li>文本方向的修改</li>
+<li>阴影的修改</li>
+</ul>
+<h3 id="浏览器优化机制"><a href="#浏览器优化机制" class="headerlink" title="浏览器优化机制"></a>浏览器优化机制</h3><p>由于每次重排都会造成额外的计算消耗，因此大多数浏览器都会通过队列化修改并批量执行来优化重排过程。浏览器会将修改操作放入到队列里，直到过了一段时间或者操作达到了一个阈值，才清空队列</p>
+<p>当你获取布局信息的操作的时候，会强制队列刷新，包括前面讲到的<code>offsetTop</code>等方法都会返回最新的数据</p>
+<p>因此浏览器不得不清空队列，触发回流重绘来返回正确的值</p>
+<h2 id="三、如何减少"><a href="#三、如何减少" class="headerlink" title="三、如何减少"></a>三、如何减少</h2><p>我们了解了如何触发回流和重绘的场景，下面给出避免回流的经验：</p>
+<ul>
+<li>如果想设定元素的样式，通过改变元素的 <code>class</code> 类名 (尽可能在 DOM 树的最里层)</li>
+<li>避免设置多项内联样式</li>
+<li>应用元素的动画，使用 <code>position</code> 属性的 <code>fixed</code> 值或 <code>absolute</code> 值(如前文示例所提)</li>
+<li>避免使用 <code>table</code> 布局，<code>table</code> 中每个元素的大小以及内容的改动，都会导致整个 <code>table</code> 的重新计算</li>
+<li>对于那些复杂的动画，对其设置 <code>position: fixed/absolute</code>，尽可能地使元素脱离文档流，从而减少对其他元素的影响</li>
+<li>使用 css3 硬件加速，可以让<code>transform</code>、<code>opacity</code>、<code>filters</code>这些动画不会引起回流重绘</li>
+<li>避免使用 CSS 的 <code>JavaScript</code> 表达式</li>
+</ul>
+<p>在使用 <code>JavaScript</code> 动态插入多个节点时, 可以使用<code>DocumentFragment</code>. 创建后一次插入. 就能避免多次的渲染性能</p>
+<p>但有时候，我们会无可避免地进行回流或者重绘，我们可以更好使用它们</p>
+<p>例如，多次修改一个把元素布局的时候，我们很可能会如下操作</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const el &#x3D; document.getElementById(&#39;el&#39;)</span><br><span class="line">for(let i&#x3D;0;i&lt;10;i++) &#123;</span><br><span class="line">    el.style.top  &#x3D; el.offsetTop  + 10 + &quot;px&quot;;</span><br><span class="line">    el.style.left &#x3D; el.offsetLeft + 10 + &quot;px&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>每次循环都需要获取多次<code>offset</code>属性，比较糟糕，可以使用变量的形式缓存起来，待计算完毕再提交给浏览器发出重计算请求</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 缓存offsetLeft与offsetTop的值</span><br><span class="line">const el &#x3D; document.getElementById(&#39;el&#39;)</span><br><span class="line">let offLeft &#x3D; el.offsetLeft, offTop &#x3D; el.offsetTop</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 在JS层面进行计算</span><br><span class="line">for(let i&#x3D;0;i&lt;10;i++) &#123;</span><br><span class="line">  offLeft +&#x3D; 10</span><br><span class="line">  offTop  +&#x3D; 10</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 一次性将计算结果应用到DOM上</span><br><span class="line">el.style.left &#x3D; offLeft + &quot;px&quot;</span><br><span class="line">el.style.top &#x3D; offTop  + &quot;px&quot;</span><br></pre></td></tr></table></figure>
+
+<p>我们还可避免改变样式，使用类名去合并样式</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const container &#x3D; document.getElementById(&#39;container&#39;)</span><br><span class="line">container.style.width &#x3D; &#39;100px&#39;</span><br><span class="line">container.style.height &#x3D; &#39;200px&#39;</span><br><span class="line">container.style.border &#x3D; &#39;10px solid red&#39;</span><br><span class="line">container.style.color &#x3D; &#39;red&#39;</span><br></pre></td></tr></table></figure>
+
+<p>使用类名去合并样式</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;style&gt;</span><br><span class="line">    .basic_style &#123;</span><br><span class="line">        width: 100px;</span><br><span class="line">        height: 200px;</span><br><span class="line">        border: 10px solid red;</span><br><span class="line">        color: red;</span><br><span class="line">    &#125;</span><br><span class="line">&lt;&#x2F;style&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">    const container &#x3D; document.getElementById(&#39;container&#39;)</span><br><span class="line">    container.classList.add(&#39;basic_style&#39;)</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>前者每次单独操作，都去触发一次渲染树更改（新浏览器不会），</p>
+<p>都去触发一次渲染树更改，从而导致相应的回流与重绘过程</p>
+<p>合并之后，等于我们将所有的更改一次性发出</p>
+<p>我们还可以通过通过设置元素属性<code>display: none</code>，将其从页面上去掉，然后再进行后续操作，这些后续操作也不会触发回流与重绘，这个过程称为离线操作</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const container &#x3D; document.getElementById(&#39;container&#39;)</span><br><span class="line">container.style.width &#x3D; &#39;100px&#39;</span><br><span class="line">container.style.height &#x3D; &#39;200px&#39;</span><br><span class="line">container.style.border &#x3D; &#39;10px solid red&#39;</span><br><span class="line">container.style.color &#x3D; &#39;red&#39;</span><br></pre></td></tr></table></figure>
+
+<p>离线操作后</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">let container &#x3D; document.getElementById(&#39;container&#39;)</span><br><span class="line">container.style.display &#x3D; &#39;none&#39;</span><br><span class="line">container.style.width &#x3D; &#39;100px&#39;</span><br><span class="line">container.style.height &#x3D; &#39;200px&#39;</span><br><span class="line">container.style.border &#x3D; &#39;10px solid red&#39;</span><br><span class="line">container.style.color &#x3D; &#39;red&#39;</span><br><span class="line">...（省略了许多类似的后续操作）</span><br><span class="line">container.style.display &#x3D; &#39;block&#39;</span><br></pre></td></tr></table></figure>
+
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2>]]></content>
+      <categories>
+        <category>note</category>
+      </categories>
+      <tags>
+        <tag>note</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>移动端自适应——手淘flexible</title>
+    <url>/2021/04/25/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible/</url>
+    <content><![CDATA[<h2 id="移动端自适应——手淘flexible"><a href="#移动端自适应——手淘flexible" class="headerlink" title="移动端自适应——手淘flexible"></a>移动端自适应——手淘flexible</h2><p>熟悉移动端的自适应方案的朋友对 rem 适应方案，肯定不陌生，最出名的就是阿里的 <a href="https://github.com/amfe/lib-flexible">lib-flexible</a> 方案。</p>
+<p><strong>原理：</strong>flexible就是根据不同的屏幕算出html的font-size，通过js来动态写meta标签。</p>
+<p>事实上他做了这几样事情：</p>
+<ul>
+<li>动态改写<code>&lt;meta&gt;</code>标签</li>
+<li>给<code>&lt;html&gt;</code>元素添加<code>data-dpr</code>属性，并且动态改写<code>data-dpr</code>的值</li>
+<li>给<code>&lt;html&gt;</code>元素添加<code>font-size</code>属性，并且动态改写<code>font-size</code>的值</li>
+</ul>
+<p>比如我们在做移动端的时候，经常拿到的设计稿是640px或者750px。自己项目中就是640px，以此为例，自己在项目中为了计算方便，所以给html根元素设置的字体大小是100px，也就是在640px下面。这里注意，我们给html设置100px，这个是字体哦，所以最好在body设置一下字体大小。 </p>
+<span id="more"></span>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 设置html元素的字体大小为100px</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 所有的像素我们直接除以</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">640px  ——  6.4rem</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">64px —— 0.64rem</span><br></pre></td></tr></table></figure>
+
+<p>那么如果64px，对应我们写rem就是0.64rem，也不需要动用计算器去计算rem，需要多强的大脑呀（虽然有很多插件帮我们）</p>
+<p>修改flexible.js。640px下面的10就变成6.4</p>
+<p>![image-20210425112100315](/Users/gaoyuan/Library/Application Support/typora-user-images/image-20210425112100315.png)</p>
+<p>这样，我们页面直接把px换算成rem，就可以实现自适应。（记住，自己这里以640px设计稿为基础，如果是750px就是除以7.5）。</p>
+<p><strong>字号不使用rem</strong></p>
+<p>我们都知道chrome的最小显示的字体是12px，如果字体用rem，计算出来小于12px，那么就也会以12px显示，而且我们不希望出现13px或者15px这样的奇葩尺寸，所以字体最好是用px来表示，至于适应，我们可以写媒体查询。</p>
+<h2 id="vue中使用rem"><a href="#vue中使用rem" class="headerlink" title="vue中使用rem"></a>vue中使用rem</h2><p>vue现在正是火的势头上，作者说明年估计3.0要出来了。那么在vue我们如果做移动端自适应怎么弄呢？</p>
+<p><strong>安装flexible</strong></p>
+<p><em>在命令行中运行如下安装：</em></p>
+<blockquote>
+<p>npm i lib-flexible –save-dev</p>
+</blockquote>
+<p><strong>引入flexible</strong></p>
+<p><em>在项目入口文件 main.js 里 引入 lib-flexible</em></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&#x27;lib-flexible&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>对于我们的index.html，最好是不要meta标签，flexible会自动添加上的，因为有一个判断。当然了，懒惰果然是最大的生产力，有的人觉得换算rem太麻烦，就出现了插件<a href="https://www.npmjs.com/package/px2rem-loader">px2rem-loader</a>，把px自动转化为对应的rem。但是呢，麻烦的就是如果引入外部的css文件，那么也会把px转化为rem。自己在项目中就是手动计算rem，用上面的方法，直接除以100，这个应该很简单吧，都是程序员，数学这个还是可以吧……</p>
+]]></content>
+      <categories>
+        <category>移动端</category>
+      </categories>
+      <tags>
+        <tag>移动端</tag>
       </tags>
   </entry>
 </search>
