@@ -91,6 +91,146 @@
       </tags>
   </entry>
   <entry>
+    <title>JavaScript基础（一）this</title>
+    <url>/2021/03/20/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89this/</url>
+    <content><![CDATA[<h3 id="一、this的指向"><a href="#一、this的指向" class="headerlink" title="一、this的指向"></a>一、this的指向</h3><p>百度、谷歌上输入“this的指向”关键字，大几千条文章肯定是有的，总不至于为了全方面、无死角的掌握它就要将所有的文章都看一遍吧？所以不如梳理出一个稳固的框架，我们一起来填充它。</p>
+<h4 id="思维导图"><a href="#思维导图" class="headerlink" title="思维导图"></a>思维导图</h4><p><img data-src="https://img-blog.csdnimg.cn/20200602110330766.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<span id="more"></span>
+
+<ul>
+<li>this 总是（非严格模式下）指向一个对象，而具体指向哪个对象是在运行时基于函数的<code>执行环境</code>动态绑定的，而非函数被声明时的环境；</li>
+<li>除了不常用的with和eval的情况，具体到实际应用中，this指向大概可以分为四种：<ul>
+<li>作为对象的方法调用；</li>
+<li>作为普通函数调用；</li>
+<li>构造器调用；</li>
+<li>call 或 apply调用；</li>
+<li>箭头函数中，this指向函数上层作用域的this；</li>
+</ul>
+</li>
+<li><strong>构造器</strong>和<strong>普通函数</strong>的区别在于<code>被调用的方式</code>；</li>
+<li>A,call(B) =&gt; 可以理解成在B的作用域内调用了A方法；</li>
+</ul>
+<h4 id="1-1-作为对象的方法调用"><a href="#1-1-作为对象的方法调用" class="headerlink" title="1.1 作为对象的方法调用"></a>1.1 作为对象的方法调用</h4><p>当函数作为对象的方法被调用时，<code>this指向该对象</code></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    a: <span class="string">&#x27;gaoyuan&#x27;</span>,</span><br><span class="line">    getName: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span> === obj);</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.a);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">obj.getName(); <span class="comment">// true gaoyuan</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-作为普通函数调用"><a href="#1-2-作为普通函数调用" class="headerlink" title="1.2 作为普通函数调用"></a>1.2 作为普通函数调用</h4><p>当函数不作为对象的属性被调用，而是以普通函数的方式，this总是指向全局对象（在浏览器中，通常是Window对象）</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">window</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> getName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.name);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">getName(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+
+<p>或者下面这段迷惑性的代码</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">window</span>.name = <span class="string">&#x27;老王&#x27;</span></span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="string">&#x27;gaoyuan&#x27;</span>,</span><br><span class="line">    getName: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.name)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> getNew = obj.getName;</span><br><span class="line">getNew(); <span class="comment">// 老王</span></span><br></pre></td></tr></table></figure>
+
+<p>而在ES5的严格模式下，this被规定为不会指向全局对象，而是<code>undefined</code></p>
+<h4 id="1-3-构造器调用"><a href="#1-3-构造器调用" class="headerlink" title="1.3 构造器调用"></a>1.3 构造器调用</h4><p>除了一些内置函数，大部分Js中的函数都可以成为构造器，它们与普通函数没什么不同</p>
+<p><strong>构造器</strong>和<strong>普通函数</strong>的区别在于<code>被调用的方式</code>： 当new运算符调用函数时，总是返回一个对象，this通常也指向这个对象</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass()</span><br><span class="line">obj.name; <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+
+<p>但是，如果显式的返回了一个object对象，那么此次运算结果最终会返回这个对象。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.name = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        name: <span class="number">2</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> myClass = <span class="keyword">new</span> MyClass();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;myClass.name:&#x27;</span>, myClass.name); <span class="comment">// &#123; name: 2&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>只要构造器不显示的返回任何数据，或者返回非对象类型的数据，就不会造成上述问题。</p>
+<h4 id="1-4-call或apply调用"><a href="#1-4-call或apply调用" class="headerlink" title="1.4 call或apply调用"></a>1.4 call或apply调用</h4><p>跟普通的函数调用相比，用call和apply可以动态的改变函数的this</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> obj1 = &#123;</span><br><span class="line">    name: <span class="number">1</span>,</span><br><span class="line">    getName: <span class="function"><span class="keyword">function</span> (<span class="params">num = <span class="string">&#x27;&#x27;</span></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.name + num;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> obj2 = &#123;</span><br><span class="line">    name: <span class="number">2</span>,</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 可以理解成在 obj2的作用域下调用了 obj1.getName()函数</span></span><br><span class="line"><span class="built_in">console</span>.log(obj1.getName()); <span class="comment">// 1</span></span><br><span class="line"><span class="built_in">console</span>.log(obj1.getName.call(obj2, <span class="number">2</span>)); <span class="comment">// 2 + 2 = 4</span></span><br><span class="line"><span class="built_in">console</span>.log(obj1.getName.apply(obj2, [<span class="number">2</span>])); <span class="comment">// 2 + 2 = 4</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="1-5-箭头函数"><a href="#1-5-箭头函数" class="headerlink" title="1.5 箭头函数"></a>1.5 箭头函数</h4><p>箭头函数不会创建自己的this，它只会从自己的作用域链的上一层继承this。因此，在下面的代码中，传递给setInterval的函数内的this与封闭函数中的this值相同：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">this</span>.name = <span class="number">2</span></span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="string">&#x27;1&#x27;</span>,</span><br><span class="line">    getName: <span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.name)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">obj.getName()</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-6-常见的坑"><a href="#1-6-常见的坑" class="headerlink" title="1.6 常见的坑"></a>1.6 常见的坑</h4><p>就像标题一样，有的时候<code>this</code>会指向undefined</p>
+<p><strong>情况一</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="string">&#x27;1&#x27;</span>,</span><br><span class="line">    getName: <span class="function"><span class="keyword">function</span> (<span class="params">params</span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.name)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">obj.getName();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> getName2 = obj.getName;</span><br><span class="line">getName2()</span><br></pre></td></tr></table></figure>
+
+<p>这个时候，getName2()作为普通函数被调用时，this指向全局对象——window。</p>
+<p><strong>情况二</strong></p>
+<p>当我们希望自己封装Dom方法，来精简代码时：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> getDomById = <span class="function"><span class="keyword">function</span> (<span class="params">id</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">document</span>.getElementById(id);</span><br><span class="line">&#125;;</span><br><span class="line">getDomById(<span class="string">&#x27;div1&#x27;</span>) <span class="comment">//dom节点</span></span><br></pre></td></tr></table></figure>
+
+<p>那么我们看看这么写行不行？</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> getDomById = <span class="built_in">document</span>.getElementById</span><br><span class="line">getDomById(<span class="string">&#x27;div1&#x27;</span>) <span class="comment">// Uncaught TypeError: Illegal invocation(非法调用)</span></span><br></pre></td></tr></table></figure>
+
+<p>这是因为:</p>
+<ul>
+<li>当我们去调用<code>document</code>对象的方法时，方法内的this指向<code>document</code>。</li>
+<li>当我们用getId应用document内的方法，再以普通函数的方式调用，函数内容的this就指向了全局对象。</li>
+</ul>
+<p><strong>利用call和apply修正情况二</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">document</span>.getElementById = (<span class="function"><span class="keyword">function</span> (<span class="params">func</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> func.call(<span class="built_in">document</span>, ...arguments)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)(<span class="built_in">document</span>.getElementById)</span><br><span class="line"><span class="comment">// 利用立即执行函数将document保存在作用域中</span></span><br></pre></td></tr></table></figure>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=2299180848,518697654&fm=26&gp=0.jpeg"></p>
+<h3 id="二、call和apply"><a href="#二、call和apply" class="headerlink" title="二、call和apply"></a>二、call和apply</h3><p>不要因为它的“强大”而对它产生抗拒，了解并熟悉它是我们必须要做的，共勉！</p>
+<h4 id="思维导图-1"><a href="#思维导图-1" class="headerlink" title="思维导图"></a>思维导图</h4><p><img data-src="https://img-blog.csdnimg.cn/20200602153648211.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<h4 id="1-call和apply区别"><a href="#1-call和apply区别" class="headerlink" title="1.call和apply区别"></a>1.call和apply区别</h4><p>先来看区别，是因为它们<strong>几乎</strong>没有区别，下文代码实例call和apply都可以轻易的切换。</p>
+<p>当它们被设计出来时要做到的事情一摸一样，唯一的区别就在于<code>传参的格式不一样</code></p>
+<ul>
+<li>apply接受两个参数<ul>
+<li>第一个参数指定了函数体内this对象的指向</li>
+<li>第二个参数为一个带下标的参数集合（可以是数组或者类数组）</li>
+</ul>
+</li>
+<li>call接受的参数不固定<ul>
+<li>第一个参数指定了函数体内this对象的指向</li>
+<li>第二个参数及以后为函数调用的参数</li>
+</ul>
+</li>
+</ul>
+<p>因为在所有（非箭头）函数中都可以通过<code>arguments</code>对象在函数中引用函数的参数。此对象包含传递给函数的每个参数，它本身就是一个类数组，我们apply在实际使用中更常见一些。</p>
+<p>call是包装在apply上面的语法糖，如果我们明确的知道参数数量，并且希望展示它们，可以使用call。</p>
+<p>当使用call或者apply的时候，如果我们传入的第一个参数为null，函数体内的this会默认指向宿主对象，在浏览器中则是<code>window</code>。</p>
+<p><strong>借用其他对象的方法</strong></p>
+<p>我们可以直接传null来代替任意对象</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Math</span>.max.apply(<span class="literal">null</span>, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>])</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-call和apply能做什么？"><a href="#2-call和apply能做什么？" class="headerlink" title="2.call和apply能做什么？"></a>2.call和apply能做什么？</h4><p>使用一个指定的 this 值和单独给出的一个或多个参数来调用一个函数——来时<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/call">MDN(opens new window)</a></p>
+<ul>
+<li>调用构造函数来<code>实现继承</code>;</li>
+<li>调用函数并且指定上下文的 <code>this</code>;</li>
+<li>调用函数并且不指定第一个参数;</li>
+</ul>
+<p><strong>1.调用构造函数来实现继承</strong></p>
+<p>通过“借用”的方式来达到继承的效果：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Product</span>(<span class="params">name, price</span>) </span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = name;</span><br><span class="line">	<span class="built_in">this</span>.price = price;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Food</span>(<span class="params">name, price</span>) </span>&#123;</span><br><span class="line">	Product.call(<span class="built_in">this</span>, name, price); <span class="comment">//</span></span><br><span class="line">	<span class="built_in">this</span>.category = food;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> hotDog = <span class="keyword">new</span> Food(<span class="string">&#x27;hotDog&#x27;</span>, <span class="number">20</span>);</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.调用函数并且指定上下文的 <code>this</code></strong></p>
+<p>此时this被指向了obj</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">showName</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.id + <span class="string">&#x27;:&#x27;</span> + <span class="built_in">this</span>.name);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    id: <span class="number">1</span>,</span><br><span class="line">    name: <span class="string">&#x27;gaoyuan&#x27;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">showName.call(obj)</span><br></pre></td></tr></table></figure>
+
+<p><strong>3.使用call单纯的调用某个函数</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Math</span>.max.apply(<span class="literal">null</span>, [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">10</span>,<span class="number">4</span>,<span class="number">5</span>]); <span class="comment">// 10</span></span><br></pre></td></tr></table></figure>
+
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=826503588,4160798134&fm=15&gp=0.jpeg"></p>
+<h3 id="三、模拟实现一个call"><a href="#三、模拟实现一个call" class="headerlink" title="三、模拟实现一个call"></a>三、模拟实现一个call</h3><p>先来看一下call帮我们需要做什么？</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = &#123;</span><br><span class="line">	value: <span class="number">1</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="built_in">this</span>.value);</span><br><span class="line">&#125;;</span><br><span class="line">show.call(foo); <span class="comment">//1</span></span><br></pre></td></tr></table></figure>
+
+<p>就像解方程，要在已知条件中寻找突破哦口：</p>
+<ul>
+<li><code>call</code> 使得this的指向变了，指向了foo;</li>
+<li><code>show</code> 函数被执行了;</li>
+<li>传入的参数应为 <code>this</code> + 参数列表;</li>
+</ul>
+<p><strong>第一版代码</strong></p>
+<p>上面提到的3点，仅仅完成了一点，且传入的参数</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = &#123;</span><br><span class="line">    value: <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">Function</span>.prototype.setCall = <span class="function"><span class="keyword">function</span> (<span class="params">obj</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>); <span class="comment">// 此时this指向show</span></span><br><span class="line">    obj.func = <span class="built_in">this</span>; <span class="comment">// 将函数变成对象的内部属性</span></span><br><span class="line">    obj.func(obj.value) <span class="comment">// 指定函数</span></span><br><span class="line">    <span class="keyword">delete</span> obj.func <span class="comment">// 删除函数，当做什么都没发生～</span></span><br><span class="line">&#125;</span><br><span class="line">show.setCall(foo)</span><br></pre></td></tr></table></figure>
+
+<p><strong>第二版代码</strong></p>
+<p>为了解决参数的问题，我们要能获取到参数，并且正确的传入：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = &#123;</span><br><span class="line">    value: <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span>(<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.value);</span><br><span class="line">    <span class="built_in">console</span>.log(a + b)</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">Function</span>.prototype.setCall = <span class="function"><span class="keyword">function</span> (<span class="params">obj</span>) </span>&#123;</span><br><span class="line">    obj.fn = <span class="built_in">this</span>; <span class="comment">// 将函数变成对象的内部属性</span></span><br><span class="line">    <span class="keyword">var</span> args = [];</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">1</span>; i &lt; <span class="built_in">arguments</span>.length; i++)&#123;</span><br><span class="line">        args.push(<span class="string">&#x27;arguments[&#x27;</span> + i + <span class="string">&#x27;]&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">eval</span>(<span class="string">&#x27;obj.fn(&#x27;</span> + args + <span class="string">&#x27;)&#x27;</span>); <span class="comment">// 传入参数</span></span><br><span class="line">    <span class="keyword">delete</span> obj.fn; <span class="comment">// 删除函数，当做什么都没发生～</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">show.setCall(foo, <span class="number">1</span>, <span class="number">2</span>); <span class="comment">// 1 3</span></span><br></pre></td></tr></table></figure>
+
+<p>此时，我们就可以做到，传入多个参数的情况下使用call了，但是如果你仅想用某个方法呢？</p>
+<p><strong>第三版代码</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Function</span>.prototype.setCall = <span class="function"><span class="keyword">function</span> (<span class="params">obj</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> obj = obj || <span class="built_in">window</span>;</span><br><span class="line">  obj.fn = <span class="built_in">this</span>;</span><br><span class="line">  <span class="keyword">var</span> args = [];</span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">1</span>, len = <span class="built_in">arguments</span>.length; i &lt; len; i++) &#123;</span><br><span class="line">    args.push(<span class="string">&#x27;arguments[&#x27;</span> + i + <span class="string">&#x27;]&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">var</span> result = <span class="built_in">eval</span>(<span class="string">&#x27;obj.fn(&#x27;</span> + args +<span class="string">&#x27;)&#x27;</span>);</span><br><span class="line">  <span class="keyword">delete</span> obj.fn;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 测试一下</span></span><br><span class="line"><span class="keyword">var</span> value = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">var</span> obj = &#123; <span class="attr">value</span>: <span class="number">1</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params">name, age</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="built_in">this</span>.value);</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    value: <span class="built_in">this</span>.value,</span><br><span class="line">    name: name,</span><br><span class="line">    age: age</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">bar.setCall(<span class="literal">null</span>); <span class="comment">// 2</span></span><br><span class="line"><span class="built_in">console</span>.log(bar.setCall(obj, <span class="string">&#x27;kevin&#x27;</span>, <span class="number">18</span>));</span><br></pre></td></tr></table></figure>
+
+<h3 id="四、bind"><a href="#四、bind" class="headerlink" title="四、bind"></a>四、bind</h3><p>提到了<strong>call</strong>和<strong>apply</strong>，就绕不开**bind()<strong>，来看一下MDN上对</strong>bind()**的解释：</p>
+<p>bind() 方法创建一个新的函数，在 bind() 被调用时，这个新函数的 this 被指定为 bind() 的第一个参数，而其余参数将作为新函数的参数，供调用时使用。</p>
+<p>我们用Js来模拟一个bind方法，以便加深我们的认识</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Function</span>.prototype.bind = <span class="function"><span class="keyword">function</span> (<span class="params">func</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> _this = <span class="built_in">this</span></span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> _this.apply(func, <span class="built_in">arguments</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="number">1</span>,</span><br><span class="line">    getName: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.name)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> func = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.name)</span><br><span class="line">&#125;</span><br><span class="line">func.bind(obj)</span><br></pre></td></tr></table></figure>
+
+<p>这样看上去，bind总会帮我们返回同样的<code>this</code>值，还是挺坚挺的哦～</p>
+]]></content>
+      <categories>
+        <category>javascript</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>JS实现图片压缩</title>
     <url>/2021/02/11/JS%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9/</url>
     <content><![CDATA[<blockquote>
@@ -278,146 +418,6 @@
 <li>let和const可以有效的规避变量提升</li>
 </ol>
 <p>最后提炼一下《你不知道的JS》中的一段话：<strong>JavaScript引擎并不总是按照代码的顺序来进行解析。在编译阶段，无论作用域中的声明出现在什么地方，都将在代码本身被执行前首先进行处理，这个过程被称为提升。声明本身会被提升，而包括函数表达式的赋值在内的赋值操作并不会提升。</strong></p>
-]]></content>
-      <categories>
-        <category>javascript</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>JavaScript基础（一）this</title>
-    <url>/2021/03/20/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89this/</url>
-    <content><![CDATA[<h3 id="一、this的指向"><a href="#一、this的指向" class="headerlink" title="一、this的指向"></a>一、this的指向</h3><p>百度、谷歌上输入“this的指向”关键字，大几千条文章肯定是有的，总不至于为了全方面、无死角的掌握它就要将所有的文章都看一遍吧？所以不如梳理出一个稳固的框架，我们一起来填充它。</p>
-<h4 id="思维导图"><a href="#思维导图" class="headerlink" title="思维导图"></a>思维导图</h4><p><img data-src="https://img-blog.csdnimg.cn/20200602110330766.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<span id="more"></span>
-
-<ul>
-<li>this 总是（非严格模式下）指向一个对象，而具体指向哪个对象是在运行时基于函数的<code>执行环境</code>动态绑定的，而非函数被声明时的环境；</li>
-<li>除了不常用的with和eval的情况，具体到实际应用中，this指向大概可以分为四种：<ul>
-<li>作为对象的方法调用；</li>
-<li>作为普通函数调用；</li>
-<li>构造器调用；</li>
-<li>call 或 apply调用；</li>
-<li>箭头函数中，this指向函数上层作用域的this；</li>
-</ul>
-</li>
-<li><strong>构造器</strong>和<strong>普通函数</strong>的区别在于<code>被调用的方式</code>；</li>
-<li>A,call(B) =&gt; 可以理解成在B的作用域内调用了A方法；</li>
-</ul>
-<h4 id="1-1-作为对象的方法调用"><a href="#1-1-作为对象的方法调用" class="headerlink" title="1.1 作为对象的方法调用"></a>1.1 作为对象的方法调用</h4><p>当函数作为对象的方法被调用时，<code>this指向该对象</code></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    a: <span class="string">&#x27;gaoyuan&#x27;</span>,</span><br><span class="line">    getName: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span> === obj);</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.a);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">obj.getName(); <span class="comment">// true gaoyuan</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="1-2-作为普通函数调用"><a href="#1-2-作为普通函数调用" class="headerlink" title="1.2 作为普通函数调用"></a>1.2 作为普通函数调用</h4><p>当函数不作为对象的属性被调用，而是以普通函数的方式，this总是指向全局对象（在浏览器中，通常是Window对象）</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">window</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> getName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.name);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">getName(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-
-<p>或者下面这段迷惑性的代码</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">window</span>.name = <span class="string">&#x27;老王&#x27;</span></span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="string">&#x27;gaoyuan&#x27;</span>,</span><br><span class="line">    getName: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.name)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> getNew = obj.getName;</span><br><span class="line">getNew(); <span class="comment">// 老王</span></span><br></pre></td></tr></table></figure>
-
-<p>而在ES5的严格模式下，this被规定为不会指向全局对象，而是<code>undefined</code></p>
-<h4 id="1-3-构造器调用"><a href="#1-3-构造器调用" class="headerlink" title="1.3 构造器调用"></a>1.3 构造器调用</h4><p>除了一些内置函数，大部分Js中的函数都可以成为构造器，它们与普通函数没什么不同</p>
-<p><strong>构造器</strong>和<strong>普通函数</strong>的区别在于<code>被调用的方式</code>： 当new运算符调用函数时，总是返回一个对象，this通常也指向这个对象</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass()</span><br><span class="line">obj.name; <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-
-<p>但是，如果显式的返回了一个object对象，那么此次运算结果最终会返回这个对象。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.name = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        name: <span class="number">2</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> myClass = <span class="keyword">new</span> MyClass();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;myClass.name:&#x27;</span>, myClass.name); <span class="comment">// &#123; name: 2&#125;</span></span><br></pre></td></tr></table></figure>
-
-<p>只要构造器不显示的返回任何数据，或者返回非对象类型的数据，就不会造成上述问题。</p>
-<h4 id="1-4-call或apply调用"><a href="#1-4-call或apply调用" class="headerlink" title="1.4 call或apply调用"></a>1.4 call或apply调用</h4><p>跟普通的函数调用相比，用call和apply可以动态的改变函数的this</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> obj1 = &#123;</span><br><span class="line">    name: <span class="number">1</span>,</span><br><span class="line">    getName: <span class="function"><span class="keyword">function</span> (<span class="params">num = <span class="string">&#x27;&#x27;</span></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.name + num;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> obj2 = &#123;</span><br><span class="line">    name: <span class="number">2</span>,</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 可以理解成在 obj2的作用域下调用了 obj1.getName()函数</span></span><br><span class="line"><span class="built_in">console</span>.log(obj1.getName()); <span class="comment">// 1</span></span><br><span class="line"><span class="built_in">console</span>.log(obj1.getName.call(obj2, <span class="number">2</span>)); <span class="comment">// 2 + 2 = 4</span></span><br><span class="line"><span class="built_in">console</span>.log(obj1.getName.apply(obj2, [<span class="number">2</span>])); <span class="comment">// 2 + 2 = 4</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="1-5-箭头函数"><a href="#1-5-箭头函数" class="headerlink" title="1.5 箭头函数"></a>1.5 箭头函数</h4><p>箭头函数不会创建自己的this，它只会从自己的作用域链的上一层继承this。因此，在下面的代码中，传递给setInterval的函数内的this与封闭函数中的this值相同：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">this</span>.name = <span class="number">2</span></span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="string">&#x27;1&#x27;</span>,</span><br><span class="line">    getName: <span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.name)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">obj.getName()</span><br></pre></td></tr></table></figure>
-
-<h4 id="1-6-常见的坑"><a href="#1-6-常见的坑" class="headerlink" title="1.6 常见的坑"></a>1.6 常见的坑</h4><p>就像标题一样，有的时候<code>this</code>会指向undefined</p>
-<p><strong>情况一</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="string">&#x27;1&#x27;</span>,</span><br><span class="line">    getName: <span class="function"><span class="keyword">function</span> (<span class="params">params</span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.name)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">obj.getName();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> getName2 = obj.getName;</span><br><span class="line">getName2()</span><br></pre></td></tr></table></figure>
-
-<p>这个时候，getName2()作为普通函数被调用时，this指向全局对象——window。</p>
-<p><strong>情况二</strong></p>
-<p>当我们希望自己封装Dom方法，来精简代码时：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> getDomById = <span class="function"><span class="keyword">function</span> (<span class="params">id</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">document</span>.getElementById(id);</span><br><span class="line">&#125;;</span><br><span class="line">getDomById(<span class="string">&#x27;div1&#x27;</span>) <span class="comment">//dom节点</span></span><br></pre></td></tr></table></figure>
-
-<p>那么我们看看这么写行不行？</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> getDomById = <span class="built_in">document</span>.getElementById</span><br><span class="line">getDomById(<span class="string">&#x27;div1&#x27;</span>) <span class="comment">// Uncaught TypeError: Illegal invocation(非法调用)</span></span><br></pre></td></tr></table></figure>
-
-<p>这是因为:</p>
-<ul>
-<li>当我们去调用<code>document</code>对象的方法时，方法内的this指向<code>document</code>。</li>
-<li>当我们用getId应用document内的方法，再以普通函数的方式调用，函数内容的this就指向了全局对象。</li>
-</ul>
-<p><strong>利用call和apply修正情况二</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">document</span>.getElementById = (<span class="function"><span class="keyword">function</span> (<span class="params">func</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> func.call(<span class="built_in">document</span>, ...arguments)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)(<span class="built_in">document</span>.getElementById)</span><br><span class="line"><span class="comment">// 利用立即执行函数将document保存在作用域中</span></span><br></pre></td></tr></table></figure>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=2299180848,518697654&fm=26&gp=0.jpeg"></p>
-<h3 id="二、call和apply"><a href="#二、call和apply" class="headerlink" title="二、call和apply"></a>二、call和apply</h3><p>不要因为它的“强大”而对它产生抗拒，了解并熟悉它是我们必须要做的，共勉！</p>
-<h4 id="思维导图-1"><a href="#思维导图-1" class="headerlink" title="思维导图"></a>思维导图</h4><p><img data-src="https://img-blog.csdnimg.cn/20200602153648211.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<h4 id="1-call和apply区别"><a href="#1-call和apply区别" class="headerlink" title="1.call和apply区别"></a>1.call和apply区别</h4><p>先来看区别，是因为它们<strong>几乎</strong>没有区别，下文代码实例call和apply都可以轻易的切换。</p>
-<p>当它们被设计出来时要做到的事情一摸一样，唯一的区别就在于<code>传参的格式不一样</code></p>
-<ul>
-<li>apply接受两个参数<ul>
-<li>第一个参数指定了函数体内this对象的指向</li>
-<li>第二个参数为一个带下标的参数集合（可以是数组或者类数组）</li>
-</ul>
-</li>
-<li>call接受的参数不固定<ul>
-<li>第一个参数指定了函数体内this对象的指向</li>
-<li>第二个参数及以后为函数调用的参数</li>
-</ul>
-</li>
-</ul>
-<p>因为在所有（非箭头）函数中都可以通过<code>arguments</code>对象在函数中引用函数的参数。此对象包含传递给函数的每个参数，它本身就是一个类数组，我们apply在实际使用中更常见一些。</p>
-<p>call是包装在apply上面的语法糖，如果我们明确的知道参数数量，并且希望展示它们，可以使用call。</p>
-<p>当使用call或者apply的时候，如果我们传入的第一个参数为null，函数体内的this会默认指向宿主对象，在浏览器中则是<code>window</code>。</p>
-<p><strong>借用其他对象的方法</strong></p>
-<p>我们可以直接传null来代替任意对象</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Math</span>.max.apply(<span class="literal">null</span>, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>])</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-call和apply能做什么？"><a href="#2-call和apply能做什么？" class="headerlink" title="2.call和apply能做什么？"></a>2.call和apply能做什么？</h4><p>使用一个指定的 this 值和单独给出的一个或多个参数来调用一个函数——来时<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/call">MDN(opens new window)</a></p>
-<ul>
-<li>调用构造函数来<code>实现继承</code>;</li>
-<li>调用函数并且指定上下文的 <code>this</code>;</li>
-<li>调用函数并且不指定第一个参数;</li>
-</ul>
-<p><strong>1.调用构造函数来实现继承</strong></p>
-<p>通过“借用”的方式来达到继承的效果：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Product</span>(<span class="params">name, price</span>) </span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = name;</span><br><span class="line">	<span class="built_in">this</span>.price = price;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Food</span>(<span class="params">name, price</span>) </span>&#123;</span><br><span class="line">	Product.call(<span class="built_in">this</span>, name, price); <span class="comment">//</span></span><br><span class="line">	<span class="built_in">this</span>.category = food;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> hotDog = <span class="keyword">new</span> Food(<span class="string">&#x27;hotDog&#x27;</span>, <span class="number">20</span>);</span><br></pre></td></tr></table></figure>
-
-<p><strong>2.调用函数并且指定上下文的 <code>this</code></strong></p>
-<p>此时this被指向了obj</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">showName</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.id + <span class="string">&#x27;:&#x27;</span> + <span class="built_in">this</span>.name);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    id: <span class="number">1</span>,</span><br><span class="line">    name: <span class="string">&#x27;gaoyuan&#x27;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">showName.call(obj)</span><br></pre></td></tr></table></figure>
-
-<p><strong>3.使用call单纯的调用某个函数</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Math</span>.max.apply(<span class="literal">null</span>, [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">10</span>,<span class="number">4</span>,<span class="number">5</span>]); <span class="comment">// 10</span></span><br></pre></td></tr></table></figure>
-
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=826503588,4160798134&fm=15&gp=0.jpeg"></p>
-<h3 id="三、模拟实现一个call"><a href="#三、模拟实现一个call" class="headerlink" title="三、模拟实现一个call"></a>三、模拟实现一个call</h3><p>先来看一下call帮我们需要做什么？</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = &#123;</span><br><span class="line">	value: <span class="number">1</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="built_in">this</span>.value);</span><br><span class="line">&#125;;</span><br><span class="line">show.call(foo); <span class="comment">//1</span></span><br></pre></td></tr></table></figure>
-
-<p>就像解方程，要在已知条件中寻找突破哦口：</p>
-<ul>
-<li><code>call</code> 使得this的指向变了，指向了foo;</li>
-<li><code>show</code> 函数被执行了;</li>
-<li>传入的参数应为 <code>this</code> + 参数列表;</li>
-</ul>
-<p><strong>第一版代码</strong></p>
-<p>上面提到的3点，仅仅完成了一点，且传入的参数</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = &#123;</span><br><span class="line">    value: <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">Function</span>.prototype.setCall = <span class="function"><span class="keyword">function</span> (<span class="params">obj</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>); <span class="comment">// 此时this指向show</span></span><br><span class="line">    obj.func = <span class="built_in">this</span>; <span class="comment">// 将函数变成对象的内部属性</span></span><br><span class="line">    obj.func(obj.value) <span class="comment">// 指定函数</span></span><br><span class="line">    <span class="keyword">delete</span> obj.func <span class="comment">// 删除函数，当做什么都没发生～</span></span><br><span class="line">&#125;</span><br><span class="line">show.setCall(foo)</span><br></pre></td></tr></table></figure>
-
-<p><strong>第二版代码</strong></p>
-<p>为了解决参数的问题，我们要能获取到参数，并且正确的传入：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = &#123;</span><br><span class="line">    value: <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span>(<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.value);</span><br><span class="line">    <span class="built_in">console</span>.log(a + b)</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">Function</span>.prototype.setCall = <span class="function"><span class="keyword">function</span> (<span class="params">obj</span>) </span>&#123;</span><br><span class="line">    obj.fn = <span class="built_in">this</span>; <span class="comment">// 将函数变成对象的内部属性</span></span><br><span class="line">    <span class="keyword">var</span> args = [];</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">1</span>; i &lt; <span class="built_in">arguments</span>.length; i++)&#123;</span><br><span class="line">        args.push(<span class="string">&#x27;arguments[&#x27;</span> + i + <span class="string">&#x27;]&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">eval</span>(<span class="string">&#x27;obj.fn(&#x27;</span> + args + <span class="string">&#x27;)&#x27;</span>); <span class="comment">// 传入参数</span></span><br><span class="line">    <span class="keyword">delete</span> obj.fn; <span class="comment">// 删除函数，当做什么都没发生～</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">show.setCall(foo, <span class="number">1</span>, <span class="number">2</span>); <span class="comment">// 1 3</span></span><br></pre></td></tr></table></figure>
-
-<p>此时，我们就可以做到，传入多个参数的情况下使用call了，但是如果你仅想用某个方法呢？</p>
-<p><strong>第三版代码</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Function</span>.prototype.setCall = <span class="function"><span class="keyword">function</span> (<span class="params">obj</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> obj = obj || <span class="built_in">window</span>;</span><br><span class="line">  obj.fn = <span class="built_in">this</span>;</span><br><span class="line">  <span class="keyword">var</span> args = [];</span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">1</span>, len = <span class="built_in">arguments</span>.length; i &lt; len; i++) &#123;</span><br><span class="line">    args.push(<span class="string">&#x27;arguments[&#x27;</span> + i + <span class="string">&#x27;]&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">var</span> result = <span class="built_in">eval</span>(<span class="string">&#x27;obj.fn(&#x27;</span> + args +<span class="string">&#x27;)&#x27;</span>);</span><br><span class="line">  <span class="keyword">delete</span> obj.fn;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 测试一下</span></span><br><span class="line"><span class="keyword">var</span> value = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">var</span> obj = &#123; <span class="attr">value</span>: <span class="number">1</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params">name, age</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="built_in">this</span>.value);</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    value: <span class="built_in">this</span>.value,</span><br><span class="line">    name: name,</span><br><span class="line">    age: age</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">bar.setCall(<span class="literal">null</span>); <span class="comment">// 2</span></span><br><span class="line"><span class="built_in">console</span>.log(bar.setCall(obj, <span class="string">&#x27;kevin&#x27;</span>, <span class="number">18</span>));</span><br></pre></td></tr></table></figure>
-
-<h3 id="四、bind"><a href="#四、bind" class="headerlink" title="四、bind"></a>四、bind</h3><p>提到了<strong>call</strong>和<strong>apply</strong>，就绕不开**bind()<strong>，来看一下MDN上对</strong>bind()**的解释：</p>
-<p>bind() 方法创建一个新的函数，在 bind() 被调用时，这个新函数的 this 被指定为 bind() 的第一个参数，而其余参数将作为新函数的参数，供调用时使用。</p>
-<p>我们用Js来模拟一个bind方法，以便加深我们的认识</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Function</span>.prototype.bind = <span class="function"><span class="keyword">function</span> (<span class="params">func</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> _this = <span class="built_in">this</span></span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> _this.apply(func, <span class="built_in">arguments</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="number">1</span>,</span><br><span class="line">    getName: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.name)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> func = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.name)</span><br><span class="line">&#125;</span><br><span class="line">func.bind(obj)</span><br></pre></td></tr></table></figure>
-
-<p>这样看上去，bind总会帮我们返回同样的<code>this</code>值，还是挺坚挺的哦～</p>
 ]]></content>
       <categories>
         <category>javascript</category>
@@ -993,6 +993,56 @@
       </tags>
   </entry>
   <entry>
+    <title>VUE组件之间通信的6种方式</title>
+    <url>/2021/02/20/VUE%E7%BB%84%E4%BB%B6%E4%B9%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E7%9A%846%E7%A7%8D%E6%96%B9%E5%BC%8F/</url>
+    <content><![CDATA[<h3 id="1-方法一：props和-emit"><a href="#1-方法一：props和-emit" class="headerlink" title="1.方法一：props和**$emit**"></a>1.方法一：<strong>props</strong>和**$emit**</h3><p>父组件通过props向下传递数据给子组件，子组件通过event给父组件发送消息，实际上就是子组件把自己的数据发送给父组件。</p>
+<h3 id="2-方法二：-attrs和-listeners"><a href="#2-方法二：-attrs和-listeners" class="headerlink" title="2.方法二：**$attrs和$listeners**"></a>2.方法二：**$attrs<strong>和</strong>$listeners**</h3><p>​    第一种方式处理父子组件之间的数据传输有一个问题：如果父组件A下面有子组件B，组件B下面有组件C,这时如果组件A想传递数据给组件C怎么办呢？ 如果采用第一种方法，我们必须让组件A通过prop传递消息给组件B，组件B在通过prop传递消息给组件C；要是组件A和组件C之间有更多的组件，那采用这种方式就很复杂了。Vue 2.4开始提供了$attrs和$listeners来解决这个问题，能够让组件A之间传递消息给组件C。</p>
+<span id="more"></span>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件C--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">        &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;$attrs.messagec&quot; @input&#x3D;&quot;passCData($attrs.messagec)&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;C&#39;,</span><br><span class="line">    data () &#123;</span><br><span class="line">      return &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passCData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发父组件A中的事件,把从A得到的数据hello C还给A组件</span><br><span class="line">        this.$emit(&#39;getCData&#39;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @input&#x3D;&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">    &lt;!-- C组件中能直接触发getCData的原因在于 B组件调用C组件时 使用 v-on 绑定了$listeners 属性 --&gt;</span><br><span class="line">    &lt;!-- 通过v-bind 绑定$attrs属性，C组件可以直接获取到A组件中传递下来的props（除了B组件中props声明的） --&gt;</span><br><span class="line">    &lt;C v-bind&#x3D;&quot;$attrs&quot; v-on&#x3D;&quot;$listeners&quot;&gt;&lt;&#x2F;C&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;B&#39;,</span><br><span class="line">    props:[</span><br><span class="line">      message:&#123;</span><br><span class="line">        type: String,</span><br><span class="line">        default: null</span><br><span class="line">      &#125;</span><br><span class="line">    ],&#x2F;&#x2F;得到父组件A传递过来的数据,hello B</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发父组件中的事件,把message给组件A</span><br><span class="line">        this.$emit(&#39;getChildData&#39;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;B </span><br><span class="line">     :messagec&#x3D;&quot;messagec&quot; </span><br><span class="line">     :message&#x3D;&quot;message&quot; </span><br><span class="line">     :getCData&#x3D;&quot;getCData&quot;</span><br><span class="line">     :getChildData&#x3D;&quot;getChildData&quot;&gt;&lt;&#x2F;B&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;A&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#39;hello B&#39;,</span><br><span class="line">        messagec:&#39;hello C&#39; &#x2F;&#x2F;传递给c组件的数据</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      getChildData(val)&#123;</span><br><span class="line">        console.log(&#39;这是来自B组件的数据&#39;,val) &#x2F;&#x2F;打印hello B</span><br><span class="line">      &#125;,</span><br><span class="line">      &#x2F;&#x2F;执行C子组件触发的事件</span><br><span class="line">      getCData(val)&#123;</span><br><span class="line">        console.log(&quot;这是来自C组件的数据：&quot;, val) &#x2F;&#x2F;打印hello C</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-方法3：provide和-inject"><a href="#3-方法3：provide和-inject" class="headerlink" title="3.方法3：provide和 inject"></a>3.方法3：<strong>provide</strong>和 <strong>inject</strong></h3><p>在 Vue.js 的 <code>2.2.0+</code> 版本中添加加了 provide 和 inject 选项。他们成对出现，用于父级组件向下传递数据。</p>
+<p>父组件中通过provide来提供变量，然后在子组件中通过inject来注入变量。不论子组件有多深，只要调用了inject那么就可以注入provide中的数据。而不是局限于只能从当前父组件的prop属性来获取数据，只要在父组件的生命周期内，子组件都可以调用。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--父组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;child&gt;&lt;&#x2F;child&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;parent&#39;,</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#39;这是要个子组件的数据&#39;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#39;hello&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--子组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;child&#39;,</span><br><span class="line">    inject:[&#39;forChidrenData&#39;], &#x2F;&#x2F;得到父组件传递过来的数据</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#39;这是要个子组件的数据&#39;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:this.forChidrenData</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-方法四：vuex处理组件之间的数据交互"><a href="#4-方法四：vuex处理组件之间的数据交互" class="headerlink" title="4.方法四：vuex处理组件之间的数据交互"></a>4.方法四：<strong>vuex处理组件之间的数据交互</strong></h3><p>​    如果业务逻辑复杂，很多组件之间需要同时处理一些公共的数据，这个时候才有上面这一些方法可能不利于项目的维护，vuex的做法就是将这一些公共的数据抽离出来，然后其他组件就可以对这个公共数据进行读写操作，这样达到了解耦的目的。</p>
+<h3 id="5-方法五：中央事件总线"><a href="#5-方法五：中央事件总线" class="headerlink" title="5.方法五：中央事件总线"></a>5.方法五：<strong>中央事件总线</strong></h3><p>​    如果两个组件不是父子关系呢？这种情况下可以使用中央事件总线的方式。新建一个Vue事件bus对象，然后通过bus.$emit触发事件，bus.$on监听触发的事件。</p>
+<blockquote>
+<p>公共事件总线eventBus的实质就是创建一个vue实例，通过一个空的vue实例作为桥梁实现vue组件间的通信。它是实现非父子组件通信的一种解决方案。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother1 compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @input&#x3D;&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;brother1&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:&#39;hello brother1&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发全局事件globalEvent</span><br><span class="line">        bus.$emit(&#39;globalEvent&#39;, val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother2 compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;p&gt;brother1传递过来的数据：&#123;&#123;brothermessage&#125;&#125;&lt;&#x2F;p&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;brother2&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        brothermessage:&#39;&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    mounted()&#123;</span><br><span class="line">      &#x2F;&#x2F;绑定全局事件globalEvent</span><br><span class="line">      bus.$on(&#39;globalEvent&#39;,(val)&#x3D;&gt;&#123;</span><br><span class="line">        this.brothermessage &#x3D; val;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;中央事件总线</span><br><span class="line">var bus&#x3D;new Vue();</span><br><span class="line">var app&#x3D;new Vue(&#123;</span><br><span class="line">  el:&#39;#app&#39;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;brother1&gt;&lt;&#x2F;brother1&gt;</span><br><span class="line">      &lt;brother2&gt;&lt;&#x2F;brother2&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;,</span><br><span class="line">   beforeDestroy()&#123;</span><br><span class="line">sd     bus.$off(&#39;globalEvent&#39;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="6-方法六：-parent和-children"><a href="#6-方法六：-parent和-children" class="headerlink" title="6.方法六：**$parent和$children**"></a>6.方法六：**$parent<strong>和</strong>$children**</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Vue.component(&#39;child&#39;,&#123;</span><br><span class="line">  props:&#123;</span><br><span class="line">    value:String, &#x2F;&#x2F;v-model会自动传递一个字段为value的prop属性</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      mymessage:this.value</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeValue()&#123;</span><br><span class="line">      this.$parent.message &#x3D; this.mymessage;&#x2F;&#x2F;通过如此调用可以改变父组件的值</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @change&#x3D;&quot;changeValue&quot;&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;&#96;</span><br><span class="line">&#125;)</span><br><span class="line">  </span><br><span class="line">Vue.component(&#39;parent&#39;,&#123;</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">      &lt;button @click&#x3D;&quot;changeChildValue&quot;&gt;test&lt;&#x2F;button &gt;</span><br><span class="line">      &lt;child&gt;&lt;&#x2F;child&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeChildValue()&#123;</span><br><span class="line">      this.$children[0].mymessage &#x3D; &#39;hello&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      message:&#39;hello&#39;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">var app&#x3D;new Vue(&#123;</span><br><span class="line">  el:&#39;#app&#39;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;parent&gt;&lt;&#x2F;parent&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>vue</category>
+      </categories>
+      <tags>
+        <tag>vue</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>vuex笔记</title>
     <url>/2020/12/26/vuex%E7%AC%94%E8%AE%B0/</url>
     <content><![CDATA[<h1 id="Vuex笔记"><a href="#Vuex笔记" class="headerlink" title="Vuex笔记"></a>Vuex笔记</h1><h3 id="Vuex概述"><a href="#Vuex概述" class="headerlink" title="Vuex概述"></a>Vuex概述</h3><h4 id="vuex是什么"><a href="#vuex是什么" class="headerlink" title="vuex是什么"></a>vuex是什么</h4><p>​    vuex是实现组件全局状态（数据）管理的一种机制，可以方便实现组件之间数据的共享<br><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/image-20201221091304337.png"></p>
@@ -1101,56 +1151,6 @@
       </categories>
       <tags>
         <tag>vuex</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>VUE组件之间通信的6种方式</title>
-    <url>/2021/02/20/VUE%E7%BB%84%E4%BB%B6%E4%B9%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E7%9A%846%E7%A7%8D%E6%96%B9%E5%BC%8F/</url>
-    <content><![CDATA[<h3 id="1-方法一：props和-emit"><a href="#1-方法一：props和-emit" class="headerlink" title="1.方法一：props和**$emit**"></a>1.方法一：<strong>props</strong>和**$emit**</h3><p>父组件通过props向下传递数据给子组件，子组件通过event给父组件发送消息，实际上就是子组件把自己的数据发送给父组件。</p>
-<h3 id="2-方法二：-attrs和-listeners"><a href="#2-方法二：-attrs和-listeners" class="headerlink" title="2.方法二：**$attrs和$listeners**"></a>2.方法二：**$attrs<strong>和</strong>$listeners**</h3><p>​    第一种方式处理父子组件之间的数据传输有一个问题：如果父组件A下面有子组件B，组件B下面有组件C,这时如果组件A想传递数据给组件C怎么办呢？ 如果采用第一种方法，我们必须让组件A通过prop传递消息给组件B，组件B在通过prop传递消息给组件C；要是组件A和组件C之间有更多的组件，那采用这种方式就很复杂了。Vue 2.4开始提供了$attrs和$listeners来解决这个问题，能够让组件A之间传递消息给组件C。</p>
-<span id="more"></span>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件C--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">        &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;$attrs.messagec&quot; @input&#x3D;&quot;passCData($attrs.messagec)&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;C&#39;,</span><br><span class="line">    data () &#123;</span><br><span class="line">      return &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passCData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发父组件A中的事件,把从A得到的数据hello C还给A组件</span><br><span class="line">        this.$emit(&#39;getCData&#39;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @input&#x3D;&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">    &lt;!-- C组件中能直接触发getCData的原因在于 B组件调用C组件时 使用 v-on 绑定了$listeners 属性 --&gt;</span><br><span class="line">    &lt;!-- 通过v-bind 绑定$attrs属性，C组件可以直接获取到A组件中传递下来的props（除了B组件中props声明的） --&gt;</span><br><span class="line">    &lt;C v-bind&#x3D;&quot;$attrs&quot; v-on&#x3D;&quot;$listeners&quot;&gt;&lt;&#x2F;C&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;B&#39;,</span><br><span class="line">    props:[</span><br><span class="line">      message:&#123;</span><br><span class="line">        type: String,</span><br><span class="line">        default: null</span><br><span class="line">      &#125;</span><br><span class="line">    ],&#x2F;&#x2F;得到父组件A传递过来的数据,hello B</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发父组件中的事件,把message给组件A</span><br><span class="line">        this.$emit(&#39;getChildData&#39;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;B </span><br><span class="line">     :messagec&#x3D;&quot;messagec&quot; </span><br><span class="line">     :message&#x3D;&quot;message&quot; </span><br><span class="line">     :getCData&#x3D;&quot;getCData&quot;</span><br><span class="line">     :getChildData&#x3D;&quot;getChildData&quot;&gt;&lt;&#x2F;B&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;A&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#39;hello B&#39;,</span><br><span class="line">        messagec:&#39;hello C&#39; &#x2F;&#x2F;传递给c组件的数据</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      getChildData(val)&#123;</span><br><span class="line">        console.log(&#39;这是来自B组件的数据&#39;,val) &#x2F;&#x2F;打印hello B</span><br><span class="line">      &#125;,</span><br><span class="line">      &#x2F;&#x2F;执行C子组件触发的事件</span><br><span class="line">      getCData(val)&#123;</span><br><span class="line">        console.log(&quot;这是来自C组件的数据：&quot;, val) &#x2F;&#x2F;打印hello C</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="3-方法3：provide和-inject"><a href="#3-方法3：provide和-inject" class="headerlink" title="3.方法3：provide和 inject"></a>3.方法3：<strong>provide</strong>和 <strong>inject</strong></h3><p>在 Vue.js 的 <code>2.2.0+</code> 版本中添加加了 provide 和 inject 选项。他们成对出现，用于父级组件向下传递数据。</p>
-<p>父组件中通过provide来提供变量，然后在子组件中通过inject来注入变量。不论子组件有多深，只要调用了inject那么就可以注入provide中的数据。而不是局限于只能从当前父组件的prop属性来获取数据，只要在父组件的生命周期内，子组件都可以调用。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--父组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;child&gt;&lt;&#x2F;child&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;parent&#39;,</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#39;这是要个子组件的数据&#39;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#39;hello&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--子组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;child&#39;,</span><br><span class="line">    inject:[&#39;forChidrenData&#39;], &#x2F;&#x2F;得到父组件传递过来的数据</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#39;这是要个子组件的数据&#39;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:this.forChidrenData</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="4-方法四：vuex处理组件之间的数据交互"><a href="#4-方法四：vuex处理组件之间的数据交互" class="headerlink" title="4.方法四：vuex处理组件之间的数据交互"></a>4.方法四：<strong>vuex处理组件之间的数据交互</strong></h3><p>​    如果业务逻辑复杂，很多组件之间需要同时处理一些公共的数据，这个时候才有上面这一些方法可能不利于项目的维护，vuex的做法就是将这一些公共的数据抽离出来，然后其他组件就可以对这个公共数据进行读写操作，这样达到了解耦的目的。</p>
-<h3 id="5-方法五：中央事件总线"><a href="#5-方法五：中央事件总线" class="headerlink" title="5.方法五：中央事件总线"></a>5.方法五：<strong>中央事件总线</strong></h3><p>​    如果两个组件不是父子关系呢？这种情况下可以使用中央事件总线的方式。新建一个Vue事件bus对象，然后通过bus.$emit触发事件，bus.$on监听触发的事件。</p>
-<blockquote>
-<p>公共事件总线eventBus的实质就是创建一个vue实例，通过一个空的vue实例作为桥梁实现vue组件间的通信。它是实现非父子组件通信的一种解决方案。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother1 compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @input&#x3D;&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;brother1&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:&#39;hello brother1&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        &#x2F;&#x2F;触发全局事件globalEvent</span><br><span class="line">        bus.$emit(&#39;globalEvent&#39;, val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother2 compoent!&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;p&gt;brother1传递过来的数据：&#123;&#123;brothermessage&#125;&#125;&lt;&#x2F;p&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#39;brother2&#39;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        brothermessage:&#39;&#39;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    mounted()&#123;</span><br><span class="line">      &#x2F;&#x2F;绑定全局事件globalEvent</span><br><span class="line">      bus.$on(&#39;globalEvent&#39;,(val)&#x3D;&gt;&#123;</span><br><span class="line">        this.brothermessage &#x3D; val;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;中央事件总线</span><br><span class="line">var bus&#x3D;new Vue();</span><br><span class="line">var app&#x3D;new Vue(&#123;</span><br><span class="line">  el:&#39;#app&#39;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;brother1&gt;&lt;&#x2F;brother1&gt;</span><br><span class="line">      &lt;brother2&gt;&lt;&#x2F;brother2&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;,</span><br><span class="line">   beforeDestroy()&#123;</span><br><span class="line">sd     bus.$off(&#39;globalEvent&#39;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="6-方法六：-parent和-children"><a href="#6-方法六：-parent和-children" class="headerlink" title="6.方法六：**$parent和$children**"></a>6.方法六：**$parent<strong>和</strong>$children**</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Vue.component(&#39;child&#39;,&#123;</span><br><span class="line">  props:&#123;</span><br><span class="line">    value:String, &#x2F;&#x2F;v-model会自动传递一个字段为value的prop属性</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      mymessage:this.value</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeValue()&#123;</span><br><span class="line">      this.$parent.message &#x3D; this.mymessage;&#x2F;&#x2F;通过如此调用可以改变父组件的值</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;mymessage&quot; @change&#x3D;&quot;changeValue&quot;&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;&#96;</span><br><span class="line">&#125;)</span><br><span class="line">  </span><br><span class="line">Vue.component(&#39;parent&#39;,&#123;</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;p&gt;this is parent compoent!&lt;&#x2F;p&gt;</span><br><span class="line">      &lt;button @click&#x3D;&quot;changeChildValue&quot;&gt;test&lt;&#x2F;button &gt;</span><br><span class="line">      &lt;child&gt;&lt;&#x2F;child&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeChildValue()&#123;</span><br><span class="line">      this.$children[0].mymessage &#x3D; &#39;hello&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      message:&#39;hello&#39;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">var app&#x3D;new Vue(&#123;</span><br><span class="line">  el:&#39;#app&#39;,</span><br><span class="line">  template:&#96;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;parent&gt;&lt;&#x2F;parent&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">  &#96;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>vue</category>
-      </categories>
-      <tags>
-        <tag>vue</tag>
       </tags>
   </entry>
   <entry>
@@ -1637,6 +1637,18 @@
       </tags>
   </entry>
   <entry>
+    <title>测试文章</title>
+    <url>/2021/05/07/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/</url>
+    <content><![CDATA[<p>测试</p>
+]]></content>
+      <categories>
+        <category>test</category>
+      </categories>
+      <tags>
+        <tag>测试</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>开发小技巧</title>
     <url>/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
     <content><![CDATA[<h2 id="阻止单击事件冒泡"><a href="#阻止单击事件冒泡" class="headerlink" title="阻止单击事件冒泡"></a>阻止单击事件冒泡</h2><p><code>&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;</code></p>
@@ -1778,6 +1790,47 @@
       </tags>
   </entry>
   <entry>
+    <title>移动端自适应——手淘flexible</title>
+    <url>/2021/04/25/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible/</url>
+    <content><![CDATA[<h2 id="移动端自适应——手淘flexible"><a href="#移动端自适应——手淘flexible" class="headerlink" title="移动端自适应——手淘flexible"></a>移动端自适应——手淘flexible</h2><p>熟悉移动端的自适应方案的朋友对 rem 适应方案，肯定不陌生，最出名的就是阿里的 <a href="https://github.com/amfe/lib-flexible">lib-flexible</a> 方案。</p>
+<p><strong>原理：</strong>flexible就是根据不同的屏幕算出html的font-size，通过js来动态写meta标签。</p>
+<p>事实上他做了这几样事情：</p>
+<ul>
+<li>动态改写<code>&lt;meta&gt;</code>标签</li>
+<li>给<code>&lt;html&gt;</code>元素添加<code>data-dpr</code>属性，并且动态改写<code>data-dpr</code>的值</li>
+<li>给<code>&lt;html&gt;</code>元素添加<code>font-size</code>属性，并且动态改写<code>font-size</code>的值</li>
+</ul>
+<p>比如我们在做移动端的时候，经常拿到的设计稿是640px或者750px。自己项目中就是640px，以此为例，自己在项目中为了计算方便，所以给html根元素设置的字体大小是100px，也就是在640px下面。这里注意，我们给html设置100px，这个是字体哦，所以最好在body设置一下字体大小。 </p>
+<span id="more"></span>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 设置html元素的字体大小为100px</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 所有的像素我们直接除以</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">640px  ——  6.4rem</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">64px —— 0.64rem</span><br></pre></td></tr></table></figure>
+
+<p>那么如果64px，对应我们写rem就是0.64rem，也不需要动用计算器去计算rem，需要多强的大脑呀（虽然有很多插件帮我们）</p>
+<p>修改flexible.js。640px下面的10就变成6.4</p>
+<p>![image-20210425112100315](/Users/gaoyuan/Library/Application Support/typora-user-images/image-20210425112100315.png)</p>
+<p>这样，我们页面直接把px换算成rem，就可以实现自适应。（记住，自己这里以640px设计稿为基础，如果是750px就是除以7.5）。</p>
+<p><strong>字号不使用rem</strong></p>
+<p>我们都知道chrome的最小显示的字体是12px，如果字体用rem，计算出来小于12px，那么就也会以12px显示，而且我们不希望出现13px或者15px这样的奇葩尺寸，所以字体最好是用px来表示，至于适应，我们可以写媒体查询。</p>
+<h2 id="vue中使用rem"><a href="#vue中使用rem" class="headerlink" title="vue中使用rem"></a>vue中使用rem</h2><p>vue现在正是火的势头上，作者说明年估计3.0要出来了。那么在vue我们如果做移动端自适应怎么弄呢？</p>
+<p><strong>安装flexible</strong></p>
+<p><em>在命令行中运行如下安装：</em></p>
+<blockquote>
+<p>npm i lib-flexible –save-dev</p>
+</blockquote>
+<p><strong>引入flexible</strong></p>
+<p><em>在项目入口文件 main.js 里 引入 lib-flexible</em></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&#x27;lib-flexible&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>对于我们的index.html，最好是不要meta标签，flexible会自动添加上的，因为有一个判断。当然了，懒惰果然是最大的生产力，有的人觉得换算rem太麻烦，就出现了插件<a href="https://www.npmjs.com/package/px2rem-loader">px2rem-loader</a>，把px自动转化为对应的rem。但是呢，麻烦的就是如果引入外部的css文件，那么也会把px转化为rem。自己在项目中就是手动计算rem，用上面的方法，直接除以100，这个应该很简单吧，都是程序员，数学这个还是可以吧……</p>
+]]></content>
+      <categories>
+        <category>移动端</category>
+      </categories>
+      <tags>
+        <tag>移动端</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>用CSS3使你的网页动起来——transform属性</title>
     <url>/2017/08/11/%E7%94%A8CSS3%E4%BD%BF%E4%BD%A0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%8A%A8%E8%B5%B7%E6%9D%A5%E2%80%94%E2%80%94transform%E5%B1%9E%E6%80%A7/</url>
     <content><![CDATA[<p><strong>转换</strong></p>
@@ -1861,47 +1914,6 @@
       </categories>
       <tags>
         <tag>CSS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>移动端自适应——手淘flexible</title>
-    <url>/2021/04/25/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible/</url>
-    <content><![CDATA[<h2 id="移动端自适应——手淘flexible"><a href="#移动端自适应——手淘flexible" class="headerlink" title="移动端自适应——手淘flexible"></a>移动端自适应——手淘flexible</h2><p>熟悉移动端的自适应方案的朋友对 rem 适应方案，肯定不陌生，最出名的就是阿里的 <a href="https://github.com/amfe/lib-flexible">lib-flexible</a> 方案。</p>
-<p><strong>原理：</strong>flexible就是根据不同的屏幕算出html的font-size，通过js来动态写meta标签。</p>
-<p>事实上他做了这几样事情：</p>
-<ul>
-<li>动态改写<code>&lt;meta&gt;</code>标签</li>
-<li>给<code>&lt;html&gt;</code>元素添加<code>data-dpr</code>属性，并且动态改写<code>data-dpr</code>的值</li>
-<li>给<code>&lt;html&gt;</code>元素添加<code>font-size</code>属性，并且动态改写<code>font-size</code>的值</li>
-</ul>
-<p>比如我们在做移动端的时候，经常拿到的设计稿是640px或者750px。自己项目中就是640px，以此为例，自己在项目中为了计算方便，所以给html根元素设置的字体大小是100px，也就是在640px下面。这里注意，我们给html设置100px，这个是字体哦，所以最好在body设置一下字体大小。 </p>
-<span id="more"></span>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 设置html元素的字体大小为100px</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 所有的像素我们直接除以</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">640px  ——  6.4rem</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">64px —— 0.64rem</span><br></pre></td></tr></table></figure>
-
-<p>那么如果64px，对应我们写rem就是0.64rem，也不需要动用计算器去计算rem，需要多强的大脑呀（虽然有很多插件帮我们）</p>
-<p>修改flexible.js。640px下面的10就变成6.4</p>
-<p>![image-20210425112100315](/Users/gaoyuan/Library/Application Support/typora-user-images/image-20210425112100315.png)</p>
-<p>这样，我们页面直接把px换算成rem，就可以实现自适应。（记住，自己这里以640px设计稿为基础，如果是750px就是除以7.5）。</p>
-<p><strong>字号不使用rem</strong></p>
-<p>我们都知道chrome的最小显示的字体是12px，如果字体用rem，计算出来小于12px，那么就也会以12px显示，而且我们不希望出现13px或者15px这样的奇葩尺寸，所以字体最好是用px来表示，至于适应，我们可以写媒体查询。</p>
-<h2 id="vue中使用rem"><a href="#vue中使用rem" class="headerlink" title="vue中使用rem"></a>vue中使用rem</h2><p>vue现在正是火的势头上，作者说明年估计3.0要出来了。那么在vue我们如果做移动端自适应怎么弄呢？</p>
-<p><strong>安装flexible</strong></p>
-<p><em>在命令行中运行如下安装：</em></p>
-<blockquote>
-<p>npm i lib-flexible –save-dev</p>
-</blockquote>
-<p><strong>引入flexible</strong></p>
-<p><em>在项目入口文件 main.js 里 引入 lib-flexible</em></p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&#x27;lib-flexible&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>对于我们的index.html，最好是不要meta标签，flexible会自动添加上的，因为有一个判断。当然了，懒惰果然是最大的生产力，有的人觉得换算rem太麻烦，就出现了插件<a href="https://www.npmjs.com/package/px2rem-loader">px2rem-loader</a>，把px自动转化为对应的rem。但是呢，麻烦的就是如果引入外部的css文件，那么也会把px转化为rem。自己在项目中就是手动计算rem，用上面的方法，直接除以100，这个应该很简单吧，都是程序员，数学这个还是可以吧……</p>
-]]></content>
-      <categories>
-        <category>移动端</category>
-      </categories>
-      <tags>
-        <tag>移动端</tag>
       </tags>
   </entry>
 </search>
