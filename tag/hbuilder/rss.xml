@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+    <channel>
+        <title>浅岛夏风 • Posts by &#34;hbuilder&#34; tag</title>
+        <link>http://example.com</link>
+        <description>一枚微不足道的前端攻城狮</description>
+        <language>zh-CN</language>
+        <pubDate>Thu, 12 Jul 2018 17:16:26 +0800</pubDate>
+        <lastBuildDate>Thu, 12 Jul 2018 17:16:26 +0800</lastBuildDate>
+        <category>javascript</category>
+        <category>HTTP</category>
+        <category>vue</category>
+        <category>MySQL</category>
+        <category>vuex</category>
+        <category>webpack</category>
+        <category>axios</category>
+        <category>Hbuilder</category>
+        <category>AJAX</category>
+        <category>CSS</category>
+        <category>react</category>
+        <category>note</category>
+        <category>移动端</category>
+        <item>
+            <guid isPermalink="true">http://example.com/2018/07/12/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/</guid>
+            <title>使用Hbuilder快速打包一个app</title>
+            <link>http://example.com/2018/07/12/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/</link>
+            <category>Hbuilder</category>
+            <pubDate>Thu, 12 Jul 2018 17:16:26 +0800</pubDate>
+            <description><![CDATA[ &lt;p&gt;HBuilder 提供的打包有云端打包和本地打包两种，云端打包的特点是 DCloud 官方配置好了原生的打包环境，可以把 HTML 等文件编译为原生安装包。&lt;/p&gt;
+&lt;p&gt;优点：速度快，所需要的环境少，加快了开发者速度，不会因为各种 JDK，java，Android 环境而无法打包生成 apk 或 ipa 头疼，大大减少了开发繁琐操作。&lt;/p&gt;
+&lt;p&gt;方法步骤：&lt;/p&gt;
+&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;
+&lt;p&gt;1. 下载 HBuilder，注册并登陆。首先打开 “文件”-“新建”-“移动 APP”，输入 “应用名称”，“位置” 可以根据需要自己选择即可，“选择模板” 建议选择空模板，如下图所示：&lt;/p&gt;
+&lt;p&gt;​​&lt;img data-src=&#34;https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712163802432&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;2. 新建完成后， 在项目管理器会显示新建的项目目录，其中 css，img，js 和 index.html 这几个文件可删可改可替换。&lt;br&gt;
+unpackage 文件夹是放置 app 图标和启动界面的图片。&lt;/p&gt;
+&lt;p&gt;manifest.json 文件是移动 App 的配置文件，用于指定应用的显示名称、图标、应用入口文件地址及需要使用的设备权限等信息，用户可通过 HBuilder 的可视化界面视图或者源码视图来配置移动 App 的信息，如下图所示：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164108624&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;3. 如果删除了 css，img，js 文件夹和 index.html 文件，就把其他自己打包好的的项目文件对应复制到文件夹中，注意 html 文件中的引用路径需要保持正确，如下图自己拷贝的项目（我的是项目打包后的 build 文件和 index.html 文件，其中 css/js/img 都在 build 文件夹下）：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164250660&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;4. 文件复制完成后，刷新更新下，双击打开 manifest.json 文件来配置 App。&lt;/p&gt;
+&lt;p&gt;appid：点击云端获取。版本号：根据需要来编辑。页面入口：默认是 index.html，根据自己项目需要，更改 APP 的启动页面。应用描述：自己随便填。应用是否全屏显示：勾上就全屏显示，如下图所示：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164915305&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;5. 图标配置：点击页面下方的图标配置，配置 APP 显示图标。&lt;/p&gt;
+&lt;p&gt;点击 &amp;quot;+“号的正方形方框，选择图标素材的路径找到图标素材，再点击” 自动生成所有图标并替换&amp;quot; 按钮，完成图标生成和替换，如下图所示：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165506582&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;生成的图标自动在 unpackage 文件夹下，如下图所示：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165618254&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;6. 在启动图片设置里点击 &amp;quot;选择&amp;quot;，找到刚放进来的启动图片，如下图所示：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165842174&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;7.SDK 配置：有需要就配置，没有就默认就行。&lt;/p&gt;
+&lt;p&gt;模块权限配置：有需要就配置，没有就默认就行。&lt;/p&gt;
+&lt;p&gt;8. 云端打包：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170045185&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170127683&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170219731&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;然后等待几分钟，刷新状态，就可以看到制作完成，是否下载？点击下载。然后将 apk 发送到手机上安装就可以正常运行了！&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712171021649&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2018071217113978&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;以下是 apk 安装后再模拟器上运行效果：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://img-blog.csdn.net/20180712171240702?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://img-blog.csdn.net/20180712171322289?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://img-blog.csdn.net/20180712171518460?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+ ]]></description>
+        </item>
+    </channel>
+</rss>

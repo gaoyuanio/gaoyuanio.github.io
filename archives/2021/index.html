@@ -1,610 +1,588 @@
+
+
+
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-
-<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<meta name="theme-color" content="#FFF">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/gao.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/gao.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/gao.png">
-  <link rel="mask-icon" href="/images/gao.svg" color="#222">
+
+<link rel="icon" type="image/ico" sizes="32x32" href="/images/favicon.ico">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
   <meta name="google-site-verification" content="BmblXLTbEG0oadNT7kCQo-kj5Dt_izzFLYV5KTcssDk">
   <meta name="msvalidate.01" content="89E58D35F116EFB128D266136B6C2871">
   <meta name="baidu-site-verification" content="code-do8zfrpF7M">
 
-<link rel="stylesheet" href="/css/main.css">
 
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic%7Csans-serif:300,300italic,400,400italic,700,700italic%7CPT+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="alternate" type="application/rss+xml" title="浅岛夏风" href="http://example.com/rss.xml" />
+<link rel="alternate" type="application/atom+xml" title="浅岛夏风" href="http://example.com/atom.xml" />
+<link rel="alternate" type="application/json" title="浅岛夏风" href="http://example.com/feed.json" />
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Mulish:300,300italic,400,400italic,700,700italic%7CFredericka%20the%20Great:300,300italic,400,400italic,700,700italic%7CNoto%20Serif%20JP:300,300italic,400,400italic,700,700italic%7CNoto%20Serif%20SC:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 
-<script class="hexo-configurations">
-    var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
-  </script>
-<meta name="description" content="一枚微不足道的前端攻城狮">
-<meta property="og:type" content="website">
-<meta property="og:title" content="GaoYuan&#39;s Blog">
-<meta property="og:url" content="http://example.com/archives/2021/index.html">
-<meta property="og:site_name" content="GaoYuan&#39;s Blog">
-<meta property="og:description" content="一枚微不足道的前端攻城狮">
-<meta property="og:locale" content="zh_CN">
-<meta property="article:author" content="高原">
-<meta property="article:tag" content="前端">
-<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="/css/app.css?v=0.2.5">
 
+  
 
 <link rel="canonical" href="http://example.com/archives/2021/">
 
 
-<script class="page-configurations">
-  // https://hexo.io/docs/variables.html
-  CONFIG.page = {
-    sidebar: "",
-    isHome : false,
-    isPost : false,
-    lang   : 'zh-CN'
-  };
-</script>
-<title>归档 | GaoYuan's Blog</title>
-  
 
-
-
-
-  <noscript>
-  <style>
-  body { margin-top: 2rem; }
-
-  .use-motion .menu-item,
-  .use-motion .sidebar,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-header {
-    visibility: visible;
-  }
-
-  .use-motion .header,
-  .use-motion .site-brand-container .toggle,
-  .use-motion .footer { opacity: initial; }
-
-  .use-motion .site-title,
-  .use-motion .site-subtitle,
-  .use-motion .custom-logo-image {
-    opacity: initial;
-    top: initial;
-  }
-
-  .use-motion .logo-line {
-    transform: scaleX(1);
-  }
-
-  .search-pop-overlay, .sidebar-nav { display: none; }
-  .sidebar-panel { display: block; }
-  </style>
-</noscript>
-
-<link rel="alternate" href="/atom.xml" title="GaoYuan's Blog" type="application/atom+xml">
-</head>
-
-<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
-  <div class="headband"></div>
-
-  <main class="main">
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏" role="button">
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
+  <title>
+2021 年 -
+归档 |
+GaoYuan's Blog = 浅岛夏风 = 生活就像海洋，只有意志将强的人才能到达彼岸</title>
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div id="loading">
+    <div class="cat">
+      <div class="body"></div>
+      <div class="head">
+        <div class="face"></div>
+      </div>
+      <div class="foot">
+        <div class="tummy-end"></div>
+        <div class="bottom"></div>
+        <div class="legs left"></div>
+        <div class="legs right"></div>
+      </div>
+      <div class="paw">
+        <div class="hands left"></div>
+        <div class="hands right"></div>
+      </div>
     </div>
   </div>
+  <div id="container">
+    <header id="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="inner">
+        <div id="brand">
+          <div class="pjax">
+          
+  <h1 itemprop="name headline">
+      发表于"2021年"的文章
+  </h1>
 
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <i class="logo-line"></i>
-      <h1 class="site-title">GaoYuan's Blog</h1>
-      <i class="logo-line"></i>
-    </a>
-      <p class="site-subtitle" itemprop="description">生活就像海洋，只有意志将强的人才能到达彼岸</p>
-  </div>
-
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger">
-        <i class="fa fa-search fa-fw fa-lg"></i>
-    </div>
-  </div>
-</div>
-
-
-
-<nav class="site-nav">
-  <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
-        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">13</span></a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">10</span></a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">24</span></a></li>
-      <li class="menu-item menu-item-search">
-        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
-        </a>
-      </li>
-  </ul>
-</nav>
-
-
-
-  <div class="search-pop-overlay">
-    <div class="popup search-popup"><div class="search-header">
-  <span class="search-icon">
-    <i class="fa fa-search"></i>
-  </span>
-  <div class="search-input-container">
-    <input autocomplete="off" autocapitalize="off" maxlength="80"
-           placeholder="搜索..." spellcheck="false"
-           type="search" class="search-input">
-  </div>
-  <span class="popup-btn-close" role="button">
-    <i class="fa fa-times-circle"></i>
-  </span>
-</div>
-<div class="search-result-container no-result">
-  <div class="search-result-icon">
-    <i class="fa fa-spinner fa-pulse fa-5x"></i>
-  </div>
-</div>
-
-    </div>
-  </div>
-
-</div>
-        
-  
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-
-  <aside class="sidebar">
-
-    <div class="sidebar-inner sidebar-overview-active">
-      <ul class="sidebar-nav">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <div class="sidebar-panel-container">
-        <!--noindex-->
-        <div class="post-toc-wrap sidebar-panel">
+          </div>
         </div>
-        <!--/noindex-->
-
-        <div class="site-overview-wrap sidebar-panel">
-          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="高原"
-      src="/images/avatar.jpeg">
-  <p class="site-author-name" itemprop="name">高原</p>
-  <div class="site-description" itemprop="description">一枚微不足道的前端攻城狮</div>
-</div>
-<div class="site-state-wrap site-overview-item animated">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-          <a href="/archives/">
-        
-          <span class="site-state-item-count">24</span>
-          <span class="site-state-item-name">日志</span>
-        </a>
+        <nav id="nav">
+  <div class="inner">
+    <div class="toggle">
+      <div class="lines" aria-label="切换导航栏">
+        <span class="line"></span>
+        <span class="line"></span>
+        <span class="line"></span>
       </div>
-      <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-          
-        <span class="site-state-item-count">10</span>
-        <span class="site-state-item-name">分类</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
-        <span class="site-state-item-count">13</span>
-        <span class="site-state-item-name">标签</span></a>
-      </div>
-  </nav>
-</div>
-  <div class="links-of-author site-overview-item animated">
-      <span class="links-of-author-item">
-        <a href="https://github.com/gaoyuanio" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;gaoyuanio" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="mailto:gaoyuan9841@163.com" title="E-Mail → mailto:gaoyuan9841@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/231615898025_.pic.jpg" title="WeChat → https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;gh&#x2F;gaoyuanio&#x2F;imgs&#x2F;img&#x2F;231615898025_.pic.jpg" rel="noopener" target="_blank"><i class="fab fa-weixin fa-fw"></i>WeChat</a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="https://qm.qq.com/cgi-bin/qm/qr?k=QW2diWiXakeqYNjughKYKvo9LVXWd0rY&noverify=0" title="QQ → https:&#x2F;&#x2F;qm.qq.com&#x2F;cgi-bin&#x2F;qm&#x2F;qr?k&#x3D;QW2diWiXakeqYNjughKYKvo9LVXWd0rY&amp;noverify&#x3D;0" rel="noopener" target="_blank"><i class="fab fa-qq fa-fw"></i>QQ</a>
-      </span>
-  </div>
-
-
-  <div class="links-of-blogroll site-overview-item animated">
-    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
-      友情链接
     </div>
-    <ul class="links-of-blogroll-list">
-        <li class="links-of-blogroll-item">
-          <a href="https://blog.csdn.net/qq_32415541?spm=1010.2135.3001.5421" title="https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_32415541?spm&#x3D;1010.2135.3001.5421" rel="noopener" target="_blank">CSDN</a>
-        </li>
-        <li class="links-of-blogroll-item">
-          <a href="https://www.monlor.com/" title="https:&#x2F;&#x2F;www.monlor.com" rel="noopener" target="_blank">Monlor's Blog</a>
-        </li>
+    <ul class="menu">
+      <li class="item title"><a href="/" rel="start">GaoYuan's Blog</a></li>
+    </ul>
+    <ul class="right">
+      <li class="item theme">
+        <i class="ic i-sun"></i>
+      </li>
+      <li class="item search">
+        <i class="ic i-search"></i>
+      </li>
     </ul>
   </div>
+</nav>
 
-
-          <!-- <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=1808492017&auto=1&height=66"></iframe> -->
-        </div>
       </div>
-        <div class="back-to-top animated" role="button">
-          <i class="fa fa-arrow-up"></i>
-          <span>0%</span>
-        </div>
+      <div id="imgs" class="pjax">
+        <ul>
+          <li class="item" data-background-image="https://tva1.sinaimg.cn/large/6833939bly1gipey84bjtj20zk0m8hdt.jpg"></li>
+          <li class="item" data-background-image="https://tva1.sinaimg.cn/large/6833939bly1gicitspjpbj20zk0m81ky.jpg"></li>
+          <li class="item" data-background-image="https://tva1.sinaimg.cn/large/6833939bly1giclffsa1cj20zk0m811l.jpg"></li>
+          <li class="item" data-background-image="https://tva1.sinaimg.cn/large/6833939bly1gipew28b65j20zk0m8hdt.jpg"></li>
+          <li class="item" data-background-image="https://tva1.sinaimg.cn/large/6833939bly1giph4baakhj20zk0m8h5q.jpg"></li>
+          <li class="item" data-background-image="https://tva1.sinaimg.cn/large/6833939bly1giciundwu5j20zk0m8n9e.jpg"></li>
+        </ul>
+      </div>
+    </header>
+    <div id="waves">
+      <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+        <defs>
+          <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+        </defs>
+        <g class="parallax">
+          <use xlink:href="#gentle-wave" x="48" y="0" />
+          <use xlink:href="#gentle-wave" x="48" y="3" />
+          <use xlink:href="#gentle-wave" x="48" y="5" />
+          <use xlink:href="#gentle-wave" x="48" y="7" />
+        </g>
+      </svg>
     </div>
-  </aside>
-  <div class="sidebar-dimmer"></div>
+    <main>
+      <div class="inner">
+        <div id="main" class="pjax">
+          
+  <div class="collapse wrap">
+    <h2 class="item header">
+          <a href="/archives">全部</a> <small>/</small> 2021 年 <small>归档</small>
+        
+    </h2>
+          <h3 class="item section"><a href="/archives/2021/05">05 月</a></h3>
 
+        <article class="item normal" itemscope itemtype="http://schema.org/Article">
+          <div class="meta">
+            <time itemprop="dateCreated"
+                  datetime="2021-05-12T11:31:26+08:00"
+                  content="2021-05-12">
+              05-12
+            </time>
+          </div>
 
-    </header>
+          <div class="title">
+              <a href="/2021/05/12/Javascript%E4%B8%AD%E5%93%AA%E4%B8%80%E7%A7%8D%E5%BE%AA%E7%8E%AF%E6%9C%80%E5%BF%AB%E5%91%A2%EF%BC%9F/" itemprop="url">
+                <span itemprop="name">Javascript中哪一种循环最快呢？</span>
+              </a>
+          </div>
+        </article>
+          <h3 class="item section"><a href="/archives/2021/04">04 月</a></h3>
 
-    
-  <div class="reading-progress-bar"></div>
+        <article class="item normal" itemscope itemtype="http://schema.org/Article">
+          <div class="meta">
+            <time itemprop="dateCreated"
+                  datetime="2021-04-25T11:21:51+08:00"
+                  content="2021-04-25">
+              04-25
+            </time>
+                <span><a href="/categories/%E7%A7%BB%E5%8A%A8%E7%AB%AF/">移动端</a></span>
+          </div>
 
-  <a href="https://github.com/gaoyuanio" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+          <div class="title">
+              <a href="/2021/04/25/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible/" itemprop="url">
+                <span itemprop="name">移动端自适应——手淘flexible</span>
+              </a>
+          </div>
+        </article>
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
+        <article class="item normal" itemscope itemtype="http://schema.org/Article">
+          <div class="meta">
+            <time itemprop="dateCreated"
+                  datetime="2021-04-16T09:20:34+08:00"
+                  content="2021-04-16">
+              04-16
+            </time>
+                <span><a href="/categories/note/">note</a></span>
+          </div>
 
+          <div class="title">
+              <a href="/2021/04/16/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%9B%9E%E6%B5%81%E5%92%8C%E9%87%8D%E6%B1%87/" itemprop="url">
+                <span itemprop="name">浏览器回流和重汇</span>
+              </a>
+          </div>
+        </article>
 
-    <div class="main-inner archive posts-collapse">
+        <article class="item normal" itemscope itemtype="http://schema.org/Article">
+          <div class="meta">
+            <time itemprop="dateCreated"
+                  datetime="2021-04-13T22:00:20+08:00"
+                  content="2021-04-13">
+              04-13
+            </time>
+                <span><a href="/categories/react/">react</a></span>
+          </div>
 
+          <div class="title">
+              <a href="/2021/04/13/%E5%AE%9E%E7%8E%B0%E6%BB%9A%E5%8A%A8%E5%8A%A8%E7%94%BB%E2%80%94%E6%B8%90%E5%85%A5%E5%8A%A8%E7%94%BB/" itemprop="url">
+                <span itemprop="name">实现滚动动画—渐入动画</span>
+              </a>
+          </div>
+        </article>
+          <h3 class="item section"><a href="/archives/2021/03">03 月</a></h3>
 
-  
-  
-  
-  <div class="post-block">
-    <div class="post-content">
-      <div class="collection-title">
-        <span class="collection-header">嗯..! 目前共计 24 篇日志。 继续努力。</span>
-      </div>
+        <article class="item normal" itemscope itemtype="http://schema.org/Article">
+          <div class="meta">
+            <time itemprop="dateCreated"
+                  datetime="2021-03-31T11:13:22+08:00"
+                  content="2021-03-31">
+              03-31
+            </time>
+                <span><a href="/categories/javascript/">javascript</a></span>
+          </div>
 
-      
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
-    </div>
+          <div class="title">
+              <a href="/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/" itemprop="url">
+                <span itemprop="name">JavaScript专题（一）变量与函数提升</span>
+              </a>
+          </div>
+        </article>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-05-12T11:31:26+08:00"
-              content="2021-05-12">
-          05-12
-        </time>
-      </div>
+        <article class="item normal" itemscope itemtype="http://schema.org/Article">
+          <div class="meta">
+            <time itemprop="dateCreated"
+                  datetime="2021-03-29T20:09:53+08:00"
+                  content="2021-03-29">
+              03-29
+            </time>
+                <span><a href="/categories/vue/">vue</a></span>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/05/12/Javascript%E4%B8%AD%E5%93%AA%E4%B8%80%E7%A7%8D%E5%BE%AA%E7%8E%AF%E6%9C%80%E5%BF%AB%E5%91%A2%EF%BC%9F/" itemprop="url">
-            <span itemprop="name">Javascript中哪一种循环最快呢？</span>
-          </a>
-      </div>
+          <div class="title">
+              <a href="/2021/03/29/vue%E9%87%8C%E5%B0%81%E8%A3%85axios%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8promise%E6%97%A0%E7%97%9B%E5%88%B7%E6%96%B0token/" itemprop="url">
+                <span itemprop="name">vue里封装axios——利用promise无痛刷新token</span>
+              </a>
+          </div>
+        </article>
 
-      
-    </header>
-  </article>
+        <article class="item normal" itemscope itemtype="http://schema.org/Article">
+          <div class="meta">
+            <time itemprop="dateCreated"
+                  datetime="2021-03-26T11:20:16+08:00"
+                  content="2021-03-26">
+              03-26
+            </time>
+                <span><a href="/categories/javascript/">javascript</a></span>
+          </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-04-25T11:21:51+08:00"
-              content="2021-04-25">
-          04-25
-        </time>
-      </div>
+          <div class="title">
+              <a href="/2021/03/26/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%85%AD%EF%BC%89%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" itemprop="url">
+                <span itemprop="name">JavaScript基础（六）基本数据类型</span>
+              </a>
+          </div>
+        </article>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/04/25/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible/" itemprop="url">
-            <span itemprop="name">移动端自适应——手淘flexible</span>
-          </a>
-      </div>
+        <article class="item normal" itemscope itemtype="http://schema.org/Article">
+          <div class="meta">
+            <time itemprop="dateCreated"
+                  datetime="2021-03-25T10:54:14+08:00"
+                  content="2021-03-25">
+              03-25
+            </time>
+                <span><a href="/categories/javascript/">javascript</a></span>
+          </div>
 
-      
-    </header>
-  </article>
+          <div class="title">
+              <a href="/2021/03/25/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%94%EF%BC%89%E9%97%AD%E5%8C%85/" itemprop="url">
+                <span itemprop="name">JavaScript基础（五）闭包</span>
+              </a>
+          </div>
+        </article>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-04-16T09:20:34+08:00"
-              content="2021-04-16">
-          04-16
-        </time>
-      </div>
+        <article class="item normal" itemscope itemtype="http://schema.org/Article">
+          <div class="meta">
+            <time itemprop="dateCreated"
+                  datetime="2021-03-24T09:37:26+08:00"
+                  content="2021-03-24">
+              03-24
+            </time>
+                <span><a href="/categories/javascript/">javascript</a></span>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/04/16/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%9B%9E%E6%B5%81%E5%92%8C%E9%87%8D%E6%B1%87/" itemprop="url">
-            <span itemprop="name">浏览器回流和重汇</span>
-          </a>
-      </div>
+          <div class="title">
+              <a href="/2021/03/24/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%9B%9B%EF%BC%89%E7%AB%8B%E5%8D%B3%E8%B0%83%E7%94%A8%E5%87%BD%E6%95%B0/" itemprop="url">
+                <span itemprop="name">JavaScript基础（四）立即调用函数</span>
+              </a>
+          </div>
+        </article>
 
-      
-    </header>
-  </article>
+        <article class="item normal" itemscope itemtype="http://schema.org/Article">
+          <div class="meta">
+            <time itemprop="dateCreated"
+                  datetime="2021-03-23T11:00:57+08:00"
+                  content="2021-03-23">
+              03-23
+            </time>
+                <span><a href="/categories/javascript/">javascript</a></span>
+          </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-04-13T22:00:20+08:00"
-              content="2021-04-13">
-          04-13
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/04/13/%E5%AE%9E%E7%8E%B0%E6%BB%9A%E5%8A%A8%E5%8A%A8%E7%94%BB%E2%80%94%E6%B8%90%E5%85%A5%E5%8A%A8%E7%94%BB/" itemprop="url">
-            <span itemprop="name">实现滚动动画—渐入动画</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-03-31T11:13:22+08:00"
-              content="2021-03-31">
-          03-31
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/" itemprop="url">
-            <span itemprop="name">JavaScript专题（一）变量与函数提升</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-03-29T20:09:53+08:00"
-              content="2021-03-29">
-          03-29
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/03/29/vue%E9%87%8C%E5%B0%81%E8%A3%85axios%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8promise%E6%97%A0%E7%97%9B%E5%88%B7%E6%96%B0token/" itemprop="url">
-            <span itemprop="name">vue里封装axios——利用promise无痛刷新token</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-03-26T11:20:16+08:00"
-              content="2021-03-26">
-          03-26
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/03/26/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%85%AD%EF%BC%89%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" itemprop="url">
-            <span itemprop="name">JavaScript基础（六）基本数据类型</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-03-25T10:54:14+08:00"
-              content="2021-03-25">
-          03-25
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/03/25/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%94%EF%BC%89%E9%97%AD%E5%8C%85/" itemprop="url">
-            <span itemprop="name">JavaScript基础（五）闭包</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-03-24T09:37:26+08:00"
-              content="2021-03-24">
-          03-24
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/03/24/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%9B%9B%EF%BC%89%E7%AB%8B%E5%8D%B3%E8%B0%83%E7%94%A8%E5%87%BD%E6%95%B0/" itemprop="url">
-            <span itemprop="name">JavaScript基础（四）立即调用函数</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-03-23T11:00:57+08:00"
-              content="2021-03-23">
-          03-23
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89%E4%BD%9C%E7%94%A8%E5%9F%9F/" itemprop="url">
-            <span itemprop="name">JavaScript基础（三）作用域</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-
-    </div>
+          <div class="title">
+              <a href="/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89%E4%BD%9C%E7%94%A8%E5%9F%9F/" itemprop="url">
+                <span itemprop="name">JavaScript基础（三）作用域</span>
+              </a>
+          </div>
+        </article>
   </div>
-  
-  
+
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/archives/2021/page/2/">2</a><a class="extend next" rel="next" href="/archives/2021/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <div class="inner">
+    <span class="page-number current">1</span><a class="page-number" href="/archives/2021/page/2/">2</a><a class="extend next" rel="next" href="/archives/2021/page/2/"><i class="ic i-angle-right" aria-label="下一页"></i></a>
+    </div>
   </nav>
 
 
-<script>
-  window.addEventListener('tabs:register', () => {
-    let { activeClass } = CONFIG.comments;
-    if (CONFIG.comments.storage) {
-      activeClass = localStorage.getItem('comments_active') || activeClass;
-    }
-    if (activeClass) {
-      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
-      if (activeTab) {
-        activeTab.click();
-      }
-    }
-  });
-  if (CONFIG.comments.storage) {
-    window.addEventListener('tabs:click', event => {
-      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      const commentClass = event.target.classList[1];
-      localStorage.setItem('comments_active', commentClass);
-    });
-  }
-</script>
+
+        </div>
+        <div id="sidebar">
+          
+<div class="inner">
+
+  <div class="panels">
+    <div class="inner">
+      <div class="contents panel pjax" data-title="文章目录">
+      </div>
+      <div class="related panel pjax" data-title="系列文章">
+      </div>
+      <div class="overview panel" data-title="站点概览">
+        <div class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <img class="image" itemprop="image" alt="高原"
+      data-src="/images/avatar.jpeg">
+  <p class="name" itemprop="name">高原</p>
+  <div class="description" itemprop="description">一枚微不足道的前端攻城狮</div>
 </div>
-  </main>
 
-  <footer class="footer">
-    <div class="footer-inner">
+<nav class="state">
+    <div class="item posts">
+      <a href="/archives/">
+        <span class="count">24</span>
+        <span class="name">文章</span>
+      </a>
+    </div>
+    <div class="item categories">
+      <a href="/categories/">
+        <span class="count">10</span>
+        <span class="name">分类</span>
+      </a>
+    </div>
+    <div class="item tags">
+      <a href="/tags/">
+        <span class="count">13</span>
+        <span class="name">标签</span>
+      </a>
+    </div>
+</nav>
 
-  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">京ICP备 1234567890号-1 </a>
-      <img src="/uploads/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=1234567890" rel="noopener" target="_blank">京公网安备 1234567890号 </a>
+<div class="social">
+      <span class="exturl item github" data-url="aHR0cHM6Ly9naXRodWIuY29tL2dhb3l1YW5pbw==" title="https:&#x2F;&#x2F;github.com&#x2F;gaoyuanio"><i class="ic i-github"></i></span>
+      <span class="exturl item email" data-url="bWFpbHRvOmdhb3l1YW45ODQxQDE2My5jb20=" title="mailto:gaoyuan9841@163.com"><i class="ic i-envelope"></i></span>
+</div>
+
+<ul class="menu">
+  
+    
+  <li class="item">
+    <a href="/" rel="section"><i class="ic i-home"></i>首页</a>
+  </li>
+
+    
+  <li class="item">
+    <a href="/about/" rel="section"><i class="ic i-user"></i>关于</a>
+  </li>
+
+        
+  <li class="item dropdown">
+      <a href="javascript:void(0);"><i class="ic i-feather"></i>文章</a>
+    <ul class="submenu">
+
+        
+  <li class="item">
+    <a href="/archives/" rel="section"><i class="ic i-list-alt"></i>归档</a>
+  </li>
+
+        
+  <li class="item">
+    <a href="/categories/" rel="section"><i class="ic i-th"></i>分类</a>
+  </li>
+
+        
+  <li class="item">
+    <a href="/tags/" rel="section"><i class="ic i-tags"></i>标签</a>
+  </li>
+
+  </ul>
+
+</ul>
+
+      </div>
+    </div>
   </div>
 
-<div class="copyright">
-  &copy; 
-  <span itemprop="copyrightYear">2021</span>
-  <span class="with-love">
-    <i class="fas fa-bone"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">高原</span>
+  <ul id="quick">
+    <li class="prev pjax">
+    </li>
+    <li class="up"><i class="ic i-arrow-up"></i></li>
+    <li class="down"><i class="ic i-arrow-down"></i></li>
+    <li class="next pjax">
+        <a href="/archives/2021/page/2/" rel="next" title="下一篇"><i class="ic i-chevron-right"></i></a>
+    </li>
+    <li class="percent"></li>
+  </ul>
 </div>
-<div class="wordcount">
-  <span class="post-meta-item">
+
+        </div>
+        <div class="dimmer"></div>
+      </div>
+    </main>
+    <footer id="footer">
+      <div class="inner">
+        <div class="widgets">
+          
+<div class="rpost pjax">
+  <h2>随机文章</h2>
+  <ul>
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/" title="分类于 个人笔记">个人笔记</a>
+</div>
+
+    <span><a href="/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/" title="开发小技巧">开发小技巧</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/javascript/" title="分类于 javascript">javascript</a>
+</div>
+
+    <span><a href="/2021/02/11/JS%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9/" title="JS实现图片压缩">JS实现图片压缩</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/javascript/" title="分类于 javascript">javascript</a>
+</div>
+
+    <span><a href="/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/" title="JavaScript专题（一）变量与函数提升">JavaScript专题（一）变量与函数提升</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/javascript/" title="分类于 javascript">javascript</a>
+</div>
+
+    <span><a href="/2021/03/24/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%9B%9B%EF%BC%89%E7%AB%8B%E5%8D%B3%E8%B0%83%E7%94%A8%E5%87%BD%E6%95%B0/" title="JavaScript基础（四）立即调用函数">JavaScript基础（四）立即调用函数</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/vue/" title="分类于 vue">vue</a>
+</div>
+
+    <span><a href="/2020/11/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/" title="vue项目打包优化策略">vue项目打包优化策略</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/javascript/" title="分类于 javascript">javascript</a>
+</div>
+
+    <span><a href="/2021/03/21/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%E4%BB%8E%E5%8E%9F%E5%9E%8B%E5%88%B0%E5%8E%9F%E5%9E%8B%E9%93%BE/" title="JavaScript基础（二）从原型到原型链">JavaScript基础（二）从原型到原型链</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/Hbuilder/" title="分类于 Hbuilder">Hbuilder</a>
+</div>
+
+    <span><a href="/2018/07/12/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/" title="使用Hbuilder快速打包一个app">使用Hbuilder快速打包一个app</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/javascript/" title="分类于 javascript">javascript</a>
+</div>
+
+    <span><a href="/2021/03/20/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89this/" title="JavaScript基础（一）this">JavaScript基础（一）this</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/vue/" title="分类于 vue">vue</a>
+</div>
+
+    <span><a href="/2021/02/20/VUE%E7%BB%84%E4%BB%B6%E4%B9%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E7%9A%846%E7%A7%8D%E6%96%B9%E5%BC%8F/" title="VUE组件之间通信的6种方式">VUE组件之间通信的6种方式</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/MySQL/" title="分类于 MySQL">MySQL</a>
+</div>
+
+    <span><a href="/2017/08/06/MySQL%E5%88%97%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%88%97%E4%B8%8A%E7%BA%A6%E6%9D%9F/" title="MySQL列类型和列上约束">MySQL列类型和列上约束</a></span>
+  </li>
+
+  </ul>
+</div>
+<div>
+  <h2>最新评论</h2>
+  <ul class="leancloud-recent-comment"></ul>
+</div>
+
+        </div>
+        <div class="status">
+  <div class="copyright">
+    
+    &copy; 2010 – 
+    <span itemprop="copyrightYear">2021</span>
+    <span class="with-love">
+      <i class="ic i-sakura rotate"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">高原 @ GaoYuan's Blog</span>
+  </div>
+  <div class="count">
     <span class="post-meta-item-icon">
-      <i class="fa fa-chart-line"></i>
+      <i class="ic i-chart-area"></i>
     </span>
-    <span title="站点总字数">101k</span>
-  </span>
-  <span class="post-meta-item">
+    <span title="站点总字数">93k 字</span>
+
+    <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
-      <i class="fa fa-coffee"></i>
+      <i class="ic i-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:32</span>
-  </span>
+    <span title="站点阅读时长">1:24</span>
+  </div>
+  <div class="powered-by">
+    基于 <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & Theme.<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2FtZWhpbWUvaGV4by10aGVtZS1zaG9rYQ==">Shoka</span>
+  </div>
 </div>
-<div class="busuanzi-count">
-    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
-      <span class="post-meta-item-icon">
-        <i class="user"></i>
-      </span>
-      <span class="site-uv" title="总访客量">
-        <span id="busuanzi_value_site_uv"></span>
-      </span>
-    </span>
-    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-eye"></i>
-      </span>
-      <span class="site-pv" title="总访问量">
-        <span id="busuanzi_value_site_pv"></span>
-      </span>
-    </span>
-</div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
-  </div><script color="128,128,128" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
 
-    </div>
-  </footer>
+      </div>
+    </footer>
+  </div>
+<script data-config type="text/javascript">
+  var LOCAL = {
+    path: 'archives/2021/',
+    favicon: {
+      show: "（●´3｀●）やれやれだぜ",
+      hide: "(´Д｀)大変だ！"
+    },
+    search : {
+      placeholder: "文章搜索",
+      empty: "关于 「 ${query} 」，什么也没搜到",
+      stats: "${time} ms 内找到 ${hits} 条结果"
+    },
+    valine: true,fancybox: true,copyright: '复制成功，转载请遵守 <i class="ic i-creative-commons"></i>BY-NC-SA 协议。',
+    ignores : [
+      function(uri) {
+        return uri.includes('#');
+      },
+      function(uri) {
+        return new RegExp(LOCAL.path+"$").test(uri);
+      }
+    ]
+  };
+</script>
 
-  
-  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
-<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+<script src="https://cdn.polyfill.io/v2/polyfill.js"></script>
 
-  
-<script src="/js/local-search.js"></script>
+<script src="//cdn.jsdelivr.net/combine/npm/pace-js@1.0.2/pace.min.js,npm/pjax@0.2.8/pjax.min.js,npm/whatwg-fetch@3.4.0/dist/fetch.umd.min.js,npm/animejs@3.2.0/lib/anime.min.js,npm/algoliasearch@4/dist/algoliasearch-lite.umd.js,npm/instantsearch.js@4/dist/instantsearch.production.min.js,npm/lozad@1/dist/lozad.min.js,npm/quicklink@2/dist/quicklink.umd.js"></script>
 
-
-
-
-
-
-  
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-
+<script src="/js/app.js?v=0.2.5"></script>
 
 
 

@@ -1,577 +1,618 @@
+
+
+
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-
-<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<meta name="theme-color" content="#FFF">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/gao.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/gao.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/gao.png">
-  <link rel="mask-icon" href="/images/gao.svg" color="#222">
+
+<link rel="icon" type="image/ico" sizes="32x32" href="/images/favicon.ico">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
   <meta name="google-site-verification" content="BmblXLTbEG0oadNT7kCQo-kj5Dt_izzFLYV5KTcssDk">
   <meta name="msvalidate.01" content="89E58D35F116EFB128D266136B6C2871">
   <meta name="baidu-site-verification" content="code-do8zfrpF7M">
 
-<link rel="stylesheet" href="/css/main.css">
 
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic%7Csans-serif:300,300italic,400,400italic,700,700italic%7CPT+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="alternate" type="application/rss+xml" title="浅岛夏风" href="http://example.com/rss.xml" />
+<link rel="alternate" type="application/atom+xml" title="浅岛夏风" href="http://example.com/atom.xml" />
+<link rel="alternate" type="application/json" title="浅岛夏风" href="http://example.com/feed.json" />
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Mulish:300,300italic,400,400italic,700,700italic%7CFredericka%20the%20Great:300,300italic,400,400italic,700,700italic%7CNoto%20Serif%20JP:300,300italic,400,400italic,700,700italic%7CNoto%20Serif%20SC:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 
-<script class="hexo-configurations">
-    var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
-  </script>
-<meta name="description" content="需求最近遇到个需求：前端登录后，后端返回token和token有效时间，当token过期时要求用旧token去获取新的token，前端需要做到无痛刷新token，即请求刷新token时要做到用户无感知。 需求解析当用户发起一个请求时，判断token是否已过期，若已过期则先调refreshToken接口，拿到新的token后再继续执行之前的请求。 这个问题的难点在于：当同时发起多个请求，而刷新tok">
-<meta property="og:type" content="article">
-<meta property="og:title" content="vue里封装axios——利用promise无痛刷新token">
-<meta property="og:url" content="http://example.com/2021/03/29/vue%E9%87%8C%E5%B0%81%E8%A3%85axios%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8promise%E6%97%A0%E7%97%9B%E5%88%B7%E6%96%B0token/index.html">
-<meta property="og:site_name" content="GaoYuan&#39;s Blog">
-<meta property="og:description" content="需求最近遇到个需求：前端登录后，后端返回token和token有效时间，当token过期时要求用旧token去获取新的token，前端需要做到无痛刷新token，即请求刷新token时要做到用户无感知。 需求解析当用户发起一个请求时，判断token是否已过期，若已过期则先调refreshToken接口，拿到新的token后再继续执行之前的请求。 这个问题的难点在于：当同时发起多个请求，而刷新tok">
-<meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-03-29T12:09:53.000Z">
-<meta property="article:modified_time" content="2021-03-29T12:16:27.940Z">
-<meta property="article:author" content="高原">
-<meta property="article:tag" content="vue">
-<meta property="article:tag" content="axios">
-<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="/css/app.css?v=0.2.5">
+
+  
+  <meta name="keywords" content="vue,axios" />
 
 
 <link rel="canonical" href="http://example.com/2021/03/29/vue%E9%87%8C%E5%B0%81%E8%A3%85axios%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8promise%E6%97%A0%E7%97%9B%E5%88%B7%E6%96%B0token/">
 
 
-<script class="page-configurations">
-  // https://hexo.io/docs/variables.html
-  CONFIG.page = {
-    sidebar: "",
-    isHome : false,
-    isPost : true,
-    lang   : 'zh-CN'
-  };
-</script>
-<title>vue里封装axios——利用promise无痛刷新token | GaoYuan's Blog</title>
+
+  <title>
+vue里封装axios——利用promise无痛刷新token - vue |
+GaoYuan's Blog = 浅岛夏风 = 生活就像海洋，只有意志将强的人才能到达彼岸</title>
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div id="loading">
+    <div class="cat">
+      <div class="body"></div>
+      <div class="head">
+        <div class="face"></div>
+      </div>
+      <div class="foot">
+        <div class="tummy-end"></div>
+        <div class="bottom"></div>
+        <div class="legs left"></div>
+        <div class="legs right"></div>
+      </div>
+      <div class="paw">
+        <div class="hands left"></div>
+        <div class="hands right"></div>
+      </div>
+    </div>
+  </div>
+  <div id="container">
+    <header id="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="inner">
+        <div id="brand">
+          <div class="pjax">
+          
+  <h1 itemprop="name headline">vue里封装axios——利用promise无痛刷新token
+  </h1>
   
-
-
-
-
-  <noscript>
-  <style>
-  body { margin-top: 2rem; }
-
-  .use-motion .menu-item,
-  .use-motion .sidebar,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-header {
-    visibility: visible;
-  }
-
-  .use-motion .header,
-  .use-motion .site-brand-container .toggle,
-  .use-motion .footer { opacity: initial; }
-
-  .use-motion .site-title,
-  .use-motion .site-subtitle,
-  .use-motion .custom-logo-image {
-    opacity: initial;
-    top: initial;
-  }
-
-  .use-motion .logo-line {
-    transform: scaleX(1);
-  }
-
-  .search-pop-overlay, .sidebar-nav { display: none; }
-  .sidebar-panel { display: block; }
-  </style>
-</noscript>
-
-<link rel="alternate" href="/atom.xml" title="GaoYuan's Blog" type="application/atom+xml">
-</head>
-
-<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
-  <div class="headband"></div>
-
-  <main class="main">
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏" role="button">
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
-    </div>
-  </div>
-
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <i class="logo-line"></i>
-      <h1 class="site-title">GaoYuan's Blog</h1>
-      <i class="logo-line"></i>
-    </a>
-      <p class="site-subtitle" itemprop="description">生活就像海洋，只有意志将强的人才能到达彼岸</p>
-  </div>
-
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger">
-        <i class="fa fa-search fa-fw fa-lg"></i>
-    </div>
-  </div>
-</div>
-
-
-
-<nav class="site-nav">
-  <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
-        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">13</span></a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">10</span></a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">24</span></a></li>
-      <li class="menu-item menu-item-search">
-        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
-        </a>
-      </li>
-  </ul>
-</nav>
-
-
-
-  <div class="search-pop-overlay">
-    <div class="popup search-popup"><div class="search-header">
-  <span class="search-icon">
-    <i class="fa fa-search"></i>
+<div class="meta">
+  <span class="item" title="创建时间：2021-03-29 20:09:53">
+    <span class="icon">
+      <i class="ic i-calendar"></i>
+    </span>
+    <span class="text">发表于</span>
+    <time itemprop="dateCreated datePublished" datetime="2021-03-29T20:09:53+08:00">2021-03-29</time>
   </span>
-  <div class="search-input-container">
-    <input autocomplete="off" autocapitalize="off" maxlength="80"
-           placeholder="搜索..." spellcheck="false"
-           type="search" class="search-input">
-  </div>
-  <span class="popup-btn-close" role="button">
-    <i class="fa fa-times-circle"></i>
+  <span class="item" title="本文字数">
+    <span class="icon">
+      <i class="ic i-pen"></i>
+    </span>
+    <span class="text">本文字数</span>
+    <span>7.6k</span>
+    <span class="text">字</span>
+  </span>
+  <span class="item" title="阅读时长">
+    <span class="icon">
+      <i class="ic i-clock"></i>
+    </span>
+    <span class="text">阅读时长</span>
+    <span>7 分钟</span>
   </span>
 </div>
-<div class="search-result-container no-result">
-  <div class="search-result-icon">
-    <i class="fa fa-spinner fa-pulse fa-5x"></i>
-  </div>
-</div>
 
-    </div>
-  </div>
 
-</div>
-        
-  
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-
-  <aside class="sidebar">
-
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
-      <ul class="sidebar-nav">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <div class="sidebar-panel-container">
-        <!--noindex-->
-        <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9C%80%E6%B1%82"><span class="nav-text">需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9C%80%E6%B1%82%E8%A7%A3%E6%9E%90"><span class="nav-text">需求解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%80%9D%E8%B7%AF"><span class="nav-text">实现思路</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80%EF%BC%9A"><span class="nav-text">方法一：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8C%EF%BC%9A"><span class="nav-text">方法二：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8D%E6%96%B9%E6%B3%95%E5%AF%B9%E6%AF%94"><span class="nav-text">两种方法对比</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-text">实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%81%E8%A3%85axios%E5%9F%BA%E6%9C%AC%E9%AA%A8%E6%9E%B6"><span class="nav-text">封装axios基本骨架</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#instance-interceptors-response-use%E6%8B%A6%E6%88%AA%E5%AE%9E%E7%8E%B0"><span class="nav-text">instance.interceptors.response.use拦截实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E5%92%8C%E4%BC%98%E5%8C%96"><span class="nav-text">问题和优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2%E5%A4%9A%E6%AC%A1%E5%88%B7%E6%96%B0token"><span class="nav-text">如何防止多次刷新token</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E6%97%B6%E5%8F%91%E8%B5%B7%E4%B8%A4%E4%B8%AA%E6%88%96%E4%BB%A5%E4%B8%8A%E7%9A%84%E8%AF%B7%E6%B1%82%E6%97%B6%EF%BC%8C%E5%85%B6%E4%BB%96%E6%8E%A5%E5%8F%A3%E5%A6%82%E4%BD%95%E9%87%8D%E8%AF%95"><span class="nav-text">同时发起两个或以上的请求时，其他接口如何重试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%90%8E%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81"><span class="nav-text">最后完整代码</span></a></li></ol></div>
+          </div>
         </div>
-        <!--/noindex-->
-
-        <div class="site-overview-wrap sidebar-panel">
-          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="高原"
-      src="/images/avatar.jpeg">
-  <p class="site-author-name" itemprop="name">高原</p>
-  <div class="site-description" itemprop="description">一枚微不足道的前端攻城狮</div>
-</div>
-<div class="site-state-wrap site-overview-item animated">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-          <a href="/archives/">
-        
-          <span class="site-state-item-count">24</span>
-          <span class="site-state-item-name">日志</span>
-        </a>
+        <nav id="nav">
+  <div class="inner">
+    <div class="toggle">
+      <div class="lines" aria-label="切换导航栏">
+        <span class="line"></span>
+        <span class="line"></span>
+        <span class="line"></span>
       </div>
-      <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-          
-        <span class="site-state-item-count">10</span>
-        <span class="site-state-item-name">分类</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
-        <span class="site-state-item-count">13</span>
-        <span class="site-state-item-name">标签</span></a>
-      </div>
-  </nav>
-</div>
-  <div class="links-of-author site-overview-item animated">
-      <span class="links-of-author-item">
-        <a href="https://github.com/gaoyuanio" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;gaoyuanio" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="mailto:gaoyuan9841@163.com" title="E-Mail → mailto:gaoyuan9841@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/231615898025_.pic.jpg" title="WeChat → https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;gh&#x2F;gaoyuanio&#x2F;imgs&#x2F;img&#x2F;231615898025_.pic.jpg" rel="noopener" target="_blank"><i class="fab fa-weixin fa-fw"></i>WeChat</a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="https://qm.qq.com/cgi-bin/qm/qr?k=QW2diWiXakeqYNjughKYKvo9LVXWd0rY&noverify=0" title="QQ → https:&#x2F;&#x2F;qm.qq.com&#x2F;cgi-bin&#x2F;qm&#x2F;qr?k&#x3D;QW2diWiXakeqYNjughKYKvo9LVXWd0rY&amp;noverify&#x3D;0" rel="noopener" target="_blank"><i class="fab fa-qq fa-fw"></i>QQ</a>
-      </span>
-  </div>
-
-
-  <div class="links-of-blogroll site-overview-item animated">
-    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
-      友情链接
     </div>
-    <ul class="links-of-blogroll-list">
-        <li class="links-of-blogroll-item">
-          <a href="https://blog.csdn.net/qq_32415541?spm=1010.2135.3001.5421" title="https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_32415541?spm&#x3D;1010.2135.3001.5421" rel="noopener" target="_blank">CSDN</a>
-        </li>
-        <li class="links-of-blogroll-item">
-          <a href="https://www.monlor.com/" title="https:&#x2F;&#x2F;www.monlor.com" rel="noopener" target="_blank">Monlor's Blog</a>
-        </li>
+    <ul class="menu">
+      <li class="item title"><a href="/" rel="start">GaoYuan's Blog</a></li>
+    </ul>
+    <ul class="right">
+      <li class="item theme">
+        <i class="ic i-sun"></i>
+      </li>
+      <li class="item search">
+        <i class="ic i-search"></i>
+      </li>
     </ul>
   </div>
+</nav>
 
-
-          <!-- <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=1808492017&auto=1&height=66"></iframe> -->
-        </div>
       </div>
-        <div class="back-to-top animated" role="button">
-          <i class="fa fa-arrow-up"></i>
-          <span>0%</span>
-        </div>
-    </div>
-  </aside>
-  <div class="sidebar-dimmer"></div>
-
-
+      <div id="imgs" class="pjax">
+        <ul>
+          <li class="item" data-background-image="https://tva1.sinaimg.cn/large/6833939bly1gicitspjpbj20zk0m81ky.jpg"></li>
+          <li class="item" data-background-image="https://tva1.sinaimg.cn/large/6833939bly1gipew28b65j20zk0m8hdt.jpg"></li>
+          <li class="item" data-background-image="https://tva1.sinaimg.cn/large/6833939bly1giclxfdlttj20zk0m8npd.jpg"></li>
+          <li class="item" data-background-image="https://tva1.sinaimg.cn/large/6833939bly1giclxp31goj20zk0m8qv5.jpg"></li>
+          <li class="item" data-background-image="https://tva1.sinaimg.cn/large/6833939bly1gipetlbztpj20zk0m84qp.jpg"></li>
+          <li class="item" data-background-image="https://tva1.sinaimg.cn/large/6833939bly1gipewr8iypj20zk0m8b29.jpg"></li>
+        </ul>
+      </div>
     </header>
-
+    <div id="waves">
+      <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+        <defs>
+          <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+        </defs>
+        <g class="parallax">
+          <use xlink:href="#gentle-wave" x="48" y="0" />
+          <use xlink:href="#gentle-wave" x="48" y="3" />
+          <use xlink:href="#gentle-wave" x="48" y="5" />
+          <use xlink:href="#gentle-wave" x="48" y="7" />
+        </g>
+      </svg>
+    </div>
+    <main>
+      <div class="inner">
+        <div id="main" class="pjax">
+          
+  <div class="article wrap">
     
-  <div class="reading-progress-bar"></div>
-
-  <a href="https://github.com/gaoyuanio" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
-
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
-
-
-    <div class="main-inner post posts-expand">
-
-
-  
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/29/vue%E9%87%8C%E5%B0%81%E8%A3%85axios%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8promise%E6%97%A0%E7%97%9B%E5%88%B7%E6%96%B0token/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="高原">
-      <meta itemprop="description" content="一枚微不足道的前端攻城狮">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GaoYuan's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          vue里封装axios——利用promise无痛刷新token
-        </h1>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-03-29 20:09:53 / 修改时间：20:16:27" itemprop="dateCreated datePublished" datetime="2021-03-29T20:09:53+08:00">2021-03-29</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/vue/" itemprop="url" rel="index"><span itemprop="name">vue</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-eye"></i>
-      </span>
-      <span class="post-meta-item-text">阅读次数：</span>
-      <span id="busuanzi_value_page_pv"></span>
-    </span>
-      </div>
-      <div class="post-meta">
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>8.4k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>8 分钟</span>
-    </span>
+<div class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+<i class="ic i-home"></i>
+<span><a href="/">首页</a></span><i class="ic i-angle-right"></i>
+<span  class="current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a href="/categories/vue/" itemprop="item" rel="index" title="分类于 vue"><span itemprop="name">vue</span></a>
+<meta itemprop="position" content="1" /></span>
 </div>
 
-        </div>
-      </header>
+    <article itemscope itemtype="http://schema.org/Article" class="post block" lang="zh-CN">
+  <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/29/vue%E9%87%8C%E5%B0%81%E8%A3%85axios%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8promise%E6%97%A0%E7%97%9B%E5%88%B7%E6%96%B0token/">
 
+  <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+    <meta itemprop="name" content="高原">
+    <meta itemprop="description" content="生活就像海洋，只有意志将强的人才能到达彼岸, 一枚微不足道的前端攻城狮">
+  </span>
+
+  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="浅岛夏风">
+  </span>
+
+  <div class="body md" itemprop="articleBody">
     
-    
-    
-    <div class="post-body" itemprop="articleBody">
-        <h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>最近遇到个需求：前端登录后，后端返回<code>token</code>和<code>token有效时间</code>，当token过期时要求用旧token去获取新的token，前端需要做到无痛刷新<code>token</code>，即请求刷新token时要做到用户无感知。</p>
-<h2 id="需求解析"><a href="#需求解析" class="headerlink" title="需求解析"></a>需求解析</h2><p>当用户发起一个请求时，判断token是否已过期，若已过期则先调<code>refreshToken</code>接口，拿到新的token后再继续执行之前的请求。</p>
-<p>这个问题的难点在于：当同时发起多个请求，而刷新token的接口还没返回，此时其他请求该如何处理？接下来会循序渐进地分享一下整个过程。</p>
+
+    <h2 id="需求"><a class="markdownIt-Anchor" href="#需求">#</a> 需求</h2>
+<p>最近遇到个需求：前端登录后，后端返回 <code>token</code>  和 <code>token有效时间</code> ，当 token 过期时要求用旧 token 去获取新的 token，前端需要做到无痛刷新 <code>token</code> ，即请求刷新 token 时要做到用户无感知。</p>
+<h2 id="需求解析"><a class="markdownIt-Anchor" href="#需求解析">#</a> 需求解析</h2>
+<p>当用户发起一个请求时，判断 token 是否已过期，若已过期则先调 <code>refreshToken</code>  接口，拿到新的 token 后再继续执行之前的请求。</p>
+<p>这个问题的难点在于：当同时发起多个请求，而刷新 token 的接口还没返回，此时其他请求该如何处理？接下来会循序渐进地分享一下整个过程。</p>
 <span id="more"></span>
-
-<h2 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h2><p>由于后端返回了token的有效时间，可以有两种方法：</p>
-<h3 id="方法一："><a href="#方法一：" class="headerlink" title="方法一："></a>方法一：</h3><p>在请求发起前拦截每个请求，判断token的有效时间是否已经过期，若已过期，则将请求挂起，先刷新token后再继续请求。</p>
-<h3 id="方法二："><a href="#方法二：" class="headerlink" title="方法二："></a>方法二：</h3><p>不在请求前拦截，而是拦截返回后的数据。先发起请求，接口返回过期后，先刷新token，再进行一次重试。</p>
-<h3 id="两种方法对比"><a href="#两种方法对比" class="headerlink" title="两种方法对比"></a>两种方法对比</h3><p>方法一</p>
+<h2 id="实现思路"><a class="markdownIt-Anchor" href="#实现思路">#</a> 实现思路</h2>
+<p>由于后端返回了 token 的有效时间，可以有两种方法：</p>
+<h3 id="方法一"><a class="markdownIt-Anchor" href="#方法一">#</a> 方法一：</h3>
+<p>在请求发起前拦截每个请求，判断 token 的有效时间是否已经过期，若已过期，则将请求挂起，先刷新 token 后再继续请求。</p>
+<h3 id="方法二"><a class="markdownIt-Anchor" href="#方法二">#</a> 方法二：</h3>
+<p>不在请求前拦截，而是拦截返回后的数据。先发起请求，接口返回过期后，先刷新 token，再进行一次重试。</p>
+<h3 id="两种方法对比"><a class="markdownIt-Anchor" href="#两种方法对比">#</a> 两种方法对比</h3>
+<p>方法一</p>
 <ul>
 <li>优点： 在请求前拦截，能节省请求，省流量。</li>
-<li>缺点： 需要后端额外提供一个token过期时间的字段；使用了本地时间判断，若本地时间被篡改，特别是本地时间比服务器时间慢时，拦截会失败。</li>
+<li>缺点： 需要后端额外提供一个 token 过期时间的字段；使用了本地时间判断，若本地时间被篡改，特别是本地时间比服务器时间慢时，拦截会失败。</li>
 </ul>
 <blockquote>
-<p>PS：token有效时间建议是时间段，类似缓存的MaxAge，而不要是绝对时间。当服务器和本地时间不一致时，绝对时间会有问题。</p>
+<p>PS：token 有效时间建议是时间段，类似缓存的 MaxAge，而不要是绝对时间。当服务器和本地时间不一致时，绝对时间会有问题。</p>
 </blockquote>
 <p>方法二</p>
 <ul>
-<li>优点：不需额外的token过期字段，不需判断时间。</li>
+<li>优点：不需额外的 token 过期字段，不需判断时间。</li>
 <li>缺点： 会消耗多一次请求，耗流量。</li>
 </ul>
 <p>综上，方法一和二优缺点是互补的，方法一有校验失败的风险（本地时间被篡改时，当然一般没有用户闲的蛋疼去改本地时间的啦），方法二更简单粗暴，等知道服务器已经过期了再重试一次，只是会耗多一个请求。</p>
 <p>在这里博主选择了 <em>方法二</em>。</p>
-<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>这里会使用<a target="_blank" rel="noopener" href="https://github.com/axios/axios">axios</a>来实现，方法一是请求前拦截，所以会使用<code>axios.interceptors.request.use()</code>这个方法；</p>
-<p>而方法二是请求后拦截，所以会使用<code>axios.interceptors.response.use()</code>方法。</p>
-<h3 id="封装axios基本骨架"><a href="#封装axios基本骨架" class="headerlink" title="封装axios基本骨架"></a>封装axios基本骨架</h3><p>首先说明一下，项目中的token是存在<code>localStorage</code>中的。<code>request.js</code>基本骨架:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">import axios from &#39;axios&#39;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 从localStorage中获取token</span><br><span class="line">function getLocalToken () &#123;</span><br><span class="line">    const token &#x3D; window.localStorage.getItem(&#39;token&#39;)</span><br><span class="line">    return token</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 给实例添加一个setToken方法，用于登录后将最新token动态添加到header，同时将token保存在localStorage中</span><br><span class="line">instance.setToken &#x3D; (token) &#x3D;&gt; &#123;</span><br><span class="line">  instance.defaults.headers[&#39;X-Token&#39;] &#x3D; token</span><br><span class="line">  window.localStorage.setItem(&#39;token&#39;, token)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 创建一个axios实例</span><br><span class="line">const instance &#x3D; axios.create(&#123;</span><br><span class="line">  baseURL: &#39;&#x2F;api&#39;,</span><br><span class="line">  timeout: 300000,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    &#39;Content-Type&#39;: &#39;application&#x2F;json&#39;,</span><br><span class="line">    &#39;X-Token&#39;: getLocalToken() &#x2F;&#x2F; headers塞token</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 拦截返回的数据</span><br><span class="line">instance.interceptors.response.use(response &#x3D;&gt; &#123;</span><br><span class="line">  &#x2F;&#x2F; 接下来会在这里进行token过期的逻辑处理</span><br><span class="line">  return response</span><br><span class="line">&#125;, error &#x3D;&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">export default instance</span><br></pre></td></tr></table></figure>
+<h2 id="实现"><a class="markdownIt-Anchor" href="#实现">#</a> 实现</h2>
+<p>这里会使用<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2F4aW9zL2F4aW9z"> axios</span> 来实现，方法一是请求前拦截，所以会使用 <code>axios.interceptors.request.use()</code>  这个方法；</p>
+<p>而方法二是请求后拦截，所以会使用 <code>axios.interceptors.response.use()</code>  方法。</p>
+<h3 id="封装axios基本骨架"><a class="markdownIt-Anchor" href="#封装axios基本骨架">#</a> 封装 axios 基本骨架</h3>
+<p>首先说明一下，项目中的 token 是存在 <code>localStorage</code>  中的。 <code>request.js</code>  基本骨架:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">import axios from &#x27;axios&#x27;</span><br><span class="line"></span><br><span class="line">// 从localStorage中获取token</span><br><span class="line">function getLocalToken () &#123;</span><br><span class="line">    const token = window.localStorage.getItem(&#x27;token&#x27;)</span><br><span class="line">    return token</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 给实例添加一个setToken方法，用于登录后将最新token动态添加到header，同时将token保存在localStorage中</span><br><span class="line">instance.setToken = (token) =&gt; &#123;</span><br><span class="line">  instance.defaults.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">  window.localStorage.setItem(&#x27;token&#x27;, token)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 创建一个axios实例</span><br><span class="line">const instance = axios.create(&#123;</span><br><span class="line">  baseURL: &#x27;/api&#x27;,</span><br><span class="line">  timeout: 300000,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,</span><br><span class="line">    &#x27;X-Token&#x27;: getLocalToken() // headers塞token</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// 拦截返回的数据</span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  // 接下来会在这里进行token过期的逻辑处理</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">export default instance</span><br></pre></td></tr></table></figure>
+<p>这个是项目中一般的 axios 实例的封装，创建实例时，将本地已有的 token 放进 header，然后 export 出去供调用。接下来就是如何拦截返回的数据啦。</p>
+<h3 id="instanceinterceptorsresponseuse拦截实现"><a class="markdownIt-Anchor" href="#instanceinterceptorsresponseuse拦截实现">#</a> instance.interceptors.response.use 拦截实现</h3>
+<p>后端接口一般会有一个约定好的数据结构，如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;code: 1234, message: &#x27;token过期&#x27;, data: &#123;&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>如我这里，后端约定当 <code>code === 1234</code>  时表示 token 过期了，此时就要求刷新 token。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    // 说明token过期了,刷新token</span><br><span class="line">    return refreshToken().then(res =&gt; &#123;</span><br><span class="line">      // 刷新token成功，将最新的token更新到header中，同时保存在localStorage中</span><br><span class="line">      const &#123; token &#125; = res.data</span><br><span class="line">      instance.setToken(token)</span><br><span class="line">      // 获取当前失败的请求</span><br><span class="line">      const config = response.config</span><br><span class="line">      // 重置一下配置</span><br><span class="line">      config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">      config.baseURL = &#x27;&#x27; // url已经带上了/api，避免出现/api/api的情况</span><br><span class="line">      // 重试当前请求并返回promise</span><br><span class="line">      return instance(config)</span><br><span class="line">    &#125;).catch(res =&gt; &#123;</span><br><span class="line">      console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">      //刷新token失败，神仙也救不了了，跳转到首页重新登录吧</span><br><span class="line">      window.location.href = &#x27;/&#x27;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">function refreshToken () &#123;</span><br><span class="line">    // instance是当前request.js中已创建的axios实例</span><br><span class="line">    return instance.post(&#x27;/refreshtoken&#x27;).then(res =&gt; res.data)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里需要额外注意的是， <code>response.config</code>  就是原请求的配置，但这个是已经处理过了的， <code>config.url</code>  已经带上了 <code>baseUrl</code> ，因此重试时需要去掉，同时 token 也是旧的，需要刷新下。</p>
+<p>以上就基本做到了无痛刷新 token，当 token 正常时，正常返回，当 token 已过期，则 axios 内部进行一次刷新 token 和重试。对调用者来说，axios 内部的刷新 token 是一个黑盒，是无感知的，因此需求已经做到了。</p>
+<h2 id="问题和优化"><a class="markdownIt-Anchor" href="#问题和优化">#</a> 问题和优化</h2>
+<p>上面的代码还是存在一些问题的，没有考虑到多次请求的问题，因此需要进一步优化。</p>
+<h3 id="如何防止多次刷新token"><a class="markdownIt-Anchor" href="#如何防止多次刷新token">#</a> 如何防止多次刷新 token</h3>
+<p>如果 refreshToken 接口还没返回，此时再有一个过期的请求进来，上面的代码就会再一次执行 refreshToken，这就会导致多次执行刷新 token 的接口，因此需要防止这个问题。我们可以在 <code>request.js</code>  中用一个 <code>flag</code>  来标记当前是否正在刷新 token 的状态，如果正在刷新则不再调用刷新 token 的接口。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        const config = response.config</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这样子就可以避免在刷新 token 时再进入方法了。但是这种做法是相当于把其他失败的接口给舍弃了，假如同时发起两个请求，且几乎同时返回，第一个请求肯定是进入了 refreshToken 后再重试，而第二个请求则被丢弃了，仍是返回失败，所以接下来还得解决其他接口的重试问题。</p>
+<h3 id="同时发起两个或以上的请求时其他接口如何重试"><a class="markdownIt-Anchor" href="#同时发起两个或以上的请求时其他接口如何重试">#</a> 同时发起两个或以上的请求时，其他接口如何重试</h3>
+<p>两个接口几乎同时发起和返回，第一个接口会进入刷新 token 后重试的流程，而第二个接口需要先存起来，然后等刷新 token 后再重试。同样，如果同时发起三个请求，此时需要缓存后两个接口，等刷新 token 后再重试。由于接口都是异步的，处理起来会有点麻烦。</p>
+<p>当第二个过期的请求进来，token 正在刷新，我们先将这个请求存到一个数组队列中，想办法让这个请求处于等待中，一直等到刷新 token 后再逐个重试清空请求队列。<br>
+那么如何做到让这个请求处于等待中呢？为了解决这个问题，我们得借助 <code>Promise</code> 。将请求存进队列中后，同时返回一个 <code>Promise</code> ，让这个 <code>Promise</code>  一直处于 <code>Pending</code>  状态（即不调用 resolve），此时这个请求就会一直等啊等，只要我们不执行 resolve，这个请求就会一直在等待。当刷新请求的接口返回来后，我们再调用 resolve，逐个重试。最终代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">// 重试队列，每一项将是一个待执行的函数形式</span><br><span class="line">let requests = []</span><br><span class="line"></span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    const config = response.config</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        // 已经刷新了token，将所有队列中的请求进行重试</span><br><span class="line">        requests.forEach(cb =&gt; cb(token))</span><br><span class="line">        // 重试完了别忘了清空这个队列（掘金评论区同学指点）</span><br><span class="line">        requests = []</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 正在刷新token，返回一个未执行resolve的promise</span><br><span class="line">      return new Promise((resolve) =&gt; &#123;</span><br><span class="line">        // 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行</span><br><span class="line">        requests.push((token) =&gt; &#123;</span><br><span class="line">          config.baseURL = &#x27;&#x27;</span><br><span class="line">          config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">          resolve(instance(config))</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这里可能比较难理解的是 <code>requests</code>  这个队列中保存的是一个函数，这是为了让 resolve 不执行，先存起来，等刷新 token 后更方便调用这个函数使得 resolve 执行。至此，问题应该都解决了。</p>
+<h2 id="最后完整代码"><a class="markdownIt-Anchor" href="#最后完整代码">#</a> 最后完整代码</h2>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">import axios from &#x27;axios&#x27;</span><br><span class="line"></span><br><span class="line">// 从localStorage中获取token</span><br><span class="line">function getLocalToken () &#123;</span><br><span class="line">    const token = window.localStorage.getItem(&#x27;token&#x27;)</span><br><span class="line">    return token</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 给实例添加一个setToken方法，用于登录后将最新token动态添加到header，同时将token保存在localStorage中</span><br><span class="line">instance.setToken = (token) =&gt; &#123;</span><br><span class="line">  instance.defaults.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">  window.localStorage.setItem(&#x27;token&#x27;, token)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function refreshToken () &#123;</span><br><span class="line">    // instance是当前request.js中已创建的axios实例</span><br><span class="line">    return instance.post(&#x27;/refreshtoken&#x27;).then(res =&gt; res.data)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 创建一个axios实例</span><br><span class="line">const instance = axios.create(&#123;</span><br><span class="line">  baseURL: &#x27;/api&#x27;,</span><br><span class="line">  timeout: 300000,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,</span><br><span class="line">    &#x27;X-Token&#x27;: getLocalToken() // headers塞token</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">// 重试队列，每一项将是一个待执行的函数形式</span><br><span class="line">let requests = []</span><br><span class="line"></span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    const config = response.config</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        // 已经刷新了token，将所有队列中的请求进行重试</span><br><span class="line">        requests.forEach(cb =&gt; cb(token))</span><br><span class="line">        requests = []</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 正在刷新token，将返回一个未执行resolve的promise</span><br><span class="line">      return new Promise((resolve) =&gt; &#123;</span><br><span class="line">        // 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行</span><br><span class="line">        requests.push((token) =&gt; &#123;</span><br><span class="line">          config.baseURL = &#x27;&#x27;</span><br><span class="line">          config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">          resolve(instance(config))</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">export default instance</span><br></pre></td></tr></table></figure>
+<p>希望对大家有帮助。感谢看到最后<sup>_</sup>。</p>
 
-<p>这个是项目中一般的axios实例的封装，创建实例时，将本地已有的token放进header，然后export出去供调用。接下来就是如何拦截返回的数据啦。</p>
-<h3 id="instance-interceptors-response-use拦截实现"><a href="#instance-interceptors-response-use拦截实现" class="headerlink" title="instance.interceptors.response.use拦截实现"></a>instance.interceptors.response.use拦截实现</h3><p>后端接口一般会有一个约定好的数据结构，如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;code: 1234, message: &#39;token过期&#39;, data: &#123;&#125;&#125;</span><br></pre></td></tr></table></figure>
-
-<p>如我这里，后端约定当<code>code === 1234</code>时表示token过期了，此时就要求刷新token。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">instance.interceptors.response.use(response &#x3D;&gt; &#123;</span><br><span class="line">  const &#123; code &#125; &#x3D; response.data</span><br><span class="line">  if (code &#x3D;&#x3D;&#x3D; 1234) &#123;</span><br><span class="line">    &#x2F;&#x2F; 说明token过期了,刷新token</span><br><span class="line">    return refreshToken().then(res &#x3D;&gt; &#123;</span><br><span class="line">      &#x2F;&#x2F; 刷新token成功，将最新的token更新到header中，同时保存在localStorage中</span><br><span class="line">      const &#123; token &#125; &#x3D; res.data</span><br><span class="line">      instance.setToken(token)</span><br><span class="line">      &#x2F;&#x2F; 获取当前失败的请求</span><br><span class="line">      const config &#x3D; response.config</span><br><span class="line">      &#x2F;&#x2F; 重置一下配置</span><br><span class="line">      config.headers[&#39;X-Token&#39;] &#x3D; token</span><br><span class="line">      config.baseURL &#x3D; &#39;&#39; &#x2F;&#x2F; url已经带上了&#x2F;api，避免出现&#x2F;api&#x2F;api的情况</span><br><span class="line">      &#x2F;&#x2F; 重试当前请求并返回promise</span><br><span class="line">      return instance(config)</span><br><span class="line">    &#125;).catch(res &#x3D;&gt; &#123;</span><br><span class="line">      console.error(&#39;refreshtoken error &#x3D;&gt;&#39;, res)</span><br><span class="line">      &#x2F;&#x2F;刷新token失败，神仙也救不了了，跳转到首页重新登录吧</span><br><span class="line">      window.location.href &#x3D; &#39;&#x2F;&#39;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error &#x3D;&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">function refreshToken () &#123;</span><br><span class="line">    &#x2F;&#x2F; instance是当前request.js中已创建的axios实例</span><br><span class="line">    return instance.post(&#39;&#x2F;refreshtoken&#39;).then(res &#x3D;&gt; res.data)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这里需要额外注意的是，<code>response.config</code>就是原请求的配置，但这个是已经处理过了的，<code>config.url</code>已经带上了<code>baseUrl</code>，因此重试时需要去掉，同时token也是旧的，需要刷新下。</p>
-<p>以上就基本做到了无痛刷新token，当token正常时，正常返回，当token已过期，则axios内部进行一次刷新token和重试。对调用者来说，axios内部的刷新token是一个黑盒，是无感知的，因此需求已经做到了。</p>
-<h2 id="问题和优化"><a href="#问题和优化" class="headerlink" title="问题和优化"></a>问题和优化</h2><p>上面的代码还是存在一些问题的，没有考虑到多次请求的问题，因此需要进一步优化。</p>
-<h3 id="如何防止多次刷新token"><a href="#如何防止多次刷新token" class="headerlink" title="如何防止多次刷新token"></a>如何防止多次刷新token</h3><p>如果refreshToken接口还没返回，此时再有一个过期的请求进来，上面的代码就会再一次执行refreshToken，这就会导致多次执行刷新token的接口，因此需要防止这个问题。我们可以在<code>request.js</code>中用一个<code>flag</code>来标记当前是否正在刷新token的状态，如果正在刷新则不再调用刷新token的接口。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 是否正在刷新的标记</span><br><span class="line">let isRefreshing &#x3D; false</span><br><span class="line">instance.interceptors.response.use(response &#x3D;&gt; &#123;</span><br><span class="line">  const &#123; code &#125; &#x3D; response.data</span><br><span class="line">  if (code &#x3D;&#x3D;&#x3D; 1234) &#123;</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing &#x3D; true</span><br><span class="line">      return refreshToken().then(res &#x3D;&gt; &#123;</span><br><span class="line">        const &#123; token &#125; &#x3D; res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        const config &#x3D; response.config</span><br><span class="line">        config.headers[&#39;X-Token&#39;] &#x3D; token</span><br><span class="line">        config.baseURL &#x3D; &#39;&#39;</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res &#x3D;&gt; &#123;</span><br><span class="line">        console.error(&#39;refreshtoken error &#x3D;&gt;&#39;, res)</span><br><span class="line">        window.location.href &#x3D; &#39;&#x2F;&#39;</span><br><span class="line">      &#125;).finally(() &#x3D;&gt; &#123;</span><br><span class="line">        isRefreshing &#x3D; false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error &#x3D;&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<p>这样子就可以避免在刷新token时再进入方法了。但是这种做法是相当于把其他失败的接口给舍弃了，假如同时发起两个请求，且几乎同时返回，第一个请求肯定是进入了refreshToken后再重试，而第二个请求则被丢弃了，仍是返回失败，所以接下来还得解决其他接口的重试问题。</p>
-<h3 id="同时发起两个或以上的请求时，其他接口如何重试"><a href="#同时发起两个或以上的请求时，其他接口如何重试" class="headerlink" title="同时发起两个或以上的请求时，其他接口如何重试"></a>同时发起两个或以上的请求时，其他接口如何重试</h3><p>两个接口几乎同时发起和返回，第一个接口会进入刷新token后重试的流程，而第二个接口需要先存起来，然后等刷新token后再重试。同样，如果同时发起三个请求，此时需要缓存后两个接口，等刷新token后再重试。由于接口都是异步的，处理起来会有点麻烦。</p>
-<p>当第二个过期的请求进来，token正在刷新，我们先将这个请求存到一个数组队列中，想办法让这个请求处于等待中，一直等到刷新token后再逐个重试清空请求队列。<br>那么如何做到让这个请求处于等待中呢？为了解决这个问题，我们得借助<code>Promise</code>。将请求存进队列中后，同时返回一个<code>Promise</code>，让这个<code>Promise</code>一直处于<code>Pending</code>状态（即不调用resolve），此时这个请求就会一直等啊等，只要我们不执行resolve，这个请求就会一直在等待。当刷新请求的接口返回来后，我们再调用resolve，逐个重试。最终代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 是否正在刷新的标记</span><br><span class="line">let isRefreshing &#x3D; false</span><br><span class="line">&#x2F;&#x2F; 重试队列，每一项将是一个待执行的函数形式</span><br><span class="line">let requests &#x3D; []</span><br><span class="line"></span><br><span class="line">instance.interceptors.response.use(response &#x3D;&gt; &#123;</span><br><span class="line">  const &#123; code &#125; &#x3D; response.data</span><br><span class="line">  if (code &#x3D;&#x3D;&#x3D; 1234) &#123;</span><br><span class="line">    const config &#x3D; response.config</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing &#x3D; true</span><br><span class="line">      return refreshToken().then(res &#x3D;&gt; &#123;</span><br><span class="line">        const &#123; token &#125; &#x3D; res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        config.headers[&#39;X-Token&#39;] &#x3D; token</span><br><span class="line">        config.baseURL &#x3D; &#39;&#39;</span><br><span class="line">        &#x2F;&#x2F; 已经刷新了token，将所有队列中的请求进行重试</span><br><span class="line">        requests.forEach(cb &#x3D;&gt; cb(token))</span><br><span class="line">        &#x2F;&#x2F; 重试完了别忘了清空这个队列（掘金评论区同学指点）</span><br><span class="line">        requests &#x3D; []</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res &#x3D;&gt; &#123;</span><br><span class="line">        console.error(&#39;refreshtoken error &#x3D;&gt;&#39;, res)</span><br><span class="line">        window.location.href &#x3D; &#39;&#x2F;&#39;</span><br><span class="line">      &#125;).finally(() &#x3D;&gt; &#123;</span><br><span class="line">        isRefreshing &#x3D; false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      &#x2F;&#x2F; 正在刷新token，返回一个未执行resolve的promise</span><br><span class="line">      return new Promise((resolve) &#x3D;&gt; &#123;</span><br><span class="line">        &#x2F;&#x2F; 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行</span><br><span class="line">        requests.push((token) &#x3D;&gt; &#123;</span><br><span class="line">          config.baseURL &#x3D; &#39;&#39;</span><br><span class="line">          config.headers[&#39;X-Token&#39;] &#x3D; token</span><br><span class="line">          resolve(instance(config))</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error &#x3D;&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<p>这里可能比较难理解的是<code>requests</code>这个队列中保存的是一个函数，这是为了让resolve不执行，先存起来，等刷新token后更方便调用这个函数使得resolve执行。至此，问题应该都解决了。</p>
-<h2 id="最后完整代码"><a href="#最后完整代码" class="headerlink" title="最后完整代码"></a>最后完整代码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">import axios from &#39;axios&#39;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 从localStorage中获取token</span><br><span class="line">function getLocalToken () &#123;</span><br><span class="line">    const token &#x3D; window.localStorage.getItem(&#39;token&#39;)</span><br><span class="line">    return token</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 给实例添加一个setToken方法，用于登录后将最新token动态添加到header，同时将token保存在localStorage中</span><br><span class="line">instance.setToken &#x3D; (token) &#x3D;&gt; &#123;</span><br><span class="line">  instance.defaults.headers[&#39;X-Token&#39;] &#x3D; token</span><br><span class="line">  window.localStorage.setItem(&#39;token&#39;, token)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function refreshToken () &#123;</span><br><span class="line">    &#x2F;&#x2F; instance是当前request.js中已创建的axios实例</span><br><span class="line">    return instance.post(&#39;&#x2F;refreshtoken&#39;).then(res &#x3D;&gt; res.data)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 创建一个axios实例</span><br><span class="line">const instance &#x3D; axios.create(&#123;</span><br><span class="line">  baseURL: &#39;&#x2F;api&#39;,</span><br><span class="line">  timeout: 300000,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    &#39;Content-Type&#39;: &#39;application&#x2F;json&#39;,</span><br><span class="line">    &#39;X-Token&#39;: getLocalToken() &#x2F;&#x2F; headers塞token</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 是否正在刷新的标记</span><br><span class="line">let isRefreshing &#x3D; false</span><br><span class="line">&#x2F;&#x2F; 重试队列，每一项将是一个待执行的函数形式</span><br><span class="line">let requests &#x3D; []</span><br><span class="line"></span><br><span class="line">instance.interceptors.response.use(response &#x3D;&gt; &#123;</span><br><span class="line">  const &#123; code &#125; &#x3D; response.data</span><br><span class="line">  if (code &#x3D;&#x3D;&#x3D; 1234) &#123;</span><br><span class="line">    const config &#x3D; response.config</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing &#x3D; true</span><br><span class="line">      return refreshToken().then(res &#x3D;&gt; &#123;</span><br><span class="line">        const &#123; token &#125; &#x3D; res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        config.headers[&#39;X-Token&#39;] &#x3D; token</span><br><span class="line">        config.baseURL &#x3D; &#39;&#39;</span><br><span class="line">        &#x2F;&#x2F; 已经刷新了token，将所有队列中的请求进行重试</span><br><span class="line">        requests.forEach(cb &#x3D;&gt; cb(token))</span><br><span class="line">        requests &#x3D; []</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res &#x3D;&gt; &#123;</span><br><span class="line">        console.error(&#39;refreshtoken error &#x3D;&gt;&#39;, res)</span><br><span class="line">        window.location.href &#x3D; &#39;&#x2F;&#39;</span><br><span class="line">      &#125;).finally(() &#x3D;&gt; &#123;</span><br><span class="line">        isRefreshing &#x3D; false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      &#x2F;&#x2F; 正在刷新token，将返回一个未执行resolve的promise</span><br><span class="line">      return new Promise((resolve) &#x3D;&gt; &#123;</span><br><span class="line">        &#x2F;&#x2F; 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行</span><br><span class="line">        requests.push((token) &#x3D;&gt; &#123;</span><br><span class="line">          config.baseURL &#x3D; &#39;&#39;</span><br><span class="line">          config.headers[&#39;X-Token&#39;] &#x3D; token</span><br><span class="line">          resolve(instance(config))</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error &#x3D;&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">export default instance</span><br></pre></td></tr></table></figure>
-
-<p>希望对大家有帮助。感谢看到最后^_^。</p>
-
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/vue/" rel="tag"># vue</a>
-              <a href="/tags/axios/" rel="tag"># axios</a>
-          </div>
-
-        
-
-          <div class="post-nav">
-            <div class="post-nav-item">
-                <a href="/2021/03/26/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%85%AD%EF%BC%89%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" rel="prev" title="JavaScript基础（六）基本数据类型">
-                  <i class="fa fa-chevron-left"></i> JavaScript基础（六）基本数据类型
-                </a>
-            </div>
-            <div class="post-nav-item">
-                <a href="/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/" rel="next" title="JavaScript专题（一）变量与函数提升">
-                  JavaScript专题（一）变量与函数提升 <i class="fa fa-chevron-right"></i>
-                </a>
-            </div>
-          </div>
-    </footer>
-  </article>
-</div>
-
-
-
-
-
-
-    <div class="comments gitalk-container"></div>
-
-<script>
-  window.addEventListener('tabs:register', () => {
-    let { activeClass } = CONFIG.comments;
-    if (CONFIG.comments.storage) {
-      activeClass = localStorage.getItem('comments_active') || activeClass;
-    }
-    if (activeClass) {
-      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
-      if (activeTab) {
-        activeTab.click();
-      }
-    }
-  });
-  if (CONFIG.comments.storage) {
-    window.addEventListener('tabs:click', event => {
-      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      const commentClass = event.target.classList[1];
-      localStorage.setItem('comments_active', commentClass);
-    });
-  }
-</script>
-</div>
-  </main>
-
-  <footer class="footer">
-    <div class="footer-inner">
-
-  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">京ICP备 1234567890号-1 </a>
-      <img src="/uploads/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=1234567890" rel="noopener" target="_blank">京公网安备 1234567890号 </a>
+      <div class="tags">
+          <a href="/tags/vue/" rel="tag"><i class="ic i-tag"></i> vue</a>
+          <a href="/tags/axios/" rel="tag"><i class="ic i-tag"></i> axios</a>
+      </div>
   </div>
 
-<div class="copyright">
-  &copy; 
-  <span itemprop="copyrightYear">2021</span>
-  <span class="with-love">
-    <i class="fas fa-bone"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">高原</span>
-</div>
-<div class="wordcount">
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon">
-      <i class="fa fa-chart-line"></i>
-    </span>
-    <span title="站点总字数">101k</span>
-  </span>
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon">
-      <i class="fa fa-coffee"></i>
-    </span>
-    <span title="站点阅读时长">1:32</span>
-  </span>
-</div>
-<div class="busuanzi-count">
-    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
-      <span class="post-meta-item-icon">
-        <i class="user"></i>
-      </span>
-      <span class="site-uv" title="总访客量">
-        <span id="busuanzi_value_site_uv"></span>
-      </span>
-    </span>
-    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-eye"></i>
-      </span>
-      <span class="site-pv" title="总访问量">
-        <span id="busuanzi_value_site_pv"></span>
-      </span>
-    </span>
-</div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
-  </div><script color="128,128,128" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+   <footer>
 
-    </div>
+    <div class="meta">
+  <span class="item">
+    <span class="icon">
+      <i class="ic i-calendar-check"></i>
+    </span>
+    <span class="text">更新于</span>
+    <time title="修改时间：2021-03-29 20:16:27" itemprop="dateModified" datetime="2021-03-29T20:16:27+08:00">2021-03-29</time>
+  </span>
+  <span id="2021/03/29/vue里封装axios——利用promise无痛刷新token/" class="item leancloud_visitors" data-flag-title="vue里封装axios——利用promise无痛刷新token" title="阅读次数">
+      <span class="icon">
+        <i class="ic i-eye"></i>
+      </span>
+      <span class="text">阅读次数</span>
+      <span class="leancloud-visitors-count"></span>
+      <span class="text">次</span>
+  </span>
+</div>
+
+      
+<div class="reward">
+  <button><i class="ic i-heartbeat"></i> 赞赏</button>
+  <p>请我喝[茶]~(￣▽￣)~*</p>
+  <div id="qr">
+      
+      <div>
+        <img data-src="/images/wechatpay.png" alt="高原 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div>
+        <img data-src="/images/alipay.png" alt="高原 支付宝">
+        <p>支付宝</p>
+      </div>
+      
+      <div>
+        <img data-src="/images/paypal.png" alt="高原 贝宝">
+        <p>贝宝</p>
+      </div>
+  </div>
+</div>
+
+      
+
+<div id="copyright">
+<ul>
+  <li class="author">
+    <strong>本文作者： </strong>高原 <i class="ic i-at"><em>@</em></i>浅岛夏风
+  </li>
+  <li class="link">
+    <strong>本文链接：</strong>
+    <a href="http://example.com/2021/03/29/vue%E9%87%8C%E5%B0%81%E8%A3%85axios%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8promise%E6%97%A0%E7%97%9B%E5%88%B7%E6%96%B0token/" title="vue里封装axios——利用promise无痛刷新token">http://example.com/2021/03/29/vue里封装axios——利用promise无痛刷新token/</a>
+  </li>
+  <li class="license">
+    <strong>版权声明： </strong>本站所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><i class="ic i-creative-commons"><em>(CC)</em></i>BY-NC-SA</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
   </footer>
 
+</article>
+
+  </div>
   
-  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
-<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+<div class="post-nav">
+    <div class="item left">
+      
+
+  <a href="/2021/03/26/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%85%AD%EF%BC%89%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" itemprop="url" rel="prev" data-background-image="https:&#x2F;&#x2F;tva1.sinaimg.cn&#x2F;mw690&#x2F;6833939bly1gipexj2jgzj20zk0m8b09.jpg" title="JavaScript基础（六）基本数据类型">
+  <span class="type">上一篇</span>
+  <span class="category"><i class="ic i-flag"></i> javascript</span>
+  <h3>JavaScript基础（六）基本数据类型</h3>
+  </a>
+
+    </div>
+    <div class="item right">
+      
+
+  <a href="/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/" itemprop="url" rel="next" data-background-image="https:&#x2F;&#x2F;tva1.sinaimg.cn&#x2F;mw690&#x2F;6833939bly1gicli9lfebj20zk0m84qp.jpg" title="JavaScript专题（一）变量与函数提升">
+  <span class="type">下一篇</span>
+  <span class="category"><i class="ic i-flag"></i> javascript</span>
+  <h3>JavaScript专题（一）变量与函数提升</h3>
+  </a>
+
+    </div>
+</div>
 
   
-<script src="/js/local-search.js"></script>
+  <div class="wrap" id="comments"></div>
 
 
+        </div>
+        <div id="sidebar">
+          
 
+<div class="inner">
 
+  <div class="panels">
+    <div class="inner">
+      <div class="contents panel pjax" data-title="文章目录">
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9C%80%E6%B1%82"><span class="toc-number">1.</span> <span class="toc-text"> 需求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9C%80%E6%B1%82%E8%A7%A3%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text"> 需求解析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%80%9D%E8%B7%AF"><span class="toc-number">3.</span> <span class="toc-text"> 实现思路</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80"><span class="toc-number">3.1.</span> <span class="toc-text"> 方法一：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8C"><span class="toc-number">3.2.</span> <span class="toc-text"> 方法二：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%A4%E7%A7%8D%E6%96%B9%E6%B3%95%E5%AF%B9%E6%AF%94"><span class="toc-number">3.3.</span> <span class="toc-text"> 两种方法对比</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0"><span class="toc-number">4.</span> <span class="toc-text"> 实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%81%E8%A3%85axios%E5%9F%BA%E6%9C%AC%E9%AA%A8%E6%9E%B6"><span class="toc-number">4.1.</span> <span class="toc-text"> 封装 axios 基本骨架</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#instanceinterceptorsresponseuse%E6%8B%A6%E6%88%AA%E5%AE%9E%E7%8E%B0"><span class="toc-number">4.2.</span> <span class="toc-text"> instance.interceptors.response.use 拦截实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E5%92%8C%E4%BC%98%E5%8C%96"><span class="toc-number">5.</span> <span class="toc-text"> 问题和优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2%E5%A4%9A%E6%AC%A1%E5%88%B7%E6%96%B0token"><span class="toc-number">5.1.</span> <span class="toc-text"> 如何防止多次刷新 token</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8C%E6%97%B6%E5%8F%91%E8%B5%B7%E4%B8%A4%E4%B8%AA%E6%88%96%E4%BB%A5%E4%B8%8A%E7%9A%84%E8%AF%B7%E6%B1%82%E6%97%B6%E5%85%B6%E4%BB%96%E6%8E%A5%E5%8F%A3%E5%A6%82%E4%BD%95%E9%87%8D%E8%AF%95"><span class="toc-number">5.2.</span> <span class="toc-text"> 同时发起两个或以上的请求时，其他接口如何重试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81"><span class="toc-number">6.</span> <span class="toc-text"> 最后完整代码</span></a></li></ol>
+      </div>
+      <div class="related panel pjax" data-title="系列文章">
+        <ul>
+          <li><a href="/2020/11/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/" rel="bookmark" title="vue项目打包优化策略">vue项目打包优化策略</a></li><li><a href="/2020/12/26/vuex%E7%AC%94%E8%AE%B0/" rel="bookmark" title="vuex笔记">vuex笔记</a></li><li><a href="/2021/02/20/VUE%E7%BB%84%E4%BB%B6%E4%B9%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E7%9A%846%E7%A7%8D%E6%96%B9%E5%BC%8F/" rel="bookmark" title="VUE组件之间通信的6种方式">VUE组件之间通信的6种方式</a></li><li class="active"><a href="/2021/03/29/vue%E9%87%8C%E5%B0%81%E8%A3%85axios%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8promise%E6%97%A0%E7%97%9B%E5%88%B7%E6%96%B0token/" rel="bookmark" title="vue里封装axios——利用promise无痛刷新token">vue里封装axios——利用promise无痛刷新token</a></li>
+        </ul>
+      </div>
+      <div class="overview panel" data-title="站点概览">
+        <div class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <img class="image" itemprop="image" alt="高原"
+      data-src="/images/avatar.jpeg">
+  <p class="name" itemprop="name">高原</p>
+  <div class="description" itemprop="description">一枚微不足道的前端攻城狮</div>
+</div>
 
+<nav class="state">
+    <div class="item posts">
+      <a href="/archives/">
+        <span class="count">24</span>
+        <span class="name">文章</span>
+      </a>
+    </div>
+    <div class="item categories">
+      <a href="/categories/">
+        <span class="count">10</span>
+        <span class="name">分类</span>
+      </a>
+    </div>
+    <div class="item tags">
+      <a href="/tags/">
+        <span class="count">13</span>
+        <span class="name">标签</span>
+      </a>
+    </div>
+</nav>
 
+<div class="social">
+      <span class="exturl item github" data-url="aHR0cHM6Ly9naXRodWIuY29tL2dhb3l1YW5pbw==" title="https:&#x2F;&#x2F;github.com&#x2F;gaoyuanio"><i class="ic i-github"></i></span>
+      <span class="exturl item email" data-url="bWFpbHRvOmdhb3l1YW45ODQxQDE2My5jb20=" title="mailto:gaoyuan9841@163.com"><i class="ic i-envelope"></i></span>
+</div>
+
+<ul class="menu">
   
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+  <li class="item">
+    <a href="/" rel="section"><i class="ic i-home"></i>首页</a>
+  </li>
+
+    
+  <li class="item">
+    <a href="/about/" rel="section"><i class="ic i-user"></i>关于</a>
+  </li>
+
+        
+  <li class="item dropdown">
+      <a href="javascript:void(0);"><i class="ic i-feather"></i>文章</a>
+    <ul class="submenu">
+
+        
+  <li class="item">
+    <a href="/archives/" rel="section"><i class="ic i-list-alt"></i>归档</a>
+  </li>
+
+        
+  <li class="item">
+    <a href="/categories/" rel="section"><i class="ic i-th"></i>分类</a>
+  </li>
+
+        
+  <li class="item">
+    <a href="/tags/" rel="section"><i class="ic i-tags"></i>标签</a>
+  </li>
+
+  </ul>
+
+</ul>
+
+      </div>
+    </div>
+  </div>
+
+  <ul id="quick">
+    <li class="prev pjax">
+        <a href="/2021/03/26/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%85%AD%EF%BC%89%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" rel="prev" title="上一篇"><i class="ic i-chevron-left"></i></a>
+    </li>
+    <li class="up"><i class="ic i-arrow-up"></i></li>
+    <li class="down"><i class="ic i-arrow-down"></i></li>
+    <li class="next pjax">
+        <a href="/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/" rel="next" title="下一篇"><i class="ic i-chevron-right"></i></a>
+    </li>
+    <li class="percent"></li>
+  </ul>
+</div>
 
 
+        </div>
+        <div class="dimmer"></div>
+      </div>
+    </main>
+    <footer id="footer">
+      <div class="inner">
+        <div class="widgets">
+          
+<div class="rpost pjax">
+  <h2>随机文章</h2>
+  <ul>
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/javascript/" title="分类于 javascript">javascript</a>
+</div>
 
+    <span><a href="/2021/03/24/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%9B%9B%EF%BC%89%E7%AB%8B%E5%8D%B3%E8%B0%83%E7%94%A8%E5%87%BD%E6%95%B0/" title="JavaScript基础（四）立即调用函数">JavaScript基础（四）立即调用函数</a></span>
+  </li>
 
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/javascript/" title="分类于 javascript">javascript</a>
+</div>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+    <span><a href="/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89%E4%BD%9C%E7%94%A8%E5%9F%9F/" title="JavaScript基础（三）作用域">JavaScript基础（三）作用域</a></span>
+  </li>
 
-<script>
-NexT.utils.loadComments('.gitalk-container', () => {
-  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
-    var gitalk = new Gitalk({
-      clientID    : 'b6854378950da6a4a9dc',
-      clientSecret: 'f0b9297f2f6d9fd6ac41e7e746a1b47747977a52',
-      repo        : 'gaoyuanio.github.io',
-      owner       : 'gaoyuanio',
-      admin       : ['gaoyuanio'],
-      id          : 'ac8fe2bd63b176738472e31662605c84',
-        language: 'zh-CN',
-      distractionFreeMode: true
-    });
-    gitalk.render(document.querySelector('.gitalk-container'));
-  }, window.Gitalk);
-});
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/vue/" title="分类于 vue">vue</a>
+</div>
+
+    <span><a href="/2020/12/26/vuex%E7%AC%94%E8%AE%B0/" title="vuex笔记">vuex笔记</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/note/" title="分类于 note">note</a>
+</div>
+
+    <span><a href="/2021/04/16/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%9B%9E%E6%B5%81%E5%92%8C%E9%87%8D%E6%B1%87/" title="浏览器回流和重汇">浏览器回流和重汇</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/javascript/" title="分类于 javascript">javascript</a>
+</div>
+
+    <span><a href="/2021/03/26/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%85%AD%EF%BC%89%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" title="JavaScript基础（六）基本数据类型">JavaScript基础（六）基本数据类型</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+</div>
+
+    <span><a href="/2021/05/12/Javascript%E4%B8%AD%E5%93%AA%E4%B8%80%E7%A7%8D%E5%BE%AA%E7%8E%AF%E6%9C%80%E5%BF%AB%E5%91%A2%EF%BC%9F/" title="Javascript中哪一种循环最快呢？">Javascript中哪一种循环最快呢？</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/vue/" title="分类于 vue">vue</a>
+</div>
+
+    <span><a href="/2020/11/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/" title="vue项目打包优化策略">vue项目打包优化策略</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/javascript/" title="分类于 javascript">javascript</a>
+</div>
+
+    <span><a href="/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/" title="JavaScript专题（一）变量与函数提升">JavaScript专题（一）变量与函数提升</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/javascript/" title="分类于 javascript">javascript</a>
+</div>
+
+    <span><a href="/2021/03/19/%E5%87%BD%E6%95%B0%E9%98%B2%E6%8A%96%E4%B8%8E%E8%8A%82%E6%B5%81/" title="函数防抖与节流">函数防抖与节流</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/vue/" title="分类于 vue">vue</a>
+</div>
+
+    <span><a href="/2021/03/29/vue%E9%87%8C%E5%B0%81%E8%A3%85axios%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8promise%E6%97%A0%E7%97%9B%E5%88%B7%E6%96%B0token/" title="vue里封装axios——利用promise无痛刷新token">vue里封装axios——利用promise无痛刷新token</a></span>
+  </li>
+
+  </ul>
+</div>
+<div>
+  <h2>最新评论</h2>
+  <ul class="leancloud-recent-comment"></ul>
+</div>
+
+        </div>
+        <div class="status">
+  <div class="copyright">
+    
+    &copy; 2010 – 
+    <span itemprop="copyrightYear">2021</span>
+    <span class="with-love">
+      <i class="ic i-sakura rotate"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">高原 @ GaoYuan's Blog</span>
+  </div>
+  <div class="count">
+    <span class="post-meta-item-icon">
+      <i class="ic i-chart-area"></i>
+    </span>
+    <span title="站点总字数">93k 字</span>
+
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="ic i-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:24</span>
+  </div>
+  <div class="powered-by">
+    基于 <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & Theme.<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2FtZWhpbWUvaGV4by10aGVtZS1zaG9rYQ==">Shoka</span>
+  </div>
+</div>
+
+      </div>
+    </footer>
+  </div>
+<script data-config type="text/javascript">
+  var LOCAL = {
+    path: '2021/03/29/vue里封装axios——利用promise无痛刷新token/',
+    favicon: {
+      show: "（●´3｀●）やれやれだぜ",
+      hide: "(´Д｀)大変だ！"
+    },
+    search : {
+      placeholder: "文章搜索",
+      empty: "关于 「 ${query} 」，什么也没搜到",
+      stats: "${time} ms 内找到 ${hits} 条结果"
+    },
+    valine: true,fancybox: true,copyright: '复制成功，转载请遵守 <i class="ic i-creative-commons"></i>BY-NC-SA 协议。',
+    ignores : [
+      function(uri) {
+        return uri.includes('#');
+      },
+      function(uri) {
+        return new RegExp(LOCAL.path+"$").test(uri);
+      }
+    ]
+  };
 </script>
+
+<script src="https://cdn.polyfill.io/v2/polyfill.js"></script>
+
+<script src="//cdn.jsdelivr.net/combine/npm/pace-js@1.0.2/pace.min.js,npm/pjax@0.2.8/pjax.min.js,npm/whatwg-fetch@3.4.0/dist/fetch.umd.min.js,npm/animejs@3.2.0/lib/anime.min.js,npm/algoliasearch@4/dist/algoliasearch-lite.umd.js,npm/instantsearch.js@4/dist/instantsearch.production.min.js,npm/lozad@1/dist/lozad.min.js,npm/quicklink@2/dist/quicklink.umd.js"></script>
+
+<script src="/js/app.js?v=0.2.5"></script>
+
+
+
 
 <script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":true,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
 </html>

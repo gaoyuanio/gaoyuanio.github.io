@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+    <channel>
+        <title>浅岛夏风 • Posts by &#34;移动端&#34; category</title>
+        <link>http://example.com</link>
+        <description>一枚微不足道的前端攻城狮</description>
+        <language>zh-CN</language>
+        <pubDate>Sun, 25 Apr 2021 11:21:51 +0800</pubDate>
+        <lastBuildDate>Sun, 25 Apr 2021 11:21:51 +0800</lastBuildDate>
+        <category>javascript</category>
+        <category>HTTP</category>
+        <category>vue</category>
+        <category>MySQL</category>
+        <category>vuex</category>
+        <category>webpack</category>
+        <category>axios</category>
+        <category>Hbuilder</category>
+        <category>AJAX</category>
+        <category>CSS</category>
+        <category>react</category>
+        <category>note</category>
+        <category>移动端</category>
+        <item>
+            <guid isPermalink="true">http://example.com/2021/04/25/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible/</guid>
+            <title>移动端自适应——手淘flexible</title>
+            <link>http://example.com/2021/04/25/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible/</link>
+            <category>移动端</category>
+            <pubDate>Sun, 25 Apr 2021 11:21:51 +0800</pubDate>
+            <description><![CDATA[ &lt;h2 id=&#34;移动端自适应手淘flexible&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#移动端自适应手淘flexible&#34;&gt;#&lt;/a&gt; 移动端自适应 —— 手淘 flexible&lt;/h2&gt;
+&lt;p&gt;熟悉移动端的自适应方案的朋友对 rem 适应方案，肯定不陌生，最出名的就是阿里的 &lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9naXRodWIuY29tL2FtZmUvbGliLWZsZXhpYmxl&#34;&gt;lib-flexible&lt;/span&gt; 方案。&lt;/p&gt;
+&lt;p&gt;** 原理：**flexible 就是根据不同的屏幕算出 html 的 font-size，通过 js 来动态写 meta 标签。&lt;/p&gt;
+&lt;p&gt;事实上他做了这几样事情：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;动态改写 &lt;code&gt;&amp;lt;meta&amp;gt;&lt;/code&gt;  标签&lt;/li&gt;
+&lt;li&gt;给 &lt;code&gt;&amp;lt;html&amp;gt;&lt;/code&gt;  元素添加 &lt;code&gt;data-dpr&lt;/code&gt;  属性，并且动态改写 &lt;code&gt;data-dpr&lt;/code&gt;  的值&lt;/li&gt;
+&lt;li&gt;给 &lt;code&gt;&amp;lt;html&amp;gt;&lt;/code&gt;  元素添加 &lt;code&gt;font-size&lt;/code&gt;  属性，并且动态改写 &lt;code&gt;font-size&lt;/code&gt;  的值&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;比如我们在做移动端的时候，经常拿到的设计稿是 640px 或者 750px。自己项目中就是 640px，以此为例，自己在项目中为了计算方便，所以给 html 根元素设置的字体大小是 100px，也就是在 640px 下面。这里注意，我们给 html 设置 100px，这个是字体哦，所以最好在 body 设置一下字体大小。&lt;/p&gt;
+&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;gutter&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;10&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;// 设置html元素的字体大小为100px&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;// 所有的像素我们直接除以&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;640px  ——  6.4rem&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;64px —— 0.64rem&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;那么如果 64px，对应我们写 rem 就是 0.64rem，也不需要动用计算器去计算 rem，需要多强的大脑呀（虽然有很多插件帮我们）&lt;/p&gt;
+&lt;p&gt;修改 flexible.js。640px 下面的 10 就变成 6.4&lt;/p&gt;
+&lt;p&gt;![image-20210425112100315](/Users/gaoyuan/Library/Application Support/typora-user-images/image-20210425112100315.png)&lt;/p&gt;
+&lt;p&gt;这样，我们页面直接把 px 换算成 rem，就可以实现自适应。（记住，自己这里以 640px 设计稿为基础，如果是 750px 就是除以 7.5）。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;字号不使用 rem&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;我们都知道 chrome 的最小显示的字体是 12px，如果字体用 rem，计算出来小于 12px，那么就也会以 12px 显示，而且我们不希望出现 13px 或者 15px 这样的奇葩尺寸，所以字体最好是用 px 来表示，至于适应，我们可以写媒体查询。&lt;/p&gt;
+&lt;h2 id=&#34;vue中使用rem&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#vue中使用rem&#34;&gt;#&lt;/a&gt; vue 中使用 rem&lt;/h2&gt;
+&lt;p&gt;vue 现在正是火的势头上，作者说明年估计 3.0 要出来了。那么在 vue 我们如果做移动端自适应怎么弄呢？&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;安装 flexible&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;在命令行中运行如下安装：&lt;/em&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;npm i lib-flexible --save-dev&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;引入 flexible&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;在项目入口文件 main.js 里 引入 lib-flexible&lt;/em&gt;&lt;/p&gt;
+&lt;figure class=&#34;highlight javascript&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;gutter&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;comment&#34;&gt;// main.js&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;string&#34;&gt;&amp;#x27;lib-flexible&amp;#x27;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;对于我们的 index.html，最好是不要 meta 标签，flexible 会自动添加上的，因为有一个判断。当然了，懒惰果然是最大的生产力，有的人觉得换算 rem 太麻烦，就出现了插件&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly93d3cubnBtanMuY29tL3BhY2thZ2UvcHgycmVtLWxvYWRlcg==&#34;&gt; px2rem-loader&lt;/span&gt;，把 px 自动转化为对应的 rem。但是呢，麻烦的就是如果引入外部的 css 文件，那么也会把 px 转化为 rem。自己在项目中就是手动计算 rem，用上面的方法，直接除以 100，这个应该很简单吧，都是程序员，数学这个还是可以吧…&lt;/p&gt;
+ ]]></description>
+        </item>
+    </channel>
+</rss>

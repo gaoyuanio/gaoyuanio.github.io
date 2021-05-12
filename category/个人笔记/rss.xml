@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+    <channel>
+        <title>浅岛夏风 • Posts by &#34;个人笔记&#34; category</title>
+        <link>http://example.com</link>
+        <description>一枚微不足道的前端攻城狮</description>
+        <language>zh-CN</language>
+        <pubDate>Fri, 01 May 2020 21:55:23 +0800</pubDate>
+        <lastBuildDate>Fri, 01 May 2020 21:55:23 +0800</lastBuildDate>
+        <category>javascript</category>
+        <category>HTTP</category>
+        <category>vue</category>
+        <category>MySQL</category>
+        <category>vuex</category>
+        <category>webpack</category>
+        <category>axios</category>
+        <category>Hbuilder</category>
+        <category>AJAX</category>
+        <category>CSS</category>
+        <category>react</category>
+        <category>note</category>
+        <category>移动端</category>
+        <item>
+            <guid isPermalink="true">http://example.com/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</guid>
+            <title>开发小技巧</title>
+            <link>http://example.com/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</link>
+            <category>note</category>
+            <pubDate>Fri, 01 May 2020 21:55:23 +0800</pubDate>
+            <description><![CDATA[ &lt;h2 id=&#34;阻止单击事件冒泡&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#阻止单击事件冒泡&#34;&gt;#&lt;/a&gt; 阻止单击事件冒泡&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;&amp;lt;a v-on:click.stop=&amp;quot;doThis&amp;quot;&amp;gt;&amp;lt;/a&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id=&#34;提交事件不再重载页面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#提交事件不再重载页面&#34;&gt;#&lt;/a&gt; 提交事件不再重载页面&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;&amp;lt;form v-on:submit.prevent=&amp;quot;onSubmit&amp;quot;&amp;gt;&amp;lt;/form&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id=&#34;修饰符可以串联&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#修饰符可以串联&#34;&gt;#&lt;/a&gt; 修饰符可以串联&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;&amp;lt;a v-on:click.stop.prevent=&amp;quot;doThat&amp;quot;&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;
+&lt;h2 id=&#34;只有修饰符&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#只有修饰符&#34;&gt;#&lt;/a&gt; 只有修饰符&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;&amp;lt;form v-on:submit.prevent&amp;gt;&amp;lt;/form&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;h2 id=&#34;mac谷歌跨域命令&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#mac谷歌跨域命令&#34;&gt;#&lt;/a&gt; Mac 谷歌跨域命令&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;open -n /Applications/Google\ Chrome.app/ --args --disable-web-security  --user-data-dir=/Users/GaoYuan/Documents/MyChromeDevUserData&lt;/code&gt;&lt;/p&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;h2 id=&#34;mac显示隐藏文件命令&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#mac显示隐藏文件命令&#34;&gt;#&lt;/a&gt; Mac 显示隐藏文件命令：&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;显示隐藏文件&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;defaults write com.apple.finder AppleShowAllFiles Yes &amp;amp;&amp;amp; killall Finder &lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;不显示隐藏文件&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;defaults write com.apple.finder AppleShowAllFiles No &amp;amp;&amp;amp; killall Finder &lt;/code&gt;&lt;/p&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;h2 id=&#34;jison解决js处理后端返回的long型数据精度丢失问题&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#jison解决js处理后端返回的long型数据精度丢失问题&#34;&gt;#&lt;/a&gt; Jison 解决 JS 处理后端返回的 Long 型数据精度丢失问题&lt;/h2&gt;
+&lt;p&gt;原因：js 是弱类型语言，所有的数字类型统称为 Number 类型，不区分 int、long、double 等。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;git clone git://github.com/zaach/jsonlint.git&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;在 src 目录下提供了 jsonlint.y（grammaFile）和 jsonlint.l（lexFile) 两个文件。使用这两个文件可以直接生成 jsonlint.js。如下修改 jsonlint.y：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;gutter&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;6&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;JSONNumber&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    : NUMBER&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;        &amp;#123;$$ = yytext == String(Number(yytext))? Number(yytext): yytext;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    ;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;然后：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;cd src&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;jison jsonlint.y jsonlint.l&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&#34;最后引入至项目&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#最后引入至项目&#34;&gt;#&lt;/a&gt; 最后引入至项目&lt;/h3&gt;
+&lt;p&gt;1. 将自定义的 jsonlint.js 放到 static 目录下&lt;br&gt;
+ 2. 在 index.html 中引入&lt;br&gt;
+ &lt;code&gt;&amp;lt;script src=&amp;quot;./static/jsonlint/jsonlint.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;3、在我们请求的返回数据中，做一层拦截转换，此处以 axios 的实现方法为例：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;gutter&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;7&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;/*transformResponse 选项允许我们在数据传送到 `then/catch` 方法之前对数据进行改动*/&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;axios.defaults.transformResponse = [&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;  function(data) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    return jsonlint.parse(data)&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;]&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;综上，定义 JSON 转化避免 long 类型数据溢出，可以实现 long 类型数据在前端正常显示&lt;/p&gt;
+&lt;h2 id=&#34;mac给文件夹赋予管理员权限&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#mac给文件夹赋予管理员权限&#34;&gt;#&lt;/a&gt; Mac 给文件夹赋予管理员权限&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;sudo chown -R gaoyuan ios&lt;/code&gt;&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;gutter&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;if ($request_filename ~* .*index\.html$) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;     add_header Cache-Control &amp;quot;private, no-store, no-cache, must-revalidate, proxy-revalidate&amp;quot;;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt; ]]></description>
+        </item>
+    </channel>
+</rss>
