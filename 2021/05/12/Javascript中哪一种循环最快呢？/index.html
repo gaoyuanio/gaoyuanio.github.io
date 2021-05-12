@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/gao.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/gao.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/gao.png">
+  <link rel="mask-icon" href="/images/gao.svg" color="#222">
+  <meta name="google-site-verification" content="BmblXLTbEG0oadNT7kCQo-kj5Dt_izzFLYV5KTcssDk">
+  <meta name="msvalidate.01" content="89E58D35F116EFB128D266136B6C2871">
+  <meta name="baidu-site-verification" content="code-do8zfrpF7M">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic%7Csans-serif:300,300italic,400,400italic,700,700italic%7CPT+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="了解哪一种 for 循环或迭代器适合我们的需求，防止我们犯下一些影响应用性能的低级错误。  JavaScript 是 Web 开发领域的“常青树”。无论是 JavaScript 框架（如 Node.js、React、Angular、Vue 等），还是原生 JavaScript，都拥有非常庞大的粉丝基础。我们来谈谈现代 JavaScript 吧。循环一直是大多数编程语言的重要组成部分，而现代 Ja">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Javascript中哪一种循环最快呢？">
+<meta property="og:url" content="http://example.com/2021/05/12/Javascript%E4%B8%AD%E5%93%AA%E4%B8%80%E7%A7%8D%E5%BE%AA%E7%8E%AF%E6%9C%80%E5%BF%AB%E5%91%A2%EF%BC%9F/index.html">
+<meta property="og:site_name" content="GaoYuan&#39;s Blog">
+<meta property="og:description" content="了解哪一种 for 循环或迭代器适合我们的需求，防止我们犯下一些影响应用性能的低级错误。  JavaScript 是 Web 开发领域的“常青树”。无论是 JavaScript 框架（如 Node.js、React、Angular、Vue 等），还是原生 JavaScript，都拥有非常庞大的粉丝基础。我们来谈谈现代 JavaScript 吧。循环一直是大多数编程语言的重要组成部分，而现代 Ja">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-05-12T03:31:26.000Z">
+<meta property="article:modified_time" content="2021-05-12T03:33:24.729Z">
+<meta property="article:author" content="高原">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2021/05/12/Javascript%E4%B8%AD%E5%93%AA%E4%B8%80%E7%A7%8D%E5%BE%AA%E7%8E%AF%E6%9C%80%E5%BF%AB%E5%91%A2%EF%BC%9F/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Javascript中哪一种循环最快呢？ | GaoYuan's Blog</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="GaoYuan's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">GaoYuan's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">生活就像海洋，只有意志将强的人才能到达彼岸</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">13</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">10</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">24</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A9%B6%E7%AB%9F%E5%93%AA%E4%B8%80%E7%A7%8D%E5%BE%AA%E7%8E%AF%E6%9B%B4%E5%BF%AB%EF%BC%9F"><span class="nav-text">究竟哪一种循环更快？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E7%9A%84%E7%B1%BB%E5%9E%8B%EF%BC%8C%E4%BB%A5%E5%8F%8A%E6%88%91%E4%BB%AC%E5%BA%94%E8%AF%A5%E5%9C%A8%E4%BD%95%E5%A4%84%E4%BD%BF%E7%94%A8%E5%AE%83%E4%BB%AC"><span class="nav-text">循环的类型，以及我们应该在何处使用它们</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-For-%E5%BE%AA%E7%8E%AF%EF%BC%88%E6%AD%A3%E5%BA%8F%E5%92%8C%E5%80%92%E5%BA%8F%EF%BC%89"><span class="nav-text">1. For 循环（正序和倒序）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-forEach"><span class="nav-text">2. forEach</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-for%E2%80%A6of"><span class="nav-text">3. for…of</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-for-in"><span class="nav-text">4. for in</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#for%E2%80%A6of-%E5%92%8C-for%E2%80%A6in"><span class="nav-text">for…of 和 for…in</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%81%8D%E5%8E%86%E6%95%B0%E7%BB%84%E9%80%9A%E5%B8%B8%E7%94%A8for%E5%BE%AA%E7%8E%AF"><span class="nav-text">1. 遍历数组通常用for循环</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-for-in%E9%81%8D%E5%8E%86%E6%95%B0%E7%BB%84%E7%9A%84%E6%AF%9B%E7%97%85"><span class="nav-text">2. for in遍历数组的毛病</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E9%81%8D%E5%8E%86%E5%AF%B9%E8%B1%A1"><span class="nav-text">3. 遍历对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-text">结论</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="高原"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">高原</p>
+  <div class="site-description" itemprop="description">一枚微不足道的前端攻城狮</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/gaoyuanio" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;gaoyuanio" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:gaoyuan9841@163.com" title="E-Mail → mailto:gaoyuan9841@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/231615898025_.pic.jpg" title="WeChat → https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;gh&#x2F;gaoyuanio&#x2F;imgs&#x2F;img&#x2F;231615898025_.pic.jpg" rel="noopener" target="_blank"><i class="fab fa-weixin fa-fw"></i>WeChat</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qm.qq.com/cgi-bin/qm/qr?k=QW2diWiXakeqYNjughKYKvo9LVXWd0rY&noverify=0" title="QQ → https:&#x2F;&#x2F;qm.qq.com&#x2F;cgi-bin&#x2F;qm&#x2F;qr?k&#x3D;QW2diWiXakeqYNjughKYKvo9LVXWd0rY&amp;noverify&#x3D;0" rel="noopener" target="_blank"><i class="fab fa-qq fa-fw"></i>QQ</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.csdn.net/qq_32415541?spm=1010.2135.3001.5421" title="https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_32415541?spm&#x3D;1010.2135.3001.5421" rel="noopener" target="_blank">CSDN</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.monlor.com/" title="https:&#x2F;&#x2F;www.monlor.com" rel="noopener" target="_blank">Monlor's Blog</a>
+        </li>
+    </ul>
+  </div>
+
+
+          <!-- <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=1808492017&auto=1&height=66"></iframe> -->
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/gaoyuanio" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/12/Javascript%E4%B8%AD%E5%93%AA%E4%B8%80%E7%A7%8D%E5%BE%AA%E7%8E%AF%E6%9C%80%E5%BF%AB%E5%91%A2%EF%BC%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="高原">
+      <meta itemprop="description" content="一枚微不足道的前端攻城狮">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GaoYuan's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Javascript中哪一种循环最快呢？
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-05-12 11:31:26 / 修改时间：11:33:24" itemprop="dateCreated datePublished" datetime="2021-05-12T11:31:26+08:00">2021-05-12</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.7k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>了解哪一种 <code>for</code> 循环或迭代器适合我们的需求，防止我们犯下一些影响应用性能的低级错误。</p>
+</blockquote>
+<p>JavaScript 是 Web 开发领域的“常青树”。无论是 JavaScript 框架（如 Node.js、React、Angular、Vue 等），还是原生 JavaScript，都拥有非常庞大的粉丝基础。我们来谈谈现代 JavaScript 吧。循环一直是大多数编程语言的重要组成部分，而现代 JavaScript 为我们提供了许多迭代或循环值的方法。</p>
+<p>但问题在于，我们是否真的知道哪种循环或迭代最适合我们的需求。<code>for</code> 循环有很多变形，例如 <code>for</code>、<code>for</code>（倒序）、<code>for…of</code>、<code>forEach</code>、<code>for…in</code>、<code>for…await</code>。本文将围绕这些展开讨论。</p>
+<span id="more"></span>
+
+<h2 id="究竟哪一种循环更快？"><a href="#究竟哪一种循环更快？" class="headerlink" title="究竟哪一种循环更快？"></a>究竟哪一种循环更快？</h2><p><strong>答案其实是：</strong> <code>for</code>（倒序）</p>
+<p>最让我感到惊讶的事情是，当我在本地计算机上进行测试之后，我不得不接受 <code>for</code>（倒序）是所有 <code>for</code> 循环中最快的这一事实。下面我会举个对一个包含超过一百万项元素的数组执行一次循环遍历的例子。</p>
+<p><strong>声明</strong>：<code>console.time()</code> 结果的准确度在很大程度上取决于我们运行测试的系统配置。你可以在<a target="_blank" rel="noopener" href="https://johnresig.com/blog/accuracy-of-javascript-time/%E5%AF%B9%E5%87%86%E7%A1%AE%E5%BA%A6%E4%BD%9C%E8%BF%9B%E4%B8%80%E6%AD%A5%E4%BA%86%E8%A7%A3%E3%80%82">https://johnresig.com/blog/accuracy-of-javascript-time/对准确度作进一步了解。</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">const million &#x3D; 1000000; </span><br><span class="line">const arr &#x3D; Array(million);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 注：这是稀疏数组，应该为其指定内容，否则不同方式的循环对其的处理方式会不同：</span><br><span class="line">&#x2F;&#x2F; const arr &#x3D; [...Array(million)]</span><br><span class="line"></span><br><span class="line">console.time(&#39;⏳&#39;);</span><br><span class="line">for (let i &#x3D; arr.length; i &gt; 0; i--) &#123;&#125; &#x2F;&#x2F; for(倒序)  :- 1.5ms</span><br><span class="line">for (let i &#x3D; 0; i &lt; arr.length; i++) &#123;&#125; &#x2F;&#x2F; for          :- 1.6ms</span><br><span class="line">arr.forEach(v &#x3D;&gt; v)                     &#x2F;&#x2F; foreach      :- 2.1ms</span><br><span class="line">for (const v of arr) &#123;&#125;                 &#x2F;&#x2F; for...of     :- 11.7ms</span><br><span class="line">console.timeEnd(&#39;⏳&#39;);</span><br></pre></td></tr></table></figure>
+
+<p>造成这样结果的原因很简单，在代码中，正序和倒序的 <code>for</code> 循环几乎花费一样的时间，仅仅相差了 0.1 毫秒。原因是，<code>for</code>（倒序）只需要计算一次起始变量 <code>let i = arr.length</code>，而在正序的 <code>for</code> 循环中，它在每次变量增加后都会检查条件 <code>i&lt;arr.length</code>。这个细微的差别不是很重要，你可以忽略它。（译者注：在数据量小或对时间不敏感的代码上，我们大可忽略它，但是根据译者的测试，当数据量扩大，例如十亿，千亿等的数量级，差距就显著提升，我们就需要考虑时间对应用程序性能的影响了。）</p>
+<p>而 <code>forEach</code> 是 <code>Array</code> 原型的一个方法，与普通的 <code>for</code> 循环相比，<code>forEach</code> 和 <code>for…of</code>需要花费更多的时间进行数组迭代。（译者注：但值得注意的是，<code>for…of</code> 和 <code>forEach</code> 都从对象中获取了数据，而原型并没有，因此没有可比性。）</p>
+<h2 id="循环的类型，以及我们应该在何处使用它们"><a href="#循环的类型，以及我们应该在何处使用它们" class="headerlink" title="循环的类型，以及我们应该在何处使用它们"></a>循环的类型，以及我们应该在何处使用它们</h2><h3 id="1-For-循环（正序和倒序）"><a href="#1-For-循环（正序和倒序）" class="headerlink" title="1. For 循环（正序和倒序）"></a><strong>1. For 循环（正序和倒序）</strong></h3><p>我想，也许大家都应该对这个基础循环非常熟悉了。我们可以在任何我们需要的地方使用 <code>for</code> 循环，按照核定的次数运行一段代码。最基础的 <code>for</code> 循环运行最迅速的，那我们每一次都应该使用它，对吗？并不然，性能不仅仅只是唯一尺度，代码可读性往往更加重要，就让我们选择适合我们应用程序的变形即可。</p>
+<h3 id="2-forEach"><a href="#2-forEach" class="headerlink" title="2. forEach"></a><strong>2. <code>forEach</code></strong></h3><p>这个方法需要接受一个回调函数作为输入参数，遍历数组的每一个元素，并执行我们的回调函数（以元素本身和它的索引（可选参数）作为参数赋予给回调函数）。<code>forEach</code> 还允许在回调函数中使用一个可选参数 <code>this</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">const things &#x3D; [&#39;have&#39;, &#39;fun&#39;, &#39;coding&#39;];</span><br><span class="line">const callbackFun &#x3D; (item, idex) &#x3D;&gt; &#123;</span><br><span class="line">    console.log(&#96;$&#123;item&#125; - $&#123;index&#125;&#96;);</span><br><span class="line">&#125;</span><br><span class="line">things.foreach(callbackFun); </span><br><span class="line">&#x2F;* 输出   have - 0</span><br><span class="line">        fun - 1</span><br><span class="line">        coding - 2 *&#x2F;</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是，如果我们要使用 <code>forEach</code>，我们不能使用 JavaScript 的短路运算符，即不能在每一次循环中跳过或结束循环。</p>
+<h3 id="3-for…of"><a href="#3-for…of" class="headerlink" title="3. for…of"></a><strong>3. <code>for…of</code></strong></h3><p><code>for…of</code> 是在 ES6（ECMAScript 6）中实现标准化的。它会对一个可迭代的对象（例如 <code>array</code>、<code>map</code>、<code>set</code>、<code>string</code> 等）创建一个循环，并且有一个突出的优点，即优秀的可读性。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">const arr &#x3D; [3, 5, 7];</span><br><span class="line">const str &#x3D; &#39;hello&#39;;</span><br><span class="line">for (let i of arr) &#123;</span><br><span class="line">   console.log(i); &#x2F;&#x2F; 输出 3, 5, 7</span><br><span class="line">&#125;</span><br><span class="line">for (let i of str) &#123;</span><br><span class="line">   console.log(i); &#x2F;&#x2F; 输出 &#39;h&#39;, &#39;e&#39;, &#39;l&#39;, &#39;l&#39;, &#39;o&#39;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是，请不要在生成器中使用 <code>for……of</code>，即便 <code>for……of</code> 循环提前终止。在退出循环后，生成器被关闭，并尝试再次迭代，不会产生任何进一步的结果。</p>
+<h3 id="4-for-in"><a href="#4-for-in" class="headerlink" title="4. for in"></a><strong>4. <code>for</code> <code>in</code></strong></h3><p><code>for…in</code> 会在对象的所有可枚举属性上迭代指定的变量。对于每个不同的属性，<code>for…in</code> 语句除返回数字索引外，还将返回用户定义的属性的名称。因此，在遍历数组时最好使用带有数字索引的传统 <code>for</code> 循环。因为 <code>for…in</code> 语句还会迭代除数组元素之外的用户定义属性，就算我们修改了数组对象（例如添加自定义属性或方法），依然如此。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">const details &#x3D; &#123;firstName: &#39;john&#39;, lastName: &#39;Doe&#39;&#125;;</span><br><span class="line">let fullName &#x3D; &#39;&#39;;</span><br><span class="line">for (let i in details) &#123;</span><br><span class="line">    fullName +&#x3D; details[i] + &#39; &#39;; &#x2F;&#x2F; fullName: john doe</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="for…of-和-for…in"><a href="#for…of-和-for…in" class="headerlink" title="for…of 和 for…in"></a><code>for…of</code> 和 <code>for…in</code></h2><p><code>for…of</code> 和 <code>for…in</code> 之间的主要区别是它们迭代的内容。<code>for…in</code> 循环遍历对象的属性，而 <code>for…of</code> 循环遍历可迭代对象的值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">let arr&#x3D; [4, 5, 6];</span><br><span class="line">for (let i in arr) &#123;</span><br><span class="line">   console.log(i); &#x2F;&#x2F; &#39;0&#39;, &#39;1&#39;, &#39;2&#39;</span><br><span class="line">&#125;</span><br><span class="line">for (let i of arr) &#123;</span><br><span class="line">   console.log(i); &#x2F;&#x2F; &#39;4&#39;, &#39;5&#39;, &#39;6&#39;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-遍历数组通常用for循环"><a href="#1-遍历数组通常用for循环" class="headerlink" title="1. 遍历数组通常用for循环"></a>1. 遍历数组通常用for循环</h3><p>ES5的话也可以使用forEach，ES5具有遍历数组功能的还有map、filter、some、every、reduce、reduceRight等，只不过他们的返回结果不一样。但是使用foreach遍历数组的话，使用break不能中断循环，使用return也不能返回到外层函数。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.method=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">　　<span class="built_in">console</span>.log(<span class="built_in">this</span>.length);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> myArray=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>]</span><br><span class="line">myArray.name=<span class="string">&quot;数组&quot;</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> index <span class="keyword">in</span> myArray) &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(myArray[index]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-for-in遍历数组的毛病"><a href="#2-for-in遍历数组的毛病" class="headerlink" title="2. for in遍历数组的毛病"></a>2. for in遍历数组的毛病</h3><p>1.index索引为字符串型数字，不能直接进行几何运算<br> 2.遍历顺序有可能不是按照实际数组的内部顺序<br> 3.使用for in会遍历数组所有的可枚举属性，包括原型。例如上栗的原型方法method和name属性<br> 所以for in更适合遍历对象，不要使用for in遍历数组。</p>
+<p>那么除了使用for循环，如何更简单的正确的遍历数组达到我们的期望呢（即不遍历method和name），ES6中的for of更胜一筹.</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.method=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">　　<span class="built_in">console</span>.log(<span class="built_in">this</span>.length);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> myArray=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>]</span><br><span class="line">myArray.name=<span class="string">&quot;数组&quot;</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> value <span class="keyword">of</span> myArray) &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><em>记住，for in遍历的是数组的索引（即键名），而for of遍历的是数组元素值。</em></p>
+<p>for of遍历的只是数组内的元素，而不包括数组的原型属性method和索引name</p>
+<h3 id="3-遍历对象"><a href="#3-遍历对象" class="headerlink" title="3. 遍历对象"></a>3. 遍历对象</h3><p>遍历对象 通常用for in来遍历对象的键名</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Object</span>.prototype.method=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">　　<span class="built_in">console</span>.log(<span class="built_in">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> myObject=&#123;</span><br><span class="line">　　a:<span class="number">1</span>,</span><br><span class="line">　　b:<span class="number">2</span>,</span><br><span class="line">　　c:<span class="number">3</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> myObject) &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>for in 可以遍历到myObject的原型方法method,如果不想遍历原型方法和属性的话，可以在循环内部判断一下,hasOwnPropery方法可以判断某属性是否是该对象的实例属性</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> myObject) &#123;</span><br><span class="line">　　<span class="keyword">if</span>（myObject.hasOwnProperty(key))&#123;</span><br><span class="line">　　　　<span class="built_in">console</span>.log(key);</span><br><span class="line">　　&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同样可以通过ES5的Object.keys(myObject)获取对象的实例属性组成的数组，不包括原型方法和属性</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Object</span>.prototype.method=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">　　<span class="built_in">console</span>.log(<span class="built_in">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> myObject=&#123;</span><br><span class="line">　　a:<span class="number">1</span>,</span><br><span class="line">　　b:<span class="number">2</span>,</span><br><span class="line">　　c:<span class="number">3</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>for..of适用遍历数/数组对象/字符串/map/set等拥有迭代器对象的集合.但是不能遍历对象,因为没有迭代器对象.与forEach()不同的是，它可以正确响应break、continue和return语句</li>
+<li>for-of循环不支持普通对象，但如果你想迭代一个对象的属性，你可以用for-in循环（这也是它的本职工作）或内建的Object.keys()方法：</li>
+</ul>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><ul>
+<li><code>for</code> 最快，但可读性比较差</li>
+<li><code>foreach</code> 比较快，能够控制内容</li>
+<li><code>for...of</code> 比较慢，但香</li>
+<li><code>for...in</code> 比较慢，没那么方便</li>
+</ul>
+<p>最后，给你一条明智的建议 —— 优先考虑可读性。尤其是当我们开发复杂的结构程序时，更需要这样做。当然，我们也应该专注于性能。尽量避免增添不必要的、多余的花哨代码，因为这有时可能对你的程序性能造成严重影响。祝你编码愉快。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/javascript/" rel="tag"># javascript</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/04/25/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible/" rel="prev" title="移动端自适应——手淘flexible">
+                  <i class="fa fa-chevron-left"></i> 移动端自适应——手淘flexible
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">京ICP备 1234567890号-1 </a>
+      <img src="/uploads/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=1234567890" rel="noopener" target="_blank">京公网安备 1234567890号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fas fa-bone"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">高原</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">101k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:31</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="128,128,128" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('.gitalk-container', () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'b6854378950da6a4a9dc',
+      clientSecret: 'f0b9297f2f6d9fd6ac41e7e746a1b47747977a52',
+      repo        : 'gaoyuanio.github.io',
+      owner       : 'gaoyuanio',
+      admin       : ['gaoyuanio'],
+      id          : 'f3c1876a322c54ef3aae710ebc63e2c4',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render(document.querySelector('.gitalk-container'));
+  }, window.Gitalk);
+});
+</script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":true,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

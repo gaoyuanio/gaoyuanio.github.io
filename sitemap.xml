@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://example.com/2021/05/12/Javascript%E4%B8%AD%E5%93%AA%E4%B8%80%E7%A7%8D%E5%BE%AA%E7%8E%AF%E6%9C%80%E5%BF%AB%E5%91%A2%EF%BC%9F/</loc>
+    
+    <lastmod>2021-05-12</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://example.com/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/</loc>
     
     <lastmod>2021-05-06</lastmod>
@@ -193,7 +200,7 @@
 
   <url>
     <loc>http://example.com/</loc>
-    <lastmod>2021-05-07</lastmod>
+    <lastmod>2021-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -201,91 +208,91 @@
   
   <url>
     <loc>http://example.com/tags/HTTP/</loc>
-    <lastmod>2021-05-07</lastmod>
+    <lastmod>2021-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://example.com/tags/javascript/</loc>
-    <lastmod>2021-05-07</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/tags/MySQL/</loc>
-    <lastmod>2021-05-07</lastmod>
+    <lastmod>2021-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://example.com/tags/vue/</loc>
-    <lastmod>2021-05-07</lastmod>
+    <lastmod>2021-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://example.com/tags/vuex/</loc>
-    <lastmod>2021-05-07</lastmod>
+    <loc>http://example.com/tags/MySQL/</loc>
+    <lastmod>2021-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://example.com/tags/axios/</loc>
-    <lastmod>2021-05-07</lastmod>
+    <lastmod>2021-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://example.com/tags/webpack/</loc>
-    <lastmod>2021-05-07</lastmod>
+    <lastmod>2021-05-12</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/tags/vuex/</loc>
+    <lastmod>2021-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://example.com/tags/Hbuilder/</loc>
-    <lastmod>2021-05-07</lastmod>
+    <lastmod>2021-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://example.com/tags/AJAX/</loc>
-    <lastmod>2021-05-07</lastmod>
+    <lastmod>2021-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://example.com/tags/react/</loc>
-    <lastmod>2021-05-07</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/tags/CSS/</loc>
-    <lastmod>2021-05-07</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/tags/%E7%A7%BB%E5%8A%A8%E7%AB%AF/</loc>
-    <lastmod>2021-05-07</lastmod>
+    <lastmod>2021-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://example.com/tags/note/</loc>
-    <lastmod>2021-05-07</lastmod>
+    <lastmod>2021-05-12</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/tags/CSS/</loc>
+    <lastmod>2021-05-12</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/tags/%E7%A7%BB%E5%8A%A8%E7%AB%AF/</loc>
+    <lastmod>2021-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
@@ -294,70 +301,70 @@
   
   <url>
     <loc>http://example.com/categories/HTTP/</loc>
-    <lastmod>2021-05-07</lastmod>
+    <lastmod>2021-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/javascript/</loc>
-    <lastmod>2021-05-07</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/categories/MySQL/</loc>
-    <lastmod>2021-05-07</lastmod>
+    <lastmod>2021-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/vue/</loc>
-    <lastmod>2021-05-07</lastmod>
+    <lastmod>2021-05-12</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/categories/MySQL/</loc>
+    <lastmod>2021-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/Hbuilder/</loc>
-    <lastmod>2021-05-07</lastmod>
+    <lastmod>2021-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/react/</loc>
-    <lastmod>2021-05-07</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/categories/CSS/</loc>
-    <lastmod>2021-05-07</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/categories/%E7%A7%BB%E5%8A%A8%E7%AB%AF/</loc>
-    <lastmod>2021-05-07</lastmod>
+    <lastmod>2021-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/</loc>
-    <lastmod>2021-05-07</lastmod>
+    <lastmod>2021-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/note/</loc>
-    <lastmod>2021-05-07</lastmod>
+    <lastmod>2021-05-12</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/categories/CSS/</loc>
+    <lastmod>2021-05-12</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/categories/%E7%A7%BB%E5%8A%A8%E7%AB%AF/</loc>
+    <lastmod>2021-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>

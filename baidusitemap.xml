@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://example.com/2021/05/12/Javascript%E4%B8%AD%E5%93%AA%E4%B8%80%E7%A7%8D%E5%BE%AA%E7%8E%AF%E6%9C%80%E5%BF%AB%E5%91%A2%EF%BC%9F/</loc>
+    <lastmod>2021-05-12</lastmod>
+  </url>
+  <url>
     <loc>http://example.com/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/</loc>
     <lastmod>2021-05-06</lastmod>
   </url>
