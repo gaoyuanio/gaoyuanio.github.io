@@ -36,7 +36,7 @@
 <meta property="og:description" content="了解哪一种 for 循环或迭代器适合我们的需求，防止我们犯下一些影响应用性能的低级错误。  JavaScript 是 Web 开发领域的“常青树”。无论是 JavaScript 框架（如 Node.js、React、Angular、Vue 等），还是原生 JavaScript，都拥有非常庞大的粉丝基础。我们来谈谈现代 JavaScript 吧。循环一直是大多数编程语言的重要组成部分，而现代 Ja">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-05-12T03:31:26.000Z">
-<meta property="article:modified_time" content="2021-05-12T03:33:24.729Z">
+<meta property="article:modified_time" content="2021-05-12T04:02:01.272Z">
 <meta property="article:author" content="高原">
 <meta property="article:tag" content="javascript">
 <meta name="twitter:card" content="summary">
@@ -319,7 +319,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-05-12 11:31:26 / 修改时间：11:33:24" itemprop="dateCreated datePublished" datetime="2021-05-12T11:31:26+08:00">2021-05-12</time>
+      <time title="创建时间：2021-05-12 11:31:26 / 修改时间：12:02:01" itemprop="dateCreated datePublished" datetime="2021-05-12T11:31:26+08:00">2021-05-12</time>
     </span>
 
   
@@ -337,7 +337,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>4.7k</span>
+      <span>4.8k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -367,7 +367,7 @@
 <p><strong>声明</strong>：<code>console.time()</code> 结果的准确度在很大程度上取决于我们运行测试的系统配置。你可以在<a target="_blank" rel="noopener" href="https://johnresig.com/blog/accuracy-of-javascript-time/%E5%AF%B9%E5%87%86%E7%A1%AE%E5%BA%A6%E4%BD%9C%E8%BF%9B%E4%B8%80%E6%AD%A5%E4%BA%86%E8%A7%A3%E3%80%82">https://johnresig.com/blog/accuracy-of-javascript-time/对准确度作进一步了解。</a></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">const million &#x3D; 1000000; </span><br><span class="line">const arr &#x3D; Array(million);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 注：这是稀疏数组，应该为其指定内容，否则不同方式的循环对其的处理方式会不同：</span><br><span class="line">&#x2F;&#x2F; const arr &#x3D; [...Array(million)]</span><br><span class="line"></span><br><span class="line">console.time(&#39;⏳&#39;);</span><br><span class="line">for (let i &#x3D; arr.length; i &gt; 0; i--) &#123;&#125; &#x2F;&#x2F; for(倒序)  :- 1.5ms</span><br><span class="line">for (let i &#x3D; 0; i &lt; arr.length; i++) &#123;&#125; &#x2F;&#x2F; for          :- 1.6ms</span><br><span class="line">arr.forEach(v &#x3D;&gt; v)                     &#x2F;&#x2F; foreach      :- 2.1ms</span><br><span class="line">for (const v of arr) &#123;&#125;                 &#x2F;&#x2F; for...of     :- 11.7ms</span><br><span class="line">console.timeEnd(&#39;⏳&#39;);</span><br></pre></td></tr></table></figure>
 
-<p>造成这样结果的原因很简单，在代码中，正序和倒序的 <code>for</code> 循环几乎花费一样的时间，仅仅相差了 0.1 毫秒。原因是，<code>for</code>（倒序）只需要计算一次起始变量 <code>let i = arr.length</code>，而在正序的 <code>for</code> 循环中，它在每次变量增加后都会检查条件 <code>i&lt;arr.length</code>。这个细微的差别不是很重要，你可以忽略它。（译者注：在数据量小或对时间不敏感的代码上，我们大可忽略它，但是根据译者的测试，当数据量扩大，例如十亿，千亿等的数量级，差距就显著提升，我们就需要考虑时间对应用程序性能的影响了。）</p>
+<p>造成这样结果的原因很简单，在代码中，正序和倒序的 <code>for</code> 循环几乎花费一样的时间，仅仅相差了 0.1 毫秒。原因是，<code>for</code>（倒序）只需要计算一次起始变量 <code>let i = arr.length</code>，而在正序的 <code>for</code> 循环中，它在每次变量增加后都会检查条件 <code>i&lt;arr.length</code>。这个细微的差别不是很重要，你可以忽略它。（译者注：在数据量小或对时间不敏感的代码上，我们大可忽略它，但是根据译者的测试，当数据量扩大，例如十亿，千亿等的数量级，差距就显著提升，我们就需要考虑时间对应用程序性能的影响了。）同理，如果知道了差异，正序循环也可以做优化，将arr.length存下来，<code>for(let i=0,j=arr.length;i&lt;j;i++)&#123;&#125;</code></p>
 <p>而 <code>forEach</code> 是 <code>Array</code> 原型的一个方法，与普通的 <code>for</code> 循环相比，<code>forEach</code> 和 <code>for…of</code>需要花费更多的时间进行数组迭代。（译者注：但值得注意的是，<code>for…of</code> 和 <code>forEach</code> 都从对象中获取了数据，而原型并没有，因此没有可比性。）</p>
 <h2 id="循环的类型，以及我们应该在何处使用它们"><a href="#循环的类型，以及我们应该在何处使用它们" class="headerlink" title="循环的类型，以及我们应该在何处使用它们"></a>循环的类型，以及我们应该在何处使用它们</h2><h3 id="1-For-循环（正序和倒序）"><a href="#1-For-循环（正序和倒序）" class="headerlink" title="1. For 循环（正序和倒序）"></a><strong>1. For 循环（正序和倒序）</strong></h3><p>我想，也许大家都应该对这个基础循环非常熟悉了。我们可以在任何我们需要的地方使用 <code>for</code> 循环，按照核定的次数运行一段代码。最基础的 <code>for</code> 循环运行最迅速的，那我们每一次都应该使用它，对吗？并不然，性能不仅仅只是唯一尺度，代码可读性往往更加重要，就让我们选择适合我们应用程序的变形即可。</p>
 <h3 id="2-forEach"><a href="#2-forEach" class="headerlink" title="2. forEach"></a><strong>2. <code>forEach</code></strong></h3><p>这个方法需要接受一个回调函数作为输入参数，遍历数组的每一个元素，并执行我们的回调函数（以元素本身和它的索引（可选参数）作为参数赋予给回调函数）。<code>forEach</code> 还允许在回调函数中使用一个可选参数 <code>this</code>。</p>
@@ -503,7 +503,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:31</span>
+    <span title="站点阅读时长">1:32</span>
   </span>
 </div>
 <div class="busuanzi-count">
