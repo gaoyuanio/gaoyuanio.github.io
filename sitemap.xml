@@ -221,14 +221,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/tags/vue/</loc>
+    <loc>http://example.com/tags/MySQL/</loc>
     <lastmod>2021-05-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://example.com/tags/MySQL/</loc>
+    <loc>http://example.com/tags/vue/</loc>
     <lastmod>2021-05-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -321,14 +321,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/categories/vue/</loc>
+    <loc>http://example.com/categories/MySQL/</loc>
     <lastmod>2021-05-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://example.com/categories/MySQL/</loc>
+    <loc>http://example.com/categories/vue/</loc>
     <lastmod>2021-05-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>

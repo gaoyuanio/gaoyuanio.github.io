@@ -201,6 +201,93 @@ SSL 提供服务<br>
       </tags>
   </entry>
   <entry>
+    <title>JavaScript专题（一）变量与函数提升</title>
+    <url>/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/</url>
+    <content><![CDATA[<h2 id="一-有趣的现象"><a class="markdownIt-Anchor" href="#一-有趣的现象">#</a> 一、有趣的现象</h2>
+<p>按照大家的常识，JavaScript 代码在执行是一定是自上而下的，你需要输出一个字符串，当然需要提前声明一个 <code>保存string类型的变量</code> 。如果深奥的道理我都能懂，于是我阅读了下面的代码。</p>
+<h3 id="11-我以为的开局"><a class="markdownIt-Anchor" href="#11-我以为的开局">#</a> 1.1 我以为的开局</h3>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// 123</span></span><br></pre></td></tr></table></figure>
+<p>我们调换一下代码的位置在再看：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// undefined</span></span><br><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<p><strong>我好像找到规律了！！！</strong></p>
+<p>当我看完了前两段代码并且进行了 “深度思考” 后，我好像找到规律了，那就是：在当前代码块后函数中，在变量声明和初始化 <code>之前</code> 使用变量，会拿不到正确的值。</p>
+<h3 id="12-实际上是这样的"><a class="markdownIt-Anchor" href="#12-实际上是这样的">#</a> 1.2 实际上是这样的</h3>
+<p>带着上面的 “结论” 我来到了这里</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// 高原</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<p>果然如此！，在<strong>变量声明和初始化之后</strong>耶稣也阻挡不了我拿到 val 的值，我说的！！！</p>
+<p>当我看到下面一段代码时，我已经产生了动摇，此事必要蹊跷。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> val = <span class="string">&#x27;测试&#x27;</span>;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<p>这… 我怂了，是什么原因导致这样的现象发生的呢？Js 又是如果处理的呢？</p>
+<h2 id="二-js的预解析"><a class="markdownIt-Anchor" href="#二-js的预解析">#</a> 二、Js 的预解析</h2>
+<p>在当前的作用域内，无论在哪里变量声明，在幕后，都会进行一次看不见的移动。</p>
+<p>注意：<strong>仅声明被 “移动”</strong>。即声明和赋值在某些时候被动分开了。而这次看不见的移动实际上就是 <code>Js在编译阶段的解析</code> 。</p>
+<p>来看一段《你知不知道的 Js》中经典的例子：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 未添加关键字（未声明），name为全局变量，，即window.name = &#x27;高原&#x27;</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 再次声明name，此时name未进行初始化，它的值是undefined吗？</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
+<p>结果是成功打印 “高原”，这样<strong>看不见的移动</strong>就发生在 Js 预解析（编译）之中。</p>
+<h3 id="21-核心预解析"><a class="markdownIt-Anchor" href="#21-核心预解析">#</a> 2.1 核心：预解析</h3>
+<p>为了搞明白这个核心问题，我们需要回顾一下，引擎会在解释 JavaScript 代码之前首先对其进行编译。编译阶段中的一部分工作就是找到所有的声明，并用合适的作用域将它们关联起来。</p>
+<p>因此，发生这样的事情，包括 <code>变量</code> 和 <code>函数</code> 在内的所有声明都会在任何代码被执行前首先被处理。当你看到 <code>var a = 2</code> ；时，可能会认为这是一个声明。但 JavaScript 实际上会将其看成两个声明：var a；和 a = 2;。</p>
+<ul>
+<li>第一个定义声明是在编译阶段进行的。</li>
+<li>第二个赋值声明会被留在原地等待执行阶段。</li>
+</ul>
+<p>即代码是这样写的：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 我们看到的代码：</span></span><br><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<p>但 Js 会将它解析成：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 声明(Declaration)</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明但未初始化，所以分配 undefined</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化(Initialization)</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化（赋值）</span></span><br></pre></td></tr></table></figure>
+<p>所以本小结的一段代码应该这样分析：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明name提到作用域顶部，并被分配了一个undefined</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 进行初始化操作</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// &#x27;高原&#x27;</span></span><br></pre></td></tr></table></figure>
+<h3 id="22-注意只有声明被提升了"><a class="markdownIt-Anchor" href="#22-注意只有声明被提升了">#</a> 2.2 注意：只有声明被提升了</h3>
+<p><strong>只有声明会被提升，而赋值和其他代码逻辑会在执行到代码的位置时才会生效</strong>。所以会有下面的问题：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>函数被提升了，自然可以正常执行，但变量仅仅是声明被提升了。</p>
+<h3 id="23-每个作用域都会进行提升操作"><a class="markdownIt-Anchor" href="#23-每个作用域都会进行提升操作">#</a> 2.3 每个作用域都会进行提升操作</h3>
+<p>还是上面的代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实际它在编译时是这样的：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name; <span class="comment">// 声明</span></span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化</span></span><br><span class="line">&#125;</span><br><span class="line">foo(); <span class="comment">// 函数执行</span></span><br></pre></td></tr></table></figure>
+<p><img data-src="https://img-blog.csdnimg.cn/20200716134005198.jpg" alt="img"></p>
+<h2 id="三-提升之间的优先级"><a class="markdownIt-Anchor" href="#三-提升之间的优先级">#</a> 三、提升之间的优先级</h2>
+<p>既然我们知道了 <code>变量</code> 和 <code>函数</code> 会被提升，他们之间又是如何判断优先级的呢？</p>
+<h3 id="31-函数会被首先提升然后才是变量"><a class="markdownIt-Anchor" href="#31-函数会被首先提升然后才是变量">#</a> 3.1 函数会被首先提升，然后才是变量</h3>
+<p>我们分析下面的代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo; <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>本着函数优先提升的原则，他会被解析成这样：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">// 高原</span></span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意， <code>var foo</code>  因为是一个重复声明，且优先级 <code>低于函数声明</code> 所以它被忽略掉了。</p>
+<h3 id="32-函数字面量不会进行函数提升"><a class="markdownIt-Anchor" href="#32-函数字面量不会进行函数提升">#</a> 3.2 函数字面量不会进行函数提升</h3>
+<p>最直观的例子，就是在函数字面量前调用该函数：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// TypeError: foo is not a function</span></span><br></pre></td></tr></table></figure>
+<p>这段程序中：</p>
+<ol>
+<li>变量标识符 <code>foo()</code>  被提升并分配给所在作用域（在这里是全局作用域），因此 foo ()<strong> 不会导致 ReferenceError</strong>。</li>
+<li>然后就是执行 foo，foo 此时并没有赋值（注意变量被提升了）。由于对 undefined 值进行函数调用而导致非法操作，因此抛出 TypeError 异常。</li>
+</ol>
+<h2 id="四-es6和小结"><a class="markdownIt-Anchor" href="#四-es6和小结">#</a> 四、ES6 和小结</h2>
+<p>ES6 新增了两个命令 <code>let</code>  和 <code>const</code> ，用来声明变量，有关它们完整的概念我会在《ES6 基础系列》中总结，提起它们，是因为<strong>变量提升在它们身上不会存在</strong>。</p>
+<h3 id="41-变量提升是可以规避的"><a class="markdownIt-Anchor" href="#41-变量提升是可以规避的">#</a> 4.1 变量提升是可以规避的</h3>
+<p>let 命令改变了语法行为，它所声明的变量一定要在声明后使用，否则报错。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// var 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(foo); <span class="comment">// 输出undefined</span></span><br><span class="line"><span class="keyword">var</span> foo = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// let 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(bar); <span class="comment">// 报错ReferenceError</span></span><br><span class="line"><span class="keyword">let</span> bar = <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+<p>上面代码中，变量 foo 用 var 命令声明，会发生变量提升，即脚本开始运行时，变量 foo 已经存在了，但是没有值，所以会输出 undefined。变量 bar 用 let 命令声明，不会发生变量提升。这表示在声明它之前，变量 bar 是不存在的，这时如果用到它，就会抛出一个错误。</p>
+<p>在变量提升上，const 和 let 一样，只在声明所在的块级作用域内有效，也不会变量提升</p>
+<h3 id="42-小结"><a class="markdownIt-Anchor" href="#42-小结">#</a> 4.2 小结</h3>
+<ol>
+<li>变量提升：函数声明和变量声明总是会被解释器悄悄地被 &quot;提升&quot; 到方法体的最顶部，但变量的初始化不会提升；</li>
+<li>函数提升：函数声明可以被看作是函数的整体被提升到了代码的顶部，但函数字面量表达式并不会引发函数提升；</li>
+<li>函数提升优先与变量提升；</li>
+<li>let 和 const 可以有效的规避变量提升</li>
+</ol>
+<p>最后提炼一下《你不知道的 JS》中的一段话：<strong>JavaScript 引擎并不总是按照代码的顺序来进行解析。在编译阶段，无论作用域中的声明出现在什么地方，都将在代码本身被执行前首先进行处理，这个过程被称为提升。声明本身会被提升，而包括函数表达式的赋值在内的赋值操作并不会提升。</strong></p>
+]]></content>
+      <categories>
+        <category>JavaScript专题</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>JavaScript基础（一）this</title>
     <url>/2021/03/20/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89this/</url>
     <content><![CDATA[<h3 id="一-this的指向"><a class="markdownIt-Anchor" href="#一-this的指向">#</a> 一、this 的指向</h3>
@@ -438,93 +525,6 @@ SSL 提供服务<br>
       </tags>
   </entry>
   <entry>
-    <title>JavaScript专题（一）变量与函数提升</title>
-    <url>/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/</url>
-    <content><![CDATA[<h2 id="一-有趣的现象"><a class="markdownIt-Anchor" href="#一-有趣的现象">#</a> 一、有趣的现象</h2>
-<p>按照大家的常识，JavaScript 代码在执行是一定是自上而下的，你需要输出一个字符串，当然需要提前声明一个 <code>保存string类型的变量</code> 。如果深奥的道理我都能懂，于是我阅读了下面的代码。</p>
-<h3 id="11-我以为的开局"><a class="markdownIt-Anchor" href="#11-我以为的开局">#</a> 1.1 我以为的开局</h3>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// 123</span></span><br></pre></td></tr></table></figure>
-<p>我们调换一下代码的位置在再看：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// undefined</span></span><br><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br></pre></td></tr></table></figure>
-<span id="more"></span>
-<p><strong>我好像找到规律了！！！</strong></p>
-<p>当我看完了前两段代码并且进行了 “深度思考” 后，我好像找到规律了，那就是：在当前代码块后函数中，在变量声明和初始化 <code>之前</code> 使用变量，会拿不到正确的值。</p>
-<h3 id="12-实际上是这样的"><a class="markdownIt-Anchor" href="#12-实际上是这样的">#</a> 1.2 实际上是这样的</h3>
-<p>带着上面的 “结论” 我来到了这里</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// 高原</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
-<p>果然如此！，在<strong>变量声明和初始化之后</strong>耶稣也阻挡不了我拿到 val 的值，我说的！！！</p>
-<p>当我看到下面一段代码时，我已经产生了动摇，此事必要蹊跷。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> val = <span class="string">&#x27;测试&#x27;</span>;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
-<p>这… 我怂了，是什么原因导致这样的现象发生的呢？Js 又是如果处理的呢？</p>
-<h2 id="二-js的预解析"><a class="markdownIt-Anchor" href="#二-js的预解析">#</a> 二、Js 的预解析</h2>
-<p>在当前的作用域内，无论在哪里变量声明，在幕后，都会进行一次看不见的移动。</p>
-<p>注意：<strong>仅声明被 “移动”</strong>。即声明和赋值在某些时候被动分开了。而这次看不见的移动实际上就是 <code>Js在编译阶段的解析</code> 。</p>
-<p>来看一段《你知不知道的 Js》中经典的例子：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 未添加关键字（未声明），name为全局变量，，即window.name = &#x27;高原&#x27;</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 再次声明name，此时name未进行初始化，它的值是undefined吗？</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
-<p>结果是成功打印 “高原”，这样<strong>看不见的移动</strong>就发生在 Js 预解析（编译）之中。</p>
-<h3 id="21-核心预解析"><a class="markdownIt-Anchor" href="#21-核心预解析">#</a> 2.1 核心：预解析</h3>
-<p>为了搞明白这个核心问题，我们需要回顾一下，引擎会在解释 JavaScript 代码之前首先对其进行编译。编译阶段中的一部分工作就是找到所有的声明，并用合适的作用域将它们关联起来。</p>
-<p>因此，发生这样的事情，包括 <code>变量</code> 和 <code>函数</code> 在内的所有声明都会在任何代码被执行前首先被处理。当你看到 <code>var a = 2</code> ；时，可能会认为这是一个声明。但 JavaScript 实际上会将其看成两个声明：var a；和 a = 2;。</p>
-<ul>
-<li>第一个定义声明是在编译阶段进行的。</li>
-<li>第二个赋值声明会被留在原地等待执行阶段。</li>
-</ul>
-<p>即代码是这样写的：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 我们看到的代码：</span></span><br><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br></pre></td></tr></table></figure>
-<p>但 Js 会将它解析成：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 声明(Declaration)</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明但未初始化，所以分配 undefined</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化(Initialization)</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化（赋值）</span></span><br></pre></td></tr></table></figure>
-<p>所以本小结的一段代码应该这样分析：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明name提到作用域顶部，并被分配了一个undefined</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 进行初始化操作</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// &#x27;高原&#x27;</span></span><br></pre></td></tr></table></figure>
-<h3 id="22-注意只有声明被提升了"><a class="markdownIt-Anchor" href="#22-注意只有声明被提升了">#</a> 2.2 注意：只有声明被提升了</h3>
-<p><strong>只有声明会被提升，而赋值和其他代码逻辑会在执行到代码的位置时才会生效</strong>。所以会有下面的问题：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>函数被提升了，自然可以正常执行，但变量仅仅是声明被提升了。</p>
-<h3 id="23-每个作用域都会进行提升操作"><a class="markdownIt-Anchor" href="#23-每个作用域都会进行提升操作">#</a> 2.3 每个作用域都会进行提升操作</h3>
-<p>还是上面的代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>实际它在编译时是这样的：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name; <span class="comment">// 声明</span></span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化</span></span><br><span class="line">&#125;</span><br><span class="line">foo(); <span class="comment">// 函数执行</span></span><br></pre></td></tr></table></figure>
-<p><img data-src="https://img-blog.csdnimg.cn/20200716134005198.jpg" alt="img"></p>
-<h2 id="三-提升之间的优先级"><a class="markdownIt-Anchor" href="#三-提升之间的优先级">#</a> 三、提升之间的优先级</h2>
-<p>既然我们知道了 <code>变量</code> 和 <code>函数</code> 会被提升，他们之间又是如何判断优先级的呢？</p>
-<h3 id="31-函数会被首先提升然后才是变量"><a class="markdownIt-Anchor" href="#31-函数会被首先提升然后才是变量">#</a> 3.1 函数会被首先提升，然后才是变量</h3>
-<p>我们分析下面的代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo; <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>本着函数优先提升的原则，他会被解析成这样：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">// 高原</span></span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>注意， <code>var foo</code>  因为是一个重复声明，且优先级 <code>低于函数声明</code> 所以它被忽略掉了。</p>
-<h3 id="32-函数字面量不会进行函数提升"><a class="markdownIt-Anchor" href="#32-函数字面量不会进行函数提升">#</a> 3.2 函数字面量不会进行函数提升</h3>
-<p>最直观的例子，就是在函数字面量前调用该函数：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// TypeError: foo is not a function</span></span><br></pre></td></tr></table></figure>
-<p>这段程序中：</p>
-<ol>
-<li>变量标识符 <code>foo()</code>  被提升并分配给所在作用域（在这里是全局作用域），因此 foo ()<strong> 不会导致 ReferenceError</strong>。</li>
-<li>然后就是执行 foo，foo 此时并没有赋值（注意变量被提升了）。由于对 undefined 值进行函数调用而导致非法操作，因此抛出 TypeError 异常。</li>
-</ol>
-<h2 id="四-es6和小结"><a class="markdownIt-Anchor" href="#四-es6和小结">#</a> 四、ES6 和小结</h2>
-<p>ES6 新增了两个命令 <code>let</code>  和 <code>const</code> ，用来声明变量，有关它们完整的概念我会在《ES6 基础系列》中总结，提起它们，是因为<strong>变量提升在它们身上不会存在</strong>。</p>
-<h3 id="41-变量提升是可以规避的"><a class="markdownIt-Anchor" href="#41-变量提升是可以规避的">#</a> 4.1 变量提升是可以规避的</h3>
-<p>let 命令改变了语法行为，它所声明的变量一定要在声明后使用，否则报错。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// var 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(foo); <span class="comment">// 输出undefined</span></span><br><span class="line"><span class="keyword">var</span> foo = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// let 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(bar); <span class="comment">// 报错ReferenceError</span></span><br><span class="line"><span class="keyword">let</span> bar = <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
-<p>上面代码中，变量 foo 用 var 命令声明，会发生变量提升，即脚本开始运行时，变量 foo 已经存在了，但是没有值，所以会输出 undefined。变量 bar 用 let 命令声明，不会发生变量提升。这表示在声明它之前，变量 bar 是不存在的，这时如果用到它，就会抛出一个错误。</p>
-<p>在变量提升上，const 和 let 一样，只在声明所在的块级作用域内有效，也不会变量提升</p>
-<h3 id="42-小结"><a class="markdownIt-Anchor" href="#42-小结">#</a> 4.2 小结</h3>
-<ol>
-<li>变量提升：函数声明和变量声明总是会被解释器悄悄地被 &quot;提升&quot; 到方法体的最顶部，但变量的初始化不会提升；</li>
-<li>函数提升：函数声明可以被看作是函数的整体被提升到了代码的顶部，但函数字面量表达式并不会引发函数提升；</li>
-<li>函数提升优先与变量提升；</li>
-<li>let 和 const 可以有效的规避变量提升</li>
-</ol>
-<p>最后提炼一下《你不知道的 JS》中的一段话：<strong>JavaScript 引擎并不总是按照代码的顺序来进行解析。在编译阶段，无论作用域中的声明出现在什么地方，都将在代码本身被执行前首先进行处理，这个过程被称为提升。声明本身会被提升，而包括函数表达式的赋值在内的赋值操作并不会提升。</strong></p>
-]]></content>
-      <categories>
-        <category>JavaScript专题</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>JavaScript基础（二）从原型到原型链</title>
     <url>/2021/03/21/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%E4%BB%8E%E5%8E%9F%E5%9E%8B%E5%88%B0%E5%8E%9F%E5%9E%8B%E9%93%BE/</url>
     <content><![CDATA[<blockquote>
@@ -733,6 +733,74 @@ SSL 提供服务<br>
       </tags>
   </entry>
   <entry>
+    <title>JavaScript基础（四）立即调用函数</title>
+    <url>/2021/03/24/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%9B%9B%EF%BC%89%E7%AB%8B%E5%8D%B3%E8%B0%83%E7%94%A8%E5%87%BD%E6%95%B0/</url>
+    <content><![CDATA[<blockquote>
+<p>本篇文章，主要讲解的立即执行函数或自执行匿名函数的含义、用法、以及使用它的主要场景。系列的前面几篇文章主要讲解了作用域、原型，本篇文章一样起到了承上启下的作用，如果您感兴趣，不妨去看看哦～</p>
+</blockquote>
+<h2 id="一-了解立即调用函数表达式"><a class="markdownIt-Anchor" href="#一-了解立即调用函数表达式">#</a> 一、了解立即调用函数表达式</h2>
+<h3 id="11-思维导图"><a class="markdownIt-Anchor" href="#11-思维导图">#</a> 1.1 思维导图</h3>
+<p><img data-src="https://img-blog.csdnimg.cn/20200622113604893.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<span id="more"></span>
+<h3 id="12-什么是立即调用"><a class="markdownIt-Anchor" href="#12-什么是立即调用">#</a> 1.2 什么是立即调用？</h3>
+<p>在详细了解这个之前，我们来谈了解一下 “自执行” 这个叫法，本文对这个功能的叫法也不一定完全对，每个人对他的理解都不一样，我们在这里用 <code>立即调用</code> ～</p>
+<p>立即调用：</p>
+<ul>
+<li>顾名思义，该表达式一被 <code>创建就立即执行</code> 。</li>
+<li>是一个在定义时就会立即执行的  <code>JavaScript 函数</code> 。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params">x</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;x + x = &#x27;</span>, x + x);</span><br><span class="line">&#125;)(<span class="number">5</span>) <span class="comment">// x + x = 10</span></span><br></pre></td></tr></table></figure>
+<p>这是一个被称为  <code>自执行匿名函数</code>  的设计模式，主要包含两部分:</p>
+<ol>
+<li>第一部分是包围在 圆括号运算符  <code>()</code>  里的一个匿名函数，这个匿名函数拥有独立的词法作用域。这不仅避免了外界访问此 IIFE 中的变量，而且又不会污染全局作用域。</li>
+<li>第二部分再一次使用  <code>()</code>  创建了一个立即执行函数表达式，JavaScript 引擎到此将直接执行函数。</li>
+</ol>
+<h3 id="13-核心问题"><a class="markdownIt-Anchor" href="#13-核心问题">#</a> 1.3 核心问题</h3>
+<p><strong>当你声明一个函数的时候，通过在后面加括号就可以实现立即执行吗？</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;(); <span class="comment">// gaoyuan 成功了！</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ...是不是意味着后面加个括弧都可以自动执行？</span></span><br><span class="line"><span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;&#x27;</span>gaoyuan);</span><br><span class="line">&#125;(); <span class="comment">// Uncaught SyntaxError: Function statements require a function name</span></span><br><span class="line"><span class="comment">// 什么？还需要一个函数名？不是叫 自执行匿名函数吗？</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 我加上了函数名</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;(); <span class="comment">// Uncaught SyntaxError: Unexpected token &#x27;)&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>很显然，例子中的第二条和第三条确实报错了，而且报错内容不一样，那么问题出现在哪呢？</p>
+<h2 id="二-立即调用函数表达式报错了"><a class="markdownIt-Anchor" href="#二-立即调用函数表达式报错了">#</a> 二、立即调用函数表达式报错了？</h2>
+<p>有时，我们定义函数之后，立即调用该函数，这时不能在函数的定义后面直接加圆括号，这会产生语法错误。产生语法错误的原因是， <code>function</code>  这个关键字，既可以当做语句，也可以当做表达式，比如下边：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//语句</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>) </span>&#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//表达式</span></span><br><span class="line"><span class="keyword">var</span> fn = <span class="function"><span class="keyword">function</span> (<span class="params"></span>)</span>&#123;&#125;;</span><br></pre></td></tr></table></figure>
+<p>为了避免解析上的歧义，JS 引擎规定，如果 function 出现在行首，一律解析成语句。因此 JS 引擎看到行首是 function 关键字以后，认为这一段都是函数定义，不应该以 <code>括号结尾</code> ，在它看来 <code>括号</code> 只是分组操作符。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 下面这个function在语法上是没问题的，但是依然只是一个语句</span></span><br><span class="line"><span class="comment">// 加上括号()以后依然会报错，因为分组操作符需要包含表达式</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123; <span class="comment">/* code */</span> &#125;(); <span class="comment">// SyntaxError: Unexpected token )</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 但是如果你在括弧()里传入一个表达式，将不会有异常抛出</span></span><br><span class="line"><span class="comment">// 但是foo函数依然不会执行</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123; <span class="comment">/* code */</span> &#125;( <span class="number">1</span> );</span><br><span class="line"></span><br><span class="line"><span class="comment">// 因为它完全等价于下面这个代码，一个function声明后面，又声明了一个毫无关系的表达式：</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123; <span class="comment">/* code */</span> &#125;</span><br><span class="line"></span><br><span class="line">( <span class="number">1</span> );</span><br></pre></td></tr></table></figure>
+<h2 id="三-使用立即调用函数的正确姿势"><a class="markdownIt-Anchor" href="#三-使用立即调用函数的正确姿势">#</a> 三、使用立即调用函数的正确姿势</h2>
+<p>要解决上述问题，非常简单。</p>
+<p>我们只需要用 <code>大括弧</code> 将代码的代码全部括住就行了，因为 JavaScript 里 <code>括弧()</code>  里面不能包含语句，所以在这一点上，解析器在解析 function 关键字的时候，会将相应的代码解析成 function 表达式，而不是 function 声明。</p>
+<h3 id="31-常见使用姿势"><a class="markdownIt-Anchor" href="#31-常见使用姿势">#</a> 3.1 常见使用姿势</h3>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 下面2个括弧()都会立即执行</span></span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="comment">/* code */</span> &#125; ()); <span class="comment">// 推荐使用这个</span></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="comment">/* code */</span> &#125;)(); <span class="comment">// 但是这个也是可以用的</span></span><br></pre></td></tr></table></figure>
+<h3 id="32-不常见的使用姿势一"><a class="markdownIt-Anchor" href="#32-不常见的使用姿势一">#</a> 3.2 不常见的使用姿势（一）</h3>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 由于括弧()和JS的&amp;&amp;，异或，逗号等操作符是在函数表达式和函数声明上消除歧义的</span></span><br><span class="line"><span class="comment">// 所以一旦解析器知道其中一个已经是表达式了，其它的也都默认为表达式了</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> i = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>)</span><br><span class="line">&#125;(); <span class="comment">// gaoyuan</span></span><br><span class="line"></span><br><span class="line"><span class="literal">true</span> &amp;&amp; <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>)</span><br><span class="line">&#125;(); <span class="comment">// gaoyuan</span></span><br><span class="line"></span><br><span class="line"><span class="number">0</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>) &#125;(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+<h3 id="33-不常见的使用姿势二"><a class="markdownIt-Anchor" href="#33-不常见的使用姿势二">#</a> 3.3 不常见的使用姿势（二）</h3>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 如果你不在意返回值，或者不怕难以阅读</span></span><br><span class="line"><span class="comment">// 你甚至可以在function前面加一元操作符号</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//转bool</span></span><br><span class="line"><span class="keyword">var</span> res1 = !<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;()</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;res1:&#x27;</span>, res1); <span class="comment">// gaoyuan true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 转数字</span></span><br><span class="line"><span class="keyword">var</span> res2 = +<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;()</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;res2:&#x27;</span>, res2); <span class="comment">// gaoyuan NaN</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 按位非</span></span><br><span class="line"><span class="keyword">var</span> res3 = ～<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;()</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;res3:&#x27;</span>, res3); <span class="comment">// gaoyuan NaN</span></span><br></pre></td></tr></table></figure>
+<h3 id="34-不常见的使用姿势三"><a class="markdownIt-Anchor" href="#34-不常见的使用姿势三">#</a> 3.4 不常见的使用姿势（三）</h3>
+<p>还有一个情况，使用 new 和 void 关键字，不过不太常见罢了。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">void</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;();</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;();</span><br></pre></td></tr></table></figure>
+<h2 id="四-常见使用场景"><a class="markdownIt-Anchor" href="#四-常见使用场景">#</a> 四、常见使用场景</h2>
+<h3 id="41-隔离作用域"><a class="markdownIt-Anchor" href="#41-隔离作用域">#</a> 4.1 隔离作用域</h3>
+<p>IIFE 最常见的功能，就是隔离作用域，在 ES6 之前 JS 原生也没有块级作用域的概念，所以需要函数作用域来模拟。</p>
+<p>举例:</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> currentTime = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> time = <span class="keyword">new</span> <span class="built_in">Date</span>();</span><br><span class="line">    <span class="keyword">var</span> year  = time.getFullYear()</span><br><span class="line">    <span class="keyword">var</span> month = time.getMonth()+<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">var</span> date  = time.getDate();</span><br><span class="line">    <span class="keyword">var</span> hour  = time.getHours();</span><br><span class="line">    <span class="keyword">var</span> min   = time.getMinutes();</span><br><span class="line">    <span class="keyword">return</span> year + <span class="string">&#x27;-&#x27;</span> + month + <span class="string">&#x27;-&#x27;</span> + date + <span class="string">&#x27; &#x27;</span> + hour + <span class="string">&#x27;:&#x27;</span> + min;</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+<p>你仍然可以在其他地方声明同名变量～</p>
+<h3 id="42-惰性函数"><a class="markdownIt-Anchor" href="#42-惰性函数">#</a> 4.2 惰性函数</h3>
+<p>DOM 事件添加中，为了兼容现代浏览器和 IE 浏览器，我们需要对浏览器环境进行一次判断：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> addEvent = (<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">window</span>.addEventListener) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">type, el, fn</span>) </span>&#123;</span><br><span class="line">            el.addEventListener(type, fn, <span class="literal">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(<span class="built_in">window</span>.attachEvent) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">type, el, fn</span>) </span>&#123;</span><br><span class="line">            el.attachEvent(<span class="string">&#x27;on&#x27;</span> + type, fn);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<h3 id="43-用闭包保存状态"><a class="markdownIt-Anchor" href="#43-用闭包保存状态">#</a> 4.3 用闭包保存状态</h3>
+<p>这里我仅举个例子，为我的下一篇文章 ——《JavaScript 中的闭包》卖个关子</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> elems = <span class="built_in">document</span>.getElementsByTagName(<span class="string">&#x27;a&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; elems.length; i++) &#123;</span><br><span class="line">    (<span class="function"><span class="keyword">function</span> (<span class="params">lockedInIndex</span>) </span>&#123;</span><br><span class="line">        elems[i].addEventListener(<span class="string">&#x27;click&#x27;</span>, <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span><br><span class="line">            e.preventDefault();</span><br><span class="line">            alert(<span class="string">&#x27;I am link #&#x27;</span> + lockedInIndex);</span><br><span class="line">        &#125;, <span class="string">&#x27;false&#x27;</span>);</span><br><span class="line">    &#125;)(i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="注意"><a class="markdownIt-Anchor" href="#注意">#</a> 注意</h3>
+<p>当函数变成立即执行的函数表达式时，表达式中的变量不能从外部访问。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&quot;Barry&quot;</span>;</span><br><span class="line">&#125;)();</span><br><span class="line"><span class="comment">// 无法从外部访问变量 name</span></span><br><span class="line">name <span class="comment">// 抛出错误：&quot;Uncaught ReferenceError: name is not defined&quot;</span></span><br></pre></td></tr></table></figure>
+<p>将 IIFE 分配给一个变量，不是存储 IIFE 本身，而是存储 IIFE 执行后返回的结果。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> result = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&quot;Barry&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> name;</span><br><span class="line">&#125;)();</span><br><span class="line"><span class="comment">// IIFE 执行后返回的结果：</span></span><br><span class="line">result; <span class="comment">// &quot;Barry&quot;</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>JavaScript专题</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>JavaScript基础（六）基本数据类型</title>
     <url>/2021/03/26/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%85%AD%EF%BC%89%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</url>
     <content><![CDATA[<h2 id="一-类型"><a class="markdownIt-Anchor" href="#一-类型">#</a> 一、类型</h2>
@@ -872,74 +940,6 @@ SSL 提供服务<br>
       </tags>
   </entry>
   <entry>
-    <title>JavaScript基础（四）立即调用函数</title>
-    <url>/2021/03/24/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%9B%9B%EF%BC%89%E7%AB%8B%E5%8D%B3%E8%B0%83%E7%94%A8%E5%87%BD%E6%95%B0/</url>
-    <content><![CDATA[<blockquote>
-<p>本篇文章，主要讲解的立即执行函数或自执行匿名函数的含义、用法、以及使用它的主要场景。系列的前面几篇文章主要讲解了作用域、原型，本篇文章一样起到了承上启下的作用，如果您感兴趣，不妨去看看哦～</p>
-</blockquote>
-<h2 id="一-了解立即调用函数表达式"><a class="markdownIt-Anchor" href="#一-了解立即调用函数表达式">#</a> 一、了解立即调用函数表达式</h2>
-<h3 id="11-思维导图"><a class="markdownIt-Anchor" href="#11-思维导图">#</a> 1.1 思维导图</h3>
-<p><img data-src="https://img-blog.csdnimg.cn/20200622113604893.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<span id="more"></span>
-<h3 id="12-什么是立即调用"><a class="markdownIt-Anchor" href="#12-什么是立即调用">#</a> 1.2 什么是立即调用？</h3>
-<p>在详细了解这个之前，我们来谈了解一下 “自执行” 这个叫法，本文对这个功能的叫法也不一定完全对，每个人对他的理解都不一样，我们在这里用 <code>立即调用</code> ～</p>
-<p>立即调用：</p>
-<ul>
-<li>顾名思义，该表达式一被 <code>创建就立即执行</code> 。</li>
-<li>是一个在定义时就会立即执行的  <code>JavaScript 函数</code> 。</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params">x</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;x + x = &#x27;</span>, x + x);</span><br><span class="line">&#125;)(<span class="number">5</span>) <span class="comment">// x + x = 10</span></span><br></pre></td></tr></table></figure>
-<p>这是一个被称为  <code>自执行匿名函数</code>  的设计模式，主要包含两部分:</p>
-<ol>
-<li>第一部分是包围在 圆括号运算符  <code>()</code>  里的一个匿名函数，这个匿名函数拥有独立的词法作用域。这不仅避免了外界访问此 IIFE 中的变量，而且又不会污染全局作用域。</li>
-<li>第二部分再一次使用  <code>()</code>  创建了一个立即执行函数表达式，JavaScript 引擎到此将直接执行函数。</li>
-</ol>
-<h3 id="13-核心问题"><a class="markdownIt-Anchor" href="#13-核心问题">#</a> 1.3 核心问题</h3>
-<p><strong>当你声明一个函数的时候，通过在后面加括号就可以实现立即执行吗？</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;(); <span class="comment">// gaoyuan 成功了！</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ...是不是意味着后面加个括弧都可以自动执行？</span></span><br><span class="line"><span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;&#x27;</span>gaoyuan);</span><br><span class="line">&#125;(); <span class="comment">// Uncaught SyntaxError: Function statements require a function name</span></span><br><span class="line"><span class="comment">// 什么？还需要一个函数名？不是叫 自执行匿名函数吗？</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 我加上了函数名</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;(); <span class="comment">// Uncaught SyntaxError: Unexpected token &#x27;)&#x27;</span></span><br></pre></td></tr></table></figure>
-<p>很显然，例子中的第二条和第三条确实报错了，而且报错内容不一样，那么问题出现在哪呢？</p>
-<h2 id="二-立即调用函数表达式报错了"><a class="markdownIt-Anchor" href="#二-立即调用函数表达式报错了">#</a> 二、立即调用函数表达式报错了？</h2>
-<p>有时，我们定义函数之后，立即调用该函数，这时不能在函数的定义后面直接加圆括号，这会产生语法错误。产生语法错误的原因是， <code>function</code>  这个关键字，既可以当做语句，也可以当做表达式，比如下边：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//语句</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>) </span>&#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//表达式</span></span><br><span class="line"><span class="keyword">var</span> fn = <span class="function"><span class="keyword">function</span> (<span class="params"></span>)</span>&#123;&#125;;</span><br></pre></td></tr></table></figure>
-<p>为了避免解析上的歧义，JS 引擎规定，如果 function 出现在行首，一律解析成语句。因此 JS 引擎看到行首是 function 关键字以后，认为这一段都是函数定义，不应该以 <code>括号结尾</code> ，在它看来 <code>括号</code> 只是分组操作符。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 下面这个function在语法上是没问题的，但是依然只是一个语句</span></span><br><span class="line"><span class="comment">// 加上括号()以后依然会报错，因为分组操作符需要包含表达式</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123; <span class="comment">/* code */</span> &#125;(); <span class="comment">// SyntaxError: Unexpected token )</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 但是如果你在括弧()里传入一个表达式，将不会有异常抛出</span></span><br><span class="line"><span class="comment">// 但是foo函数依然不会执行</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123; <span class="comment">/* code */</span> &#125;( <span class="number">1</span> );</span><br><span class="line"></span><br><span class="line"><span class="comment">// 因为它完全等价于下面这个代码，一个function声明后面，又声明了一个毫无关系的表达式：</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123; <span class="comment">/* code */</span> &#125;</span><br><span class="line"></span><br><span class="line">( <span class="number">1</span> );</span><br></pre></td></tr></table></figure>
-<h2 id="三-使用立即调用函数的正确姿势"><a class="markdownIt-Anchor" href="#三-使用立即调用函数的正确姿势">#</a> 三、使用立即调用函数的正确姿势</h2>
-<p>要解决上述问题，非常简单。</p>
-<p>我们只需要用 <code>大括弧</code> 将代码的代码全部括住就行了，因为 JavaScript 里 <code>括弧()</code>  里面不能包含语句，所以在这一点上，解析器在解析 function 关键字的时候，会将相应的代码解析成 function 表达式，而不是 function 声明。</p>
-<h3 id="31-常见使用姿势"><a class="markdownIt-Anchor" href="#31-常见使用姿势">#</a> 3.1 常见使用姿势</h3>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 下面2个括弧()都会立即执行</span></span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="comment">/* code */</span> &#125; ()); <span class="comment">// 推荐使用这个</span></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="comment">/* code */</span> &#125;)(); <span class="comment">// 但是这个也是可以用的</span></span><br></pre></td></tr></table></figure>
-<h3 id="32-不常见的使用姿势一"><a class="markdownIt-Anchor" href="#32-不常见的使用姿势一">#</a> 3.2 不常见的使用姿势（一）</h3>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 由于括弧()和JS的&amp;&amp;，异或，逗号等操作符是在函数表达式和函数声明上消除歧义的</span></span><br><span class="line"><span class="comment">// 所以一旦解析器知道其中一个已经是表达式了，其它的也都默认为表达式了</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> i = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>)</span><br><span class="line">&#125;(); <span class="comment">// gaoyuan</span></span><br><span class="line"></span><br><span class="line"><span class="literal">true</span> &amp;&amp; <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>)</span><br><span class="line">&#125;(); <span class="comment">// gaoyuan</span></span><br><span class="line"></span><br><span class="line"><span class="number">0</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>) &#125;(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-<h3 id="33-不常见的使用姿势二"><a class="markdownIt-Anchor" href="#33-不常见的使用姿势二">#</a> 3.3 不常见的使用姿势（二）</h3>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 如果你不在意返回值，或者不怕难以阅读</span></span><br><span class="line"><span class="comment">// 你甚至可以在function前面加一元操作符号</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//转bool</span></span><br><span class="line"><span class="keyword">var</span> res1 = !<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;()</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;res1:&#x27;</span>, res1); <span class="comment">// gaoyuan true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 转数字</span></span><br><span class="line"><span class="keyword">var</span> res2 = +<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;()</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;res2:&#x27;</span>, res2); <span class="comment">// gaoyuan NaN</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 按位非</span></span><br><span class="line"><span class="keyword">var</span> res3 = ～<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;()</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;res3:&#x27;</span>, res3); <span class="comment">// gaoyuan NaN</span></span><br></pre></td></tr></table></figure>
-<h3 id="34-不常见的使用姿势三"><a class="markdownIt-Anchor" href="#34-不常见的使用姿势三">#</a> 3.4 不常见的使用姿势（三）</h3>
-<p>还有一个情况，使用 new 和 void 关键字，不过不太常见罢了。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">void</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;();</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;();</span><br></pre></td></tr></table></figure>
-<h2 id="四-常见使用场景"><a class="markdownIt-Anchor" href="#四-常见使用场景">#</a> 四、常见使用场景</h2>
-<h3 id="41-隔离作用域"><a class="markdownIt-Anchor" href="#41-隔离作用域">#</a> 4.1 隔离作用域</h3>
-<p>IIFE 最常见的功能，就是隔离作用域，在 ES6 之前 JS 原生也没有块级作用域的概念，所以需要函数作用域来模拟。</p>
-<p>举例:</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> currentTime = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> time = <span class="keyword">new</span> <span class="built_in">Date</span>();</span><br><span class="line">    <span class="keyword">var</span> year  = time.getFullYear()</span><br><span class="line">    <span class="keyword">var</span> month = time.getMonth()+<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">var</span> date  = time.getDate();</span><br><span class="line">    <span class="keyword">var</span> hour  = time.getHours();</span><br><span class="line">    <span class="keyword">var</span> min   = time.getMinutes();</span><br><span class="line">    <span class="keyword">return</span> year + <span class="string">&#x27;-&#x27;</span> + month + <span class="string">&#x27;-&#x27;</span> + date + <span class="string">&#x27; &#x27;</span> + hour + <span class="string">&#x27;:&#x27;</span> + min;</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
-<p>你仍然可以在其他地方声明同名变量～</p>
-<h3 id="42-惰性函数"><a class="markdownIt-Anchor" href="#42-惰性函数">#</a> 4.2 惰性函数</h3>
-<p>DOM 事件添加中，为了兼容现代浏览器和 IE 浏览器，我们需要对浏览器环境进行一次判断：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> addEvent = (<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">window</span>.addEventListener) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">type, el, fn</span>) </span>&#123;</span><br><span class="line">            el.addEventListener(type, fn, <span class="literal">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(<span class="built_in">window</span>.attachEvent) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">type, el, fn</span>) </span>&#123;</span><br><span class="line">            el.attachEvent(<span class="string">&#x27;on&#x27;</span> + type, fn);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
-<h3 id="43-用闭包保存状态"><a class="markdownIt-Anchor" href="#43-用闭包保存状态">#</a> 4.3 用闭包保存状态</h3>
-<p>这里我仅举个例子，为我的下一篇文章 ——《JavaScript 中的闭包》卖个关子</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> elems = <span class="built_in">document</span>.getElementsByTagName(<span class="string">&#x27;a&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; elems.length; i++) &#123;</span><br><span class="line">    (<span class="function"><span class="keyword">function</span> (<span class="params">lockedInIndex</span>) </span>&#123;</span><br><span class="line">        elems[i].addEventListener(<span class="string">&#x27;click&#x27;</span>, <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span><br><span class="line">            e.preventDefault();</span><br><span class="line">            alert(<span class="string">&#x27;I am link #&#x27;</span> + lockedInIndex);</span><br><span class="line">        &#125;, <span class="string">&#x27;false&#x27;</span>);</span><br><span class="line">    &#125;)(i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="注意"><a class="markdownIt-Anchor" href="#注意">#</a> 注意</h3>
-<p>当函数变成立即执行的函数表达式时，表达式中的变量不能从外部访问。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&quot;Barry&quot;</span>;</span><br><span class="line">&#125;)();</span><br><span class="line"><span class="comment">// 无法从外部访问变量 name</span></span><br><span class="line">name <span class="comment">// 抛出错误：&quot;Uncaught ReferenceError: name is not defined&quot;</span></span><br></pre></td></tr></table></figure>
-<p>将 IIFE 分配给一个变量，不是存储 IIFE 本身，而是存储 IIFE 执行后返回的结果。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> result = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&quot;Barry&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> name;</span><br><span class="line">&#125;)();</span><br><span class="line"><span class="comment">// IIFE 执行后返回的结果：</span></span><br><span class="line">result; <span class="comment">// &quot;Barry&quot;</span></span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>JavaScript专题</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Javascript中哪一种循环最快呢？</title>
     <url>/2021/05/12/Javascript%E4%B8%AD%E5%93%AA%E4%B8%80%E7%A7%8D%E5%BE%AA%E7%8E%AF%E6%9C%80%E5%BF%AB%E5%91%A2%EF%BC%9F/</url>
     <content><![CDATA[<blockquote>
@@ -1010,41 +1010,6 @@ SSL 提供服务<br>
       </categories>
       <tags>
         <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>VUE组件之间通信的6种方式</title>
-    <url>/2021/02/20/VUE%E7%BB%84%E4%BB%B6%E4%B9%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E7%9A%846%E7%A7%8D%E6%96%B9%E5%BC%8F/</url>
-    <content><![CDATA[<h3 id="1方法一props和emit"><a class="markdownIt-Anchor" href="#1方法一props和emit">#</a> 1. 方法一：<strong>props</strong> 和 **$emit**</h3>
-<p>父组件通过 props 向下传递数据给子组件，子组件通过 event 给父组件发送消息，实际上就是子组件把自己的数据发送给父组件。</p>
-<h3 id="2方法二attrs和listeners"><a class="markdownIt-Anchor" href="#2方法二attrs和listeners">#</a> 2. 方法二：<strong><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mi>t</mi><mi>t</mi><mi>r</mi><mi>s</mi><mo>∗</mo><mo>∗</mo><mtext>和</mtext><mo>∗</mo><mo>∗</mo></mrow><annotation encoding="application/x-tex">attrs**和**</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.61508em;vertical-align:0em;"></span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord">∗</span><span class="mord cjk_fallback">和</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.46528em;vertical-align:0em;"></span><span class="mord">∗</span></span></span></span>listeners</strong></h3>
-<p>​	第一种方式处理父子组件之间的数据传输有一个问题：如果父组件 A 下面有子组件 B，组件 B 下面有组件 C, 这时如果组件 A 想传递数据给组件 C 怎么办呢？ 如果采用第一种方法，我们必须让组件 A 通过 prop 传递消息给组件 B，组件 B 在通过 prop 传递消息给组件 C；要是组件 A 和组件 C 之间有更多的组件，那采用这种方式就很复杂了。Vue 2.4 开始提供了<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mi>t</mi><mi>t</mi><mi>r</mi><mi>s</mi><mtext>和</mtext></mrow><annotation encoding="application/x-tex">attrs和</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">s</span><span class="mord cjk_fallback">和</span></span></span></span> listeners 来解决这个问题，能够让组件 A 之间传递消息给组件 C。</p>
-<span id="more"></span>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;!--组件C--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">        &lt;input type=&quot;text&quot; v-model=&quot;$attrs.messagec&quot; @input=&quot;passCData($attrs.messagec)&quot;&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#x27;C&#x27;,</span><br><span class="line">    data () &#123;</span><br><span class="line">      return &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passCData(val)&#123;</span><br><span class="line">        //触发父组件A中的事件,把从A得到的数据hello C还给A组件</span><br><span class="line">        this.$emit(&#x27;getCData&#x27;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;!--组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;input type=&quot;text&quot; v-model=&quot;mymessage&quot; @input=&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">    &lt;!-- C组件中能直接触发getCData的原因在于 B组件调用C组件时 使用 v-on 绑定了$listeners 属性 --&gt;</span><br><span class="line">    &lt;!-- 通过v-bind 绑定$attrs属性，C组件可以直接获取到A组件中传递下来的props（除了B组件中props声明的） --&gt;</span><br><span class="line">    &lt;C v-bind=&quot;$attrs&quot; v-on=&quot;$listeners&quot;&gt;&lt;/C&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#x27;B&#x27;,</span><br><span class="line">    props:[</span><br><span class="line">      message:&#123;</span><br><span class="line">        type: String,</span><br><span class="line">        default: null</span><br><span class="line">      &#125;</span><br><span class="line">    ],//得到父组件A传递过来的数据,hello B</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        //触发父组件中的事件,把message给组件A</span><br><span class="line">        this.$emit(&#x27;getChildData&#x27;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;!--组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;/p&gt;</span><br><span class="line">    &lt;B </span><br><span class="line">     :messagec=&quot;messagec&quot; </span><br><span class="line">     :message=&quot;message&quot; </span><br><span class="line">     :getCData=&quot;getCData&quot;</span><br><span class="line">     :getChildData=&quot;getChildData&quot;&gt;&lt;/B&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#x27;A&#x27;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#x27;hello B&#x27;,</span><br><span class="line">        messagec:&#x27;hello C&#x27; //传递给c组件的数据</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      getChildData(val)&#123;</span><br><span class="line">        console.log(&#x27;这是来自B组件的数据&#x27;,val) //打印hello B</span><br><span class="line">      &#125;,</span><br><span class="line">      //执行C子组件触发的事件</span><br><span class="line">      getCData(val)&#123;</span><br><span class="line">        console.log(&quot;这是来自C组件的数据：&quot;, val) //打印hello C</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<h3 id="3方法3provide和-inject"><a class="markdownIt-Anchor" href="#3方法3provide和-inject">#</a> 3. 方法 3：<strong>provide</strong> 和 <strong>inject</strong></h3>
-<p>在 Vue.js 的  <code>2.2.0+</code>  版本中添加加了 provide 和 inject 选项。他们成对出现，用于父级组件向下传递数据。</p>
-<p>父组件中通过 provide 来提供变量，然后在子组件中通过 inject 来注入变量。不论子组件有多深，只要调用了 inject 那么就可以注入 provide 中的数据。而不是局限于只能从当前父组件的 prop 属性来获取数据，只要在父组件的生命周期内，子组件都可以调用。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;!--父组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;/p&gt;</span><br><span class="line">    &lt;child&gt;&lt;/child&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#x27;parent&#x27;,</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#x27;这是要个子组件的数据&#x27;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#x27;hello&#x27;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;!--子组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;input type=&quot;text&quot; v-model=&quot;mymessage&quot;&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#x27;child&#x27;,</span><br><span class="line">    inject:[&#x27;forChidrenData&#x27;], //得到父组件传递过来的数据</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#x27;这是要个子组件的数据&#x27;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:this.forChidrenData</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<h3 id="4方法四vuex处理组件之间的数据交互"><a class="markdownIt-Anchor" href="#4方法四vuex处理组件之间的数据交互">#</a> 4. 方法四：<strong>vuex 处理组件之间的数据交互</strong></h3>
-<p>​	如果业务逻辑复杂，很多组件之间需要同时处理一些公共的数据，这个时候才有上面这一些方法可能不利于项目的维护，vuex 的做法就是将这一些公共的数据抽离出来，然后其他组件就可以对这个公共数据进行读写操作，这样达到了解耦的目的。</p>
-<h3 id="5方法五中央事件总线"><a class="markdownIt-Anchor" href="#5方法五中央事件总线">#</a> 5. 方法五：<strong>中央事件总线</strong></h3>
-<p>​	如果两个组件不是父子关系呢？这种情况下可以使用中央事件总线的方式。新建一个 Vue 事件 bus 对象，然后通过 bus.<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi><mi>m</mi><mi>i</mi><mi>t</mi><mtext>触发事件，</mtext><mi>b</mi><mi>u</mi><mi>s</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">emit触发事件，bus.</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">e</span><span class="mord mathnormal">m</span><span class="mord mathnormal">i</span><span class="mord mathnormal">t</span><span class="mord cjk_fallback">触</span><span class="mord cjk_fallback">发</span><span class="mord cjk_fallback">事</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">，</span><span class="mord mathnormal">b</span><span class="mord mathnormal">u</span><span class="mord mathnormal">s</span><span class="mord">.</span></span></span></span>on 监听触发的事件。</p>
-<blockquote>
-<p>公共事件总线 eventBus 的实质就是创建一个 vue 实例，通过一个空的 vue 实例作为桥梁实现 vue 组件间的通信。它是实现非父子组件通信的一种解决方案。</p>
-</blockquote>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother1 compoent!&lt;/p&gt;</span><br><span class="line">    &lt;input type=&quot;text&quot; v-model=&quot;mymessage&quot; @input=&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#x27;brother1&#x27;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:&#x27;hello brother1&#x27;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        //触发全局事件globalEvent</span><br><span class="line">        bus.$emit(&#x27;globalEvent&#x27;, val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother2 compoent!&lt;/p&gt;</span><br><span class="line">    &lt;p&gt;brother1传递过来的数据：&#123;&#123;brothermessage&#125;&#125;&lt;/p&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#x27;brother2&#x27;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        brothermessage:&#x27;&#x27;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    mounted()&#123;</span><br><span class="line">      //绑定全局事件globalEvent</span><br><span class="line">      bus.$on(&#x27;globalEvent&#x27;,(val)=&gt;&#123;</span><br><span class="line">        this.brothermessage = val;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">//中央事件总线</span><br><span class="line">var bus=new Vue();</span><br><span class="line">var app=new Vue(&#123;</span><br><span class="line">  el:&#x27;#app&#x27;,</span><br><span class="line">  template:`</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;brother1&gt;&lt;/brother1&gt;</span><br><span class="line">      &lt;brother2&gt;&lt;/brother2&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  `,</span><br><span class="line">   beforeDestroy()&#123;</span><br><span class="line">sd     bus.$off(&#x27;globalEvent&#x27;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<h3 id="6方法六parent和children"><a class="markdownIt-Anchor" href="#6方法六parent和children">#</a> 6. 方法六：<strong><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mi>a</mi><mi>r</mi><mi>e</mi><mi>n</mi><mi>t</mi><mo>∗</mo><mo>∗</mo><mtext>和</mtext><mo>∗</mo><mo>∗</mo></mrow><annotation encoding="application/x-tex">parent**和**</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.80952em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord">∗</span><span class="mord cjk_fallback">和</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.46528em;vertical-align:0em;"></span><span class="mord">∗</span></span></span></span>children</strong></h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Vue.component(&#x27;child&#x27;,&#123;</span><br><span class="line">  props:&#123;</span><br><span class="line">    value:String, //v-model会自动传递一个字段为value的prop属性</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      mymessage:this.value</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeValue()&#123;</span><br><span class="line">      this.$parent.message = this.mymessage;//通过如此调用可以改变父组件的值</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  template:`</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;input type=&quot;text&quot; v-model=&quot;mymessage&quot; @change=&quot;changeValue&quot;&gt;</span><br><span class="line">    &lt;/div&gt;`</span><br><span class="line">&#125;)</span><br><span class="line">  </span><br><span class="line">Vue.component(&#x27;parent&#x27;,&#123;</span><br><span class="line">  template:`</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;p&gt;this is parent compoent!&lt;/p&gt;</span><br><span class="line">      &lt;button @click=&quot;changeChildValue&quot;&gt;test&lt;/button &gt;</span><br><span class="line">      &lt;child&gt;&lt;/child&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  `,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeChildValue()&#123;</span><br><span class="line">      this.$children[0].mymessage = &#x27;hello&#x27;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      message:&#x27;hello&#x27;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">var app=new Vue(&#123;</span><br><span class="line">  el:&#x27;#app&#x27;,</span><br><span class="line">  template:`</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;parent&gt;&lt;/parent&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  `</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>Vue专题</category>
-      </categories>
-      <tags>
-        <tag>vue</tag>
       </tags>
   </entry>
   <entry>
@@ -1123,6 +1088,41 @@ user_name  CHAR (8)：定长字符串，可能产生空间浪费，但读取速�
       </categories>
       <tags>
         <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>VUE组件之间通信的6种方式</title>
+    <url>/2021/02/20/VUE%E7%BB%84%E4%BB%B6%E4%B9%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E7%9A%846%E7%A7%8D%E6%96%B9%E5%BC%8F/</url>
+    <content><![CDATA[<h3 id="1方法一props和emit"><a class="markdownIt-Anchor" href="#1方法一props和emit">#</a> 1. 方法一：<strong>props</strong> 和 **$emit**</h3>
+<p>父组件通过 props 向下传递数据给子组件，子组件通过 event 给父组件发送消息，实际上就是子组件把自己的数据发送给父组件。</p>
+<h3 id="2方法二attrs和listeners"><a class="markdownIt-Anchor" href="#2方法二attrs和listeners">#</a> 2. 方法二：<strong><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mi>t</mi><mi>t</mi><mi>r</mi><mi>s</mi><mo>∗</mo><mo>∗</mo><mtext>和</mtext><mo>∗</mo><mo>∗</mo></mrow><annotation encoding="application/x-tex">attrs**和**</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.61508em;vertical-align:0em;"></span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord">∗</span><span class="mord cjk_fallback">和</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.46528em;vertical-align:0em;"></span><span class="mord">∗</span></span></span></span>listeners</strong></h3>
+<p>​	第一种方式处理父子组件之间的数据传输有一个问题：如果父组件 A 下面有子组件 B，组件 B 下面有组件 C, 这时如果组件 A 想传递数据给组件 C 怎么办呢？ 如果采用第一种方法，我们必须让组件 A 通过 prop 传递消息给组件 B，组件 B 在通过 prop 传递消息给组件 C；要是组件 A 和组件 C 之间有更多的组件，那采用这种方式就很复杂了。Vue 2.4 开始提供了<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mi>t</mi><mi>t</mi><mi>r</mi><mi>s</mi><mtext>和</mtext></mrow><annotation encoding="application/x-tex">attrs和</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">s</span><span class="mord cjk_fallback">和</span></span></span></span> listeners 来解决这个问题，能够让组件 A 之间传递消息给组件 C。</p>
+<span id="more"></span>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;!--组件C--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">        &lt;input type=&quot;text&quot; v-model=&quot;$attrs.messagec&quot; @input=&quot;passCData($attrs.messagec)&quot;&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#x27;C&#x27;,</span><br><span class="line">    data () &#123;</span><br><span class="line">      return &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passCData(val)&#123;</span><br><span class="line">        //触发父组件A中的事件,把从A得到的数据hello C还给A组件</span><br><span class="line">        this.$emit(&#x27;getCData&#x27;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;!--组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;input type=&quot;text&quot; v-model=&quot;mymessage&quot; @input=&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">    &lt;!-- C组件中能直接触发getCData的原因在于 B组件调用C组件时 使用 v-on 绑定了$listeners 属性 --&gt;</span><br><span class="line">    &lt;!-- 通过v-bind 绑定$attrs属性，C组件可以直接获取到A组件中传递下来的props（除了B组件中props声明的） --&gt;</span><br><span class="line">    &lt;C v-bind=&quot;$attrs&quot; v-on=&quot;$listeners&quot;&gt;&lt;/C&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#x27;B&#x27;,</span><br><span class="line">    props:[</span><br><span class="line">      message:&#123;</span><br><span class="line">        type: String,</span><br><span class="line">        default: null</span><br><span class="line">      &#125;</span><br><span class="line">    ],//得到父组件A传递过来的数据,hello B</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        //触发父组件中的事件,把message给组件A</span><br><span class="line">        this.$emit(&#x27;getChildData&#x27;,val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;!--组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;/p&gt;</span><br><span class="line">    &lt;B </span><br><span class="line">     :messagec=&quot;messagec&quot; </span><br><span class="line">     :message=&quot;message&quot; </span><br><span class="line">     :getCData=&quot;getCData&quot;</span><br><span class="line">     :getChildData=&quot;getChildData&quot;&gt;&lt;/B&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#x27;A&#x27;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#x27;hello B&#x27;,</span><br><span class="line">        messagec:&#x27;hello C&#x27; //传递给c组件的数据</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      getChildData(val)&#123;</span><br><span class="line">        console.log(&#x27;这是来自B组件的数据&#x27;,val) //打印hello B</span><br><span class="line">      &#125;,</span><br><span class="line">      //执行C子组件触发的事件</span><br><span class="line">      getCData(val)&#123;</span><br><span class="line">        console.log(&quot;这是来自C组件的数据：&quot;, val) //打印hello C</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="3方法3provide和-inject"><a class="markdownIt-Anchor" href="#3方法3provide和-inject">#</a> 3. 方法 3：<strong>provide</strong> 和 <strong>inject</strong></h3>
+<p>在 Vue.js 的  <code>2.2.0+</code>  版本中添加加了 provide 和 inject 选项。他们成对出现，用于父级组件向下传递数据。</p>
+<p>父组件中通过 provide 来提供变量，然后在子组件中通过 inject 来注入变量。不论子组件有多深，只要调用了 inject 那么就可以注入 provide 中的数据。而不是局限于只能从当前父组件的 prop 属性来获取数据，只要在父组件的生命周期内，子组件都可以调用。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;!--父组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is parent compoent!&lt;/p&gt;</span><br><span class="line">    &lt;child&gt;&lt;/child&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#x27;parent&#x27;,</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#x27;这是要个子组件的数据&#x27;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        message:&#x27;hello&#x27;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;!--子组件--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;input type=&quot;text&quot; v-model=&quot;mymessage&quot;&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#x27;child&#x27;,</span><br><span class="line">    inject:[&#x27;forChidrenData&#x27;], //得到父组件传递过来的数据</span><br><span class="line">    provide: &#123;</span><br><span class="line">      forChidrenData:&#x27;这是要个子组件的数据&#x27;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:this.forChidrenData</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="4方法四vuex处理组件之间的数据交互"><a class="markdownIt-Anchor" href="#4方法四vuex处理组件之间的数据交互">#</a> 4. 方法四：<strong>vuex 处理组件之间的数据交互</strong></h3>
+<p>​	如果业务逻辑复杂，很多组件之间需要同时处理一些公共的数据，这个时候才有上面这一些方法可能不利于项目的维护，vuex 的做法就是将这一些公共的数据抽离出来，然后其他组件就可以对这个公共数据进行读写操作，这样达到了解耦的目的。</p>
+<h3 id="5方法五中央事件总线"><a class="markdownIt-Anchor" href="#5方法五中央事件总线">#</a> 5. 方法五：<strong>中央事件总线</strong></h3>
+<p>​	如果两个组件不是父子关系呢？这种情况下可以使用中央事件总线的方式。新建一个 Vue 事件 bus 对象，然后通过 bus.<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi><mi>m</mi><mi>i</mi><mi>t</mi><mtext>触发事件，</mtext><mi>b</mi><mi>u</mi><mi>s</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">emit触发事件，bus.</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">e</span><span class="mord mathnormal">m</span><span class="mord mathnormal">i</span><span class="mord mathnormal">t</span><span class="mord cjk_fallback">触</span><span class="mord cjk_fallback">发</span><span class="mord cjk_fallback">事</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">，</span><span class="mord mathnormal">b</span><span class="mord mathnormal">u</span><span class="mord mathnormal">s</span><span class="mord">.</span></span></span></span>on 监听触发的事件。</p>
+<blockquote>
+<p>公共事件总线 eventBus 的实质就是创建一个 vue 实例，通过一个空的 vue 实例作为桥梁实现 vue 组件间的通信。它是实现非父子组件通信的一种解决方案。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件A--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother1 compoent!&lt;/p&gt;</span><br><span class="line">    &lt;input type=&quot;text&quot; v-model=&quot;mymessage&quot; @input=&quot;passData(mymessage)&quot;&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#x27;brother1&#x27;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        mymessage:&#x27;hello brother1&#x27;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      passData(val)&#123;</span><br><span class="line">        //触发全局事件globalEvent</span><br><span class="line">        bus.$emit(&#x27;globalEvent&#x27;, val)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;!--兄弟组件B--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;this is brother2 compoent!&lt;/p&gt;</span><br><span class="line">    &lt;p&gt;brother1传递过来的数据：&#123;&#123;brothermessage&#125;&#125;&lt;/p&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    export default &#123;</span><br><span class="line">    name: &#x27;brother2&#x27;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        brothermessage:&#x27;&#x27;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    mounted()&#123;</span><br><span class="line">      //绑定全局事件globalEvent</span><br><span class="line">      bus.$on(&#x27;globalEvent&#x27;,(val)=&gt;&#123;</span><br><span class="line">        this.brothermessage = val;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">//中央事件总线</span><br><span class="line">var bus=new Vue();</span><br><span class="line">var app=new Vue(&#123;</span><br><span class="line">  el:&#x27;#app&#x27;,</span><br><span class="line">  template:`</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;brother1&gt;&lt;/brother1&gt;</span><br><span class="line">      &lt;brother2&gt;&lt;/brother2&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  `,</span><br><span class="line">   beforeDestroy()&#123;</span><br><span class="line">sd     bus.$off(&#x27;globalEvent&#x27;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h3 id="6方法六parent和children"><a class="markdownIt-Anchor" href="#6方法六parent和children">#</a> 6. 方法六：<strong><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mi>a</mi><mi>r</mi><mi>e</mi><mi>n</mi><mi>t</mi><mo>∗</mo><mo>∗</mo><mtext>和</mtext><mo>∗</mo><mo>∗</mo></mrow><annotation encoding="application/x-tex">parent**和**</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.80952em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord">∗</span><span class="mord cjk_fallback">和</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.46528em;vertical-align:0em;"></span><span class="mord">∗</span></span></span></span>children</strong></h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Vue.component(&#x27;child&#x27;,&#123;</span><br><span class="line">  props:&#123;</span><br><span class="line">    value:String, //v-model会自动传递一个字段为value的prop属性</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      mymessage:this.value</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeValue()&#123;</span><br><span class="line">      this.$parent.message = this.mymessage;//通过如此调用可以改变父组件的值</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  template:`</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;input type=&quot;text&quot; v-model=&quot;mymessage&quot; @change=&quot;changeValue&quot;&gt;</span><br><span class="line">    &lt;/div&gt;`</span><br><span class="line">&#125;)</span><br><span class="line">  </span><br><span class="line">Vue.component(&#x27;parent&#x27;,&#123;</span><br><span class="line">  template:`</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;p&gt;this is parent compoent!&lt;/p&gt;</span><br><span class="line">      &lt;button @click=&quot;changeChildValue&quot;&gt;test&lt;/button &gt;</span><br><span class="line">      &lt;child&gt;&lt;/child&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  `,</span><br><span class="line">  methods:&#123;</span><br><span class="line">    changeChildValue()&#123;</span><br><span class="line">      this.$children[0].mymessage = &#x27;hello&#x27;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  data()&#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      message:&#x27;hello&#x27;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">var app=new Vue(&#123;</span><br><span class="line">  el:&#x27;#app&#x27;,</span><br><span class="line">  template:`</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;parent&gt;&lt;/parent&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  `</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>Vue专题</category>
+      </categories>
+      <tags>
+        <tag>vue</tag>
       </tags>
   </entry>
   <entry>
@@ -1367,6 +1367,71 @@ user_name  CHAR (8)：定长字符串，可能产生空间浪费，但读取速�
       </tags>
   </entry>
   <entry>
+    <title>三次握手四次挥手的原理</title>
+    <url>/2021/03/01/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E7%9A%84%E5%8E%9F%E7%90%86/</url>
+    <content><![CDATA[<h2 id="三次握手"><a class="markdownIt-Anchor" href="#三次握手">#</a> 三次握手</h2>
+<p>握手的过程：</p>
+<p>1、第一次握手：客户端给服务器发送一个 SYN 报文。</p>
+<p>2、第二次握手：服务器收到 SYN 报文之后，会应答一个 SYN+ACK 报文。</p>
+<p>3、第三次握手：客户端收到 SYN+ACK 报文之后，会回应一个 ACK 报文。</p>
+<p>4、服务器收到 ACK 报文之后，三次握手建立完成。</p>
+<p>作用是为了确认双方的接收与发送能力是否正常。</p>
+   <span id="more"></span>
+<p><strong>这里我顺便解释一下为啥只有三次握手才能确认双方的接受与发送能力是否正常，而两次却不可以：</strong></p>
+<blockquote>
+<p>第一次握手：客户端发送网络包，服务端收到了。这样服务端就能得出结论：客户端的发送能力、服务端的接收能力是正常的。<br>
+第二次握手：服务端发包，客户端收到了。这样客户端就能得出结论：服务端的接收、发送能力，客户端的接收、发送能力是正常的。不过此时服务器并不能确认客户端的接收能力是否正常。<br>
+第三次握手：客户端发包，服务端收到了。这样服务端就能得出结论：客户端的接收、发送能力正常，服务器自己的发送、接收能力也正常。</p>
+</blockquote>
+<p>因此，需要三次握手才能确认双方的接收与发送能力是否正常。</p>
+<p>这样回答其实也是可以的，但我觉得，这个过程的我们应该要描述的更<strong>详细一点</strong>，因为三次握手的过程中，双方是<strong>由很多状态的改变的</strong>，而这些状态，也是面试官可能会问的点。所以我觉得在回答三次握手的时候，我们应该要描述的详细一点，而且描述的详细一点意味着可以扯久一点。加分的描述我觉得应该是这样：</p>
+<p><strong>刚开始客户端处于 closed 的状态，服务端处于 listen 状态</strong>。然后<br>
+ 1、第一次握手：客户端给服务端发一个 SYN 报文，并指明客户端的初始化序列号 <strong>ISN（c）</strong>。此时客户端处于 <strong>SYN_Send</strong> 状态。</p>
+<p>2、第二次握手：服务器收到客户端的 SYN 报文之后，会以自己的 SYN 报文作为应答，并且也是指定了自己的初始化序列号 ISN (s)，同时会把客户端的 ISN + 1 作为 ACK 的值，表示自己已经收到了客户端的 SYN，此时服务器处于 <strong>SYN_REVD</strong> 的状态。</p>
+<p>3、第三次握手：客户端收到 SYN 报文之后，会发送一个 ACK 报文，当然，也是一样把服务器的 ISN + 1 作为 ACK 的值，表示已经收到了服务端的 SYN 报文，此时客户端处于 <strong>establised</strong> 状态。</p>
+<p>4、服务器收到 ACK 报文之后，也处于 <strong>establised 状态</strong>，此时，双方以建立起了链接。</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2019060815530363.png" alt=""></p>
+<h3 id="1-三次握手的作用"><a class="markdownIt-Anchor" href="#1-三次握手的作用">#</a> 1、三次握手的作用</h3>
+<p>三次握手的作用也是有好多的，多记住几个，保证不亏。例如：<br>
+1、确认双方的接受能力、发送能力是否正常。<br>
+2、指定自己的初始化序列号，为后面的可靠传送做准备。<br>
+3、如果是 https 协议的话，三次握手这个过程，还会进行数字证书的验证以及加密密钥的生成到。</p>
+<h3 id="2-isn是固定的吗"><a class="markdownIt-Anchor" href="#2-isn是固定的吗">#</a> 2、（ISN）是固定的吗？</h3>
+<p>三次握手的一个重要功能是客户端和服务端交换 ISN (Initial Sequence Number), 以便让对方知道接下来接收数据的时候如何按序列号组装数据。</p>
+<p><strong>如果 ISN 是固定的，攻击者很容易猜出后续的确认号，因此 ISN 是动态生成的。</strong></p>
+<h3 id="3-什么是半连接队列"><a class="markdownIt-Anchor" href="#3-什么是半连接队列">#</a> 3、什么是半连接队列</h3>
+<p>服务器第一次收到客户端的 SYN 之后，就会处于 SYN_RCVD 状态，此时双方还没有完全建立其连接，服务器会把此种状态下请求连接放在一个队列里，我们把这种队列称之为半连接队列。当然还有一个全连接队列，就是已经完成三次握手，建立起连接的就会放在全连接队列中。如果队列满了就有可能会出现丢包现象。</p>
+<blockquote>
+<p>这里在补充一点关于 SYN-ACK 重传次数的问题：　服务器发送完 SYN－ACK 包，如果未收到客户确认包，服务器进行首次重传，等待一段时间仍未收到客户确认包，进行第二次重传，如果重传次数超 过系统规定的最大重传次数，系统将该连接信息从半连接队列中删除。注意，每次重传等待的时间不一定相同，一般会是指数增长，例如间隔时间为 1s, 2s, 4s, 8s, …</p>
+</blockquote>
+<h3 id="4-三次握手过程中可以携带数据吗"><a class="markdownIt-Anchor" href="#4-三次握手过程中可以携带数据吗">#</a> 4、三次握手过程中可以携带数据吗</h3>
+<p>很多人可能会认为三次握手都不能携带数据，其实第三次握手的时候，是可以携带数据的。也就是说，第一次、第二次握手不可以携带数据，而第三次握手是可以携带数据的。</p>
+<p>为什么这样呢？大家可以想一个问题，假如第一次握手可以携带数据的话，如果有人要恶意攻击服务器，那他每次都在第一次握手中的 SYN 报文中放入大量的数据，因为攻击者根本就不理服务器的接收、发送能力是否正常，然后疯狂着重复发 SYN 报文的话，这会让服务器花费很多时间、内存空间来接收这些报文。也就是说，第一次握手可以放数据的话，其中一个简单的原因就是会让服务器更加容易受到攻击了。<br>
+而对于第三次的话，此时客户端已经处于 established 状态，也就是说，对于客户端来说，他已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的了，所以能携带数据页没啥毛病。</p>
+<h2 id="四次挥手"><a class="markdownIt-Anchor" href="#四次挥手">#</a> 四次挥手</h2>
+<p><strong>四次挥手也一样，千万不要对方一个 FIN 报文，我方一个 ACK 报文，再我方一个 FIN 报文，我方一个 ACK 报文。然后结束，最好是说的详细一点，例如想下面这样就差不多了，要把每个阶段的状态记好。</strong></p>
+<p>刚开始双方都处于 establised 状态，假如是客户端先发起关闭请求，则：</p>
+<p>1、第一次挥手：客户端发送一个 FIN 报文，报文中会指定一个序列号。此时客户端处于<strong> FIN_WAIT1</strong> 状态。</p>
+<p>2、第二次握手：服务端收到 FIN 之后，会发送 ACK 报文，且把客户端的序列号值 + 1 作为 ACK 报文的序列号值，表明已经收到客户端的报文了，此时服务端处于 <strong>CLOSE_WAIT</strong> 状态。</p>
+<p>3、第三次挥手：如果服务端也想断开连接了，和客户端的第一次挥手一样，发给 FIN 报文，且指定一个序列号。此时服务端处于 <strong>LAST_ACK</strong> 的状态。</p>
+<p>4、第四次挥手：客户端收到 FIN 之后，一样发送一个 ACK 报文作为应答，且把服务端的序列号值 + 1 作为自己 ACK 报文的序列号值，此时客户端处于 <strong>TIME_WAIT</strong> 状态。需要过一阵子以确保服务端收到自己的 ACK 报文之后才会进入 CLOSED 状态</p>
+<p>5、服务端收到 ACK 报文之后，就处于关闭连接了，处于 CLOSED 状态。</p>
+<p><img data-src="https://img-blog.csdnimg.cn/20190608160051238.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RyZWFtaXNwb3NzaWJsZQ==,size_16,color_FFFFFF,t_70" alt=""></p>
+<p>这里特别需要主要的就是 TIME_WAIT 这个状态了，这个是面试的高频考点，就是要理解，为什么客户端发送 ACK 之后不直接关闭，而是要等一阵子才关闭。这其中的原因就是，要确保服务器是否已经收到了我们的 ACK 报文，如果没有收到的话，服务器会重新发 FIN 报文给客户端，客户端再次收到 ACK 报文之后，就知道之前的 ACK 报文丢失了，然后再次发送 ACK 报文。</p>
+<p>至于 TIME_WAIT 持续的时间至少是一个报文的来回时间。一般会设置一个计时，如果过了这个计时没有再次收到 FIN 报文，则代表对方成功就是 ACK 报文，此时处于 CLOSED 状态。</p>
+<p><strong>这里我给出每个状态所包含的含义，有兴趣的可以看看。</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">LISTEN - 侦听来自远方TCP端口的连接请求； </span><br><span class="line">SYN-SENT -在发送连接请求后等待匹配的连接请求； </span><br><span class="line">SYN-RECEIVED - 在收到和发送一个连接请求后等待对连接请求的确认； </span><br><span class="line">ESTABLISHED- 代表一个打开的连接，数据可以传送给用户； </span><br><span class="line">FIN-WAIT-1 - 等待远程TCP的连接中断请求，或先前的连接中断请求的确认；</span><br><span class="line">FIN-WAIT-2 - 从远程TCP等待连接中断请求；</span><br><span class="line">CLOSE-WAIT - 等待从本地用户发来的连接中断请求； </span><br><span class="line">CLOSING -等待远程TCP对连接中断的确认； </span><br><span class="line">LAST-ACK - 等待原来发向远程TCP的连接中断请求的确认； </span><br><span class="line">TIME-WAIT -等待足够的时间以确保远程TCP接收到连接中断请求的确认； </span><br><span class="line">CLOSED - 没有任何连接状态；</span><br></pre></td></tr></table></figure>
+<p><strong>最后，在放张三次握手与四次挥手的图</strong></p>
+<p><img data-src="https://img-blog.csdnimg.cn/20190608160404569.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RyZWFtaXNwb3NzaWJsZQ==,size_16,color_FFFFFF,t_70" alt=""></p>
+]]></content>
+      <categories>
+        <category>HTTP</category>
+      </categories>
+      <tags>
+        <tag>HTTP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>使用Hbuilder快速打包一个app</title>
     <url>/2018/07/12/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/</url>
     <content><![CDATA[<p>HBuilder 提供的打包有云端打包和本地打包两种，云端打包的特点是 DCloud 官方配置好了原生的打包环境，可以把 HTML 等文件编译为原生安装包。</p>
@@ -1571,71 +1636,6 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
       </tags>
   </entry>
   <entry>
-    <title>三次握手四次挥手的原理</title>
-    <url>/2021/03/01/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E7%9A%84%E5%8E%9F%E7%90%86/</url>
-    <content><![CDATA[<h2 id="三次握手"><a class="markdownIt-Anchor" href="#三次握手">#</a> 三次握手</h2>
-<p>握手的过程：</p>
-<p>1、第一次握手：客户端给服务器发送一个 SYN 报文。</p>
-<p>2、第二次握手：服务器收到 SYN 报文之后，会应答一个 SYN+ACK 报文。</p>
-<p>3、第三次握手：客户端收到 SYN+ACK 报文之后，会回应一个 ACK 报文。</p>
-<p>4、服务器收到 ACK 报文之后，三次握手建立完成。</p>
-<p>作用是为了确认双方的接收与发送能力是否正常。</p>
-   <span id="more"></span>
-<p><strong>这里我顺便解释一下为啥只有三次握手才能确认双方的接受与发送能力是否正常，而两次却不可以：</strong></p>
-<blockquote>
-<p>第一次握手：客户端发送网络包，服务端收到了。这样服务端就能得出结论：客户端的发送能力、服务端的接收能力是正常的。<br>
-第二次握手：服务端发包，客户端收到了。这样客户端就能得出结论：服务端的接收、发送能力，客户端的接收、发送能力是正常的。不过此时服务器并不能确认客户端的接收能力是否正常。<br>
-第三次握手：客户端发包，服务端收到了。这样服务端就能得出结论：客户端的接收、发送能力正常，服务器自己的发送、接收能力也正常。</p>
-</blockquote>
-<p>因此，需要三次握手才能确认双方的接收与发送能力是否正常。</p>
-<p>这样回答其实也是可以的，但我觉得，这个过程的我们应该要描述的更<strong>详细一点</strong>，因为三次握手的过程中，双方是<strong>由很多状态的改变的</strong>，而这些状态，也是面试官可能会问的点。所以我觉得在回答三次握手的时候，我们应该要描述的详细一点，而且描述的详细一点意味着可以扯久一点。加分的描述我觉得应该是这样：</p>
-<p><strong>刚开始客户端处于 closed 的状态，服务端处于 listen 状态</strong>。然后<br>
- 1、第一次握手：客户端给服务端发一个 SYN 报文，并指明客户端的初始化序列号 <strong>ISN（c）</strong>。此时客户端处于 <strong>SYN_Send</strong> 状态。</p>
-<p>2、第二次握手：服务器收到客户端的 SYN 报文之后，会以自己的 SYN 报文作为应答，并且也是指定了自己的初始化序列号 ISN (s)，同时会把客户端的 ISN + 1 作为 ACK 的值，表示自己已经收到了客户端的 SYN，此时服务器处于 <strong>SYN_REVD</strong> 的状态。</p>
-<p>3、第三次握手：客户端收到 SYN 报文之后，会发送一个 ACK 报文，当然，也是一样把服务器的 ISN + 1 作为 ACK 的值，表示已经收到了服务端的 SYN 报文，此时客户端处于 <strong>establised</strong> 状态。</p>
-<p>4、服务器收到 ACK 报文之后，也处于 <strong>establised 状态</strong>，此时，双方以建立起了链接。</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2019060815530363.png" alt=""></p>
-<h3 id="1-三次握手的作用"><a class="markdownIt-Anchor" href="#1-三次握手的作用">#</a> 1、三次握手的作用</h3>
-<p>三次握手的作用也是有好多的，多记住几个，保证不亏。例如：<br>
-1、确认双方的接受能力、发送能力是否正常。<br>
-2、指定自己的初始化序列号，为后面的可靠传送做准备。<br>
-3、如果是 https 协议的话，三次握手这个过程，还会进行数字证书的验证以及加密密钥的生成到。</p>
-<h3 id="2-isn是固定的吗"><a class="markdownIt-Anchor" href="#2-isn是固定的吗">#</a> 2、（ISN）是固定的吗？</h3>
-<p>三次握手的一个重要功能是客户端和服务端交换 ISN (Initial Sequence Number), 以便让对方知道接下来接收数据的时候如何按序列号组装数据。</p>
-<p><strong>如果 ISN 是固定的，攻击者很容易猜出后续的确认号，因此 ISN 是动态生成的。</strong></p>
-<h3 id="3-什么是半连接队列"><a class="markdownIt-Anchor" href="#3-什么是半连接队列">#</a> 3、什么是半连接队列</h3>
-<p>服务器第一次收到客户端的 SYN 之后，就会处于 SYN_RCVD 状态，此时双方还没有完全建立其连接，服务器会把此种状态下请求连接放在一个队列里，我们把这种队列称之为半连接队列。当然还有一个全连接队列，就是已经完成三次握手，建立起连接的就会放在全连接队列中。如果队列满了就有可能会出现丢包现象。</p>
-<blockquote>
-<p>这里在补充一点关于 SYN-ACK 重传次数的问题：　服务器发送完 SYN－ACK 包，如果未收到客户确认包，服务器进行首次重传，等待一段时间仍未收到客户确认包，进行第二次重传，如果重传次数超 过系统规定的最大重传次数，系统将该连接信息从半连接队列中删除。注意，每次重传等待的时间不一定相同，一般会是指数增长，例如间隔时间为 1s, 2s, 4s, 8s, …</p>
-</blockquote>
-<h3 id="4-三次握手过程中可以携带数据吗"><a class="markdownIt-Anchor" href="#4-三次握手过程中可以携带数据吗">#</a> 4、三次握手过程中可以携带数据吗</h3>
-<p>很多人可能会认为三次握手都不能携带数据，其实第三次握手的时候，是可以携带数据的。也就是说，第一次、第二次握手不可以携带数据，而第三次握手是可以携带数据的。</p>
-<p>为什么这样呢？大家可以想一个问题，假如第一次握手可以携带数据的话，如果有人要恶意攻击服务器，那他每次都在第一次握手中的 SYN 报文中放入大量的数据，因为攻击者根本就不理服务器的接收、发送能力是否正常，然后疯狂着重复发 SYN 报文的话，这会让服务器花费很多时间、内存空间来接收这些报文。也就是说，第一次握手可以放数据的话，其中一个简单的原因就是会让服务器更加容易受到攻击了。<br>
-而对于第三次的话，此时客户端已经处于 established 状态，也就是说，对于客户端来说，他已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的了，所以能携带数据页没啥毛病。</p>
-<h2 id="四次挥手"><a class="markdownIt-Anchor" href="#四次挥手">#</a> 四次挥手</h2>
-<p><strong>四次挥手也一样，千万不要对方一个 FIN 报文，我方一个 ACK 报文，再我方一个 FIN 报文，我方一个 ACK 报文。然后结束，最好是说的详细一点，例如想下面这样就差不多了，要把每个阶段的状态记好。</strong></p>
-<p>刚开始双方都处于 establised 状态，假如是客户端先发起关闭请求，则：</p>
-<p>1、第一次挥手：客户端发送一个 FIN 报文，报文中会指定一个序列号。此时客户端处于<strong> FIN_WAIT1</strong> 状态。</p>
-<p>2、第二次握手：服务端收到 FIN 之后，会发送 ACK 报文，且把客户端的序列号值 + 1 作为 ACK 报文的序列号值，表明已经收到客户端的报文了，此时服务端处于 <strong>CLOSE_WAIT</strong> 状态。</p>
-<p>3、第三次挥手：如果服务端也想断开连接了，和客户端的第一次挥手一样，发给 FIN 报文，且指定一个序列号。此时服务端处于 <strong>LAST_ACK</strong> 的状态。</p>
-<p>4、第四次挥手：客户端收到 FIN 之后，一样发送一个 ACK 报文作为应答，且把服务端的序列号值 + 1 作为自己 ACK 报文的序列号值，此时客户端处于 <strong>TIME_WAIT</strong> 状态。需要过一阵子以确保服务端收到自己的 ACK 报文之后才会进入 CLOSED 状态</p>
-<p>5、服务端收到 ACK 报文之后，就处于关闭连接了，处于 CLOSED 状态。</p>
-<p><img data-src="https://img-blog.csdnimg.cn/20190608160051238.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RyZWFtaXNwb3NzaWJsZQ==,size_16,color_FFFFFF,t_70" alt=""></p>
-<p>这里特别需要主要的就是 TIME_WAIT 这个状态了，这个是面试的高频考点，就是要理解，为什么客户端发送 ACK 之后不直接关闭，而是要等一阵子才关闭。这其中的原因就是，要确保服务器是否已经收到了我们的 ACK 报文，如果没有收到的话，服务器会重新发 FIN 报文给客户端，客户端再次收到 ACK 报文之后，就知道之前的 ACK 报文丢失了，然后再次发送 ACK 报文。</p>
-<p>至于 TIME_WAIT 持续的时间至少是一个报文的来回时间。一般会设置一个计时，如果过了这个计时没有再次收到 FIN 报文，则代表对方成功就是 ACK 报文，此时处于 CLOSED 状态。</p>
-<p><strong>这里我给出每个状态所包含的含义，有兴趣的可以看看。</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">LISTEN - 侦听来自远方TCP端口的连接请求； </span><br><span class="line">SYN-SENT -在发送连接请求后等待匹配的连接请求； </span><br><span class="line">SYN-RECEIVED - 在收到和发送一个连接请求后等待对连接请求的确认； </span><br><span class="line">ESTABLISHED- 代表一个打开的连接，数据可以传送给用户； </span><br><span class="line">FIN-WAIT-1 - 等待远程TCP的连接中断请求，或先前的连接中断请求的确认；</span><br><span class="line">FIN-WAIT-2 - 从远程TCP等待连接中断请求；</span><br><span class="line">CLOSE-WAIT - 等待从本地用户发来的连接中断请求； </span><br><span class="line">CLOSING -等待远程TCP对连接中断的确认； </span><br><span class="line">LAST-ACK - 等待原来发向远程TCP的连接中断请求的确认； </span><br><span class="line">TIME-WAIT -等待足够的时间以确保远程TCP接收到连接中断请求的确认； </span><br><span class="line">CLOSED - 没有任何连接状态；</span><br></pre></td></tr></table></figure>
-<p><strong>最后，在放张三次握手与四次挥手的图</strong></p>
-<p><img data-src="https://img-blog.csdnimg.cn/20190608160404569.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RyZWFtaXNwb3NzaWJsZQ==,size_16,color_FFFFFF,t_70" alt=""></p>
-]]></content>
-      <categories>
-        <category>HTTP</category>
-      </categories>
-      <tags>
-        <tag>HTTP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>学习之AJAX</title>
     <url>/2019/03/20/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
     <content><![CDATA[<p>对于 AJAX 这个玩意儿，一开始学习的时候，根本不知道这是什么，我连 AJAX 有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙 B 的状态。那么在学习一段时间的 AJAX 之后，我总结了一些我自己对 AJAX 的理解，一起共勉。</p>
@@ -1709,58 +1709,6 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
       <tags>
         <tag>vue</tag>
         <tag>react</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>开发小技巧</title>
-    <url>/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
-    <content><![CDATA[<h2 id="阻止单击事件冒泡"><a class="markdownIt-Anchor" href="#阻止单击事件冒泡">#</a> 阻止单击事件冒泡</h2>
-<p><code>&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;</code></p>
-<h2 id="提交事件不再重载页面"><a class="markdownIt-Anchor" href="#提交事件不再重载页面">#</a> 提交事件不再重载页面</h2>
-<p><code>&lt;form v-on:submit.prevent=&quot;onSubmit&quot;&gt;&lt;/form&gt;</code></p>
-<h2 id="修饰符可以串联"><a class="markdownIt-Anchor" href="#修饰符可以串联">#</a> 修饰符可以串联</h2>
-<p><code>&lt;a v-on:click.stop.prevent=&quot;doThat&quot;&gt;</code></p>
-<span id="more"></span>
-<h2 id="只有修饰符"><a class="markdownIt-Anchor" href="#只有修饰符">#</a> 只有修饰符</h2>
-<p><code>&lt;form v-on:submit.prevent&gt;&lt;/form&gt;</code></p>
-<br>
-<br>
-<br>
-<h2 id="mac谷歌跨域命令"><a class="markdownIt-Anchor" href="#mac谷歌跨域命令">#</a> Mac 谷歌跨域命令</h2>
-<p><code>open -n /Applications/Google\ Chrome.app/ --args --disable-web-security  --user-data-dir=/Users/GaoYuan/Documents/MyChromeDevUserData</code></p>
-<br>
-<br>
-<br>
-<h2 id="mac显示隐藏文件命令"><a class="markdownIt-Anchor" href="#mac显示隐藏文件命令">#</a> Mac 显示隐藏文件命令：</h2>
-<p><strong>显示隐藏文件</strong></p>
-<p><code>defaults write com.apple.finder AppleShowAllFiles Yes &amp;&amp; killall Finder </code></p>
-<p><strong>不显示隐藏文件</strong></p>
-<p><code>defaults write com.apple.finder AppleShowAllFiles No &amp;&amp; killall Finder </code></p>
-<br>
-<br>
-<h2 id="jison解决js处理后端返回的long型数据精度丢失问题"><a class="markdownIt-Anchor" href="#jison解决js处理后端返回的long型数据精度丢失问题">#</a> Jison 解决 JS 处理后端返回的 Long 型数据精度丢失问题</h2>
-<p>原因：js 是弱类型语言，所有的数字类型统称为 Number 类型，不区分 int、long、double 等。</p>
-<p><code>git clone git://github.com/zaach/jsonlint.git</code></p>
-<p>在 src 目录下提供了 jsonlint.y（grammaFile）和 jsonlint.l（lexFile) 两个文件。使用这两个文件可以直接生成 jsonlint.js。如下修改 jsonlint.y：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">JSONNumber</span><br><span class="line"></span><br><span class="line">    : NUMBER</span><br><span class="line">    </span><br><span class="line">        &#123;$$ = yytext == String(Number(yytext))? Number(yytext): yytext;&#125;</span><br><span class="line">    ;</span><br></pre></td></tr></table></figure>
-<p>然后：</p>
-<p><code>cd src</code></p>
-<p><code>jison jsonlint.y jsonlint.l</code></p>
-<h3 id="最后引入至项目"><a class="markdownIt-Anchor" href="#最后引入至项目">#</a> 最后引入至项目</h3>
-<p>1. 将自定义的 jsonlint.js 放到 static 目录下<br>
- 2. 在 index.html 中引入<br>
- <code>&lt;script src=&quot;./static/jsonlint/jsonlint.js&quot;&gt;&lt;/script&gt;</code></p>
-<p>3、在我们请求的返回数据中，做一层拦截转换，此处以 axios 的实现方法为例：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/*transformResponse 选项允许我们在数据传送到 `then/catch` 方法之前对数据进行改动*/</span><br><span class="line">axios.defaults.transformResponse = [</span><br><span class="line">  function(data) &#123;</span><br><span class="line">    return jsonlint.parse(data)</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>综上，定义 JSON 转化避免 long 类型数据溢出，可以实现 long 类型数据在前端正常显示</p>
-<h2 id="mac给文件夹赋予管理员权限"><a class="markdownIt-Anchor" href="#mac给文件夹赋予管理员权限">#</a> Mac 给文件夹赋予管理员权限</h2>
-<p><code>sudo chown -R gaoyuan ios</code></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">if ($request_filename ~* .*index\.html$) &#123;</span><br><span class="line">     add_header Cache-Control &quot;private, no-store, no-cache, must-revalidate, proxy-revalidate&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>个人笔记</category>
-      </categories>
-      <tags>
-        <tag>note</tag>
       </tags>
   </entry>
   <entry>
@@ -1851,6 +1799,58 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
 ]]></content>
       <categories>
         <category>note</category>
+      </categories>
+      <tags>
+        <tag>note</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>开发小技巧</title>
+    <url>/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
+    <content><![CDATA[<h2 id="阻止单击事件冒泡"><a class="markdownIt-Anchor" href="#阻止单击事件冒泡">#</a> 阻止单击事件冒泡</h2>
+<p><code>&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;</code></p>
+<h2 id="提交事件不再重载页面"><a class="markdownIt-Anchor" href="#提交事件不再重载页面">#</a> 提交事件不再重载页面</h2>
+<p><code>&lt;form v-on:submit.prevent=&quot;onSubmit&quot;&gt;&lt;/form&gt;</code></p>
+<h2 id="修饰符可以串联"><a class="markdownIt-Anchor" href="#修饰符可以串联">#</a> 修饰符可以串联</h2>
+<p><code>&lt;a v-on:click.stop.prevent=&quot;doThat&quot;&gt;</code></p>
+<span id="more"></span>
+<h2 id="只有修饰符"><a class="markdownIt-Anchor" href="#只有修饰符">#</a> 只有修饰符</h2>
+<p><code>&lt;form v-on:submit.prevent&gt;&lt;/form&gt;</code></p>
+<br>
+<br>
+<br>
+<h2 id="mac谷歌跨域命令"><a class="markdownIt-Anchor" href="#mac谷歌跨域命令">#</a> Mac 谷歌跨域命令</h2>
+<p><code>open -n /Applications/Google\ Chrome.app/ --args --disable-web-security  --user-data-dir=/Users/GaoYuan/Documents/MyChromeDevUserData</code></p>
+<br>
+<br>
+<br>
+<h2 id="mac显示隐藏文件命令"><a class="markdownIt-Anchor" href="#mac显示隐藏文件命令">#</a> Mac 显示隐藏文件命令：</h2>
+<p><strong>显示隐藏文件</strong></p>
+<p><code>defaults write com.apple.finder AppleShowAllFiles Yes &amp;&amp; killall Finder </code></p>
+<p><strong>不显示隐藏文件</strong></p>
+<p><code>defaults write com.apple.finder AppleShowAllFiles No &amp;&amp; killall Finder </code></p>
+<br>
+<br>
+<h2 id="jison解决js处理后端返回的long型数据精度丢失问题"><a class="markdownIt-Anchor" href="#jison解决js处理后端返回的long型数据精度丢失问题">#</a> Jison 解决 JS 处理后端返回的 Long 型数据精度丢失问题</h2>
+<p>原因：js 是弱类型语言，所有的数字类型统称为 Number 类型，不区分 int、long、double 等。</p>
+<p><code>git clone git://github.com/zaach/jsonlint.git</code></p>
+<p>在 src 目录下提供了 jsonlint.y（grammaFile）和 jsonlint.l（lexFile) 两个文件。使用这两个文件可以直接生成 jsonlint.js。如下修改 jsonlint.y：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">JSONNumber</span><br><span class="line"></span><br><span class="line">    : NUMBER</span><br><span class="line">    </span><br><span class="line">        &#123;$$ = yytext == String(Number(yytext))? Number(yytext): yytext;&#125;</span><br><span class="line">    ;</span><br></pre></td></tr></table></figure>
+<p>然后：</p>
+<p><code>cd src</code></p>
+<p><code>jison jsonlint.y jsonlint.l</code></p>
+<h3 id="最后引入至项目"><a class="markdownIt-Anchor" href="#最后引入至项目">#</a> 最后引入至项目</h3>
+<p>1. 将自定义的 jsonlint.js 放到 static 目录下<br>
+ 2. 在 index.html 中引入<br>
+ <code>&lt;script src=&quot;./static/jsonlint/jsonlint.js&quot;&gt;&lt;/script&gt;</code></p>
+<p>3、在我们请求的返回数据中，做一层拦截转换，此处以 axios 的实现方法为例：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/*transformResponse 选项允许我们在数据传送到 `then/catch` 方法之前对数据进行改动*/</span><br><span class="line">axios.defaults.transformResponse = [</span><br><span class="line">  function(data) &#123;</span><br><span class="line">    return jsonlint.parse(data)</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>综上，定义 JSON 转化避免 long 类型数据溢出，可以实现 long 类型数据在前端正常显示</p>
+<h2 id="mac给文件夹赋予管理员权限"><a class="markdownIt-Anchor" href="#mac给文件夹赋予管理员权限">#</a> Mac 给文件夹赋予管理员权限</h2>
+<p><code>sudo chown -R gaoyuan ios</code></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">if ($request_filename ~* .*index\.html$) &#123;</span><br><span class="line">     add_header Cache-Control &quot;private, no-store, no-cache, must-revalidate, proxy-revalidate&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>个人笔记</category>
       </categories>
       <tags>
         <tag>note</tag>
