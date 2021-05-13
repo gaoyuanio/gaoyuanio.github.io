@@ -104,103 +104,6 @@
       </tags>
   </entry>
   <entry>
-    <title>HTTPS和HTTP原理和区别</title>
-    <url>/2020/12/16/HTTPS%E5%92%8CHTTP%E5%8E%9F%E7%90%86%E5%92%8C%E5%8C%BA%E5%88%AB/</url>
-    <content><![CDATA[<p>一、HTTP 和 HTTPS 的基本概念<br>
- HTTP：超文本传输协议（HTTP，HyperText Transfer Protocol）是互联网上应用最为广泛的一种网络协议。设计 HTTP 最初的目的是为了提供一种发布和接收 HTML 页面的方法。它可以使浏览器更加高效。HTTP 协议是以明文方式发送信息的，如果黑客截取了 Web 浏览器和服务器之间的传输报文，就可以直接获得其中的信息。</p>
-<p>HTTP 原理：</p>
-<p>①  客户端的浏览器首先要通过网络与服务器建立连接，该连接是通过 TCP 来完成的，一般 TCP 连接的端口号是 80。 建立连接后，客户机发送一个请求给服务器，请求方式的格式为：统一资源标识符（URL）、协议版本号，后边是 MIME 信息包括请求修饰符、客户机信息和许可内容。</p>
-<p>②  服务器接到请求后，给予相应的响应信息，其格式为一个状态行，包括信息的协议版本号、一个成功或错误的代码，后边是 MIME 信息包括服务器信息、实体信息和可能的内容。</p>
-<span id="more"></span>
-<p>HTTPS：是以安全为目标的 HTTP 通道，是 HTTP 的安全版。HTTPS 的安全基础是 SSL。SSL 协议位于 TCP/IP 协议与各种应用层协议之间，为数据通讯提供安全支持。SSL 协议可分为两层：SSL 记录协议（SSL Record Protocol），它建立在可靠的传输协议（如 TCP）之上，为高层协议提供数据封装、压缩、加密等基本功能的支持。SSL 握手协议（SSL Handshake Protocol），它建立在 SSL 记录协议之上，用于在实际的数据传输开始前，通讯双方进行身份认证、协商加密算法、交换加密密钥等。</p>
-<p>​​<img data-src="https://img-blog.csdnimg.cn/20200707084720409.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4Mjg5ODE1,size_16,color_FFFFFF,t_70" alt=""></p>
-<!-- more -->
-<p>HTTPS 设计目标：</p>
-<p>(1) 数据保密性：保证数据内容在传输的过程中不会被第三方查看。就像快递员传递包裹一样，都进行了封装，别人无法获知里面装了什么  。</p>
-<p>(2) 数据完整性：及时发现被第三方篡改的传输内容。就像快递员虽然不知道包裹里装了什么东西，但他有可能中途掉包，数据完整性就是指如果被掉包，我们能轻松发现并拒收 。</p>
-<p>(3) 身份校验安全性：保证数据到达用户期望的目的地。就像我们邮寄包裹时，虽然是一个封装好的未掉包的包裹，但必须确定这个包裹不会送错地方，通过身份校验来确保送对了地方  。</p>
-<p>二、HTTP 与 HTTPS  的区别<br>
- 1、HTTPS  协议需要到 CA （Certificate Authority，证书颁发机构）申请证书，一般免费证书较少，因而需要一定费用。(以前的网易官网是 http，而网易邮箱是 https 。)</p>
-<p>2、HTTP 是超文本传输协议，信息是明文传输，HTTPS 则是具有安全性的 SSL 加密传输协议。</p>
-<p>3、HTTP 和 HTTPS 使用的是完全不同的连接方式，用的端口也不一样，前者是 80，后者是 443。</p>
-<p>4、HTTP 的连接很简单，是无状态的。HTTPS 协议是由 SSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，比 HTTP 协议安全。(无状态的意思是其数据包的发送、传输和接收都是相互独立的。无连接的意思是指通信双方都不长久的维持对方的任何信息。)</p>
-<p>三、HTTPS 相对于 HTTP 的改进<br>
-双向的身份认证</p>
-<p>客户端和服务端在传输数据之前，会通过基于 X.509 证书对双方进行身份认证 。具体过程如下：</p>
-<p>客户端发起 SSL 握手消息给服务端要求连接。</p>
-<p>服务端将证书发送给客户端。</p>
-<p>客户端检查服务端证书，确认是否由自己信任的证书签发机构签发 (客户端内置了所有受信任 CA 的证书)。 如果不是，将是否继续通讯的决定权交给用户选择 ( 注意，这里将是一个安全缺陷 )。如果检查无误或者用户选择继续，则客户端认可服务端的身份。</p>
-<p>服务端要求客户端发送证书，并检查是否通过验证。失败则关闭连接，认证成功则从客户端证书中获得客户端的公钥，一般为 1024 位或者 2048 位。到此，服务器客户端双方的身份认证结束，双方确保身份都是真实可靠的。</p>
-<p>注意：</p>
-<p>(1) 采用 HTTPS 协议的服务器必须要有一套数字证书，可以自己制作，也可以向组织申请。区别就是自己颁发的证书需要客户端验证通过，才可以继续访问。这套证书其实就是一对公钥和私钥。</p>
-<p>(2) 互联网有太多的服务需要使用证书来验证身份，以至于客户端（操作系统或浏览器等）无法内置所有证书，需要通过服务端将证书发送给客户端。</p>
-<p>(3) 客户端内置的是 CA 的根证书 (Root Certificate)，HTTPS 协议中服务器会发送证书链（Certificate Chain）给客户端。</p>
-<p>数据传输的机密性</p>
-<p>客户端和服务端在开始传输数据之前，会协商传输过程需要使用的加密算法。 客户端发送协商请求给服务端，其中包含自己支持的非对成加密的密钥交换算法 (一般是 RSA)，数据签名摘要算法 ( 一般是 SHA 或者 MD5) ，加密传输数据的对称加密算法 ( 一般是 DES)，以及加密密钥的长度。 服务端接收到消息之后，选中安全性最高的算法，并将选中的算法发送给客户端，完成协商。客户端生成随机的字符串，通过协商好的非对称加密算法，使用服务端的公钥对该字符串进行加密，发送给服务端。 服务端接收到之后，使用自己的私钥解密得到该字符串。在随后的数据传输当中，使用这个字符串作为密钥进行对称加密。</p>
-<p>防止重放攻击</p>
-<p>SSL 使用序列号来保护通讯方免受报文重放攻击。这个序列号被加密后作为数据包的负载。在整个 SSL 握手中，都有一个唯一的随机数来标记 SSL 握手。 这样防止了攻击者嗅探整个登录过程，获取到加密的登录数据之后，不对数据进行解密，而直接重传登录数据包的攻击手法。</p>
-<p>可以看到，鉴于电子商务等安全上的需求，HTTPS 对比 HTTP 协议，在安全方面已经取得了极大的增强。总结来说，HTTPS 的改进点在于创造性的使用了非对称加密算法，在不安全的网路上，安全的传输了用来进行非对称加密的密钥，综合利用了非对称加密的安全性和对称加密的快速性。</p>
-<p>四、HTTPS 的优点<br>
- 1、使用 HTTPS 协议可认证用户和服务器，确保数据发送到正确的客户机和服务器。</p>
-<p>2、HTTPS 协议是由 SSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，要比 HTTP 协议安全，可防止数据在传输过程中不被窃取、修改，确保数据的完整性。</p>
-<p>3、HTTPS 是现行架构下最安全的解决方案，虽然不是绝对安全，但它大幅增加了中间人攻击的成本。</p>
-<p>五、HTTPS 的缺点（对比优点）<br>
-1、HTTPS 协议握手阶段比较费时，会使页面的加载时间延长近。</p>
-<p>2、HTTPS 连接缓存不如 HTTP 高效，会增加数据开销，甚至已有的安全措施也会因此而受到影响。</p>
-<p>3、HTTPS 协议的安全是有范围的，在黑客攻击、拒绝服务攻击和服务器劫持等方面几乎起不到什么作用。</p>
-<p>4、SSL 证书通常需要绑定 IP，不能在同一 IP 上绑定多个域名，IPv4 资源不可能支撑这个消耗。</p>
-<p>5、成本增加。部署 HTTPS 后，因为 HTTPS 协议的工作要增加额外的计算资源消耗，例如 SSL 协议加密算法和 SSL 交互次数将占用一定的计算资源和服务器成本。</p>
-<p>6、HTTPS 协议的加密范围也比较有限。最关键的，SSL 证书的信用链体系并不安全，特别是在某些国家可以控制 CA 根证书的情况下，中间人攻击一样可行。</p>
-<p>六、HTTPS 的连接过程</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180709141944471" alt=""></p>
-<p>图片中的过程是按 8 个步骤分的，但是网上有更详细的步骤，所以我把详细的过程和这个图片配在一起。</p>
-<p>① 客户端的浏览器向服务器发送请求，并传送客户端 SSL 协议的版本号，加密算法的种类，产生的随机数，以及其他服务器和客户端之间通讯所需要的各种信息。</p>
-<p>② 服务器向客户端传送 SSL 协议的版本号，加密算法的种类，随机数以及其他相关信息，同时服务器还将向客户端传送自己的证书。</p>
-<p>③ 客户端利用服务器传过来的信息验证服务器的合法性，服务器的合法性包括：证书是否过期，发行服务器证书的 CA 是否可靠，发行者证书的公钥能否正确解开服务器证书的 “发行者的数字签名”，服务器证书上的域名是否和服务器的实际域名相匹配。如果合法性验证没有通过，通讯将断开；如果合法性验证通过，将继续进行第四步。</p>
-<p>④ 用户端随机产生一个用于通讯的 “对称密码”，然后用服务器的公钥（服务器的公钥从步骤②中的服务器的证书中获得）对其加密，然后将加密后的 “预主密码” 传给服务器。</p>
-<p>⑤ 如果服务器要求客户的身份认证（在握手过程中为可选），用户可以建立一个随机数然后对其进行数据签名，将这个含有签名的随机数和客户自己的证书以及加密过的密钥一起传给服务器。</p>
-<p>⑥ 如果服务器要求客户的身份认证，服务器必须检验客户证书和签名随机数的合法性，具体的合法性验证过程包括：客户的证书使用日期是否有效，为客户提供证书的 CA  是否可靠，发行 CA 的公钥能否正确解开客户证书的发行 CA 的数字签名，检查客户的证书是否在证书废止列表（CRL）中。检验如果没有通过，通讯立刻中断；如果验证通过，服务器将用自己的私钥解开加密的私钥，然后执行一系列步骤来产生主通讯密码（客户端也将通过同样的方法产生相同的主通讯密码）。</p>
-<p>⑦ 服务器和客户端用相同的对称加密密钥，对称密钥用于 SSL 协议的安全数据通讯的加解密通讯。同时在 SSL 通讯过程中还要完成数据通讯的完整性，防止数据通讯中的任何变化。</p>
-<p>⑧ 客户端向服务器端发出信息，指明后面的数据通讯将使用的步骤 ⑦ 中的主密码为对称密钥，同时通知服务器客户端的握手过程结束。</p>
-<p>⑨ 服务器向客户端发出信息，指明后面的数据通讯将使用的步骤 ⑦ 中的主密码为对称密钥，同时通知客户端服务器端的握手过程结束。</p>
-<p>⑩ SSL 的握手部分结束，SSL 安全通道的数据通讯开始，客户和服务器开始使用相同的对称密钥进行数据通讯，同时进行通讯完整性的检验。</p>
-<p>上述的过程需要弄懂的核心思想<br>
-客户端解析证书</p>
-<p>这部分工作是由客户端的 TLS 来完成的，首先会验证公钥是否有效，比如颁发机构，过期时间等等，如果发现异常，则会弹出一个警告框，提示证书存在问题。如果证书没有问题，那么就生成一个对称加密密钥，然后用公钥对该密钥进行非对称加密。</p>
-<p>传送加密信息</p>
-<p>这部分传送的是用公钥加密后的对称加密密钥，目的就是让服务端得到这个密钥，以后客户端和服务端的通信就可以通过这个密钥来进行加密解密了。</p>
-<p>服务端解密信息</p>
-<p>服务端用非对称加密算法里的私钥解密后，得到了客户端传过来的对称加密算法的私钥，然后把之后传输的内容通过该值进行对称加密。</p>
-<p>为什么用非对称加密协商对称加密密钥</p>
-<p>对称加密的特点：对称密码体制中只有一种密钥，并且是非公开的。如果要解密就得让对方知道密钥，所以想要保证其安全性就要保证密钥的安全。</p>
-<p>非对称加密的特点：算法强度复杂、安全性依赖于算法与密钥但是由于其算法复杂，而使得加密解密速度没有对称加密解密的速度快。非对称密钥体制有两种密钥，其中一个是公开的，这样就可以不需要像对称密码那样传输对方的密钥了，这样安全性就大了很多。</p>
-<p>非对称加密公钥和私钥的使用方法：(1) 公钥加密私钥解密。(2) 私钥做数字签名，公钥验证。</p>
-<p>补充：<br>
-SSL 提供服务<br>
- (1) 认证用户和服务器，确保数据发送到正确的客户机和服务器；</p>
-<p>(2) 加密数据以防止数据中途被窃取；</p>
-<p>(3) 维护数据的完整性，确保数据在传输过程中不被改变。</p>
-<p>SSL 工作流程<br>
-服务器认证阶段：</p>
-<p>(1) 客户端向服务器发送一个开始信息 “Hello” 以便开始一个新的会话连接；</p>
-<p>(2) 服务器根据客户的信息确定是否需要生成新的主密钥，如需要则服务器在响应客户的 “Hello” 信息时将包含生成主密钥所需的信息；</p>
-<p>(3) 客户根据收到的服务器响应信息，产生一个主密钥，并用服务器的公开密钥加密后传给服务器；</p>
-<p>(4) 服务器回复该主密钥，并返回给客户一个用主密钥认证的信息，以此让客户认证服务器。</p>
-<p>用户认证阶段：在此之前，服务器已经通过了客户认证，这一阶段主要完成对客户的认证。经认证的服务器发送一个提问给客户，客户则返回（数字）签名后的提问和其公开密钥，从而向服务器提供认证。</p>
-<p>SSL 协议提供的安全通道有以下三个特性：</p>
-<p>机密性：SSL 协议使用密钥加密通信数据。</p>
-<p>可靠性：服务器和客户都会被认证，客户的认证是可选的。</p>
-<p>完整性：SSL 协议会对传送的数据进行完整性检查。</p>
-<p>服务器证书 (server certificates) 是 SSL 数字证书的一种形式，意指通过提交数字证书来证明您的身份或表明您有权访问在线服务。再者简单来说，通过使用服务器证书可为不同站点提供身份鉴定并保证该站点拥有高强度加密安全。是组成 Web 服务器的 SSL 安全功能的唯一的数字标识。通过相互信任的第三方组织获得，并为用户提供验证您 Web 站点身份的手段。服务器证书包含详细的身份验证信息，如服务器内容附属的组织、颁发证书的组织以及称为公开密钥的唯一的身份验证文件。</p>
-]]></content>
-      <categories>
-        <category>HTTP</category>
-      </categories>
-      <tags>
-        <tag>HTTP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>JavaScript专题（一）变量与函数提升</title>
     <url>/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/</url>
     <content><![CDATA[<h2 id="一-有趣的现象"><a class="markdownIt-Anchor" href="#一-有趣的现象">#</a> 一、有趣的现象</h2>
@@ -279,106 +182,6 @@ SSL 提供服务<br>
 <li>let 和 const 可以有效的规避变量提升</li>
 </ol>
 <p>最后提炼一下《你不知道的 JS》中的一段话：<strong>JavaScript 引擎并不总是按照代码的顺序来进行解析。在编译阶段，无论作用域中的声明出现在什么地方，都将在代码本身被执行前首先进行处理，这个过程被称为提升。声明本身会被提升，而包括函数表达式的赋值在内的赋值操作并不会提升。</strong></p>
-]]></content>
-      <categories>
-        <category>JavaScript专题</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>JavaScript基础（三）作用域</title>
-    <url>/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89%E4%BD%9C%E7%94%A8%E5%9F%9F/</url>
-    <content><![CDATA[<blockquote>
-<p>作用域的篇幅不会太长，作为自己对 Js 总结的第三篇文章，主要是承上启下。 之后会涉及到执行上下文，闭包等相关专题，为了避免内容过多，作用域这一部分单独总结。</p>
-</blockquote>
-<h2 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h2>
-<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/%E4%B8%8B%E8%BD%BD.jpeg" style="zoom:67%;" />
-<span id="more"></span>
-<h2 id="一-作用域的定义"><a class="markdownIt-Anchor" href="#一-作用域的定义">#</a> 一、作用域的定义</h2>
-<p><strong>一张导图概括本节内容</strong> <img data-src="https://img-blog.csdnimg.cn/20200609102448438.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"> <strong>1.1 常见的解释</strong></p>
-<ol>
-<li>一段程序代码中所用到的<strong>名字</strong>并不总是有效，而限定它的可用性的范围就是这个名字的作用域；</li>
-<li>作用域规定了<strong>如何查找变量</strong>，也就是确定当前执行代码对变量的访问权限；</li>
-<li>通俗的讲作用域就是<strong>一套规则</strong>，用于确定在何处以及如何查找<strong>某个变量</strong>的规则</li>
-</ol>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(a); <span class="comment">// 100</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(a) <span class="comment">// a is not defined a变量并不是任何地方都可以被找到的</span></span><br></pre></td></tr></table></figure>
-<p><strong>1.2 JavaScript 中作用域工作模型</strong></p>
-<p>JavaScript 采用是词法作用域 (lexical scoping)，也就是静态作用域：</p>
-<ul>
-<li>函数的作用域在函数定义的时候就决定了</li>
-</ul>
-<p>与之对应的还有一个动态作用域：</p>
-<ul>
-<li>函数的作用域是在函数调用的时候才决定的；</li>
-</ul>
-<p><strong>1.3 全局变量和局部变量</strong></p>
-<p>根据定义变量的方式又可以分为：</p>
-<p>局部变量：只能在函数中访问，该函数外不可访问；</p>
-<ul>
-<li>定义在函数中的变量</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(name);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br><span class="line">fn(); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
-<p>全局：任何地方都能访问到的对象拥有全局作用域。</p>
-<ul>
-<li>函数外定义的变量</li>
-<li>所有末定义直接赋值的变量自动声明为拥有全局作用域</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a4-&#x27;</span>,a);</span><br></pre></td></tr></table></figure>
-<p>注意：在 ES6 之后又提出了块级作用域，它们之间的区别我们之后再来讨论。</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=2659298556,3987226078&amp;fm=26&amp;gp=0.jpeg" alt=""></p>
-<h2 id="二-理解作用域"><a class="markdownIt-Anchor" href="#二-理解作用域">#</a> 二、理解作用域</h2>
-<p>根据第一节的描述，我们一一验证一下</p>
-<p><strong>2.1 理解词法作用域</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> value = <span class="number">1</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> value = <span class="number">2</span>;</span><br><span class="line">    foo();</span><br><span class="line">&#125;</span><br><span class="line">bar();</span><br></pre></td></tr></table></figure>
-<p>我们结合定义去分析：</p>
-<ul>
-<li>执行 <code>bar</code>  函数，函数内部形成了局部作用域；</li>
-<li>声明 value 变量，并赋值 2</li>
-<li>执行 <code>foo</code>  函数，函数 foo 的作用域内没有 <code>value</code>  这个变量，它会向外查找</li>
-<li>根据词法作用域的规则，函数定义时， <code>foo</code>  的外部作用域为全局作用域</li>
-<li>打印<strong>结果是 1</strong></li>
-</ul>
-<p>如果是动态作用域的话：结果<strong>就是 2</strong>，不知道你是否想明白了？</p>
-<p><strong>2.2 全局变量</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;全局变量&#x27;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(str+<span class="number">1</span>);</span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		<span class="built_in">console</span>.log(str+<span class="number">2</span>);</span><br><span class="line">		<span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">			<span class="built_in">console</span>.log(str+<span class="number">3</span>);</span><br><span class="line">		&#125;;</span><br><span class="line">		fn();</span><br><span class="line">	&#125;;</span><br><span class="line">	childFn();</span><br><span class="line">&#125;</span><br><span class="line">func();</span><br><span class="line"><span class="comment">// 全局变量1</span></span><br><span class="line"><span class="comment">// 全局变量2</span></span><br><span class="line"><span class="comment">// 全局变量3</span></span><br></pre></td></tr></table></figure>
-<p>再来分析下面的代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line"><span class="comment">// a2- 100 // 在当前作用域下查找变量a =&gt; 100</span></span><br><span class="line"><span class="comment">// a1- 1000 // 函数执行时，全局变量a已经被重新赋值</span></span><br><span class="line"><span class="comment">// a3- 1000 // 全局变量a =&gt; 1000</span></span><br></pre></td></tr></table></figure>
-<p><strong>2.3 局部作用域</strong></p>
-<p>局部作用域一般只在固定的代码片段内可访问到，最常见的就是以函数为单位的：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name=<span class="string">&quot;高原&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(name);</span><br><span class="line">    &#125;</span><br><span class="line">    childFn(); <span class="comment">// 高原</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// name is not defined</span></span><br></pre></td></tr></table></figure>
-<h2 id="三-作用域链"><a class="markdownIt-Anchor" href="#三-作用域链">#</a> 三、作用域链</h2>
-<p><strong>3.1 当查找变量的时候都发生了什么？</strong></p>
-<ul>
-<li>会先从当前<strong>上下文的变量对象</strong>中查找；</li>
-<li>如果没有找到，就会从父级 (词法层面上的父级)<strong> 执行上下文</strong>的变量对象中查找；</li>
-<li>一直找到全局上下文的变量对象，也就是全局对象；</li>
-<li>作用域链的顶端就是全局对象；</li>
-</ul>
-<p>这样<strong>由多个执行上下文的变量对象构成的链表就叫做作用域链</strong>，从某种意义上很类似原型和原型链。</p>
-<p><strong>3.2 作用域链和原型继承查找时的区别：</strong></p>
-<ul>
-<li>查找一个普通对象的属性，但是在当前对象和其原型中都找不到时，会返回 <code>undefined</code></li>
-<li>查找的属性在作用域链中不存在的话就会抛出 <code>ReferenceError</code> 。</li>
-</ul>
-<p><strong>3.3 作用域嵌套</strong></p>
-<p>既然每一个函数就可以形成一个作用域（ <code>词法作用域</code>  ||  <code>块级作用域</code> ），那么当然也会存在多个作用域嵌套的情况，他们遵循这样的查询规则：</p>
-<ul>
-<li>内部作用域有权访问外部作用域；</li>
-<li>外部作用域无法访问内部作用域；（真是是这样吗？）</li>
-<li>兄弟作用域不可互相访问；</li>
-</ul>
-<p>在《你不知道的 Js》中，希望读者可以将作用域的嵌套和作用域链想象成这样：</p>
-<p><img data-src="https://img-blog.csdnimg.cn/2020060915193493.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<h2 id="四-思考与总结"><a class="markdownIt-Anchor" href="#四-思考与总结">#</a> 四、思考与总结</h2>
-<p><strong>4.1 总结</strong></p>
-<p><img data-src="https://img-blog.csdnimg.cn/20200609160809565.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<p><strong>4.2 思考</strong></p>
-<p>最后，让我们看一个《JavaScript 权威指南》中的两段代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f(); <span class="comment">// 注意</span></span><br><span class="line">&#125;</span><br><span class="line">checkscope1();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope2</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line">checkscope2()();</span><br></pre></td></tr></table></figure>
-<p>两段代码的结果都是 &quot;local scope&quot;，书中的回答是：JavaScript 函数的执行用到了作用域链，这个作用域链是在函数定义的时候创建的。嵌套的函数 f () 定义在这个作用域链里，其中的变量 scope 一定是局部变量，不管何时何地执行函数 f ()，这种绑定在执行 f () 时依然有效。</p>
-<p>但是它们内部经历的事情是一样的吗？</p>
 ]]></content>
       <categories>
         <category>JavaScript专题</category>
@@ -525,6 +328,203 @@ SSL 提供服务<br>
       </tags>
   </entry>
   <entry>
+    <title>HTTPS和HTTP原理和区别</title>
+    <url>/2020/12/16/HTTPS%E5%92%8CHTTP%E5%8E%9F%E7%90%86%E5%92%8C%E5%8C%BA%E5%88%AB/</url>
+    <content><![CDATA[<p>一、HTTP 和 HTTPS 的基本概念<br>
+ HTTP：超文本传输协议（HTTP，HyperText Transfer Protocol）是互联网上应用最为广泛的一种网络协议。设计 HTTP 最初的目的是为了提供一种发布和接收 HTML 页面的方法。它可以使浏览器更加高效。HTTP 协议是以明文方式发送信息的，如果黑客截取了 Web 浏览器和服务器之间的传输报文，就可以直接获得其中的信息。</p>
+<p>HTTP 原理：</p>
+<p>①  客户端的浏览器首先要通过网络与服务器建立连接，该连接是通过 TCP 来完成的，一般 TCP 连接的端口号是 80。 建立连接后，客户机发送一个请求给服务器，请求方式的格式为：统一资源标识符（URL）、协议版本号，后边是 MIME 信息包括请求修饰符、客户机信息和许可内容。</p>
+<p>②  服务器接到请求后，给予相应的响应信息，其格式为一个状态行，包括信息的协议版本号、一个成功或错误的代码，后边是 MIME 信息包括服务器信息、实体信息和可能的内容。</p>
+<span id="more"></span>
+<p>HTTPS：是以安全为目标的 HTTP 通道，是 HTTP 的安全版。HTTPS 的安全基础是 SSL。SSL 协议位于 TCP/IP 协议与各种应用层协议之间，为数据通讯提供安全支持。SSL 协议可分为两层：SSL 记录协议（SSL Record Protocol），它建立在可靠的传输协议（如 TCP）之上，为高层协议提供数据封装、压缩、加密等基本功能的支持。SSL 握手协议（SSL Handshake Protocol），它建立在 SSL 记录协议之上，用于在实际的数据传输开始前，通讯双方进行身份认证、协商加密算法、交换加密密钥等。</p>
+<p>​​<img data-src="https://img-blog.csdnimg.cn/20200707084720409.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4Mjg5ODE1,size_16,color_FFFFFF,t_70" alt=""></p>
+<!-- more -->
+<p>HTTPS 设计目标：</p>
+<p>(1) 数据保密性：保证数据内容在传输的过程中不会被第三方查看。就像快递员传递包裹一样，都进行了封装，别人无法获知里面装了什么  。</p>
+<p>(2) 数据完整性：及时发现被第三方篡改的传输内容。就像快递员虽然不知道包裹里装了什么东西，但他有可能中途掉包，数据完整性就是指如果被掉包，我们能轻松发现并拒收 。</p>
+<p>(3) 身份校验安全性：保证数据到达用户期望的目的地。就像我们邮寄包裹时，虽然是一个封装好的未掉包的包裹，但必须确定这个包裹不会送错地方，通过身份校验来确保送对了地方  。</p>
+<p>二、HTTP 与 HTTPS  的区别<br>
+ 1、HTTPS  协议需要到 CA （Certificate Authority，证书颁发机构）申请证书，一般免费证书较少，因而需要一定费用。(以前的网易官网是 http，而网易邮箱是 https 。)</p>
+<p>2、HTTP 是超文本传输协议，信息是明文传输，HTTPS 则是具有安全性的 SSL 加密传输协议。</p>
+<p>3、HTTP 和 HTTPS 使用的是完全不同的连接方式，用的端口也不一样，前者是 80，后者是 443。</p>
+<p>4、HTTP 的连接很简单，是无状态的。HTTPS 协议是由 SSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，比 HTTP 协议安全。(无状态的意思是其数据包的发送、传输和接收都是相互独立的。无连接的意思是指通信双方都不长久的维持对方的任何信息。)</p>
+<p>三、HTTPS 相对于 HTTP 的改进<br>
+双向的身份认证</p>
+<p>客户端和服务端在传输数据之前，会通过基于 X.509 证书对双方进行身份认证 。具体过程如下：</p>
+<p>客户端发起 SSL 握手消息给服务端要求连接。</p>
+<p>服务端将证书发送给客户端。</p>
+<p>客户端检查服务端证书，确认是否由自己信任的证书签发机构签发 (客户端内置了所有受信任 CA 的证书)。 如果不是，将是否继续通讯的决定权交给用户选择 ( 注意，这里将是一个安全缺陷 )。如果检查无误或者用户选择继续，则客户端认可服务端的身份。</p>
+<p>服务端要求客户端发送证书，并检查是否通过验证。失败则关闭连接，认证成功则从客户端证书中获得客户端的公钥，一般为 1024 位或者 2048 位。到此，服务器客户端双方的身份认证结束，双方确保身份都是真实可靠的。</p>
+<p>注意：</p>
+<p>(1) 采用 HTTPS 协议的服务器必须要有一套数字证书，可以自己制作，也可以向组织申请。区别就是自己颁发的证书需要客户端验证通过，才可以继续访问。这套证书其实就是一对公钥和私钥。</p>
+<p>(2) 互联网有太多的服务需要使用证书来验证身份，以至于客户端（操作系统或浏览器等）无法内置所有证书，需要通过服务端将证书发送给客户端。</p>
+<p>(3) 客户端内置的是 CA 的根证书 (Root Certificate)，HTTPS 协议中服务器会发送证书链（Certificate Chain）给客户端。</p>
+<p>数据传输的机密性</p>
+<p>客户端和服务端在开始传输数据之前，会协商传输过程需要使用的加密算法。 客户端发送协商请求给服务端，其中包含自己支持的非对成加密的密钥交换算法 (一般是 RSA)，数据签名摘要算法 ( 一般是 SHA 或者 MD5) ，加密传输数据的对称加密算法 ( 一般是 DES)，以及加密密钥的长度。 服务端接收到消息之后，选中安全性最高的算法，并将选中的算法发送给客户端，完成协商。客户端生成随机的字符串，通过协商好的非对称加密算法，使用服务端的公钥对该字符串进行加密，发送给服务端。 服务端接收到之后，使用自己的私钥解密得到该字符串。在随后的数据传输当中，使用这个字符串作为密钥进行对称加密。</p>
+<p>防止重放攻击</p>
+<p>SSL 使用序列号来保护通讯方免受报文重放攻击。这个序列号被加密后作为数据包的负载。在整个 SSL 握手中，都有一个唯一的随机数来标记 SSL 握手。 这样防止了攻击者嗅探整个登录过程，获取到加密的登录数据之后，不对数据进行解密，而直接重传登录数据包的攻击手法。</p>
+<p>可以看到，鉴于电子商务等安全上的需求，HTTPS 对比 HTTP 协议，在安全方面已经取得了极大的增强。总结来说，HTTPS 的改进点在于创造性的使用了非对称加密算法，在不安全的网路上，安全的传输了用来进行非对称加密的密钥，综合利用了非对称加密的安全性和对称加密的快速性。</p>
+<p>四、HTTPS 的优点<br>
+ 1、使用 HTTPS 协议可认证用户和服务器，确保数据发送到正确的客户机和服务器。</p>
+<p>2、HTTPS 协议是由 SSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，要比 HTTP 协议安全，可防止数据在传输过程中不被窃取、修改，确保数据的完整性。</p>
+<p>3、HTTPS 是现行架构下最安全的解决方案，虽然不是绝对安全，但它大幅增加了中间人攻击的成本。</p>
+<p>五、HTTPS 的缺点（对比优点）<br>
+1、HTTPS 协议握手阶段比较费时，会使页面的加载时间延长近。</p>
+<p>2、HTTPS 连接缓存不如 HTTP 高效，会增加数据开销，甚至已有的安全措施也会因此而受到影响。</p>
+<p>3、HTTPS 协议的安全是有范围的，在黑客攻击、拒绝服务攻击和服务器劫持等方面几乎起不到什么作用。</p>
+<p>4、SSL 证书通常需要绑定 IP，不能在同一 IP 上绑定多个域名，IPv4 资源不可能支撑这个消耗。</p>
+<p>5、成本增加。部署 HTTPS 后，因为 HTTPS 协议的工作要增加额外的计算资源消耗，例如 SSL 协议加密算法和 SSL 交互次数将占用一定的计算资源和服务器成本。</p>
+<p>6、HTTPS 协议的加密范围也比较有限。最关键的，SSL 证书的信用链体系并不安全，特别是在某些国家可以控制 CA 根证书的情况下，中间人攻击一样可行。</p>
+<p>六、HTTPS 的连接过程</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180709141944471" alt=""></p>
+<p>图片中的过程是按 8 个步骤分的，但是网上有更详细的步骤，所以我把详细的过程和这个图片配在一起。</p>
+<p>① 客户端的浏览器向服务器发送请求，并传送客户端 SSL 协议的版本号，加密算法的种类，产生的随机数，以及其他服务器和客户端之间通讯所需要的各种信息。</p>
+<p>② 服务器向客户端传送 SSL 协议的版本号，加密算法的种类，随机数以及其他相关信息，同时服务器还将向客户端传送自己的证书。</p>
+<p>③ 客户端利用服务器传过来的信息验证服务器的合法性，服务器的合法性包括：证书是否过期，发行服务器证书的 CA 是否可靠，发行者证书的公钥能否正确解开服务器证书的 “发行者的数字签名”，服务器证书上的域名是否和服务器的实际域名相匹配。如果合法性验证没有通过，通讯将断开；如果合法性验证通过，将继续进行第四步。</p>
+<p>④ 用户端随机产生一个用于通讯的 “对称密码”，然后用服务器的公钥（服务器的公钥从步骤②中的服务器的证书中获得）对其加密，然后将加密后的 “预主密码” 传给服务器。</p>
+<p>⑤ 如果服务器要求客户的身份认证（在握手过程中为可选），用户可以建立一个随机数然后对其进行数据签名，将这个含有签名的随机数和客户自己的证书以及加密过的密钥一起传给服务器。</p>
+<p>⑥ 如果服务器要求客户的身份认证，服务器必须检验客户证书和签名随机数的合法性，具体的合法性验证过程包括：客户的证书使用日期是否有效，为客户提供证书的 CA  是否可靠，发行 CA 的公钥能否正确解开客户证书的发行 CA 的数字签名，检查客户的证书是否在证书废止列表（CRL）中。检验如果没有通过，通讯立刻中断；如果验证通过，服务器将用自己的私钥解开加密的私钥，然后执行一系列步骤来产生主通讯密码（客户端也将通过同样的方法产生相同的主通讯密码）。</p>
+<p>⑦ 服务器和客户端用相同的对称加密密钥，对称密钥用于 SSL 协议的安全数据通讯的加解密通讯。同时在 SSL 通讯过程中还要完成数据通讯的完整性，防止数据通讯中的任何变化。</p>
+<p>⑧ 客户端向服务器端发出信息，指明后面的数据通讯将使用的步骤 ⑦ 中的主密码为对称密钥，同时通知服务器客户端的握手过程结束。</p>
+<p>⑨ 服务器向客户端发出信息，指明后面的数据通讯将使用的步骤 ⑦ 中的主密码为对称密钥，同时通知客户端服务器端的握手过程结束。</p>
+<p>⑩ SSL 的握手部分结束，SSL 安全通道的数据通讯开始，客户和服务器开始使用相同的对称密钥进行数据通讯，同时进行通讯完整性的检验。</p>
+<p>上述的过程需要弄懂的核心思想<br>
+客户端解析证书</p>
+<p>这部分工作是由客户端的 TLS 来完成的，首先会验证公钥是否有效，比如颁发机构，过期时间等等，如果发现异常，则会弹出一个警告框，提示证书存在问题。如果证书没有问题，那么就生成一个对称加密密钥，然后用公钥对该密钥进行非对称加密。</p>
+<p>传送加密信息</p>
+<p>这部分传送的是用公钥加密后的对称加密密钥，目的就是让服务端得到这个密钥，以后客户端和服务端的通信就可以通过这个密钥来进行加密解密了。</p>
+<p>服务端解密信息</p>
+<p>服务端用非对称加密算法里的私钥解密后，得到了客户端传过来的对称加密算法的私钥，然后把之后传输的内容通过该值进行对称加密。</p>
+<p>为什么用非对称加密协商对称加密密钥</p>
+<p>对称加密的特点：对称密码体制中只有一种密钥，并且是非公开的。如果要解密就得让对方知道密钥，所以想要保证其安全性就要保证密钥的安全。</p>
+<p>非对称加密的特点：算法强度复杂、安全性依赖于算法与密钥但是由于其算法复杂，而使得加密解密速度没有对称加密解密的速度快。非对称密钥体制有两种密钥，其中一个是公开的，这样就可以不需要像对称密码那样传输对方的密钥了，这样安全性就大了很多。</p>
+<p>非对称加密公钥和私钥的使用方法：(1) 公钥加密私钥解密。(2) 私钥做数字签名，公钥验证。</p>
+<p>补充：<br>
+SSL 提供服务<br>
+ (1) 认证用户和服务器，确保数据发送到正确的客户机和服务器；</p>
+<p>(2) 加密数据以防止数据中途被窃取；</p>
+<p>(3) 维护数据的完整性，确保数据在传输过程中不被改变。</p>
+<p>SSL 工作流程<br>
+服务器认证阶段：</p>
+<p>(1) 客户端向服务器发送一个开始信息 “Hello” 以便开始一个新的会话连接；</p>
+<p>(2) 服务器根据客户的信息确定是否需要生成新的主密钥，如需要则服务器在响应客户的 “Hello” 信息时将包含生成主密钥所需的信息；</p>
+<p>(3) 客户根据收到的服务器响应信息，产生一个主密钥，并用服务器的公开密钥加密后传给服务器；</p>
+<p>(4) 服务器回复该主密钥，并返回给客户一个用主密钥认证的信息，以此让客户认证服务器。</p>
+<p>用户认证阶段：在此之前，服务器已经通过了客户认证，这一阶段主要完成对客户的认证。经认证的服务器发送一个提问给客户，客户则返回（数字）签名后的提问和其公开密钥，从而向服务器提供认证。</p>
+<p>SSL 协议提供的安全通道有以下三个特性：</p>
+<p>机密性：SSL 协议使用密钥加密通信数据。</p>
+<p>可靠性：服务器和客户都会被认证，客户的认证是可选的。</p>
+<p>完整性：SSL 协议会对传送的数据进行完整性检查。</p>
+<p>服务器证书 (server certificates) 是 SSL 数字证书的一种形式，意指通过提交数字证书来证明您的身份或表明您有权访问在线服务。再者简单来说，通过使用服务器证书可为不同站点提供身份鉴定并保证该站点拥有高强度加密安全。是组成 Web 服务器的 SSL 安全功能的唯一的数字标识。通过相互信任的第三方组织获得，并为用户提供验证您 Web 站点身份的手段。服务器证书包含详细的身份验证信息，如服务器内容附属的组织、颁发证书的组织以及称为公开密钥的唯一的身份验证文件。</p>
+]]></content>
+      <categories>
+        <category>HTTP</category>
+      </categories>
+      <tags>
+        <tag>HTTP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>JavaScript基础（三）作用域</title>
+    <url>/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89%E4%BD%9C%E7%94%A8%E5%9F%9F/</url>
+    <content><![CDATA[<blockquote>
+<p>作用域的篇幅不会太长，作为自己对 Js 总结的第三篇文章，主要是承上启下。 之后会涉及到执行上下文，闭包等相关专题，为了避免内容过多，作用域这一部分单独总结。</p>
+</blockquote>
+<h2 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h2>
+<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/%E4%B8%8B%E8%BD%BD.jpeg" style="zoom:67%;" />
+<span id="more"></span>
+<h2 id="一-作用域的定义"><a class="markdownIt-Anchor" href="#一-作用域的定义">#</a> 一、作用域的定义</h2>
+<p><strong>一张导图概括本节内容</strong> <img data-src="https://img-blog.csdnimg.cn/20200609102448438.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"> <strong>1.1 常见的解释</strong></p>
+<ol>
+<li>一段程序代码中所用到的<strong>名字</strong>并不总是有效，而限定它的可用性的范围就是这个名字的作用域；</li>
+<li>作用域规定了<strong>如何查找变量</strong>，也就是确定当前执行代码对变量的访问权限；</li>
+<li>通俗的讲作用域就是<strong>一套规则</strong>，用于确定在何处以及如何查找<strong>某个变量</strong>的规则</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(a); <span class="comment">// 100</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(a) <span class="comment">// a is not defined a变量并不是任何地方都可以被找到的</span></span><br></pre></td></tr></table></figure>
+<p><strong>1.2 JavaScript 中作用域工作模型</strong></p>
+<p>JavaScript 采用是词法作用域 (lexical scoping)，也就是静态作用域：</p>
+<ul>
+<li>函数的作用域在函数定义的时候就决定了</li>
+</ul>
+<p>与之对应的还有一个动态作用域：</p>
+<ul>
+<li>函数的作用域是在函数调用的时候才决定的；</li>
+</ul>
+<p><strong>1.3 全局变量和局部变量</strong></p>
+<p>根据定义变量的方式又可以分为：</p>
+<p>局部变量：只能在函数中访问，该函数外不可访问；</p>
+<ul>
+<li>定义在函数中的变量</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(name);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br><span class="line">fn(); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
+<p>全局：任何地方都能访问到的对象拥有全局作用域。</p>
+<ul>
+<li>函数外定义的变量</li>
+<li>所有末定义直接赋值的变量自动声明为拥有全局作用域</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a4-&#x27;</span>,a);</span><br></pre></td></tr></table></figure>
+<p>注意：在 ES6 之后又提出了块级作用域，它们之间的区别我们之后再来讨论。</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=2659298556,3987226078&amp;fm=26&amp;gp=0.jpeg" alt=""></p>
+<h2 id="二-理解作用域"><a class="markdownIt-Anchor" href="#二-理解作用域">#</a> 二、理解作用域</h2>
+<p>根据第一节的描述，我们一一验证一下</p>
+<p><strong>2.1 理解词法作用域</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> value = <span class="number">1</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> value = <span class="number">2</span>;</span><br><span class="line">    foo();</span><br><span class="line">&#125;</span><br><span class="line">bar();</span><br></pre></td></tr></table></figure>
+<p>我们结合定义去分析：</p>
+<ul>
+<li>执行 <code>bar</code>  函数，函数内部形成了局部作用域；</li>
+<li>声明 value 变量，并赋值 2</li>
+<li>执行 <code>foo</code>  函数，函数 foo 的作用域内没有 <code>value</code>  这个变量，它会向外查找</li>
+<li>根据词法作用域的规则，函数定义时， <code>foo</code>  的外部作用域为全局作用域</li>
+<li>打印<strong>结果是 1</strong></li>
+</ul>
+<p>如果是动态作用域的话：结果<strong>就是 2</strong>，不知道你是否想明白了？</p>
+<p><strong>2.2 全局变量</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;全局变量&#x27;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(str+<span class="number">1</span>);</span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		<span class="built_in">console</span>.log(str+<span class="number">2</span>);</span><br><span class="line">		<span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">			<span class="built_in">console</span>.log(str+<span class="number">3</span>);</span><br><span class="line">		&#125;;</span><br><span class="line">		fn();</span><br><span class="line">	&#125;;</span><br><span class="line">	childFn();</span><br><span class="line">&#125;</span><br><span class="line">func();</span><br><span class="line"><span class="comment">// 全局变量1</span></span><br><span class="line"><span class="comment">// 全局变量2</span></span><br><span class="line"><span class="comment">// 全局变量3</span></span><br></pre></td></tr></table></figure>
+<p>再来分析下面的代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line"><span class="comment">// a2- 100 // 在当前作用域下查找变量a =&gt; 100</span></span><br><span class="line"><span class="comment">// a1- 1000 // 函数执行时，全局变量a已经被重新赋值</span></span><br><span class="line"><span class="comment">// a3- 1000 // 全局变量a =&gt; 1000</span></span><br></pre></td></tr></table></figure>
+<p><strong>2.3 局部作用域</strong></p>
+<p>局部作用域一般只在固定的代码片段内可访问到，最常见的就是以函数为单位的：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name=<span class="string">&quot;高原&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(name);</span><br><span class="line">    &#125;</span><br><span class="line">    childFn(); <span class="comment">// 高原</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// name is not defined</span></span><br></pre></td></tr></table></figure>
+<h2 id="三-作用域链"><a class="markdownIt-Anchor" href="#三-作用域链">#</a> 三、作用域链</h2>
+<p><strong>3.1 当查找变量的时候都发生了什么？</strong></p>
+<ul>
+<li>会先从当前<strong>上下文的变量对象</strong>中查找；</li>
+<li>如果没有找到，就会从父级 (词法层面上的父级)<strong> 执行上下文</strong>的变量对象中查找；</li>
+<li>一直找到全局上下文的变量对象，也就是全局对象；</li>
+<li>作用域链的顶端就是全局对象；</li>
+</ul>
+<p>这样<strong>由多个执行上下文的变量对象构成的链表就叫做作用域链</strong>，从某种意义上很类似原型和原型链。</p>
+<p><strong>3.2 作用域链和原型继承查找时的区别：</strong></p>
+<ul>
+<li>查找一个普通对象的属性，但是在当前对象和其原型中都找不到时，会返回 <code>undefined</code></li>
+<li>查找的属性在作用域链中不存在的话就会抛出 <code>ReferenceError</code> 。</li>
+</ul>
+<p><strong>3.3 作用域嵌套</strong></p>
+<p>既然每一个函数就可以形成一个作用域（ <code>词法作用域</code>  ||  <code>块级作用域</code> ），那么当然也会存在多个作用域嵌套的情况，他们遵循这样的查询规则：</p>
+<ul>
+<li>内部作用域有权访问外部作用域；</li>
+<li>外部作用域无法访问内部作用域；（真是是这样吗？）</li>
+<li>兄弟作用域不可互相访问；</li>
+</ul>
+<p>在《你不知道的 Js》中，希望读者可以将作用域的嵌套和作用域链想象成这样：</p>
+<p><img data-src="https://img-blog.csdnimg.cn/2020060915193493.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="四-思考与总结"><a class="markdownIt-Anchor" href="#四-思考与总结">#</a> 四、思考与总结</h2>
+<p><strong>4.1 总结</strong></p>
+<p><img data-src="https://img-blog.csdnimg.cn/20200609160809565.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p><strong>4.2 思考</strong></p>
+<p>最后，让我们看一个《JavaScript 权威指南》中的两段代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f(); <span class="comment">// 注意</span></span><br><span class="line">&#125;</span><br><span class="line">checkscope1();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope2</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line">checkscope2()();</span><br></pre></td></tr></table></figure>
+<p>两段代码的结果都是 &quot;local scope&quot;，书中的回答是：JavaScript 函数的执行用到了作用域链，这个作用域链是在函数定义的时候创建的。嵌套的函数 f () 定义在这个作用域链里，其中的变量 scope 一定是局部变量，不管何时何地执行函数 f ()，这种绑定在执行 f () 时依然有效。</p>
+<p>但是它们内部经历的事情是一样的吗？</p>
+]]></content>
+      <categories>
+        <category>JavaScript专题</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>JavaScript基础（二）从原型到原型链</title>
     <url>/2021/03/21/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%E4%BB%8E%E5%8E%9F%E5%9E%8B%E5%88%B0%E5%8E%9F%E5%9E%8B%E9%93%BE/</url>
     <content><![CDATA[<blockquote>
@@ -622,108 +622,6 @@ SSL 提供服务<br>
 <li>Object.prototype 是所有对象的根对象；</li>
 <li>原型链存在终点，不会无限查找下去；</li>
 </ul>
-]]></content>
-      <categories>
-        <category>JavaScript专题</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>JavaScript基础（五）闭包</title>
-    <url>/2021/03/25/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%94%EF%BC%89%E9%97%AD%E5%8C%85/</url>
-    <content><![CDATA[<h2 id="一-什么是闭包"><a class="markdownIt-Anchor" href="#一-什么是闭包">#</a> 一、什么是闭包</h2>
-<p>顾名思义，遇见问题先问为什么是我们一贯的思维方式，我们尝试回答一下：</p>
-<ol>
-<li>闭包就是函数内部的子函数 ——  <code>等于没说</code></li>
-<li>当函数可以记住并访问所在的词法作用域时，就产生了闭包，即使函数是在当前词法作用域之外执行。—— <code>靠谱</code></li>
-<li>闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁 —— <code>靠谱</code></li>
-<li>函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）—— <code>很靠谱</code></li>
-</ol>
-<p>我们试着用代码来描述一下上面的回答，看看你最<strong>中意</strong>哪一个～</p>
-<span id="more"></span>
-<h3 id="11-闭包是函数内部的子函数"><a class="markdownIt-Anchor" href="#11-闭包是函数内部的子函数">#</a> 1.1 闭包是函数内部的子函数</h3>
-<p>先看这段代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(a);</span><br><span class="line">    &#125;</span><br><span class="line">    bar()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-<p>基于词法作用域的查找规则， <code>bar函数</code> 可以成功的打印 <code>a</code>  变量，并且它也是 <code>foo</code>  的子函数，但严格来说它并没有清晰的表达出闭包这一概念，说它表达的是<strong>嵌套函数可以访问声明于大外部作用域的变量</strong>更准确一些。</p>
-<h3 id="12-闭包就是能够读取其他函数内部变量的函数在本质上是函数内部和函数外部链接的桥梁"><a class="markdownIt-Anchor" href="#12-闭包就是能够读取其他函数内部变量的函数在本质上是函数内部和函数外部链接的桥梁">#</a> 1.2 闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁</h3>
-<p>再来看下面的例子：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(a);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> bar;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> res = foo();</span><br><span class="line">res(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-<p>结果一致，这是因为此时 <code>res</code>  是执行 <code>foo</code>  函数时返回的 <code>bar</code>  引用，bar 函数得以保存了它饿词法环境。</p>
-<h3 id="13-函数和对其周围状态词法环境的引用捆绑在一起构成闭包closure"><a class="markdownIt-Anchor" href="#13-函数和对其周围状态词法环境的引用捆绑在一起构成闭包closure">#</a> 1.3 函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）</h3>
-<p>我们来看下面代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(name); <span class="comment">// gaoyuan</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">//gaoyuan</span></span><br></pre></td></tr></table></figure>
-<p>foo 的上下文被静态的保存了下来，而且是在该函数创建的时候就保存了。下面我们来验证一下：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(name); <span class="comment">// gaoyuan</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params">func</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;老王&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    func()</span><br><span class="line">&#125;)(foo); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-<p>这里我们就可以理解 —— 函数被创建后就形成了闭包，他们保存了上层上下文的作用域链，并且保存在 <code>[[scope]]</code>  中，如果你对 <code>[[scope]]</code>  的概念已经模糊了，不妨花几分钟看看《JavaScript 中的执行上下文》这篇文章。</p>
-<h3 id="14-总结"><a class="markdownIt-Anchor" href="#14-总结">#</a> 1.4 总结</h3>
-<p><strong>注意：闭包是函数内部的返回的子函数这句话本身没错</strong>，但要看从什么角度出发：</p>
-<p>ECMAScript 中，闭包指的是：</p>
-<ol>
-<li>从理论角度：所有的函数。因为它们都在创建的时候就将上层上下文的数据保存起来了。哪怕是简单的全局变量也是如此，因为函数中访问全局变量就相当于是在访问自由变量，这个时候使用最外层的作用域。</li>
-<li>从实践角度：以下函数才算是闭包：
-<ul>
-<li>即使创建它的上下文已经销毁，它仍然存在（比如，内部函数从父函数中返回）</li>
-<li>在代码中引用了自由变量</li>
-</ul>
-</li>
-</ol>
-<p><strong>总结：</strong></p>
-<ul>
-<li>闭包代码块创建该代码块的上下文中数据的结合</li>
-<li>闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁</li>
-<li>不同的角度对闭包的解释不同的</li>
-</ul>
-<p>注意：这些并不是闭包的全部，就好像当你被问到 —— 闭包是什么的时候，你的上述回答并不能结束这个话题，往往会引申出更多的话题。</p>
-<h2 id="二-尝试分析闭包"><a class="markdownIt-Anchor" href="#二-尝试分析闭包">#</a> 二、尝试分析闭包</h2>
-<p>还是那段经典代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = checkscope();</span><br><span class="line">foo(); <span class="comment">// local scope</span></span><br></pre></td></tr></table></figure>
-<p>首先我们要分析一下这段代码中执行上下文栈和执行上下文的变化情况。</p>
-<ol>
-<li>进入全局代码，创建全局执行上下文，全局执行上下文压入执行上下文栈</li>
-<li>全局执行上下文初始化</li>
-<li>执行 checkscope 函数，创建 checkscope 函数执行上下文，checkscope 执行上下文被压入执行上下文栈</li>
-<li>checkscope 执行上下文初始化，创建变量对象、作用域链、this 等</li>
-<li>checkscope 函数执行完毕，checkscope 执行上下文从执行上下文栈中弹出</li>
-<li>执行 f 函数，创建 f 函数执行上下文，f 执行上下文被压入执行上下文栈</li>
-<li>f 执行上下文初始化，创建变量对象、作用域链、this 等</li>
-<li>f 函数执行完毕，f 函数上下文从执行上下文栈中弹出</li>
-</ol>
-<p><img data-src="https://img-blog.csdnimg.cn/20200628152924827.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<p>当  <code>f</code>  函数执行的时候， <code>checkscope</code>  函数上下文已经被销毁了啊 (即从执行上下文栈中被弹出)，怎么还会读取到  <code>checkscope</code>  作用域下的  <code>scope</code>  值呢？</p>
-<p>当我们了解了具体的执行过程后，我们知道 f 执行上下文维护了一个作用域链：</p>
-<p>因为这个作用域链：</p>
-<ul>
-<li><code>f 函数</code> 依然可以读取到  <code>checkscopeContext.AO</code>  的值；</li>
-<li>当  <code>f 函数</code> 引用了  <code>checkscopeContext.AO</code>  中的值的时候，即使  <code>checkscopeContext</code>  被销毁了，JavaScript 依然会让  <code>checkscopeContext.AO</code>  活在内存中；</li>
-<li><code>f 函数</code> 依然可以通过  <code>f 函数</code> 的作用域链找到它，正是因为 JavaScript 做到了这一点，从而实现了闭包这个概念。</li>
-</ul>
-<p>多么浪漫的思想 —— 只要你需要我，那我我本应该被销毁，你也能找到我～</p>
-<h2 id="三-经典问题"><a class="markdownIt-Anchor" href="#三-经典问题">#</a> 三、经典问题</h2>
-<h3 id="31-多个对象引用同一个scope你遇到过吗"><a class="markdownIt-Anchor" href="#31-多个对象引用同一个scope你遇到过吗">#</a> 3.1 多个对象引用同一个 [[Scope]]，你遇到过吗？</h3>
-<p>直接上代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> child1;</span><br><span class="line"><span class="keyword">var</span> child2;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">parent</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> x = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    child1 = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(++x)</span><br><span class="line">    &#125;;</span><br><span class="line">    child2 = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(--x)</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line">parent();</span><br><span class="line">child1(); <span class="comment">// 2</span></span><br><span class="line">child1(); <span class="comment">// 3</span></span><br><span class="line">child2(); <span class="comment">// 2</span></span><br></pre></td></tr></table></figure>
-<p>大家可能不理解， <code>child1</code>  和 <code>child</code>  他们两个函数在创建后都保存了上层上下文，万万没想到，<strong>同一个上下文创建的闭包是共用一个 <code>[[scope]]</code>  属性的</strong>，某个闭包对其中 [[Scope]] 的变量做修改会影响到其他闭包对其变量的读取。</p>
-<h3 id="32-闭包轻松解决的经典问题"><a class="markdownIt-Anchor" href="#32-闭包轻松解决的经典问题">#</a> 3.2 闭包轻松解决的经典问题</h3>
-<p>大家一定对下面这段代码很眼熟：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = []</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">    arr[i] = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(i)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">arr[<span class="number">0</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">1</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">2</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">3</span>](); <span class="comment">// 10</span></span><br></pre></td></tr></table></figure>
-<p>我们这么解释它：<strong>同一个上下文中创建的闭包是共用一个 [[Scope]] 属性的</strong>。</p>
-<p>因此上层上下文中的变量 <code>i</code>  是可以很容易就被改变的。</p>
-<p>arr [0],arr [1]…arr [9] 他们共用一个 [[scope]]，最终执行的时候结果当然一样。</p>
-<p><strong>如何利用闭包来解决这个问题呢？</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = []</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">    arr[i] = (<span class="function"><span class="keyword">function</span> (<span class="params">i</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)(i)</span><br><span class="line">&#125;</span><br><span class="line">arr[<span class="number">0</span>](); <span class="comment">// 0</span></span><br><span class="line">arr[<span class="number">1</span>](); <span class="comment">// 1</span></span><br><span class="line">arr[<span class="number">2</span>](); <span class="comment">// 2</span></span><br><span class="line">arr[<span class="number">3</span>](); <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
-<p>我们通过立即执行匿名函数的方式隔离了作用域，当执行 arr [0] 函数的时候，arr [0] 函数的作用域链发生了改变：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">arr[<span class="number">0</span>]Context = &#123;</span><br><span class="line">    <span class="attr">Scope</span>: [AO, 匿名函数Context.AO globalContext.VO]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>匿名函数执行上下文的 AO 为：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">匿名函数Context = &#123;</span><br><span class="line">    <span class="attr">AO</span>: &#123;</span><br><span class="line">        <span class="attr">arguments</span>: &#123;</span><br><span class="line">            <span class="number">0</span>: <span class="number">0</span>,</span><br><span class="line">            <span class="attr">length</span>: <span class="number">1</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">i</span>: <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们看到，这时函数的 <code>[[Scope]]</code>  属性就有了真正想要的值了，为了达到这样的目的，我们不得不在 <code>[[Scope]]</code>  中创建额外的变量对象。要注意的是，在返回的函数中，如果要获取 <code>i</code>  的值，那么该值还是会是 10。</p>
-<h3 id="33-总结"><a class="markdownIt-Anchor" href="#33-总结">#</a> 3.3 总结</h3>
-<ul>
-<li>函数内的所有内部函数都共享一个父作用域，因此创建的闭包是共用的。</li>
-<li>利用闭包隔离作用域的特性可以解决共享作用域的问题</li>
-</ul>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&amp;fm=26&amp;gp=0.jpeg" alt=""></p>
 ]]></content>
       <categories>
         <category>JavaScript专题</category>
@@ -872,66 +770,100 @@ SSL 提供服务<br>
       </tags>
   </entry>
   <entry>
-    <title>JavaScript基础（四）立即调用函数</title>
-    <url>/2021/03/24/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%9B%9B%EF%BC%89%E7%AB%8B%E5%8D%B3%E8%B0%83%E7%94%A8%E5%87%BD%E6%95%B0/</url>
-    <content><![CDATA[<blockquote>
-<p>本篇文章，主要讲解的立即执行函数或自执行匿名函数的含义、用法、以及使用它的主要场景。系列的前面几篇文章主要讲解了作用域、原型，本篇文章一样起到了承上启下的作用，如果您感兴趣，不妨去看看哦～</p>
-</blockquote>
-<h2 id="一-了解立即调用函数表达式"><a class="markdownIt-Anchor" href="#一-了解立即调用函数表达式">#</a> 一、了解立即调用函数表达式</h2>
-<h3 id="11-思维导图"><a class="markdownIt-Anchor" href="#11-思维导图">#</a> 1.1 思维导图</h3>
-<p><img data-src="https://img-blog.csdnimg.cn/20200622113604893.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<span id="more"></span>
-<h3 id="12-什么是立即调用"><a class="markdownIt-Anchor" href="#12-什么是立即调用">#</a> 1.2 什么是立即调用？</h3>
-<p>在详细了解这个之前，我们来谈了解一下 “自执行” 这个叫法，本文对这个功能的叫法也不一定完全对，每个人对他的理解都不一样，我们在这里用 <code>立即调用</code> ～</p>
-<p>立即调用：</p>
-<ul>
-<li>顾名思义，该表达式一被 <code>创建就立即执行</code> 。</li>
-<li>是一个在定义时就会立即执行的  <code>JavaScript 函数</code> 。</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params">x</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;x + x = &#x27;</span>, x + x);</span><br><span class="line">&#125;)(<span class="number">5</span>) <span class="comment">// x + x = 10</span></span><br></pre></td></tr></table></figure>
-<p>这是一个被称为  <code>自执行匿名函数</code>  的设计模式，主要包含两部分:</p>
+    <title>JavaScript基础（五）闭包</title>
+    <url>/2021/03/25/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%94%EF%BC%89%E9%97%AD%E5%8C%85/</url>
+    <content><![CDATA[<h2 id="一-什么是闭包"><a class="markdownIt-Anchor" href="#一-什么是闭包">#</a> 一、什么是闭包</h2>
+<p>顾名思义，遇见问题先问为什么是我们一贯的思维方式，我们尝试回答一下：</p>
 <ol>
-<li>第一部分是包围在 圆括号运算符  <code>()</code>  里的一个匿名函数，这个匿名函数拥有独立的词法作用域。这不仅避免了外界访问此 IIFE 中的变量，而且又不会污染全局作用域。</li>
-<li>第二部分再一次使用  <code>()</code>  创建了一个立即执行函数表达式，JavaScript 引擎到此将直接执行函数。</li>
+<li>闭包就是函数内部的子函数 ——  <code>等于没说</code></li>
+<li>当函数可以记住并访问所在的词法作用域时，就产生了闭包，即使函数是在当前词法作用域之外执行。—— <code>靠谱</code></li>
+<li>闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁 —— <code>靠谱</code></li>
+<li>函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）—— <code>很靠谱</code></li>
 </ol>
-<h3 id="13-核心问题"><a class="markdownIt-Anchor" href="#13-核心问题">#</a> 1.3 核心问题</h3>
-<p><strong>当你声明一个函数的时候，通过在后面加括号就可以实现立即执行吗？</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;(); <span class="comment">// gaoyuan 成功了！</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ...是不是意味着后面加个括弧都可以自动执行？</span></span><br><span class="line"><span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;&#x27;</span>gaoyuan);</span><br><span class="line">&#125;(); <span class="comment">// Uncaught SyntaxError: Function statements require a function name</span></span><br><span class="line"><span class="comment">// 什么？还需要一个函数名？不是叫 自执行匿名函数吗？</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 我加上了函数名</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;(); <span class="comment">// Uncaught SyntaxError: Unexpected token &#x27;)&#x27;</span></span><br></pre></td></tr></table></figure>
-<p>很显然，例子中的第二条和第三条确实报错了，而且报错内容不一样，那么问题出现在哪呢？</p>
-<h2 id="二-立即调用函数表达式报错了"><a class="markdownIt-Anchor" href="#二-立即调用函数表达式报错了">#</a> 二、立即调用函数表达式报错了？</h2>
-<p>有时，我们定义函数之后，立即调用该函数，这时不能在函数的定义后面直接加圆括号，这会产生语法错误。产生语法错误的原因是， <code>function</code>  这个关键字，既可以当做语句，也可以当做表达式，比如下边：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//语句</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>) </span>&#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//表达式</span></span><br><span class="line"><span class="keyword">var</span> fn = <span class="function"><span class="keyword">function</span> (<span class="params"></span>)</span>&#123;&#125;;</span><br></pre></td></tr></table></figure>
-<p>为了避免解析上的歧义，JS 引擎规定，如果 function 出现在行首，一律解析成语句。因此 JS 引擎看到行首是 function 关键字以后，认为这一段都是函数定义，不应该以 <code>括号结尾</code> ，在它看来 <code>括号</code> 只是分组操作符。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 下面这个function在语法上是没问题的，但是依然只是一个语句</span></span><br><span class="line"><span class="comment">// 加上括号()以后依然会报错，因为分组操作符需要包含表达式</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123; <span class="comment">/* code */</span> &#125;(); <span class="comment">// SyntaxError: Unexpected token )</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 但是如果你在括弧()里传入一个表达式，将不会有异常抛出</span></span><br><span class="line"><span class="comment">// 但是foo函数依然不会执行</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123; <span class="comment">/* code */</span> &#125;( <span class="number">1</span> );</span><br><span class="line"></span><br><span class="line"><span class="comment">// 因为它完全等价于下面这个代码，一个function声明后面，又声明了一个毫无关系的表达式：</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123; <span class="comment">/* code */</span> &#125;</span><br><span class="line"></span><br><span class="line">( <span class="number">1</span> );</span><br></pre></td></tr></table></figure>
-<h2 id="三-使用立即调用函数的正确姿势"><a class="markdownIt-Anchor" href="#三-使用立即调用函数的正确姿势">#</a> 三、使用立即调用函数的正确姿势</h2>
-<p>要解决上述问题，非常简单。</p>
-<p>我们只需要用 <code>大括弧</code> 将代码的代码全部括住就行了，因为 JavaScript 里 <code>括弧()</code>  里面不能包含语句，所以在这一点上，解析器在解析 function 关键字的时候，会将相应的代码解析成 function 表达式，而不是 function 声明。</p>
-<h3 id="31-常见使用姿势"><a class="markdownIt-Anchor" href="#31-常见使用姿势">#</a> 3.1 常见使用姿势</h3>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 下面2个括弧()都会立即执行</span></span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="comment">/* code */</span> &#125; ()); <span class="comment">// 推荐使用这个</span></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="comment">/* code */</span> &#125;)(); <span class="comment">// 但是这个也是可以用的</span></span><br></pre></td></tr></table></figure>
-<h3 id="32-不常见的使用姿势一"><a class="markdownIt-Anchor" href="#32-不常见的使用姿势一">#</a> 3.2 不常见的使用姿势（一）</h3>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 由于括弧()和JS的&amp;&amp;，异或，逗号等操作符是在函数表达式和函数声明上消除歧义的</span></span><br><span class="line"><span class="comment">// 所以一旦解析器知道其中一个已经是表达式了，其它的也都默认为表达式了</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> i = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>)</span><br><span class="line">&#125;(); <span class="comment">// gaoyuan</span></span><br><span class="line"></span><br><span class="line"><span class="literal">true</span> &amp;&amp; <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>)</span><br><span class="line">&#125;(); <span class="comment">// gaoyuan</span></span><br><span class="line"></span><br><span class="line"><span class="number">0</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>) &#125;(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-<h3 id="33-不常见的使用姿势二"><a class="markdownIt-Anchor" href="#33-不常见的使用姿势二">#</a> 3.3 不常见的使用姿势（二）</h3>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 如果你不在意返回值，或者不怕难以阅读</span></span><br><span class="line"><span class="comment">// 你甚至可以在function前面加一元操作符号</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//转bool</span></span><br><span class="line"><span class="keyword">var</span> res1 = !<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;()</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;res1:&#x27;</span>, res1); <span class="comment">// gaoyuan true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 转数字</span></span><br><span class="line"><span class="keyword">var</span> res2 = +<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;()</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;res2:&#x27;</span>, res2); <span class="comment">// gaoyuan NaN</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 按位非</span></span><br><span class="line"><span class="keyword">var</span> res3 = ～<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;()</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;res3:&#x27;</span>, res3); <span class="comment">// gaoyuan NaN</span></span><br></pre></td></tr></table></figure>
-<h3 id="34-不常见的使用姿势三"><a class="markdownIt-Anchor" href="#34-不常见的使用姿势三">#</a> 3.4 不常见的使用姿势（三）</h3>
-<p>还有一个情况，使用 new 和 void 关键字，不过不太常见罢了。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">void</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;();</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;();</span><br></pre></td></tr></table></figure>
-<h2 id="四-常见使用场景"><a class="markdownIt-Anchor" href="#四-常见使用场景">#</a> 四、常见使用场景</h2>
-<h3 id="41-隔离作用域"><a class="markdownIt-Anchor" href="#41-隔离作用域">#</a> 4.1 隔离作用域</h3>
-<p>IIFE 最常见的功能，就是隔离作用域，在 ES6 之前 JS 原生也没有块级作用域的概念，所以需要函数作用域来模拟。</p>
-<p>举例:</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> currentTime = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> time = <span class="keyword">new</span> <span class="built_in">Date</span>();</span><br><span class="line">    <span class="keyword">var</span> year  = time.getFullYear()</span><br><span class="line">    <span class="keyword">var</span> month = time.getMonth()+<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">var</span> date  = time.getDate();</span><br><span class="line">    <span class="keyword">var</span> hour  = time.getHours();</span><br><span class="line">    <span class="keyword">var</span> min   = time.getMinutes();</span><br><span class="line">    <span class="keyword">return</span> year + <span class="string">&#x27;-&#x27;</span> + month + <span class="string">&#x27;-&#x27;</span> + date + <span class="string">&#x27; &#x27;</span> + hour + <span class="string">&#x27;:&#x27;</span> + min;</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
-<p>你仍然可以在其他地方声明同名变量～</p>
-<h3 id="42-惰性函数"><a class="markdownIt-Anchor" href="#42-惰性函数">#</a> 4.2 惰性函数</h3>
-<p>DOM 事件添加中，为了兼容现代浏览器和 IE 浏览器，我们需要对浏览器环境进行一次判断：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> addEvent = (<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">window</span>.addEventListener) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">type, el, fn</span>) </span>&#123;</span><br><span class="line">            el.addEventListener(type, fn, <span class="literal">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(<span class="built_in">window</span>.attachEvent) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">type, el, fn</span>) </span>&#123;</span><br><span class="line">            el.attachEvent(<span class="string">&#x27;on&#x27;</span> + type, fn);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
-<h3 id="43-用闭包保存状态"><a class="markdownIt-Anchor" href="#43-用闭包保存状态">#</a> 4.3 用闭包保存状态</h3>
-<p>这里我仅举个例子，为我的下一篇文章 ——《JavaScript 中的闭包》卖个关子</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> elems = <span class="built_in">document</span>.getElementsByTagName(<span class="string">&#x27;a&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; elems.length; i++) &#123;</span><br><span class="line">    (<span class="function"><span class="keyword">function</span> (<span class="params">lockedInIndex</span>) </span>&#123;</span><br><span class="line">        elems[i].addEventListener(<span class="string">&#x27;click&#x27;</span>, <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span><br><span class="line">            e.preventDefault();</span><br><span class="line">            alert(<span class="string">&#x27;I am link #&#x27;</span> + lockedInIndex);</span><br><span class="line">        &#125;, <span class="string">&#x27;false&#x27;</span>);</span><br><span class="line">    &#125;)(i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="注意"><a class="markdownIt-Anchor" href="#注意">#</a> 注意</h3>
-<p>当函数变成立即执行的函数表达式时，表达式中的变量不能从外部访问。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&quot;Barry&quot;</span>;</span><br><span class="line">&#125;)();</span><br><span class="line"><span class="comment">// 无法从外部访问变量 name</span></span><br><span class="line">name <span class="comment">// 抛出错误：&quot;Uncaught ReferenceError: name is not defined&quot;</span></span><br></pre></td></tr></table></figure>
-<p>将 IIFE 分配给一个变量，不是存储 IIFE 本身，而是存储 IIFE 执行后返回的结果。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> result = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&quot;Barry&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> name;</span><br><span class="line">&#125;)();</span><br><span class="line"><span class="comment">// IIFE 执行后返回的结果：</span></span><br><span class="line">result; <span class="comment">// &quot;Barry&quot;</span></span><br></pre></td></tr></table></figure>]]></content>
+<p>我们试着用代码来描述一下上面的回答，看看你最<strong>中意</strong>哪一个～</p>
+<span id="more"></span>
+<h3 id="11-闭包是函数内部的子函数"><a class="markdownIt-Anchor" href="#11-闭包是函数内部的子函数">#</a> 1.1 闭包是函数内部的子函数</h3>
+<p>先看这段代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(a);</span><br><span class="line">    &#125;</span><br><span class="line">    bar()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+<p>基于词法作用域的查找规则， <code>bar函数</code> 可以成功的打印 <code>a</code>  变量，并且它也是 <code>foo</code>  的子函数，但严格来说它并没有清晰的表达出闭包这一概念，说它表达的是<strong>嵌套函数可以访问声明于大外部作用域的变量</strong>更准确一些。</p>
+<h3 id="12-闭包就是能够读取其他函数内部变量的函数在本质上是函数内部和函数外部链接的桥梁"><a class="markdownIt-Anchor" href="#12-闭包就是能够读取其他函数内部变量的函数在本质上是函数内部和函数外部链接的桥梁">#</a> 1.2 闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁</h3>
+<p>再来看下面的例子：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(a);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> bar;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> res = foo();</span><br><span class="line">res(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+<p>结果一致，这是因为此时 <code>res</code>  是执行 <code>foo</code>  函数时返回的 <code>bar</code>  引用，bar 函数得以保存了它饿词法环境。</p>
+<h3 id="13-函数和对其周围状态词法环境的引用捆绑在一起构成闭包closure"><a class="markdownIt-Anchor" href="#13-函数和对其周围状态词法环境的引用捆绑在一起构成闭包closure">#</a> 1.3 函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）</h3>
+<p>我们来看下面代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(name); <span class="comment">// gaoyuan</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">//gaoyuan</span></span><br></pre></td></tr></table></figure>
+<p>foo 的上下文被静态的保存了下来，而且是在该函数创建的时候就保存了。下面我们来验证一下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(name); <span class="comment">// gaoyuan</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params">func</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;老王&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    func()</span><br><span class="line">&#125;)(foo); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+<p>这里我们就可以理解 —— 函数被创建后就形成了闭包，他们保存了上层上下文的作用域链，并且保存在 <code>[[scope]]</code>  中，如果你对 <code>[[scope]]</code>  的概念已经模糊了，不妨花几分钟看看《JavaScript 中的执行上下文》这篇文章。</p>
+<h3 id="14-总结"><a class="markdownIt-Anchor" href="#14-总结">#</a> 1.4 总结</h3>
+<p><strong>注意：闭包是函数内部的返回的子函数这句话本身没错</strong>，但要看从什么角度出发：</p>
+<p>ECMAScript 中，闭包指的是：</p>
+<ol>
+<li>从理论角度：所有的函数。因为它们都在创建的时候就将上层上下文的数据保存起来了。哪怕是简单的全局变量也是如此，因为函数中访问全局变量就相当于是在访问自由变量，这个时候使用最外层的作用域。</li>
+<li>从实践角度：以下函数才算是闭包：
+<ul>
+<li>即使创建它的上下文已经销毁，它仍然存在（比如，内部函数从父函数中返回）</li>
+<li>在代码中引用了自由变量</li>
+</ul>
+</li>
+</ol>
+<p><strong>总结：</strong></p>
+<ul>
+<li>闭包代码块创建该代码块的上下文中数据的结合</li>
+<li>闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁</li>
+<li>不同的角度对闭包的解释不同的</li>
+</ul>
+<p>注意：这些并不是闭包的全部，就好像当你被问到 —— 闭包是什么的时候，你的上述回答并不能结束这个话题，往往会引申出更多的话题。</p>
+<h2 id="二-尝试分析闭包"><a class="markdownIt-Anchor" href="#二-尝试分析闭包">#</a> 二、尝试分析闭包</h2>
+<p>还是那段经典代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = checkscope();</span><br><span class="line">foo(); <span class="comment">// local scope</span></span><br></pre></td></tr></table></figure>
+<p>首先我们要分析一下这段代码中执行上下文栈和执行上下文的变化情况。</p>
+<ol>
+<li>进入全局代码，创建全局执行上下文，全局执行上下文压入执行上下文栈</li>
+<li>全局执行上下文初始化</li>
+<li>执行 checkscope 函数，创建 checkscope 函数执行上下文，checkscope 执行上下文被压入执行上下文栈</li>
+<li>checkscope 执行上下文初始化，创建变量对象、作用域链、this 等</li>
+<li>checkscope 函数执行完毕，checkscope 执行上下文从执行上下文栈中弹出</li>
+<li>执行 f 函数，创建 f 函数执行上下文，f 执行上下文被压入执行上下文栈</li>
+<li>f 执行上下文初始化，创建变量对象、作用域链、this 等</li>
+<li>f 函数执行完毕，f 函数上下文从执行上下文栈中弹出</li>
+</ol>
+<p><img data-src="https://img-blog.csdnimg.cn/20200628152924827.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>当  <code>f</code>  函数执行的时候， <code>checkscope</code>  函数上下文已经被销毁了啊 (即从执行上下文栈中被弹出)，怎么还会读取到  <code>checkscope</code>  作用域下的  <code>scope</code>  值呢？</p>
+<p>当我们了解了具体的执行过程后，我们知道 f 执行上下文维护了一个作用域链：</p>
+<p>因为这个作用域链：</p>
+<ul>
+<li><code>f 函数</code> 依然可以读取到  <code>checkscopeContext.AO</code>  的值；</li>
+<li>当  <code>f 函数</code> 引用了  <code>checkscopeContext.AO</code>  中的值的时候，即使  <code>checkscopeContext</code>  被销毁了，JavaScript 依然会让  <code>checkscopeContext.AO</code>  活在内存中；</li>
+<li><code>f 函数</code> 依然可以通过  <code>f 函数</code> 的作用域链找到它，正是因为 JavaScript 做到了这一点，从而实现了闭包这个概念。</li>
+</ul>
+<p>多么浪漫的思想 —— 只要你需要我，那我我本应该被销毁，你也能找到我～</p>
+<h2 id="三-经典问题"><a class="markdownIt-Anchor" href="#三-经典问题">#</a> 三、经典问题</h2>
+<h3 id="31-多个对象引用同一个scope你遇到过吗"><a class="markdownIt-Anchor" href="#31-多个对象引用同一个scope你遇到过吗">#</a> 3.1 多个对象引用同一个 [[Scope]]，你遇到过吗？</h3>
+<p>直接上代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> child1;</span><br><span class="line"><span class="keyword">var</span> child2;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">parent</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> x = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    child1 = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(++x)</span><br><span class="line">    &#125;;</span><br><span class="line">    child2 = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(--x)</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line">parent();</span><br><span class="line">child1(); <span class="comment">// 2</span></span><br><span class="line">child1(); <span class="comment">// 3</span></span><br><span class="line">child2(); <span class="comment">// 2</span></span><br></pre></td></tr></table></figure>
+<p>大家可能不理解， <code>child1</code>  和 <code>child</code>  他们两个函数在创建后都保存了上层上下文，万万没想到，<strong>同一个上下文创建的闭包是共用一个 <code>[[scope]]</code>  属性的</strong>，某个闭包对其中 [[Scope]] 的变量做修改会影响到其他闭包对其变量的读取。</p>
+<h3 id="32-闭包轻松解决的经典问题"><a class="markdownIt-Anchor" href="#32-闭包轻松解决的经典问题">#</a> 3.2 闭包轻松解决的经典问题</h3>
+<p>大家一定对下面这段代码很眼熟：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = []</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">    arr[i] = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(i)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">arr[<span class="number">0</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">1</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">2</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">3</span>](); <span class="comment">// 10</span></span><br></pre></td></tr></table></figure>
+<p>我们这么解释它：<strong>同一个上下文中创建的闭包是共用一个 [[Scope]] 属性的</strong>。</p>
+<p>因此上层上下文中的变量 <code>i</code>  是可以很容易就被改变的。</p>
+<p>arr [0],arr [1]…arr [9] 他们共用一个 [[scope]]，最终执行的时候结果当然一样。</p>
+<p><strong>如何利用闭包来解决这个问题呢？</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = []</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">    arr[i] = (<span class="function"><span class="keyword">function</span> (<span class="params">i</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)(i)</span><br><span class="line">&#125;</span><br><span class="line">arr[<span class="number">0</span>](); <span class="comment">// 0</span></span><br><span class="line">arr[<span class="number">1</span>](); <span class="comment">// 1</span></span><br><span class="line">arr[<span class="number">2</span>](); <span class="comment">// 2</span></span><br><span class="line">arr[<span class="number">3</span>](); <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+<p>我们通过立即执行匿名函数的方式隔离了作用域，当执行 arr [0] 函数的时候，arr [0] 函数的作用域链发生了改变：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">arr[<span class="number">0</span>]Context = &#123;</span><br><span class="line">    <span class="attr">Scope</span>: [AO, 匿名函数Context.AO globalContext.VO]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>匿名函数执行上下文的 AO 为：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">匿名函数Context = &#123;</span><br><span class="line">    <span class="attr">AO</span>: &#123;</span><br><span class="line">        <span class="attr">arguments</span>: &#123;</span><br><span class="line">            <span class="number">0</span>: <span class="number">0</span>,</span><br><span class="line">            <span class="attr">length</span>: <span class="number">1</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">i</span>: <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们看到，这时函数的 <code>[[Scope]]</code>  属性就有了真正想要的值了，为了达到这样的目的，我们不得不在 <code>[[Scope]]</code>  中创建额外的变量对象。要注意的是，在返回的函数中，如果要获取 <code>i</code>  的值，那么该值还是会是 10。</p>
+<h3 id="33-总结"><a class="markdownIt-Anchor" href="#33-总结">#</a> 3.3 总结</h3>
+<ul>
+<li>函数内的所有内部函数都共享一个父作用域，因此创建的闭包是共用的。</li>
+<li>利用闭包隔离作用域的特性可以解决共享作用域的问题</li>
+</ul>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&amp;fm=26&amp;gp=0.jpeg" alt=""></p>
+]]></content>
       <categories>
         <category>JavaScript专题</category>
       </categories>
@@ -1007,6 +939,74 @@ SSL 提供服务<br>
 ]]></content>
       <categories>
         <category>javascript</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>JavaScript基础（四）立即调用函数</title>
+    <url>/2021/03/24/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%9B%9B%EF%BC%89%E7%AB%8B%E5%8D%B3%E8%B0%83%E7%94%A8%E5%87%BD%E6%95%B0/</url>
+    <content><![CDATA[<blockquote>
+<p>本篇文章，主要讲解的立即执行函数或自执行匿名函数的含义、用法、以及使用它的主要场景。系列的前面几篇文章主要讲解了作用域、原型，本篇文章一样起到了承上启下的作用，如果您感兴趣，不妨去看看哦～</p>
+</blockquote>
+<h2 id="一-了解立即调用函数表达式"><a class="markdownIt-Anchor" href="#一-了解立即调用函数表达式">#</a> 一、了解立即调用函数表达式</h2>
+<h3 id="11-思维导图"><a class="markdownIt-Anchor" href="#11-思维导图">#</a> 1.1 思维导图</h3>
+<p><img data-src="https://img-blog.csdnimg.cn/20200622113604893.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<span id="more"></span>
+<h3 id="12-什么是立即调用"><a class="markdownIt-Anchor" href="#12-什么是立即调用">#</a> 1.2 什么是立即调用？</h3>
+<p>在详细了解这个之前，我们来谈了解一下 “自执行” 这个叫法，本文对这个功能的叫法也不一定完全对，每个人对他的理解都不一样，我们在这里用 <code>立即调用</code> ～</p>
+<p>立即调用：</p>
+<ul>
+<li>顾名思义，该表达式一被 <code>创建就立即执行</code> 。</li>
+<li>是一个在定义时就会立即执行的  <code>JavaScript 函数</code> 。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params">x</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;x + x = &#x27;</span>, x + x);</span><br><span class="line">&#125;)(<span class="number">5</span>) <span class="comment">// x + x = 10</span></span><br></pre></td></tr></table></figure>
+<p>这是一个被称为  <code>自执行匿名函数</code>  的设计模式，主要包含两部分:</p>
+<ol>
+<li>第一部分是包围在 圆括号运算符  <code>()</code>  里的一个匿名函数，这个匿名函数拥有独立的词法作用域。这不仅避免了外界访问此 IIFE 中的变量，而且又不会污染全局作用域。</li>
+<li>第二部分再一次使用  <code>()</code>  创建了一个立即执行函数表达式，JavaScript 引擎到此将直接执行函数。</li>
+</ol>
+<h3 id="13-核心问题"><a class="markdownIt-Anchor" href="#13-核心问题">#</a> 1.3 核心问题</h3>
+<p><strong>当你声明一个函数的时候，通过在后面加括号就可以实现立即执行吗？</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;(); <span class="comment">// gaoyuan 成功了！</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ...是不是意味着后面加个括弧都可以自动执行？</span></span><br><span class="line"><span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;&#x27;</span>gaoyuan);</span><br><span class="line">&#125;(); <span class="comment">// Uncaught SyntaxError: Function statements require a function name</span></span><br><span class="line"><span class="comment">// 什么？还需要一个函数名？不是叫 自执行匿名函数吗？</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 我加上了函数名</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;(); <span class="comment">// Uncaught SyntaxError: Unexpected token &#x27;)&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>很显然，例子中的第二条和第三条确实报错了，而且报错内容不一样，那么问题出现在哪呢？</p>
+<h2 id="二-立即调用函数表达式报错了"><a class="markdownIt-Anchor" href="#二-立即调用函数表达式报错了">#</a> 二、立即调用函数表达式报错了？</h2>
+<p>有时，我们定义函数之后，立即调用该函数，这时不能在函数的定义后面直接加圆括号，这会产生语法错误。产生语法错误的原因是， <code>function</code>  这个关键字，既可以当做语句，也可以当做表达式，比如下边：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//语句</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>) </span>&#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//表达式</span></span><br><span class="line"><span class="keyword">var</span> fn = <span class="function"><span class="keyword">function</span> (<span class="params"></span>)</span>&#123;&#125;;</span><br></pre></td></tr></table></figure>
+<p>为了避免解析上的歧义，JS 引擎规定，如果 function 出现在行首，一律解析成语句。因此 JS 引擎看到行首是 function 关键字以后，认为这一段都是函数定义，不应该以 <code>括号结尾</code> ，在它看来 <code>括号</code> 只是分组操作符。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 下面这个function在语法上是没问题的，但是依然只是一个语句</span></span><br><span class="line"><span class="comment">// 加上括号()以后依然会报错，因为分组操作符需要包含表达式</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123; <span class="comment">/* code */</span> &#125;(); <span class="comment">// SyntaxError: Unexpected token )</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 但是如果你在括弧()里传入一个表达式，将不会有异常抛出</span></span><br><span class="line"><span class="comment">// 但是foo函数依然不会执行</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123; <span class="comment">/* code */</span> &#125;( <span class="number">1</span> );</span><br><span class="line"></span><br><span class="line"><span class="comment">// 因为它完全等价于下面这个代码，一个function声明后面，又声明了一个毫无关系的表达式：</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123; <span class="comment">/* code */</span> &#125;</span><br><span class="line"></span><br><span class="line">( <span class="number">1</span> );</span><br></pre></td></tr></table></figure>
+<h2 id="三-使用立即调用函数的正确姿势"><a class="markdownIt-Anchor" href="#三-使用立即调用函数的正确姿势">#</a> 三、使用立即调用函数的正确姿势</h2>
+<p>要解决上述问题，非常简单。</p>
+<p>我们只需要用 <code>大括弧</code> 将代码的代码全部括住就行了，因为 JavaScript 里 <code>括弧()</code>  里面不能包含语句，所以在这一点上，解析器在解析 function 关键字的时候，会将相应的代码解析成 function 表达式，而不是 function 声明。</p>
+<h3 id="31-常见使用姿势"><a class="markdownIt-Anchor" href="#31-常见使用姿势">#</a> 3.1 常见使用姿势</h3>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 下面2个括弧()都会立即执行</span></span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="comment">/* code */</span> &#125; ()); <span class="comment">// 推荐使用这个</span></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="comment">/* code */</span> &#125;)(); <span class="comment">// 但是这个也是可以用的</span></span><br></pre></td></tr></table></figure>
+<h3 id="32-不常见的使用姿势一"><a class="markdownIt-Anchor" href="#32-不常见的使用姿势一">#</a> 3.2 不常见的使用姿势（一）</h3>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 由于括弧()和JS的&amp;&amp;，异或，逗号等操作符是在函数表达式和函数声明上消除歧义的</span></span><br><span class="line"><span class="comment">// 所以一旦解析器知道其中一个已经是表达式了，其它的也都默认为表达式了</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> i = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>)</span><br><span class="line">&#125;(); <span class="comment">// gaoyuan</span></span><br><span class="line"></span><br><span class="line"><span class="literal">true</span> &amp;&amp; <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>)</span><br><span class="line">&#125;(); <span class="comment">// gaoyuan</span></span><br><span class="line"></span><br><span class="line"><span class="number">0</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>) &#125;(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+<h3 id="33-不常见的使用姿势二"><a class="markdownIt-Anchor" href="#33-不常见的使用姿势二">#</a> 3.3 不常见的使用姿势（二）</h3>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 如果你不在意返回值，或者不怕难以阅读</span></span><br><span class="line"><span class="comment">// 你甚至可以在function前面加一元操作符号</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//转bool</span></span><br><span class="line"><span class="keyword">var</span> res1 = !<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;()</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;res1:&#x27;</span>, res1); <span class="comment">// gaoyuan true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 转数字</span></span><br><span class="line"><span class="keyword">var</span> res2 = +<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;()</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;res2:&#x27;</span>, res2); <span class="comment">// gaoyuan NaN</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 按位非</span></span><br><span class="line"><span class="keyword">var</span> res3 = ～<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;()</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;res3:&#x27;</span>, res3); <span class="comment">// gaoyuan NaN</span></span><br></pre></td></tr></table></figure>
+<h3 id="34-不常见的使用姿势三"><a class="markdownIt-Anchor" href="#34-不常见的使用姿势三">#</a> 3.4 不常见的使用姿势（三）</h3>
+<p>还有一个情况，使用 new 和 void 关键字，不过不太常见罢了。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">void</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;();</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;();</span><br></pre></td></tr></table></figure>
+<h2 id="四-常见使用场景"><a class="markdownIt-Anchor" href="#四-常见使用场景">#</a> 四、常见使用场景</h2>
+<h3 id="41-隔离作用域"><a class="markdownIt-Anchor" href="#41-隔离作用域">#</a> 4.1 隔离作用域</h3>
+<p>IIFE 最常见的功能，就是隔离作用域，在 ES6 之前 JS 原生也没有块级作用域的概念，所以需要函数作用域来模拟。</p>
+<p>举例:</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> currentTime = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> time = <span class="keyword">new</span> <span class="built_in">Date</span>();</span><br><span class="line">    <span class="keyword">var</span> year  = time.getFullYear()</span><br><span class="line">    <span class="keyword">var</span> month = time.getMonth()+<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">var</span> date  = time.getDate();</span><br><span class="line">    <span class="keyword">var</span> hour  = time.getHours();</span><br><span class="line">    <span class="keyword">var</span> min   = time.getMinutes();</span><br><span class="line">    <span class="keyword">return</span> year + <span class="string">&#x27;-&#x27;</span> + month + <span class="string">&#x27;-&#x27;</span> + date + <span class="string">&#x27; &#x27;</span> + hour + <span class="string">&#x27;:&#x27;</span> + min;</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+<p>你仍然可以在其他地方声明同名变量～</p>
+<h3 id="42-惰性函数"><a class="markdownIt-Anchor" href="#42-惰性函数">#</a> 4.2 惰性函数</h3>
+<p>DOM 事件添加中，为了兼容现代浏览器和 IE 浏览器，我们需要对浏览器环境进行一次判断：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> addEvent = (<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">window</span>.addEventListener) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">type, el, fn</span>) </span>&#123;</span><br><span class="line">            el.addEventListener(type, fn, <span class="literal">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(<span class="built_in">window</span>.attachEvent) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">type, el, fn</span>) </span>&#123;</span><br><span class="line">            el.attachEvent(<span class="string">&#x27;on&#x27;</span> + type, fn);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<h3 id="43-用闭包保存状态"><a class="markdownIt-Anchor" href="#43-用闭包保存状态">#</a> 4.3 用闭包保存状态</h3>
+<p>这里我仅举个例子，为我的下一篇文章 ——《JavaScript 中的闭包》卖个关子</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> elems = <span class="built_in">document</span>.getElementsByTagName(<span class="string">&#x27;a&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; elems.length; i++) &#123;</span><br><span class="line">    (<span class="function"><span class="keyword">function</span> (<span class="params">lockedInIndex</span>) </span>&#123;</span><br><span class="line">        elems[i].addEventListener(<span class="string">&#x27;click&#x27;</span>, <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span><br><span class="line">            e.preventDefault();</span><br><span class="line">            alert(<span class="string">&#x27;I am link #&#x27;</span> + lockedInIndex);</span><br><span class="line">        &#125;, <span class="string">&#x27;false&#x27;</span>);</span><br><span class="line">    &#125;)(i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="注意"><a class="markdownIt-Anchor" href="#注意">#</a> 注意</h3>
+<p>当函数变成立即执行的函数表达式时，表达式中的变量不能从外部访问。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&quot;Barry&quot;</span>;</span><br><span class="line">&#125;)();</span><br><span class="line"><span class="comment">// 无法从外部访问变量 name</span></span><br><span class="line">name <span class="comment">// 抛出错误：&quot;Uncaught ReferenceError: name is not defined&quot;</span></span><br></pre></td></tr></table></figure>
+<p>将 IIFE 分配给一个变量，不是存储 IIFE 本身，而是存储 IIFE 执行后返回的结果。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> result = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&quot;Barry&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> name;</span><br><span class="line">&#125;)();</span><br><span class="line"><span class="comment">// IIFE 执行后返回的结果：</span></span><br><span class="line">result; <span class="comment">// &quot;Barry&quot;</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>JavaScript专题</category>
       </categories>
       <tags>
         <tag>javascript</tag>
@@ -1123,75 +1123,6 @@ user_name  CHAR (8)：定长字符串，可能产生空间浪费，但读取速�
       </categories>
       <tags>
         <tag>vue</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>vue里封装axios——利用promise无痛刷新token</title>
-    <url>/2021/03/29/vue%E9%87%8C%E5%B0%81%E8%A3%85axios%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8promise%E6%97%A0%E7%97%9B%E5%88%B7%E6%96%B0token/</url>
-    <content><![CDATA[<h2 id="需求"><a class="markdownIt-Anchor" href="#需求">#</a> 需求</h2>
-<p>最近遇到个需求：前端登录后，后端返回 <code>token</code>  和 <code>token有效时间</code> ，当 token 过期时要求用旧 token 去获取新的 token，前端需要做到无痛刷新 <code>token</code> ，即请求刷新 token 时要做到用户无感知。</p>
-<h2 id="需求解析"><a class="markdownIt-Anchor" href="#需求解析">#</a> 需求解析</h2>
-<p>当用户发起一个请求时，判断 token 是否已过期，若已过期则先调 <code>refreshToken</code>  接口，拿到新的 token 后再继续执行之前的请求。</p>
-<p>这个问题的难点在于：当同时发起多个请求，而刷新 token 的接口还没返回，此时其他请求该如何处理？接下来会循序渐进地分享一下整个过程。</p>
-<span id="more"></span>
-<h2 id="实现思路"><a class="markdownIt-Anchor" href="#实现思路">#</a> 实现思路</h2>
-<p>由于后端返回了 token 的有效时间，可以有两种方法：</p>
-<h3 id="方法一"><a class="markdownIt-Anchor" href="#方法一">#</a> 方法一：</h3>
-<p>在请求发起前拦截每个请求，判断 token 的有效时间是否已经过期，若已过期，则将请求挂起，先刷新 token 后再继续请求。</p>
-<h3 id="方法二"><a class="markdownIt-Anchor" href="#方法二">#</a> 方法二：</h3>
-<p>不在请求前拦截，而是拦截返回后的数据。先发起请求，接口返回过期后，先刷新 token，再进行一次重试。</p>
-<h3 id="两种方法对比"><a class="markdownIt-Anchor" href="#两种方法对比">#</a> 两种方法对比</h3>
-<p>方法一</p>
-<ul>
-<li>优点： 在请求前拦截，能节省请求，省流量。</li>
-<li>缺点： 需要后端额外提供一个 token 过期时间的字段；使用了本地时间判断，若本地时间被篡改，特别是本地时间比服务器时间慢时，拦截会失败。</li>
-</ul>
-<blockquote>
-<p>PS：token 有效时间建议是时间段，类似缓存的 MaxAge，而不要是绝对时间。当服务器和本地时间不一致时，绝对时间会有问题。</p>
-</blockquote>
-<p>方法二</p>
-<ul>
-<li>优点：不需额外的 token 过期字段，不需判断时间。</li>
-<li>缺点： 会消耗多一次请求，耗流量。</li>
-</ul>
-<p>综上，方法一和二优缺点是互补的，方法一有校验失败的风险（本地时间被篡改时，当然一般没有用户闲的蛋疼去改本地时间的啦），方法二更简单粗暴，等知道服务器已经过期了再重试一次，只是会耗多一个请求。</p>
-<p>在这里博主选择了 <em>方法二</em>。</p>
-<h2 id="实现"><a class="markdownIt-Anchor" href="#实现">#</a> 实现</h2>
-<p>这里会使用<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2F4aW9zL2F4aW9z"> axios</span> 来实现，方法一是请求前拦截，所以会使用 <code>axios.interceptors.request.use()</code>  这个方法；</p>
-<p>而方法二是请求后拦截，所以会使用 <code>axios.interceptors.response.use()</code>  方法。</p>
-<h3 id="封装axios基本骨架"><a class="markdownIt-Anchor" href="#封装axios基本骨架">#</a> 封装 axios 基本骨架</h3>
-<p>首先说明一下，项目中的 token 是存在 <code>localStorage</code>  中的。 <code>request.js</code>  基本骨架:</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import axios from &#x27;axios&#x27;</span><br><span class="line"></span><br><span class="line">// 从localStorage中获取token</span><br><span class="line">function getLocalToken () &#123;</span><br><span class="line">    const token = window.localStorage.getItem(&#x27;token&#x27;)</span><br><span class="line">    return token</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 给实例添加一个setToken方法，用于登录后将最新token动态添加到header，同时将token保存在localStorage中</span><br><span class="line">instance.setToken = (token) =&gt; &#123;</span><br><span class="line">  instance.defaults.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">  window.localStorage.setItem(&#x27;token&#x27;, token)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 创建一个axios实例</span><br><span class="line">const instance = axios.create(&#123;</span><br><span class="line">  baseURL: &#x27;/api&#x27;,</span><br><span class="line">  timeout: 300000,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,</span><br><span class="line">    &#x27;X-Token&#x27;: getLocalToken() // headers塞token</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// 拦截返回的数据</span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  // 接下来会在这里进行token过期的逻辑处理</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">export default instance</span><br></pre></td></tr></table></figure>
-<p>这个是项目中一般的 axios 实例的封装，创建实例时，将本地已有的 token 放进 header，然后 export 出去供调用。接下来就是如何拦截返回的数据啦。</p>
-<h3 id="instanceinterceptorsresponseuse拦截实现"><a class="markdownIt-Anchor" href="#instanceinterceptorsresponseuse拦截实现">#</a> instance.interceptors.response.use 拦截实现</h3>
-<p>后端接口一般会有一个约定好的数据结构，如：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;code: 1234, message: &#x27;token过期&#x27;, data: &#123;&#125;&#125;</span><br></pre></td></tr></table></figure>
-<p>如我这里，后端约定当 <code>code === 1234</code>  时表示 token 过期了，此时就要求刷新 token。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    // 说明token过期了,刷新token</span><br><span class="line">    return refreshToken().then(res =&gt; &#123;</span><br><span class="line">      // 刷新token成功，将最新的token更新到header中，同时保存在localStorage中</span><br><span class="line">      const &#123; token &#125; = res.data</span><br><span class="line">      instance.setToken(token)</span><br><span class="line">      // 获取当前失败的请求</span><br><span class="line">      const config = response.config</span><br><span class="line">      // 重置一下配置</span><br><span class="line">      config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">      config.baseURL = &#x27;&#x27; // url已经带上了/api，避免出现/api/api的情况</span><br><span class="line">      // 重试当前请求并返回promise</span><br><span class="line">      return instance(config)</span><br><span class="line">    &#125;).catch(res =&gt; &#123;</span><br><span class="line">      console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">      //刷新token失败，神仙也救不了了，跳转到首页重新登录吧</span><br><span class="line">      window.location.href = &#x27;/&#x27;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">function refreshToken () &#123;</span><br><span class="line">    // instance是当前request.js中已创建的axios实例</span><br><span class="line">    return instance.post(&#x27;/refreshtoken&#x27;).then(res =&gt; res.data)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里需要额外注意的是， <code>response.config</code>  就是原请求的配置，但这个是已经处理过了的， <code>config.url</code>  已经带上了 <code>baseUrl</code> ，因此重试时需要去掉，同时 token 也是旧的，需要刷新下。</p>
-<p>以上就基本做到了无痛刷新 token，当 token 正常时，正常返回，当 token 已过期，则 axios 内部进行一次刷新 token 和重试。对调用者来说，axios 内部的刷新 token 是一个黑盒，是无感知的，因此需求已经做到了。</p>
-<h2 id="问题和优化"><a class="markdownIt-Anchor" href="#问题和优化">#</a> 问题和优化</h2>
-<p>上面的代码还是存在一些问题的，没有考虑到多次请求的问题，因此需要进一步优化。</p>
-<h3 id="如何防止多次刷新token"><a class="markdownIt-Anchor" href="#如何防止多次刷新token">#</a> 如何防止多次刷新 token</h3>
-<p>如果 refreshToken 接口还没返回，此时再有一个过期的请求进来，上面的代码就会再一次执行 refreshToken，这就会导致多次执行刷新 token 的接口，因此需要防止这个问题。我们可以在 <code>request.js</code>  中用一个 <code>flag</code>  来标记当前是否正在刷新 token 的状态，如果正在刷新则不再调用刷新 token 的接口。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        const config = response.config</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p>这样子就可以避免在刷新 token 时再进入方法了。但是这种做法是相当于把其他失败的接口给舍弃了，假如同时发起两个请求，且几乎同时返回，第一个请求肯定是进入了 refreshToken 后再重试，而第二个请求则被丢弃了，仍是返回失败，所以接下来还得解决其他接口的重试问题。</p>
-<h3 id="同时发起两个或以上的请求时其他接口如何重试"><a class="markdownIt-Anchor" href="#同时发起两个或以上的请求时其他接口如何重试">#</a> 同时发起两个或以上的请求时，其他接口如何重试</h3>
-<p>两个接口几乎同时发起和返回，第一个接口会进入刷新 token 后重试的流程，而第二个接口需要先存起来，然后等刷新 token 后再重试。同样，如果同时发起三个请求，此时需要缓存后两个接口，等刷新 token 后再重试。由于接口都是异步的，处理起来会有点麻烦。</p>
-<p>当第二个过期的请求进来，token 正在刷新，我们先将这个请求存到一个数组队列中，想办法让这个请求处于等待中，一直等到刷新 token 后再逐个重试清空请求队列。<br>
-那么如何做到让这个请求处于等待中呢？为了解决这个问题，我们得借助 <code>Promise</code> 。将请求存进队列中后，同时返回一个 <code>Promise</code> ，让这个 <code>Promise</code>  一直处于 <code>Pending</code>  状态（即不调用 resolve），此时这个请求就会一直等啊等，只要我们不执行 resolve，这个请求就会一直在等待。当刷新请求的接口返回来后，我们再调用 resolve，逐个重试。最终代码：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">// 重试队列，每一项将是一个待执行的函数形式</span><br><span class="line">let requests = []</span><br><span class="line"></span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    const config = response.config</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        // 已经刷新了token，将所有队列中的请求进行重试</span><br><span class="line">        requests.forEach(cb =&gt; cb(token))</span><br><span class="line">        // 重试完了别忘了清空这个队列（掘金评论区同学指点）</span><br><span class="line">        requests = []</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 正在刷新token，返回一个未执行resolve的promise</span><br><span class="line">      return new Promise((resolve) =&gt; &#123;</span><br><span class="line">        // 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行</span><br><span class="line">        requests.push((token) =&gt; &#123;</span><br><span class="line">          config.baseURL = &#x27;&#x27;</span><br><span class="line">          config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">          resolve(instance(config))</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p>这里可能比较难理解的是 <code>requests</code>  这个队列中保存的是一个函数，这是为了让 resolve 不执行，先存起来，等刷新 token 后更方便调用这个函数使得 resolve 执行。至此，问题应该都解决了。</p>
-<h2 id="最后完整代码"><a class="markdownIt-Anchor" href="#最后完整代码">#</a> 最后完整代码</h2>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import axios from &#x27;axios&#x27;</span><br><span class="line"></span><br><span class="line">// 从localStorage中获取token</span><br><span class="line">function getLocalToken () &#123;</span><br><span class="line">    const token = window.localStorage.getItem(&#x27;token&#x27;)</span><br><span class="line">    return token</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 给实例添加一个setToken方法，用于登录后将最新token动态添加到header，同时将token保存在localStorage中</span><br><span class="line">instance.setToken = (token) =&gt; &#123;</span><br><span class="line">  instance.defaults.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">  window.localStorage.setItem(&#x27;token&#x27;, token)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function refreshToken () &#123;</span><br><span class="line">    // instance是当前request.js中已创建的axios实例</span><br><span class="line">    return instance.post(&#x27;/refreshtoken&#x27;).then(res =&gt; res.data)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 创建一个axios实例</span><br><span class="line">const instance = axios.create(&#123;</span><br><span class="line">  baseURL: &#x27;/api&#x27;,</span><br><span class="line">  timeout: 300000,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,</span><br><span class="line">    &#x27;X-Token&#x27;: getLocalToken() // headers塞token</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">// 重试队列，每一项将是一个待执行的函数形式</span><br><span class="line">let requests = []</span><br><span class="line"></span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    const config = response.config</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        // 已经刷新了token，将所有队列中的请求进行重试</span><br><span class="line">        requests.forEach(cb =&gt; cb(token))</span><br><span class="line">        requests = []</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 正在刷新token，将返回一个未执行resolve的promise</span><br><span class="line">      return new Promise((resolve) =&gt; &#123;</span><br><span class="line">        // 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行</span><br><span class="line">        requests.push((token) =&gt; &#123;</span><br><span class="line">          config.baseURL = &#x27;&#x27;</span><br><span class="line">          config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">          resolve(instance(config))</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">export default instance</span><br></pre></td></tr></table></figure>
-<p>希望对大家有帮助。感谢看到最后<sup>_</sup>。</p>
-]]></content>
-      <categories>
-        <category>Vue专题</category>
-      </categories>
-      <tags>
-        <tag>vue</tag>
-        <tag>axios</tag>
       </tags>
   </entry>
   <entry>
@@ -1367,6 +1298,75 @@ user_name  CHAR (8)：定长字符串，可能产生空间浪费，但读取速�
       </tags>
   </entry>
   <entry>
+    <title>vue里封装axios——利用promise无痛刷新token</title>
+    <url>/2021/03/29/vue%E9%87%8C%E5%B0%81%E8%A3%85axios%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8promise%E6%97%A0%E7%97%9B%E5%88%B7%E6%96%B0token/</url>
+    <content><![CDATA[<h2 id="需求"><a class="markdownIt-Anchor" href="#需求">#</a> 需求</h2>
+<p>最近遇到个需求：前端登录后，后端返回 <code>token</code>  和 <code>token有效时间</code> ，当 token 过期时要求用旧 token 去获取新的 token，前端需要做到无痛刷新 <code>token</code> ，即请求刷新 token 时要做到用户无感知。</p>
+<h2 id="需求解析"><a class="markdownIt-Anchor" href="#需求解析">#</a> 需求解析</h2>
+<p>当用户发起一个请求时，判断 token 是否已过期，若已过期则先调 <code>refreshToken</code>  接口，拿到新的 token 后再继续执行之前的请求。</p>
+<p>这个问题的难点在于：当同时发起多个请求，而刷新 token 的接口还没返回，此时其他请求该如何处理？接下来会循序渐进地分享一下整个过程。</p>
+<span id="more"></span>
+<h2 id="实现思路"><a class="markdownIt-Anchor" href="#实现思路">#</a> 实现思路</h2>
+<p>由于后端返回了 token 的有效时间，可以有两种方法：</p>
+<h3 id="方法一"><a class="markdownIt-Anchor" href="#方法一">#</a> 方法一：</h3>
+<p>在请求发起前拦截每个请求，判断 token 的有效时间是否已经过期，若已过期，则将请求挂起，先刷新 token 后再继续请求。</p>
+<h3 id="方法二"><a class="markdownIt-Anchor" href="#方法二">#</a> 方法二：</h3>
+<p>不在请求前拦截，而是拦截返回后的数据。先发起请求，接口返回过期后，先刷新 token，再进行一次重试。</p>
+<h3 id="两种方法对比"><a class="markdownIt-Anchor" href="#两种方法对比">#</a> 两种方法对比</h3>
+<p>方法一</p>
+<ul>
+<li>优点： 在请求前拦截，能节省请求，省流量。</li>
+<li>缺点： 需要后端额外提供一个 token 过期时间的字段；使用了本地时间判断，若本地时间被篡改，特别是本地时间比服务器时间慢时，拦截会失败。</li>
+</ul>
+<blockquote>
+<p>PS：token 有效时间建议是时间段，类似缓存的 MaxAge，而不要是绝对时间。当服务器和本地时间不一致时，绝对时间会有问题。</p>
+</blockquote>
+<p>方法二</p>
+<ul>
+<li>优点：不需额外的 token 过期字段，不需判断时间。</li>
+<li>缺点： 会消耗多一次请求，耗流量。</li>
+</ul>
+<p>综上，方法一和二优缺点是互补的，方法一有校验失败的风险（本地时间被篡改时，当然一般没有用户闲的蛋疼去改本地时间的啦），方法二更简单粗暴，等知道服务器已经过期了再重试一次，只是会耗多一个请求。</p>
+<p>在这里博主选择了 <em>方法二</em>。</p>
+<h2 id="实现"><a class="markdownIt-Anchor" href="#实现">#</a> 实现</h2>
+<p>这里会使用<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2F4aW9zL2F4aW9z"> axios</span> 来实现，方法一是请求前拦截，所以会使用 <code>axios.interceptors.request.use()</code>  这个方法；</p>
+<p>而方法二是请求后拦截，所以会使用 <code>axios.interceptors.response.use()</code>  方法。</p>
+<h3 id="封装axios基本骨架"><a class="markdownIt-Anchor" href="#封装axios基本骨架">#</a> 封装 axios 基本骨架</h3>
+<p>首先说明一下，项目中的 token 是存在 <code>localStorage</code>  中的。 <code>request.js</code>  基本骨架:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import axios from &#x27;axios&#x27;</span><br><span class="line"></span><br><span class="line">// 从localStorage中获取token</span><br><span class="line">function getLocalToken () &#123;</span><br><span class="line">    const token = window.localStorage.getItem(&#x27;token&#x27;)</span><br><span class="line">    return token</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 给实例添加一个setToken方法，用于登录后将最新token动态添加到header，同时将token保存在localStorage中</span><br><span class="line">instance.setToken = (token) =&gt; &#123;</span><br><span class="line">  instance.defaults.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">  window.localStorage.setItem(&#x27;token&#x27;, token)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 创建一个axios实例</span><br><span class="line">const instance = axios.create(&#123;</span><br><span class="line">  baseURL: &#x27;/api&#x27;,</span><br><span class="line">  timeout: 300000,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,</span><br><span class="line">    &#x27;X-Token&#x27;: getLocalToken() // headers塞token</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// 拦截返回的数据</span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  // 接下来会在这里进行token过期的逻辑处理</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">export default instance</span><br></pre></td></tr></table></figure>
+<p>这个是项目中一般的 axios 实例的封装，创建实例时，将本地已有的 token 放进 header，然后 export 出去供调用。接下来就是如何拦截返回的数据啦。</p>
+<h3 id="instanceinterceptorsresponseuse拦截实现"><a class="markdownIt-Anchor" href="#instanceinterceptorsresponseuse拦截实现">#</a> instance.interceptors.response.use 拦截实现</h3>
+<p>后端接口一般会有一个约定好的数据结构，如：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;code: 1234, message: &#x27;token过期&#x27;, data: &#123;&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>如我这里，后端约定当 <code>code === 1234</code>  时表示 token 过期了，此时就要求刷新 token。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    // 说明token过期了,刷新token</span><br><span class="line">    return refreshToken().then(res =&gt; &#123;</span><br><span class="line">      // 刷新token成功，将最新的token更新到header中，同时保存在localStorage中</span><br><span class="line">      const &#123; token &#125; = res.data</span><br><span class="line">      instance.setToken(token)</span><br><span class="line">      // 获取当前失败的请求</span><br><span class="line">      const config = response.config</span><br><span class="line">      // 重置一下配置</span><br><span class="line">      config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">      config.baseURL = &#x27;&#x27; // url已经带上了/api，避免出现/api/api的情况</span><br><span class="line">      // 重试当前请求并返回promise</span><br><span class="line">      return instance(config)</span><br><span class="line">    &#125;).catch(res =&gt; &#123;</span><br><span class="line">      console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">      //刷新token失败，神仙也救不了了，跳转到首页重新登录吧</span><br><span class="line">      window.location.href = &#x27;/&#x27;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">function refreshToken () &#123;</span><br><span class="line">    // instance是当前request.js中已创建的axios实例</span><br><span class="line">    return instance.post(&#x27;/refreshtoken&#x27;).then(res =&gt; res.data)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里需要额外注意的是， <code>response.config</code>  就是原请求的配置，但这个是已经处理过了的， <code>config.url</code>  已经带上了 <code>baseUrl</code> ，因此重试时需要去掉，同时 token 也是旧的，需要刷新下。</p>
+<p>以上就基本做到了无痛刷新 token，当 token 正常时，正常返回，当 token 已过期，则 axios 内部进行一次刷新 token 和重试。对调用者来说，axios 内部的刷新 token 是一个黑盒，是无感知的，因此需求已经做到了。</p>
+<h2 id="问题和优化"><a class="markdownIt-Anchor" href="#问题和优化">#</a> 问题和优化</h2>
+<p>上面的代码还是存在一些问题的，没有考虑到多次请求的问题，因此需要进一步优化。</p>
+<h3 id="如何防止多次刷新token"><a class="markdownIt-Anchor" href="#如何防止多次刷新token">#</a> 如何防止多次刷新 token</h3>
+<p>如果 refreshToken 接口还没返回，此时再有一个过期的请求进来，上面的代码就会再一次执行 refreshToken，这就会导致多次执行刷新 token 的接口，因此需要防止这个问题。我们可以在 <code>request.js</code>  中用一个 <code>flag</code>  来标记当前是否正在刷新 token 的状态，如果正在刷新则不再调用刷新 token 的接口。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        const config = response.config</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这样子就可以避免在刷新 token 时再进入方法了。但是这种做法是相当于把其他失败的接口给舍弃了，假如同时发起两个请求，且几乎同时返回，第一个请求肯定是进入了 refreshToken 后再重试，而第二个请求则被丢弃了，仍是返回失败，所以接下来还得解决其他接口的重试问题。</p>
+<h3 id="同时发起两个或以上的请求时其他接口如何重试"><a class="markdownIt-Anchor" href="#同时发起两个或以上的请求时其他接口如何重试">#</a> 同时发起两个或以上的请求时，其他接口如何重试</h3>
+<p>两个接口几乎同时发起和返回，第一个接口会进入刷新 token 后重试的流程，而第二个接口需要先存起来，然后等刷新 token 后再重试。同样，如果同时发起三个请求，此时需要缓存后两个接口，等刷新 token 后再重试。由于接口都是异步的，处理起来会有点麻烦。</p>
+<p>当第二个过期的请求进来，token 正在刷新，我们先将这个请求存到一个数组队列中，想办法让这个请求处于等待中，一直等到刷新 token 后再逐个重试清空请求队列。<br>
+那么如何做到让这个请求处于等待中呢？为了解决这个问题，我们得借助 <code>Promise</code> 。将请求存进队列中后，同时返回一个 <code>Promise</code> ，让这个 <code>Promise</code>  一直处于 <code>Pending</code>  状态（即不调用 resolve），此时这个请求就会一直等啊等，只要我们不执行 resolve，这个请求就会一直在等待。当刷新请求的接口返回来后，我们再调用 resolve，逐个重试。最终代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">// 重试队列，每一项将是一个待执行的函数形式</span><br><span class="line">let requests = []</span><br><span class="line"></span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    const config = response.config</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        // 已经刷新了token，将所有队列中的请求进行重试</span><br><span class="line">        requests.forEach(cb =&gt; cb(token))</span><br><span class="line">        // 重试完了别忘了清空这个队列（掘金评论区同学指点）</span><br><span class="line">        requests = []</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 正在刷新token，返回一个未执行resolve的promise</span><br><span class="line">      return new Promise((resolve) =&gt; &#123;</span><br><span class="line">        // 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行</span><br><span class="line">        requests.push((token) =&gt; &#123;</span><br><span class="line">          config.baseURL = &#x27;&#x27;</span><br><span class="line">          config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">          resolve(instance(config))</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这里可能比较难理解的是 <code>requests</code>  这个队列中保存的是一个函数，这是为了让 resolve 不执行，先存起来，等刷新 token 后更方便调用这个函数使得 resolve 执行。至此，问题应该都解决了。</p>
+<h2 id="最后完整代码"><a class="markdownIt-Anchor" href="#最后完整代码">#</a> 最后完整代码</h2>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import axios from &#x27;axios&#x27;</span><br><span class="line"></span><br><span class="line">// 从localStorage中获取token</span><br><span class="line">function getLocalToken () &#123;</span><br><span class="line">    const token = window.localStorage.getItem(&#x27;token&#x27;)</span><br><span class="line">    return token</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 给实例添加一个setToken方法，用于登录后将最新token动态添加到header，同时将token保存在localStorage中</span><br><span class="line">instance.setToken = (token) =&gt; &#123;</span><br><span class="line">  instance.defaults.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">  window.localStorage.setItem(&#x27;token&#x27;, token)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function refreshToken () &#123;</span><br><span class="line">    // instance是当前request.js中已创建的axios实例</span><br><span class="line">    return instance.post(&#x27;/refreshtoken&#x27;).then(res =&gt; res.data)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 创建一个axios实例</span><br><span class="line">const instance = axios.create(&#123;</span><br><span class="line">  baseURL: &#x27;/api&#x27;,</span><br><span class="line">  timeout: 300000,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,</span><br><span class="line">    &#x27;X-Token&#x27;: getLocalToken() // headers塞token</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">// 重试队列，每一项将是一个待执行的函数形式</span><br><span class="line">let requests = []</span><br><span class="line"></span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    const config = response.config</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        // 已经刷新了token，将所有队列中的请求进行重试</span><br><span class="line">        requests.forEach(cb =&gt; cb(token))</span><br><span class="line">        requests = []</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 正在刷新token，将返回一个未执行resolve的promise</span><br><span class="line">      return new Promise((resolve) =&gt; &#123;</span><br><span class="line">        // 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行</span><br><span class="line">        requests.push((token) =&gt; &#123;</span><br><span class="line">          config.baseURL = &#x27;&#x27;</span><br><span class="line">          config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">          resolve(instance(config))</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">export default instance</span><br></pre></td></tr></table></figure>
+<p>希望对大家有帮助。感谢看到最后<sup>_</sup>。</p>
+]]></content>
+      <categories>
+        <category>Vue专题</category>
+      </categories>
+      <tags>
+        <tag>vue</tag>
+        <tag>axios</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>三次握手四次挥手的原理</title>
     <url>/2021/03/01/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E7%9A%84%E5%8E%9F%E7%90%86/</url>
     <content><![CDATA[<h2 id="三次握手"><a class="markdownIt-Anchor" href="#三次握手">#</a> 三次握手</h2>
@@ -1475,6 +1475,134 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
       </categories>
       <tags>
         <tag>Hbuilder</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>学习之AJAX</title>
+    <url>/2019/03/20/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
+    <content><![CDATA[<p>对于 AJAX 这个玩意儿，一开始学习的时候，根本不知道这是什么，我连 AJAX 有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙 B 的状态。那么在学习一段时间的 AJAX 之后，我总结了一些我自己对 AJAX 的理解，一起共勉。</p>
+<p>一、页面访问方式</p>
+<p>在学习 AJAX 之前，我们首先就需要了解页面的访问方式。页面的访问方式有如下两种同步访问和异步访问：</p>
+<p>①同步访问：在访问服务器时，只能等待服务器的响应，不能做其他事情。</p>
+<p>②异步访问：在向服务器发送请求时，不耽误用户在网页其他操作。相当于在同一时间，用户能做多个事情。</p>
+<span id="more"></span>
+<p>光从字面上理解同步和异步不算太难，下面我为用图打个比方有助于更加深层次的理解同步和异步：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730181503984" alt=""></p>
+<p>上图反之是同步访问的图解，异步访问我就不再作图了，反之，你想买煎饼和稀饭，你走到卖煎饼的铺子时候，老板说：好的，你的煎饼 5 分钟后好，你可以 5 分钟后过来拿。这个时候你就可以在这五分钟去买你要的稀饭，这就是异步访问。</p>
+<p>二、什么是 AJAX</p>
+<p>AJAX 的英文全名是：Asynchronous  Javascript  And  Xml</p>
+<p>异步的  JS     和    xml</p>
+<p>其中的本质：使用 JS 中 XMLHttpRequext (xhr) 对象异步的向服务器发送请求，服务器响应回来的部分数据而不是原完整的页面，并可以以 “无刷新” 的效果来更改页面中的局部内容。为了方便理解，作以下用户名验证的例子图助于理解：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730183958321" alt=""></p>
+<p>三、获取ＡＪＡＸ对象　——XMLHttpRequest</p>
+<p>在主流浏览器中：new　XMLHttpRequest ( );</p>
+<p>注意：在 IE8 以下的浏览器不支持 XMLHttpRequest</p>
+<p>在 IE8 以下的浏览器中：</p>
+<p>new  ActiveXObject(“Microsoft.XMLHttp”);</p>
+<p>tip: 如果想测试你使用的浏览器是否支持 XMLHttpRequest，可以进行如下操作：</p>
+<p>1. 打开你的浏览器，例如谷歌、360、火狐、欧朋…;</p>
+<p>2. 按 F12，使用开发者工具，在 console 一栏中输入：console.log (window.XMLHttpRequest);</p>
+<p>3. 如果浏览器不支持 XMLHttpRequest, 以上会打印 null。</p>
+<p>// 创建 ajax 对象</p>
+<p>var  xhr;</p>
+<p>if(window.XMLHttpRequest){</p>
+<p>xhr = new  XMLHttpRequest();</p>
+<p>}else{</p>
+<p>xhr = new ActiveXObject(“Microsoft.XMLHttp”);</p>
+<p>}</p>
+<p>tip：这段函在编写代码的时候使用的次数很多，通常我们将它封装成函数单独创建一个 JS 文件，命名为 common.js，要使用的时候调用者个 js 文件就可以了。</p>
+]]></content>
+      <categories>
+        <category>HTTP</category>
+      </categories>
+      <tags>
+        <tag>AJAX</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>实现滚动动画—渐入动画</title>
+    <url>/2021/04/13/%E5%AE%9E%E7%8E%B0%E6%BB%9A%E5%8A%A8%E5%8A%A8%E7%94%BB%E2%80%94%E6%B8%90%E5%85%A5%E5%8A%A8%E7%94%BB/</url>
+    <content><![CDATA[<h2 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h2>
+<p>Vue 和 React 版本其实区别不大，，，主要使用原生 js 就能实现，性能上就没考虑太多（可以在完成需求后，移除进入视区后的元素的类名，如：slide-item，lazy-img 等）</p>
+<h2 id="一-滚动动画vue-版本"><a class="markdownIt-Anchor" href="#一-滚动动画vue-版本">#</a> 一、滚动动画：Vue 版本</h2>
+<h3 id="给-html-元素添加-class"><a class="markdownIt-Anchor" href="#给-html-元素添加-class">#</a> 给 HTML 元素添加 class</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;div class=&quot;slide-item&quot;&gt;需要根据滚动条位置显示的元素&lt;/div&gt;</span><br><span class="line">&lt;div class=&quot;slide-item slide-delay&quot; data-delay=&quot;200&quot;&gt;有延迟的元素&lt;/div&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<h3 id="css-和动画"><a class="markdownIt-Anchor" href="#css-和动画">#</a> css 和动画</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.slide-item &#123; opacity: 0; &#125;</span><br><span class="line">.slide-up,</span><br><span class="line">.slide-up-200,</span><br><span class="line">.slide-up-400,</span><br><span class="line">.slide-up-600,</span><br><span class="line">.slide-up-800 &#123;</span><br><span class="line">    animation: slide-up .5s forwards;</span><br><span class="line">&#125;</span><br><span class="line">.slide-up-200 &#123; animation-delay: .2s; &#125;</span><br><span class="line">.slide-up-400 &#123; animation-delay: .4s;&#125;</span><br><span class="line">.slide-up-600 &#123; animation-delay: .6s;&#125;</span><br><span class="line">.slide-up-800 &#123; animation-delay: .8s; &#125;</span><br><span class="line"></span><br><span class="line">@keyframes slide-up &#123;</span><br><span class="line">    from &#123; opacity: 0; transform: translateY(50%); &#125;</span><br><span class="line">    to &#123; opacity: 1; transform: translateY(0); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="监听滚动"><a class="markdownIt-Anchor" href="#监听滚动">#</a> 监听滚动</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mounted() &#123;</span><br><span class="line">  window.addEventListener(&quot;scroll&quot;, this.onScroll);</span><br><span class="line">&#125;,</span><br><span class="line">beforeDestroy() &#123;</span><br><span class="line">  window.removeEventListener(&quot;scroll&quot;, this.onScroll);</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+<h3 id="滚动方法"><a class="markdownIt-Anchor" href="#滚动方法">#</a> 滚动方法</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 监听滚动</span><br><span class="line">onScroll() &#123;</span><br><span class="line">  const slideItems = document.querySelectorAll(&#x27;.slide-item&#x27;);</span><br><span class="line">  // 上滑</span><br><span class="line">  slideItems.forEach(item =&gt; &#123;</span><br><span class="line">    let itemBCR = item.getBoundingClientRect();</span><br><span class="line">    // 进入视区或在视区之上</span><br><span class="line">    if (itemBCR.top &lt;= window.innerHeight + 10) &#123;</span><br><span class="line">      if (Array.from(item.classList).includes(&#x27;slide-delay&#x27;)) &#123;</span><br><span class="line">        item.classList.add(`slide-up-$&#123;item.dataset.delay&#125;`);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.add(&#x27;slide-up&#x27;);</span><br><span class="line">      &#125;</span><br><span class="line">      // 可以在这里 remove 掉 slide-item 这个类名，优化性能</span><br><span class="line"></span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 这里主要用来多次显示效果的，上面 remove 掉 slide-item 后将不再起作用</span><br><span class="line">      if (Array.from(item.classList).includes(&#x27;slide-delay&#x27;)) &#123;</span><br><span class="line">        item.classList.remove(`slide-up-$&#123;item.dataset.delay&#125;`);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.remove(&#x27;slide-up&#x27;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+<h2 id="二-滚动动画react-版本"><a class="markdownIt-Anchor" href="#二-滚动动画react-版本">#</a> 二、滚动动画：React 版本</h2>
+<p>主要使用 hooks</p>
+<h3 id="给-html-元素添加-class-2"><a class="markdownIt-Anchor" href="#给-html-元素添加-class-2">#</a> 给 HTML 元素添加 class</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;span className=&#123;`slide-item`&#125;&gt;需要根据滚动条位置显示的元素&lt;/span&gt;</span><br><span class="line">&lt;span className=&#123;`slide-item slide-delay`&#125; data-delay=&quot;200&quot;&gt;有延迟的元素&lt;/span&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="css-和动画-2"><a class="markdownIt-Anchor" href="#css-和动画-2">#</a> css 和动画</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.slide-item &#123; opacity: 0; &#125;</span><br><span class="line">.slide-up,</span><br><span class="line">.slide-up-200,</span><br><span class="line">.slide-up-400,</span><br><span class="line">.slide-up-600,</span><br><span class="line">.slide-up-800 &#123;</span><br><span class="line">    animation: slide-up .5s forwards;</span><br><span class="line">&#125;</span><br><span class="line">.slide-up-200 &#123; animation-delay: .2s; &#125;</span><br><span class="line">.slide-up-400 &#123; animation-delay: .4s;&#125;</span><br><span class="line">.slide-up-600 &#123; animation-delay: .6s;&#125;</span><br><span class="line">.slide-up-800 &#123; animation-delay: .8s; &#125;</span><br><span class="line"></span><br><span class="line">@keyframes slide-up &#123;</span><br><span class="line">    from &#123; opacity: 0; transform: translateY(50%); &#125;</span><br><span class="line">    to &#123; opacity: 1; transform: translateY(0); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="监听滚动-2"><a class="markdownIt-Anchor" href="#监听滚动-2">#</a> 监听滚动</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">useEffect(() =&gt; &#123;</span><br><span class="line">  onScroll();</span><br><span class="line">  window.addEventListener(&#x27;scroll&#x27;, onScroll);</span><br><span class="line"></span><br><span class="line">  return () =&gt; &#123;</span><br><span class="line">    window.removeEventListener(&#x27;scroll&#x27;, onScroll);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;, []);</span><br></pre></td></tr></table></figure>
+<h3 id="滚动方法-2"><a class="markdownIt-Anchor" href="#滚动方法-2">#</a> 滚动方法</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 监听滚动</span><br><span class="line">function onScroll(): void &#123;</span><br><span class="line">  const slideItems = document.querySelectorAll(&#x27;.slide-item&#x27;);</span><br><span class="line"></span><br><span class="line">  slideItems.forEach((item: any) =&gt; &#123;</span><br><span class="line">    let slideBCR = item.getBoundingClientRect();</span><br><span class="line">    // 进入视区或在视区之上</span><br><span class="line">    if (slideBCR.top &lt;= window.innerHeight + 10) &#123;</span><br><span class="line">      if (Array.from(item.classList).includes(&#x27;slide-delay&#x27;)) &#123; // 延迟</span><br><span class="line">        item.classList.add(`slide-up-$&#123;item.dataset.delay&#125;`);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.add(&#x27;slide-up&#x27;);</span><br><span class="line">      &#125;</span><br><span class="line">      // 可以在这里 remove 掉 slide-item 这个类名，优化性能</span><br><span class="line"></span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 这里主要用来多次显示效果的，上面 remove 掉 slide-item 后将不再起作用</span><br><span class="line">      if (Array.from(item.classList).includes(&#x27;slide-delay&#x27;)) &#123; // 延迟</span><br><span class="line">        item.classList.remove(`slide-up-$&#123;item.dataset.delay&#125;`);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.remove(&#x27;slide-up&#x27;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>react</category>
+      </categories>
+      <tags>
+        <tag>vue</tag>
+        <tag>react</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>开发小技巧</title>
+    <url>/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
+    <content><![CDATA[<h2 id="阻止单击事件冒泡"><a class="markdownIt-Anchor" href="#阻止单击事件冒泡">#</a> 阻止单击事件冒泡</h2>
+<p><code>&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;</code></p>
+<h2 id="提交事件不再重载页面"><a class="markdownIt-Anchor" href="#提交事件不再重载页面">#</a> 提交事件不再重载页面</h2>
+<p><code>&lt;form v-on:submit.prevent=&quot;onSubmit&quot;&gt;&lt;/form&gt;</code></p>
+<h2 id="修饰符可以串联"><a class="markdownIt-Anchor" href="#修饰符可以串联">#</a> 修饰符可以串联</h2>
+<p><code>&lt;a v-on:click.stop.prevent=&quot;doThat&quot;&gt;</code></p>
+<span id="more"></span>
+<h2 id="只有修饰符"><a class="markdownIt-Anchor" href="#只有修饰符">#</a> 只有修饰符</h2>
+<p><code>&lt;form v-on:submit.prevent&gt;&lt;/form&gt;</code></p>
+<br>
+<br>
+<br>
+<h2 id="mac谷歌跨域命令"><a class="markdownIt-Anchor" href="#mac谷歌跨域命令">#</a> Mac 谷歌跨域命令</h2>
+<p><code>open -n /Applications/Google\ Chrome.app/ --args --disable-web-security  --user-data-dir=/Users/GaoYuan/Documents/MyChromeDevUserData</code></p>
+<br>
+<br>
+<br>
+<h2 id="mac显示隐藏文件命令"><a class="markdownIt-Anchor" href="#mac显示隐藏文件命令">#</a> Mac 显示隐藏文件命令：</h2>
+<p><strong>显示隐藏文件</strong></p>
+<p><code>defaults write com.apple.finder AppleShowAllFiles Yes &amp;&amp; killall Finder </code></p>
+<p><strong>不显示隐藏文件</strong></p>
+<p><code>defaults write com.apple.finder AppleShowAllFiles No &amp;&amp; killall Finder </code></p>
+<br>
+<br>
+<h2 id="jison解决js处理后端返回的long型数据精度丢失问题"><a class="markdownIt-Anchor" href="#jison解决js处理后端返回的long型数据精度丢失问题">#</a> Jison 解决 JS 处理后端返回的 Long 型数据精度丢失问题</h2>
+<p>原因：js 是弱类型语言，所有的数字类型统称为 Number 类型，不区分 int、long、double 等。</p>
+<p><code>git clone git://github.com/zaach/jsonlint.git</code></p>
+<p>在 src 目录下提供了 jsonlint.y（grammaFile）和 jsonlint.l（lexFile) 两个文件。使用这两个文件可以直接生成 jsonlint.js。如下修改 jsonlint.y：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">JSONNumber</span><br><span class="line"></span><br><span class="line">    : NUMBER</span><br><span class="line">    </span><br><span class="line">        &#123;$$ = yytext == String(Number(yytext))? Number(yytext): yytext;&#125;</span><br><span class="line">    ;</span><br></pre></td></tr></table></figure>
+<p>然后：</p>
+<p><code>cd src</code></p>
+<p><code>jison jsonlint.y jsonlint.l</code></p>
+<h3 id="最后引入至项目"><a class="markdownIt-Anchor" href="#最后引入至项目">#</a> 最后引入至项目</h3>
+<p>1. 将自定义的 jsonlint.js 放到 static 目录下<br>
+ 2. 在 index.html 中引入<br>
+ <code>&lt;script src=&quot;./static/jsonlint/jsonlint.js&quot;&gt;&lt;/script&gt;</code></p>
+<p>3、在我们请求的返回数据中，做一层拦截转换，此处以 axios 的实现方法为例：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/*transformResponse 选项允许我们在数据传送到 `then/catch` 方法之前对数据进行改动*/</span><br><span class="line">axios.defaults.transformResponse = [</span><br><span class="line">  function(data) &#123;</span><br><span class="line">    return jsonlint.parse(data)</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>综上，定义 JSON 转化避免 long 类型数据溢出，可以实现 long 类型数据在前端正常显示</p>
+<h2 id="mac给文件夹赋予管理员权限"><a class="markdownIt-Anchor" href="#mac给文件夹赋予管理员权限">#</a> Mac 给文件夹赋予管理员权限</h2>
+<p><code>sudo chown -R gaoyuan ios</code></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">if ($request_filename ~* .*index\.html$) &#123;</span><br><span class="line">     add_header Cache-Control &quot;private, no-store, no-cache, must-revalidate, proxy-revalidate&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>个人笔记</category>
+      </categories>
+      <tags>
+        <tag>note</tag>
       </tags>
   </entry>
   <entry>
@@ -1633,267 +1761,6 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
       </categories>
       <tags>
         <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>学习之AJAX</title>
-    <url>/2019/03/20/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
-    <content><![CDATA[<p>对于 AJAX 这个玩意儿，一开始学习的时候，根本不知道这是什么，我连 AJAX 有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙 B 的状态。那么在学习一段时间的 AJAX 之后，我总结了一些我自己对 AJAX 的理解，一起共勉。</p>
-<p>一、页面访问方式</p>
-<p>在学习 AJAX 之前，我们首先就需要了解页面的访问方式。页面的访问方式有如下两种同步访问和异步访问：</p>
-<p>①同步访问：在访问服务器时，只能等待服务器的响应，不能做其他事情。</p>
-<p>②异步访问：在向服务器发送请求时，不耽误用户在网页其他操作。相当于在同一时间，用户能做多个事情。</p>
-<span id="more"></span>
-<p>光从字面上理解同步和异步不算太难，下面我为用图打个比方有助于更加深层次的理解同步和异步：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730181503984" alt=""></p>
-<p>上图反之是同步访问的图解，异步访问我就不再作图了，反之，你想买煎饼和稀饭，你走到卖煎饼的铺子时候，老板说：好的，你的煎饼 5 分钟后好，你可以 5 分钟后过来拿。这个时候你就可以在这五分钟去买你要的稀饭，这就是异步访问。</p>
-<p>二、什么是 AJAX</p>
-<p>AJAX 的英文全名是：Asynchronous  Javascript  And  Xml</p>
-<p>异步的  JS     和    xml</p>
-<p>其中的本质：使用 JS 中 XMLHttpRequext (xhr) 对象异步的向服务器发送请求，服务器响应回来的部分数据而不是原完整的页面，并可以以 “无刷新” 的效果来更改页面中的局部内容。为了方便理解，作以下用户名验证的例子图助于理解：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730183958321" alt=""></p>
-<p>三、获取ＡＪＡＸ对象　——XMLHttpRequest</p>
-<p>在主流浏览器中：new　XMLHttpRequest ( );</p>
-<p>注意：在 IE8 以下的浏览器不支持 XMLHttpRequest</p>
-<p>在 IE8 以下的浏览器中：</p>
-<p>new  ActiveXObject(“Microsoft.XMLHttp”);</p>
-<p>tip: 如果想测试你使用的浏览器是否支持 XMLHttpRequest，可以进行如下操作：</p>
-<p>1. 打开你的浏览器，例如谷歌、360、火狐、欧朋…;</p>
-<p>2. 按 F12，使用开发者工具，在 console 一栏中输入：console.log (window.XMLHttpRequest);</p>
-<p>3. 如果浏览器不支持 XMLHttpRequest, 以上会打印 null。</p>
-<p>// 创建 ajax 对象</p>
-<p>var  xhr;</p>
-<p>if(window.XMLHttpRequest){</p>
-<p>xhr = new  XMLHttpRequest();</p>
-<p>}else{</p>
-<p>xhr = new ActiveXObject(“Microsoft.XMLHttp”);</p>
-<p>}</p>
-<p>tip：这段函在编写代码的时候使用的次数很多，通常我们将它封装成函数单独创建一个 JS 文件，命名为 common.js，要使用的时候调用者个 js 文件就可以了。</p>
-]]></content>
-      <categories>
-        <category>HTTP</category>
-      </categories>
-      <tags>
-        <tag>AJAX</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>实现滚动动画—渐入动画</title>
-    <url>/2021/04/13/%E5%AE%9E%E7%8E%B0%E6%BB%9A%E5%8A%A8%E5%8A%A8%E7%94%BB%E2%80%94%E6%B8%90%E5%85%A5%E5%8A%A8%E7%94%BB/</url>
-    <content><![CDATA[<h2 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h2>
-<p>Vue 和 React 版本其实区别不大，，，主要使用原生 js 就能实现，性能上就没考虑太多（可以在完成需求后，移除进入视区后的元素的类名，如：slide-item，lazy-img 等）</p>
-<h2 id="一-滚动动画vue-版本"><a class="markdownIt-Anchor" href="#一-滚动动画vue-版本">#</a> 一、滚动动画：Vue 版本</h2>
-<h3 id="给-html-元素添加-class"><a class="markdownIt-Anchor" href="#给-html-元素添加-class">#</a> 给 HTML 元素添加 class</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;div class=&quot;slide-item&quot;&gt;需要根据滚动条位置显示的元素&lt;/div&gt;</span><br><span class="line">&lt;div class=&quot;slide-item slide-delay&quot; data-delay=&quot;200&quot;&gt;有延迟的元素&lt;/div&gt;</span><br></pre></td></tr></table></figure>
-<span id="more"></span>
-<h3 id="css-和动画"><a class="markdownIt-Anchor" href="#css-和动画">#</a> css 和动画</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.slide-item &#123; opacity: 0; &#125;</span><br><span class="line">.slide-up,</span><br><span class="line">.slide-up-200,</span><br><span class="line">.slide-up-400,</span><br><span class="line">.slide-up-600,</span><br><span class="line">.slide-up-800 &#123;</span><br><span class="line">    animation: slide-up .5s forwards;</span><br><span class="line">&#125;</span><br><span class="line">.slide-up-200 &#123; animation-delay: .2s; &#125;</span><br><span class="line">.slide-up-400 &#123; animation-delay: .4s;&#125;</span><br><span class="line">.slide-up-600 &#123; animation-delay: .6s;&#125;</span><br><span class="line">.slide-up-800 &#123; animation-delay: .8s; &#125;</span><br><span class="line"></span><br><span class="line">@keyframes slide-up &#123;</span><br><span class="line">    from &#123; opacity: 0; transform: translateY(50%); &#125;</span><br><span class="line">    to &#123; opacity: 1; transform: translateY(0); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="监听滚动"><a class="markdownIt-Anchor" href="#监听滚动">#</a> 监听滚动</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mounted() &#123;</span><br><span class="line">  window.addEventListener(&quot;scroll&quot;, this.onScroll);</span><br><span class="line">&#125;,</span><br><span class="line">beforeDestroy() &#123;</span><br><span class="line">  window.removeEventListener(&quot;scroll&quot;, this.onScroll);</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
-<h3 id="滚动方法"><a class="markdownIt-Anchor" href="#滚动方法">#</a> 滚动方法</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 监听滚动</span><br><span class="line">onScroll() &#123;</span><br><span class="line">  const slideItems = document.querySelectorAll(&#x27;.slide-item&#x27;);</span><br><span class="line">  // 上滑</span><br><span class="line">  slideItems.forEach(item =&gt; &#123;</span><br><span class="line">    let itemBCR = item.getBoundingClientRect();</span><br><span class="line">    // 进入视区或在视区之上</span><br><span class="line">    if (itemBCR.top &lt;= window.innerHeight + 10) &#123;</span><br><span class="line">      if (Array.from(item.classList).includes(&#x27;slide-delay&#x27;)) &#123;</span><br><span class="line">        item.classList.add(`slide-up-$&#123;item.dataset.delay&#125;`);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.add(&#x27;slide-up&#x27;);</span><br><span class="line">      &#125;</span><br><span class="line">      // 可以在这里 remove 掉 slide-item 这个类名，优化性能</span><br><span class="line"></span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 这里主要用来多次显示效果的，上面 remove 掉 slide-item 后将不再起作用</span><br><span class="line">      if (Array.from(item.classList).includes(&#x27;slide-delay&#x27;)) &#123;</span><br><span class="line">        item.classList.remove(`slide-up-$&#123;item.dataset.delay&#125;`);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.remove(&#x27;slide-up&#x27;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
-<h2 id="二-滚动动画react-版本"><a class="markdownIt-Anchor" href="#二-滚动动画react-版本">#</a> 二、滚动动画：React 版本</h2>
-<p>主要使用 hooks</p>
-<h3 id="给-html-元素添加-class-2"><a class="markdownIt-Anchor" href="#给-html-元素添加-class-2">#</a> 给 HTML 元素添加 class</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;span className=&#123;`slide-item`&#125;&gt;需要根据滚动条位置显示的元素&lt;/span&gt;</span><br><span class="line">&lt;span className=&#123;`slide-item slide-delay`&#125; data-delay=&quot;200&quot;&gt;有延迟的元素&lt;/span&gt;</span><br></pre></td></tr></table></figure>
-<h3 id="css-和动画-2"><a class="markdownIt-Anchor" href="#css-和动画-2">#</a> css 和动画</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.slide-item &#123; opacity: 0; &#125;</span><br><span class="line">.slide-up,</span><br><span class="line">.slide-up-200,</span><br><span class="line">.slide-up-400,</span><br><span class="line">.slide-up-600,</span><br><span class="line">.slide-up-800 &#123;</span><br><span class="line">    animation: slide-up .5s forwards;</span><br><span class="line">&#125;</span><br><span class="line">.slide-up-200 &#123; animation-delay: .2s; &#125;</span><br><span class="line">.slide-up-400 &#123; animation-delay: .4s;&#125;</span><br><span class="line">.slide-up-600 &#123; animation-delay: .6s;&#125;</span><br><span class="line">.slide-up-800 &#123; animation-delay: .8s; &#125;</span><br><span class="line"></span><br><span class="line">@keyframes slide-up &#123;</span><br><span class="line">    from &#123; opacity: 0; transform: translateY(50%); &#125;</span><br><span class="line">    to &#123; opacity: 1; transform: translateY(0); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="监听滚动-2"><a class="markdownIt-Anchor" href="#监听滚动-2">#</a> 监听滚动</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">useEffect(() =&gt; &#123;</span><br><span class="line">  onScroll();</span><br><span class="line">  window.addEventListener(&#x27;scroll&#x27;, onScroll);</span><br><span class="line"></span><br><span class="line">  return () =&gt; &#123;</span><br><span class="line">    window.removeEventListener(&#x27;scroll&#x27;, onScroll);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;, []);</span><br></pre></td></tr></table></figure>
-<h3 id="滚动方法-2"><a class="markdownIt-Anchor" href="#滚动方法-2">#</a> 滚动方法</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 监听滚动</span><br><span class="line">function onScroll(): void &#123;</span><br><span class="line">  const slideItems = document.querySelectorAll(&#x27;.slide-item&#x27;);</span><br><span class="line"></span><br><span class="line">  slideItems.forEach((item: any) =&gt; &#123;</span><br><span class="line">    let slideBCR = item.getBoundingClientRect();</span><br><span class="line">    // 进入视区或在视区之上</span><br><span class="line">    if (slideBCR.top &lt;= window.innerHeight + 10) &#123;</span><br><span class="line">      if (Array.from(item.classList).includes(&#x27;slide-delay&#x27;)) &#123; // 延迟</span><br><span class="line">        item.classList.add(`slide-up-$&#123;item.dataset.delay&#125;`);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.add(&#x27;slide-up&#x27;);</span><br><span class="line">      &#125;</span><br><span class="line">      // 可以在这里 remove 掉 slide-item 这个类名，优化性能</span><br><span class="line"></span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 这里主要用来多次显示效果的，上面 remove 掉 slide-item 后将不再起作用</span><br><span class="line">      if (Array.from(item.classList).includes(&#x27;slide-delay&#x27;)) &#123; // 延迟</span><br><span class="line">        item.classList.remove(`slide-up-$&#123;item.dataset.delay&#125;`);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.remove(&#x27;slide-up&#x27;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>react</category>
-      </categories>
-      <tags>
-        <tag>vue</tag>
-        <tag>react</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>浏览器回流和重汇</title>
-    <url>/2021/04/16/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%9B%9E%E6%B5%81%E5%92%8C%E9%87%8D%E6%B1%87/</url>
-    <content><![CDATA[<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/640" alt=""></p>
-<span id="more"></span>
-<h2 id="一-是什么"><a class="markdownIt-Anchor" href="#一-是什么">#</a> 一、是什么</h2>
-<p>在 <code>HTML</code>  中，每个元素都可以理解成一个盒子，在浏览器解析过程中，会涉及到回流与重绘：</p>
-<ul>
-<li>回流：布局引擎会根据各种样式计算每个盒子在页面上的大小与位置</li>
-<li>重绘：当计算好盒模型的位置、大小及其他属性后，浏览器根据每个盒子特性进行绘制</li>
-</ul>
-<p>具体的浏览器解析渲染机制如下所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20210416102029.png" alt=""></p>
-<ul>
-<li>解析 HTML，生成 DOM 树，解析 CSS，生成 CSSOM 树</li>
-<li>将 DOM 树和 CSSOM 树结合，生成渲染树 (Render Tree)</li>
-<li>Layout (回流): 根据生成的渲染树，进行回流 (Layout)，得到节点的几何信息（位置，大小）</li>
-<li>Painting (重绘): 根据渲染树以及回流得到的几何信息，得到节点的绝对像素</li>
-<li>Display: 将像素发送给 GPU，展示在页面上</li>
-</ul>
-<p>在页面初始渲染阶段，回流不可避免的触发，可以理解成页面一开始是空白的元素，后面添加了新的元素使页面布局发生改变</p>
-<p>当我们对  <code>DOM</code>  的修改引发了  <code>DOM</code>  几何尺寸的变化（比如修改元素的宽、高或隐藏元素等）时，浏览器需要重新计算元素的几何属性，然后再将计算的结果绘制出来</p>
-<p>当我们对  <code>DOM</code>  的修改导致了样式的变化（ <code>color</code>  或 <code>background-color</code> ），却并未影响其几何属性时，浏览器不需重新计算元素的几何属性、直接为该元素绘制新的样式，这里就仅仅触发了重绘</p>
-<h2 id="二-如何触发"><a class="markdownIt-Anchor" href="#二-如何触发">#</a> 二、如何触发</h2>
-<p>要想减少回流和重绘的次数，首先要了解回流和重绘是如何触发的</p>
-<h3 id="回流触发时机"><a class="markdownIt-Anchor" href="#回流触发时机">#</a> 回流触发时机</h3>
-<p>回流这一阶段主要是计算节点的位置和几何信息，那么当页面布局和几何信息发生变化的时候，就需要回流，如下面情况：</p>
-<ul>
-<li>添加或删除可见的 DOM 元素</li>
-<li>元素的位置发生变化</li>
-<li>元素的尺寸发生变化（包括外边距、内边框、边框大小、高度和宽度等）</li>
-<li>内容发生变化，比如文本变化或图片被另一个不同尺寸的图片所替代</li>
-<li>页面一开始渲染的时候（这避免不了）</li>
-<li>浏览器的窗口尺寸变化（因为回流是根据视口的大小来计算元素的位置和大小的）</li>
-</ul>
-<p>还有一些容易被忽略的操作：获取一些特定属性的值</p>
-<blockquote>
-<p>❝</p>
-<p>offsetTop、offsetLeft、 offsetWidth、offsetHeight、scrollTop、scrollLeft、scrollWidth、scrollHeight、clientTop、clientLeft、clientWidth、clientHeight</p>
-<p>❞</p>
-</blockquote>
-<p>这些属性有一个共性，就是需要通过即时计算得到。因此浏览器为了获取这些值，也会进行回流</p>
-<p>除此还包括 <code>getComputedStyle</code>  方法，原理是一样的</p>
-<h3 id="重绘触发时机"><a class="markdownIt-Anchor" href="#重绘触发时机">#</a> 重绘触发时机</h3>
-<p>触发回流一定会触发重绘</p>
-<p>可以把页面理解为一个黑板，黑板上有一朵画好的小花。现在我们要把这朵从左边移到了右边，那我们要先确定好右边的具体位置，画好形状（回流），再画上它原有的颜色（重绘）</p>
-<p>除此之外还有一些其他引起重绘行为：</p>
-<ul>
-<li>颜色的修改</li>
-<li>文本方向的修改</li>
-<li>阴影的修改</li>
-</ul>
-<h3 id="浏览器优化机制"><a class="markdownIt-Anchor" href="#浏览器优化机制">#</a> 浏览器优化机制</h3>
-<p>由于每次重排都会造成额外的计算消耗，因此大多数浏览器都会通过队列化修改并批量执行来优化重排过程。浏览器会将修改操作放入到队列里，直到过了一段时间或者操作达到了一个阈值，才清空队列</p>
-<p>当你获取布局信息的操作的时候，会强制队列刷新，包括前面讲到的 <code>offsetTop</code>  等方法都会返回最新的数据</p>
-<p>因此浏览器不得不清空队列，触发回流重绘来返回正确的值</p>
-<h2 id="三-如何减少"><a class="markdownIt-Anchor" href="#三-如何减少">#</a> 三、如何减少</h2>
-<p>我们了解了如何触发回流和重绘的场景，下面给出避免回流的经验：</p>
-<ul>
-<li>如果想设定元素的样式，通过改变元素的  <code>class</code>  类名 (尽可能在 DOM 树的最里层)</li>
-<li>避免设置多项内联样式</li>
-<li>应用元素的动画，使用  <code>position</code>  属性的  <code>fixed</code>  值或  <code>absolute</code>  值 (如前文示例所提)</li>
-<li>避免使用  <code>table</code>  布局， <code>table</code>  中每个元素的大小以及内容的改动，都会导致整个  <code>table</code>  的重新计算</li>
-<li>对于那些复杂的动画，对其设置  <code>position: fixed/absolute</code> ，尽可能地使元素脱离文档流，从而减少对其他元素的影响</li>
-<li>使用 css3 硬件加速，可以让 <code>transform</code> 、 <code>opacity</code> 、 <code>filters</code>  这些动画不会引起回流重绘</li>
-<li>避免使用 CSS 的  <code>JavaScript</code>  表达式</li>
-</ul>
-<p>在使用  <code>JavaScript</code>  动态插入多个节点时，可以使用 <code>DocumentFragment</code> . 创建后一次插入。就能避免多次的渲染性能</p>
-<p>但有时候，我们会无可避免地进行回流或者重绘，我们可以更好使用它们</p>
-<p>例如，多次修改一个把元素布局的时候，我们很可能会如下操作</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const el = document.getElementById(&#x27;el&#x27;)</span><br><span class="line">for(let i=0;i&lt;10;i++) &#123;</span><br><span class="line">    el.style.top  = el.offsetTop  + 10 + &quot;px&quot;;</span><br><span class="line">    el.style.left = el.offsetLeft + 10 + &quot;px&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>每次循环都需要获取多次 <code>offset</code>  属性，比较糟糕，可以使用变量的形式缓存起来，待计算完毕再提交给浏览器发出重计算请求</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 缓存offsetLeft与offsetTop的值</span><br><span class="line">const el = document.getElementById(&#x27;el&#x27;)</span><br><span class="line">let offLeft = el.offsetLeft, offTop = el.offsetTop</span><br><span class="line"></span><br><span class="line">// 在JS层面进行计算</span><br><span class="line">for(let i=0;i&lt;10;i++) &#123;</span><br><span class="line">  offLeft += 10</span><br><span class="line">  offTop  += 10</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 一次性将计算结果应用到DOM上</span><br><span class="line">el.style.left = offLeft + &quot;px&quot;</span><br><span class="line">el.style.top = offTop  + &quot;px&quot;</span><br></pre></td></tr></table></figure>
-<p>我们还可避免改变样式，使用类名去合并样式</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const container = document.getElementById(&#x27;container&#x27;)</span><br><span class="line">container.style.width = &#x27;100px&#x27;</span><br><span class="line">container.style.height = &#x27;200px&#x27;</span><br><span class="line">container.style.border = &#x27;10px solid red&#x27;</span><br><span class="line">container.style.color = &#x27;red&#x27;</span><br></pre></td></tr></table></figure>
-<p>使用类名去合并样式</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;style&gt;</span><br><span class="line">    .basic_style &#123;</span><br><span class="line">        width: 100px;</span><br><span class="line">        height: 200px;</span><br><span class="line">        border: 10px solid red;</span><br><span class="line">        color: red;</span><br><span class="line">    &#125;</span><br><span class="line">&lt;/style&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">    const container = document.getElementById(&#x27;container&#x27;)</span><br><span class="line">    container.classList.add(&#x27;basic_style&#x27;)</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<p>前者每次单独操作，都去触发一次渲染树更改（新浏览器不会），</p>
-<p>都去触发一次渲染树更改，从而导致相应的回流与重绘过程</p>
-<p>合并之后，等于我们将所有的更改一次性发出</p>
-<p>我们还可以通过通过设置元素属性 <code>display: none</code> ，将其从页面上去掉，然后再进行后续操作，这些后续操作也不会触发回流与重绘，这个过程称为离线操作</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const container = document.getElementById(&#x27;container&#x27;)</span><br><span class="line">container.style.width = &#x27;100px&#x27;</span><br><span class="line">container.style.height = &#x27;200px&#x27;</span><br><span class="line">container.style.border = &#x27;10px solid red&#x27;</span><br><span class="line">container.style.color = &#x27;red&#x27;</span><br></pre></td></tr></table></figure>
-<p>离线操作后</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">let container = document.getElementById(&#x27;container&#x27;)</span><br><span class="line">container.style.display = &#x27;none&#x27;</span><br><span class="line">container.style.width = &#x27;100px&#x27;</span><br><span class="line">container.style.height = &#x27;200px&#x27;</span><br><span class="line">container.style.border = &#x27;10px solid red&#x27;</span><br><span class="line">container.style.color = &#x27;red&#x27;</span><br><span class="line">...（省略了许多类似的后续操作）</span><br><span class="line">container.style.display = &#x27;block&#x27;</span><br></pre></td></tr></table></figure>
-<h2 id=""><a class="markdownIt-Anchor" href="#">#</a> </h2>
-]]></content>
-      <categories>
-        <category>note</category>
-      </categories>
-      <tags>
-        <tag>note</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>开发小技巧</title>
-    <url>/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
-    <content><![CDATA[<h2 id="阻止单击事件冒泡"><a class="markdownIt-Anchor" href="#阻止单击事件冒泡">#</a> 阻止单击事件冒泡</h2>
-<p><code>&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;</code></p>
-<h2 id="提交事件不再重载页面"><a class="markdownIt-Anchor" href="#提交事件不再重载页面">#</a> 提交事件不再重载页面</h2>
-<p><code>&lt;form v-on:submit.prevent=&quot;onSubmit&quot;&gt;&lt;/form&gt;</code></p>
-<h2 id="修饰符可以串联"><a class="markdownIt-Anchor" href="#修饰符可以串联">#</a> 修饰符可以串联</h2>
-<p><code>&lt;a v-on:click.stop.prevent=&quot;doThat&quot;&gt;</code></p>
-<span id="more"></span>
-<h2 id="只有修饰符"><a class="markdownIt-Anchor" href="#只有修饰符">#</a> 只有修饰符</h2>
-<p><code>&lt;form v-on:submit.prevent&gt;&lt;/form&gt;</code></p>
-<br>
-<br>
-<br>
-<h2 id="mac谷歌跨域命令"><a class="markdownIt-Anchor" href="#mac谷歌跨域命令">#</a> Mac 谷歌跨域命令</h2>
-<p><code>open -n /Applications/Google\ Chrome.app/ --args --disable-web-security  --user-data-dir=/Users/GaoYuan/Documents/MyChromeDevUserData</code></p>
-<br>
-<br>
-<br>
-<h2 id="mac显示隐藏文件命令"><a class="markdownIt-Anchor" href="#mac显示隐藏文件命令">#</a> Mac 显示隐藏文件命令：</h2>
-<p><strong>显示隐藏文件</strong></p>
-<p><code>defaults write com.apple.finder AppleShowAllFiles Yes &amp;&amp; killall Finder </code></p>
-<p><strong>不显示隐藏文件</strong></p>
-<p><code>defaults write com.apple.finder AppleShowAllFiles No &amp;&amp; killall Finder </code></p>
-<br>
-<br>
-<h2 id="jison解决js处理后端返回的long型数据精度丢失问题"><a class="markdownIt-Anchor" href="#jison解决js处理后端返回的long型数据精度丢失问题">#</a> Jison 解决 JS 处理后端返回的 Long 型数据精度丢失问题</h2>
-<p>原因：js 是弱类型语言，所有的数字类型统称为 Number 类型，不区分 int、long、double 等。</p>
-<p><code>git clone git://github.com/zaach/jsonlint.git</code></p>
-<p>在 src 目录下提供了 jsonlint.y（grammaFile）和 jsonlint.l（lexFile) 两个文件。使用这两个文件可以直接生成 jsonlint.js。如下修改 jsonlint.y：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">JSONNumber</span><br><span class="line"></span><br><span class="line">    : NUMBER</span><br><span class="line">    </span><br><span class="line">        &#123;$$ = yytext == String(Number(yytext))? Number(yytext): yytext;&#125;</span><br><span class="line">    ;</span><br></pre></td></tr></table></figure>
-<p>然后：</p>
-<p><code>cd src</code></p>
-<p><code>jison jsonlint.y jsonlint.l</code></p>
-<h3 id="最后引入至项目"><a class="markdownIt-Anchor" href="#最后引入至项目">#</a> 最后引入至项目</h3>
-<p>1. 将自定义的 jsonlint.js 放到 static 目录下<br>
- 2. 在 index.html 中引入<br>
- <code>&lt;script src=&quot;./static/jsonlint/jsonlint.js&quot;&gt;&lt;/script&gt;</code></p>
-<p>3、在我们请求的返回数据中，做一层拦截转换，此处以 axios 的实现方法为例：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/*transformResponse 选项允许我们在数据传送到 `then/catch` 方法之前对数据进行改动*/</span><br><span class="line">axios.defaults.transformResponse = [</span><br><span class="line">  function(data) &#123;</span><br><span class="line">    return jsonlint.parse(data)</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>综上，定义 JSON 转化避免 long 类型数据溢出，可以实现 long 类型数据在前端正常显示</p>
-<h2 id="mac给文件夹赋予管理员权限"><a class="markdownIt-Anchor" href="#mac给文件夹赋予管理员权限">#</a> Mac 给文件夹赋予管理员权限</h2>
-<p><code>sudo chown -R gaoyuan ios</code></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">if ($request_filename ~* .*index\.html$) &#123;</span><br><span class="line">     add_header Cache-Control &quot;private, no-store, no-cache, must-revalidate, proxy-revalidate&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>个人笔记</category>
-      </categories>
-      <tags>
-        <tag>note</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>移动端自适应——手淘flexible</title>
-    <url>/2021/04/25/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible/</url>
-    <content><![CDATA[<h2 id="移动端自适应手淘flexible"><a class="markdownIt-Anchor" href="#移动端自适应手淘flexible">#</a> 移动端自适应 —— 手淘 flexible</h2>
-<p>熟悉移动端的自适应方案的朋友对 rem 适应方案，肯定不陌生，最出名的就是阿里的 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2FtZmUvbGliLWZsZXhpYmxl">lib-flexible</span> 方案。</p>
-<p>** 原理：**flexible 就是根据不同的屏幕算出 html 的 font-size，通过 js 来动态写 meta 标签。</p>
-<p>事实上他做了这几样事情：</p>
-<ul>
-<li>动态改写 <code>&lt;meta&gt;</code>  标签</li>
-<li>给 <code>&lt;html&gt;</code>  元素添加 <code>data-dpr</code>  属性，并且动态改写 <code>data-dpr</code>  的值</li>
-<li>给 <code>&lt;html&gt;</code>  元素添加 <code>font-size</code>  属性，并且动态改写 <code>font-size</code>  的值</li>
-</ul>
-<p>比如我们在做移动端的时候，经常拿到的设计稿是 640px 或者 750px。自己项目中就是 640px，以此为例，自己在项目中为了计算方便，所以给 html 根元素设置的字体大小是 100px，也就是在 640px 下面。这里注意，我们给 html 设置 100px，这个是字体哦，所以最好在 body 设置一下字体大小。</p>
-<span id="more"></span>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 设置html元素的字体大小为100px</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 所有的像素我们直接除以</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">640px  ——  6.4rem</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">64px —— 0.64rem</span><br></pre></td></tr></table></figure>
-<p>那么如果 64px，对应我们写 rem 就是 0.64rem，也不需要动用计算器去计算 rem，需要多强的大脑呀（虽然有很多插件帮我们）</p>
-<p>修改 flexible.js。640px 下面的 10 就变成 6.4</p>
-<p>![image-20210425112100315](/Users/gaoyuan/Library/Application Support/typora-user-images/image-20210425112100315.png)</p>
-<p>这样，我们页面直接把 px 换算成 rem，就可以实现自适应。（记住，自己这里以 640px 设计稿为基础，如果是 750px 就是除以 7.5）。</p>
-<p><strong>字号不使用 rem</strong></p>
-<p>我们都知道 chrome 的最小显示的字体是 12px，如果字体用 rem，计算出来小于 12px，那么就也会以 12px 显示，而且我们不希望出现 13px 或者 15px 这样的奇葩尺寸，所以字体最好是用 px 来表示，至于适应，我们可以写媒体查询。</p>
-<h2 id="vue中使用rem"><a class="markdownIt-Anchor" href="#vue中使用rem">#</a> vue 中使用 rem</h2>
-<p>vue 现在正是火的势头上，作者说明年估计 3.0 要出来了。那么在 vue 我们如果做移动端自适应怎么弄呢？</p>
-<p><strong>安装 flexible</strong></p>
-<p><em>在命令行中运行如下安装：</em></p>
-<blockquote>
-<p>npm i lib-flexible --save-dev</p>
-</blockquote>
-<p><strong>引入 flexible</strong></p>
-<p><em>在项目入口文件 main.js 里 引入 lib-flexible</em></p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&#x27;lib-flexible&#x27;</span></span><br></pre></td></tr></table></figure>
-<p>对于我们的 index.html，最好是不要 meta 标签，flexible 会自动添加上的，因为有一个判断。当然了，懒惰果然是最大的生产力，有的人觉得换算 rem 太麻烦，就出现了插件<span class="exturl" data-url="aHR0cHM6Ly93d3cubnBtanMuY29tL3BhY2thZ2UvcHgycmVtLWxvYWRlcg=="> px2rem-loader</span>，把 px 自动转化为对应的 rem。但是呢，麻烦的就是如果引入外部的 css 文件，那么也会把 px 转化为 rem。自己在项目中就是手动计算 rem，用上面的方法，直接除以 100，这个应该很简单吧，都是程序员，数学这个还是可以吧…</p>
-]]></content>
-      <categories>
-        <category>移动端</category>
-      </categories>
-      <tags>
-        <tag>移动端</tag>
       </tags>
   </entry>
   <entry>
@@ -2073,6 +1940,139 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
       </categories>
       <tags>
         <tag>CSS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>移动端自适应——手淘flexible</title>
+    <url>/2021/04/25/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible/</url>
+    <content><![CDATA[<h2 id="移动端自适应手淘flexible"><a class="markdownIt-Anchor" href="#移动端自适应手淘flexible">#</a> 移动端自适应 —— 手淘 flexible</h2>
+<p>熟悉移动端的自适应方案的朋友对 rem 适应方案，肯定不陌生，最出名的就是阿里的 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2FtZmUvbGliLWZsZXhpYmxl">lib-flexible</span> 方案。</p>
+<p>** 原理：**flexible 就是根据不同的屏幕算出 html 的 font-size，通过 js 来动态写 meta 标签。</p>
+<p>事实上他做了这几样事情：</p>
+<ul>
+<li>动态改写 <code>&lt;meta&gt;</code>  标签</li>
+<li>给 <code>&lt;html&gt;</code>  元素添加 <code>data-dpr</code>  属性，并且动态改写 <code>data-dpr</code>  的值</li>
+<li>给 <code>&lt;html&gt;</code>  元素添加 <code>font-size</code>  属性，并且动态改写 <code>font-size</code>  的值</li>
+</ul>
+<p>比如我们在做移动端的时候，经常拿到的设计稿是 640px 或者 750px。自己项目中就是 640px，以此为例，自己在项目中为了计算方便，所以给 html 根元素设置的字体大小是 100px，也就是在 640px 下面。这里注意，我们给 html 设置 100px，这个是字体哦，所以最好在 body 设置一下字体大小。</p>
+<span id="more"></span>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 设置html元素的字体大小为100px</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 所有的像素我们直接除以</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">640px  ——  6.4rem</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">64px —— 0.64rem</span><br></pre></td></tr></table></figure>
+<p>那么如果 64px，对应我们写 rem 就是 0.64rem，也不需要动用计算器去计算 rem，需要多强的大脑呀（虽然有很多插件帮我们）</p>
+<p>修改 flexible.js。640px 下面的 10 就变成 6.4</p>
+<p>![image-20210425112100315](/Users/gaoyuan/Library/Application Support/typora-user-images/image-20210425112100315.png)</p>
+<p>这样，我们页面直接把 px 换算成 rem，就可以实现自适应。（记住，自己这里以 640px 设计稿为基础，如果是 750px 就是除以 7.5）。</p>
+<p><strong>字号不使用 rem</strong></p>
+<p>我们都知道 chrome 的最小显示的字体是 12px，如果字体用 rem，计算出来小于 12px，那么就也会以 12px 显示，而且我们不希望出现 13px 或者 15px 这样的奇葩尺寸，所以字体最好是用 px 来表示，至于适应，我们可以写媒体查询。</p>
+<h2 id="vue中使用rem"><a class="markdownIt-Anchor" href="#vue中使用rem">#</a> vue 中使用 rem</h2>
+<p>vue 现在正是火的势头上，作者说明年估计 3.0 要出来了。那么在 vue 我们如果做移动端自适应怎么弄呢？</p>
+<p><strong>安装 flexible</strong></p>
+<p><em>在命令行中运行如下安装：</em></p>
+<blockquote>
+<p>npm i lib-flexible --save-dev</p>
+</blockquote>
+<p><strong>引入 flexible</strong></p>
+<p><em>在项目入口文件 main.js 里 引入 lib-flexible</em></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&#x27;lib-flexible&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>对于我们的 index.html，最好是不要 meta 标签，flexible 会自动添加上的，因为有一个判断。当然了，懒惰果然是最大的生产力，有的人觉得换算 rem 太麻烦，就出现了插件<span class="exturl" data-url="aHR0cHM6Ly93d3cubnBtanMuY29tL3BhY2thZ2UvcHgycmVtLWxvYWRlcg=="> px2rem-loader</span>，把 px 自动转化为对应的 rem。但是呢，麻烦的就是如果引入外部的 css 文件，那么也会把 px 转化为 rem。自己在项目中就是手动计算 rem，用上面的方法，直接除以 100，这个应该很简单吧，都是程序员，数学这个还是可以吧…</p>
+]]></content>
+      <categories>
+        <category>移动端</category>
+      </categories>
+      <tags>
+        <tag>移动端</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>浏览器回流和重汇</title>
+    <url>/2021/04/16/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%9B%9E%E6%B5%81%E5%92%8C%E9%87%8D%E6%B1%87/</url>
+    <content><![CDATA[<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/640" alt=""></p>
+<span id="more"></span>
+<h2 id="一-是什么"><a class="markdownIt-Anchor" href="#一-是什么">#</a> 一、是什么</h2>
+<p>在 <code>HTML</code>  中，每个元素都可以理解成一个盒子，在浏览器解析过程中，会涉及到回流与重绘：</p>
+<ul>
+<li>回流：布局引擎会根据各种样式计算每个盒子在页面上的大小与位置</li>
+<li>重绘：当计算好盒模型的位置、大小及其他属性后，浏览器根据每个盒子特性进行绘制</li>
+</ul>
+<p>具体的浏览器解析渲染机制如下所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20210416102029.png" alt=""></p>
+<ul>
+<li>解析 HTML，生成 DOM 树，解析 CSS，生成 CSSOM 树</li>
+<li>将 DOM 树和 CSSOM 树结合，生成渲染树 (Render Tree)</li>
+<li>Layout (回流): 根据生成的渲染树，进行回流 (Layout)，得到节点的几何信息（位置，大小）</li>
+<li>Painting (重绘): 根据渲染树以及回流得到的几何信息，得到节点的绝对像素</li>
+<li>Display: 将像素发送给 GPU，展示在页面上</li>
+</ul>
+<p>在页面初始渲染阶段，回流不可避免的触发，可以理解成页面一开始是空白的元素，后面添加了新的元素使页面布局发生改变</p>
+<p>当我们对  <code>DOM</code>  的修改引发了  <code>DOM</code>  几何尺寸的变化（比如修改元素的宽、高或隐藏元素等）时，浏览器需要重新计算元素的几何属性，然后再将计算的结果绘制出来</p>
+<p>当我们对  <code>DOM</code>  的修改导致了样式的变化（ <code>color</code>  或 <code>background-color</code> ），却并未影响其几何属性时，浏览器不需重新计算元素的几何属性、直接为该元素绘制新的样式，这里就仅仅触发了重绘</p>
+<h2 id="二-如何触发"><a class="markdownIt-Anchor" href="#二-如何触发">#</a> 二、如何触发</h2>
+<p>要想减少回流和重绘的次数，首先要了解回流和重绘是如何触发的</p>
+<h3 id="回流触发时机"><a class="markdownIt-Anchor" href="#回流触发时机">#</a> 回流触发时机</h3>
+<p>回流这一阶段主要是计算节点的位置和几何信息，那么当页面布局和几何信息发生变化的时候，就需要回流，如下面情况：</p>
+<ul>
+<li>添加或删除可见的 DOM 元素</li>
+<li>元素的位置发生变化</li>
+<li>元素的尺寸发生变化（包括外边距、内边框、边框大小、高度和宽度等）</li>
+<li>内容发生变化，比如文本变化或图片被另一个不同尺寸的图片所替代</li>
+<li>页面一开始渲染的时候（这避免不了）</li>
+<li>浏览器的窗口尺寸变化（因为回流是根据视口的大小来计算元素的位置和大小的）</li>
+</ul>
+<p>还有一些容易被忽略的操作：获取一些特定属性的值</p>
+<blockquote>
+<p>❝</p>
+<p>offsetTop、offsetLeft、 offsetWidth、offsetHeight、scrollTop、scrollLeft、scrollWidth、scrollHeight、clientTop、clientLeft、clientWidth、clientHeight</p>
+<p>❞</p>
+</blockquote>
+<p>这些属性有一个共性，就是需要通过即时计算得到。因此浏览器为了获取这些值，也会进行回流</p>
+<p>除此还包括 <code>getComputedStyle</code>  方法，原理是一样的</p>
+<h3 id="重绘触发时机"><a class="markdownIt-Anchor" href="#重绘触发时机">#</a> 重绘触发时机</h3>
+<p>触发回流一定会触发重绘</p>
+<p>可以把页面理解为一个黑板，黑板上有一朵画好的小花。现在我们要把这朵从左边移到了右边，那我们要先确定好右边的具体位置，画好形状（回流），再画上它原有的颜色（重绘）</p>
+<p>除此之外还有一些其他引起重绘行为：</p>
+<ul>
+<li>颜色的修改</li>
+<li>文本方向的修改</li>
+<li>阴影的修改</li>
+</ul>
+<h3 id="浏览器优化机制"><a class="markdownIt-Anchor" href="#浏览器优化机制">#</a> 浏览器优化机制</h3>
+<p>由于每次重排都会造成额外的计算消耗，因此大多数浏览器都会通过队列化修改并批量执行来优化重排过程。浏览器会将修改操作放入到队列里，直到过了一段时间或者操作达到了一个阈值，才清空队列</p>
+<p>当你获取布局信息的操作的时候，会强制队列刷新，包括前面讲到的 <code>offsetTop</code>  等方法都会返回最新的数据</p>
+<p>因此浏览器不得不清空队列，触发回流重绘来返回正确的值</p>
+<h2 id="三-如何减少"><a class="markdownIt-Anchor" href="#三-如何减少">#</a> 三、如何减少</h2>
+<p>我们了解了如何触发回流和重绘的场景，下面给出避免回流的经验：</p>
+<ul>
+<li>如果想设定元素的样式，通过改变元素的  <code>class</code>  类名 (尽可能在 DOM 树的最里层)</li>
+<li>避免设置多项内联样式</li>
+<li>应用元素的动画，使用  <code>position</code>  属性的  <code>fixed</code>  值或  <code>absolute</code>  值 (如前文示例所提)</li>
+<li>避免使用  <code>table</code>  布局， <code>table</code>  中每个元素的大小以及内容的改动，都会导致整个  <code>table</code>  的重新计算</li>
+<li>对于那些复杂的动画，对其设置  <code>position: fixed/absolute</code> ，尽可能地使元素脱离文档流，从而减少对其他元素的影响</li>
+<li>使用 css3 硬件加速，可以让 <code>transform</code> 、 <code>opacity</code> 、 <code>filters</code>  这些动画不会引起回流重绘</li>
+<li>避免使用 CSS 的  <code>JavaScript</code>  表达式</li>
+</ul>
+<p>在使用  <code>JavaScript</code>  动态插入多个节点时，可以使用 <code>DocumentFragment</code> . 创建后一次插入。就能避免多次的渲染性能</p>
+<p>但有时候，我们会无可避免地进行回流或者重绘，我们可以更好使用它们</p>
+<p>例如，多次修改一个把元素布局的时候，我们很可能会如下操作</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const el = document.getElementById(&#x27;el&#x27;)</span><br><span class="line">for(let i=0;i&lt;10;i++) &#123;</span><br><span class="line">    el.style.top  = el.offsetTop  + 10 + &quot;px&quot;;</span><br><span class="line">    el.style.left = el.offsetLeft + 10 + &quot;px&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>每次循环都需要获取多次 <code>offset</code>  属性，比较糟糕，可以使用变量的形式缓存起来，待计算完毕再提交给浏览器发出重计算请求</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 缓存offsetLeft与offsetTop的值</span><br><span class="line">const el = document.getElementById(&#x27;el&#x27;)</span><br><span class="line">let offLeft = el.offsetLeft, offTop = el.offsetTop</span><br><span class="line"></span><br><span class="line">// 在JS层面进行计算</span><br><span class="line">for(let i=0;i&lt;10;i++) &#123;</span><br><span class="line">  offLeft += 10</span><br><span class="line">  offTop  += 10</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 一次性将计算结果应用到DOM上</span><br><span class="line">el.style.left = offLeft + &quot;px&quot;</span><br><span class="line">el.style.top = offTop  + &quot;px&quot;</span><br></pre></td></tr></table></figure>
+<p>我们还可避免改变样式，使用类名去合并样式</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const container = document.getElementById(&#x27;container&#x27;)</span><br><span class="line">container.style.width = &#x27;100px&#x27;</span><br><span class="line">container.style.height = &#x27;200px&#x27;</span><br><span class="line">container.style.border = &#x27;10px solid red&#x27;</span><br><span class="line">container.style.color = &#x27;red&#x27;</span><br></pre></td></tr></table></figure>
+<p>使用类名去合并样式</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;style&gt;</span><br><span class="line">    .basic_style &#123;</span><br><span class="line">        width: 100px;</span><br><span class="line">        height: 200px;</span><br><span class="line">        border: 10px solid red;</span><br><span class="line">        color: red;</span><br><span class="line">    &#125;</span><br><span class="line">&lt;/style&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">    const container = document.getElementById(&#x27;container&#x27;)</span><br><span class="line">    container.classList.add(&#x27;basic_style&#x27;)</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>前者每次单独操作，都去触发一次渲染树更改（新浏览器不会），</p>
+<p>都去触发一次渲染树更改，从而导致相应的回流与重绘过程</p>
+<p>合并之后，等于我们将所有的更改一次性发出</p>
+<p>我们还可以通过通过设置元素属性 <code>display: none</code> ，将其从页面上去掉，然后再进行后续操作，这些后续操作也不会触发回流与重绘，这个过程称为离线操作</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const container = document.getElementById(&#x27;container&#x27;)</span><br><span class="line">container.style.width = &#x27;100px&#x27;</span><br><span class="line">container.style.height = &#x27;200px&#x27;</span><br><span class="line">container.style.border = &#x27;10px solid red&#x27;</span><br><span class="line">container.style.color = &#x27;red&#x27;</span><br></pre></td></tr></table></figure>
+<p>离线操作后</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">let container = document.getElementById(&#x27;container&#x27;)</span><br><span class="line">container.style.display = &#x27;none&#x27;</span><br><span class="line">container.style.width = &#x27;100px&#x27;</span><br><span class="line">container.style.height = &#x27;200px&#x27;</span><br><span class="line">container.style.border = &#x27;10px solid red&#x27;</span><br><span class="line">container.style.color = &#x27;red&#x27;</span><br><span class="line">...（省略了许多类似的后续操作）</span><br><span class="line">container.style.display = &#x27;block&#x27;</span><br></pre></td></tr></table></figure>
+<h2 id=""><a class="markdownIt-Anchor" href="#">#</a> </h2>
+]]></content>
+      <categories>
+        <category>note</category>
+      </categories>
+      <tags>
+        <tag>note</tag>
       </tags>
   </entry>
 </search>
