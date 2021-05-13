@@ -425,112 +425,6 @@ SSL 提供服务<br>
       </tags>
   </entry>
   <entry>
-    <title>JavaScript基础（二）从原型到原型链</title>
-    <url>/2021/03/21/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%E4%BB%8E%E5%8E%9F%E5%9E%8B%E5%88%B0%E5%8E%9F%E5%9E%8B%E9%93%BE/</url>
-    <content><![CDATA[<blockquote>
-<p>本文主要从构造函数 -&gt; 原型（隐式原型 + 显示原型）-&gt; 原型链的顺序，渐进式讲解，希望对你有所做帮助，共勉～</p>
-</blockquote>
-<h2 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h2>
-<p>又到了回忆过去的时候了，知识就是这样，原型和原型链在我之前的实习生涯中用到的很少 —— 几乎没有（噗！我菜我摊牌了），但是它和 this 指向问题一样，是初级、中级前端开发在面试时永远绕不开的话题。是不是大家每次看面经的时候都会去搜索原型相关的知识点？</p>
-<p>你看这知识，总是在考的时候，才能知道它的重要，就好像曾经有一段贼拉真挚的面试题摆在我面前… 话题拉回来，今天我们就收了这个<strong>孽障</strong>！</p>
-<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/src=http___img.wxcha.com_file_201711_22_e1655873d2.jpg&refer=http___img.wxcha.jpeg" style="zoom:50%;" />
-<span id="more"></span>
-<h2 id="一-构造函数"><a class="markdownIt-Anchor" href="#一-构造函数">#</a> 一、构造函数</h2>
-<h3 id="11-什么是构造函数"><a class="markdownIt-Anchor" href="#11-什么是构造函数">#</a> 1.1 什么是构造函数？</h3>
-<p>构造函数本身就是一个函数，与普通函数没有任何区别，不过<strong>为了规范一般将其首字母大写</strong>。构造函数和普通函数的区别在于，使用<strong> new</strong> 生成实例的函数就是构造函数，直接调用的就是普通函数。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="built_in">console</span>.log(person.name) <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-<p>在这个例子中，Person 就是一个构造函数。</p>
-<h3 id="12-constructor"><a class="markdownIt-Anchor" href="#12-constructor">#</a> 1.2 constructor？</h3>
-<p><code>constructor</code>  返回创建实例对象时构造函数的引用。此属性的值是对函数本身的引用，而不是一个包含函数名称的字符串。</p>
-<p><img data-src="https://img-blog.csdnimg.cn/20200604185358168.png" alt="被构造出来的person的"> 可以看到实例对象的 constructor 指向了它的构造函数，而它和原型的关系我们在之后会链接到一起。</p>
-<h3 id="13-都有哪些数据类型或者函数拥有constructor呢"><a class="markdownIt-Anchor" href="#13-都有哪些数据类型或者函数拥有constructor呢">#</a> 1.3 都有哪些数据类型或者函数拥有 <code>constructor</code>  呢？</h3>
-<p>在 JavaScript 中，每个具有<strong>原型</strong>的对象都会自动获得 constructor 属性。除了： <code>arguments</code> 、 <code>Enumerator</code> 、 <code>Error</code> 、 <code>Global</code> 、 <code>Math</code> 、 <code>RegExp</code>  等一些特殊对象之外，其他所有的 JavaScript 内置对象都具备 constructor 属性。例如： <code>Array</code> 、 <code>Boolean</code> 、 <code>Date</code> 、 <code>Function</code> 、 <code>Number</code> 、 <code>Object</code> 、 <code>String</code>  等。所有主流浏览器均支持该属性。打开控制台我们可以验证一下</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 字符串</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;str&#x27;</span>.constructor) <span class="comment">// ƒ String() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;str&#x27;</span>.constructor === <span class="built_in">String</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 数组</span></span><br><span class="line"><span class="built_in">console</span>.log([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].constructor) <span class="comment">// ƒ Array() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].constructor === <span class="built_in">Array</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 数字</span></span><br><span class="line"><span class="keyword">var</span> num = <span class="number">1</span></span><br><span class="line"><span class="built_in">console</span>.log(num.constructor) <span class="comment">// ƒ Number() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(num.constructor === <span class="built_in">Number</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Date</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">new</span> <span class="built_in">Date</span>().constructor) <span class="comment">// ƒ Date() &#123; [native code] &#125;</span></span><br><span class="line"><span class="comment">// 注意！！！不要混淆哦</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">new</span> <span class="built_in">Date</span>().getTime().constructor) <span class="comment">// ƒ Number() &#123; [native code] &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Boolean</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">true</span>.constructor) <span class="comment">// ƒ Boolean() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">true</span>.constructor === <span class="built_in">Boolean</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">console</span>.log(show.constructor) <span class="comment">// ƒ Function() &#123; [native code] &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义构造函数，无返回值</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = name;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> p = <span class="keyword">new</span> Person()</span><br><span class="line"><span class="built_in">console</span>.log(p.constructor) <span class="comment">// ƒ Person()</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 有返回值</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = name;</span><br><span class="line">	<span class="keyword">return</span> &#123;</span><br><span class="line">		<span class="attr">name</span>: <span class="string">&#x27;gaoyuan&#x27;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> p = Person()</span><br><span class="line"><span class="built_in">console</span>.log(p1.constructor) <span class="comment">// ƒ Object() &#123; [native code] &#125;</span></span><br></pre></td></tr></table></figure>
-<h3 id="14-模拟实现一个new"><a class="markdownIt-Anchor" href="#14-模拟实现一个new">#</a> 1.4 模拟实现一个 new</h3>
-<p>既然构造函数与普通函数的区别仅仅在于调用方式上，我们就应该了解 new。</p>
-<ul>
-<li>当调用 <code>new</code>  运算符时，该函数总会返回一个对象；</li>
-<li>通常情况下，构造器里的 this 就指向返回的这个对象；</li>
-</ul>
-<p>代码如下：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">通常情况下</span><br><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass();</span><br><span class="line">obj.name; <span class="comment">// gaoyuan</span></span><br><span class="line"></span><br><span class="line">特殊情况</span><br><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">	<span class="keyword">return</span> &#123;</span><br><span class="line">		<span class="attr">name</span>: <span class="string">&#x27;老王&#x27;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass();</span><br><span class="line">obj.name <span class="comment">// 老王</span></span><br></pre></td></tr></table></figure>
-<p>我们利用  <code>__proto__</code> （隐式原型，下文会提到）属性来模拟一下 new 调用构造函数的过程：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> objectNew = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="comment">// 从object.prototype上克隆一个空的对象</span></span><br><span class="line">    <span class="keyword">var</span> obj = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">    <span class="comment">// 取得外部传入的构造器，这里是Person</span></span><br><span class="line">    <span class="keyword">var</span> Constructor = [].shift.call( <span class="built_in">arguments</span> );</span><br><span class="line">    <span class="comment">// 更新，指向正确的原型</span></span><br><span class="line">    obj.__proto__ = Constructor.prototype; <span class="comment">//知识点，要考、要考、要考</span></span><br><span class="line">    <span class="comment">// 借用外部传入的构造器给obj设置属性</span></span><br><span class="line">    <span class="keyword">var</span> ret = Constructor.apply(obj, <span class="built_in">arguments</span>);</span><br><span class="line">    <span class="comment">// 确保构造器总是返回一个对象</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">typeof</span> ref === <span class="string">&#x27;object&#x27;</span> ? ret : obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&fm=26&gp=0.jpeg" style="zoom: 67%;" />
-<h2 id="二-原型"><a class="markdownIt-Anchor" href="#二-原型">#</a> 二、原型</h2>
-<h3 id="21-prototype显式原型"><a class="markdownIt-Anchor" href="#21-prototype显式原型">#</a> 2.1 prototype (显式原型)</h3>
-<p>JavaScript 是一种基于原型的语言 (prototype-based language)，在设计的时候模仿了 Java 的两套类型机制： <code>基本类型</code>  和  <code>对象类型</code> 。可见原型很重要！</p>
-<p>每个对象都拥有一个原型对象，类是以函数的形式来定义的。prototype 表示该函数的原型，也表示一个类的成员的集合。看下图： <img data-src="https://img-blog.csdnimg.cn/20200605140618427.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"> 可以发现 Person 函数自己的原型都有什么：</p>
-<ul>
-<li><code>constructor</code>  (Person.prototype.constructor =&gt; Person)</li>
-<li><code>__proto__</code>  （我们称它为隐式原型）</li>
-</ul>
-<p>此时我们得到了第一张表示构造函数和实例原型之间的关系图：</p>
-<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTEucG5n?x-oss-process=image/format,png" alt="构造函数和实例原型的关系图"></p>
-<p>那么我们该怎么表示实例与构造函数原型，也就是 person 和 Person.prototype 之间的关系呢，这时候我们就要讲到第二个属性：</p>
-<h3 id="22-proto隐式原型"><a class="markdownIt-Anchor" href="#22-proto隐式原型">#</a> 2.2 <strong>proto</strong> (隐式原型)</h3>
-<p>这是每一个 JavaScript 对象 (除了 null) 都具有的一个属性，叫 <code>__proto__</code> ，这是一个访问器属性（即 getter 函数和 setter 函数），通过它可以访问到对象的内部 <code>[[Prototype]]</code>  (一个对象或 null)。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="built_in">console</span>.log(person.__proto__ === Person.prototype); <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
-<p>于是我们更新下关系图：</p>
-<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTIucG5n?x-oss-process=image/format,png" alt="实例与实例原型的关系图"></p>
-<p><strong>小结：</strong> 每个引用类型的隐式原型都指向它的构造函数的显式原型</p>
-<h3 id="23-constructor"><a class="markdownIt-Anchor" href="#23-constructor">#</a> 2.3 constructor</h3>
-<p>前文提到了 <code>constructor</code> ，它与原型的关系也可以添加到这张图里，更新下关系图：</p>
-<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTMucG5n?x-oss-process=image/format,png" alt="实例原型与构造函数的关系图"> 根据上图的关系，下面这段的结果，大家就一目了然了：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(person.__proto__ == Person.prototype) <span class="comment">// true</span></span><br><span class="line"><span class="built_in">console</span>.log(Person.prototype.constructor == Person) <span class="comment">// true</span></span><br><span class="line"><span class="comment">// 顺便学习一个ES5的方法,可以获得对象的原型</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">Object</span>.getPrototypeOf(person) === Person.prototype) <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
-<p>接下来我们要继续思考实例和原型的关系：</p>
-<h2 id="三-实例与原型"><a class="markdownIt-Anchor" href="#三-实例与原型">#</a> 三、实例与原型</h2>
-<p>当读取实例的属性时，如果找不到，就会查找与对象关联的原型中的属性，如果还查不到，就去找原型的原型，一直找到最顶层为止。这样一个查找过程</p>
-<p>举个例子：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line">Person.prototype.name = <span class="string">&#x27;老王&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line">person.name = <span class="string">&#x27;余光&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(person.name) <span class="comment">// 余光</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span> person.name;</span><br><span class="line"><span class="built_in">console</span>.log(person.name) <span class="comment">// 老王</span></span><br></pre></td></tr></table></figure>
-<p>在这个例子中，我们给实例对象 person 添加了 name 属性，当我们打印 <span class="exturl" data-url="aHR0cDovL3BlcnNvbi5uYW1l">person.name</span> 的时候，结果自然为 余光（is me）。</p>
-<p><strong>描述：</strong></p>
-<p>但是当我们删除了 person 的 name 属性后，再次读取 <span class="exturl" data-url="aHR0cDovL3BlcnNvbi5uYW1l">person.name</span>，从 person 对象中找不到 name 属性就会从 person 的原型也就是 person.<strong>proto</strong> ，也就是 Person.prototype 中查找，幸运的是我们找到了 name 属性，结果为 老王（这…）</p>
-<p><strong>总结：</strong></p>
-<ul>
-<li>尝试遍历 <code>实例a</code>  中的所有属性，但没有找到目标属性；</li>
-<li>查找 <code>name</code>  属性的这个请求被委托给该 <code>实例a</code>  的构造器 ( <code>A</code> ) 的原型，它被 <code>a.__proto__</code>  记录着并且指向 A.prototype；</li>
-<li>A.prototype 存在目标属性，返回他的值；</li>
-</ul>
-<p>但是万一还没有找到呢？原型的原型又是什么呢？</p>
-<h2 id="四-原型的原型"><a class="markdownIt-Anchor" href="#四-原型的原型">#</a> 四、原型的原型</h2>
-<p>在前面，我们已经讲了原型也是一个对象，既然是对象，我们就可以用最原始的方式创建它，那就是：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">obj.name = <span class="string">&#x27;余光&#x27;</span></span><br><span class="line"><span class="built_in">console</span>.log(obj.name) <span class="comment">// 余光</span></span><br></pre></td></tr></table></figure>
-<p>其实原型对象就是通过 <code>Object</code>  构造函数生成的，结合之前所讲，实例的  <code>__proto__</code>  指向构造函数的  <code>prototype</code>  ，可以理解成， <code>Object.prototype()</code>  是所有对象的根对象，所以我们再次更新下关系图：</p>
-<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTQucG5n?x-oss-process=image/format,png" alt="原型的原型关系图"></p>
-<h2 id="五-原型链"><a class="markdownIt-Anchor" href="#五-原型链">#</a> 五、原型链</h2>
-<p>每个对象拥有一个原型对象，通过  <code>__proto__</code>  指针指向上一个原型 ，并从中继承方法和属性，同时原型对象也可能拥有原型，这样一层一层，最终指向  <code>null</code> 。<strong>这种关系被称为原型链</strong> (prototype chain)，通过原型链一个对象会拥有定义在其他对象中的属性和方法。</p>
-<p>这个链条存在着终点，是因为：Object.prototype 的原型是 ——null，引用阮一峰老师的 <span class="exturl" data-url="aHR0cDovL3d3dy5ydWFueWlmZW5nLmNvbS9ibG9nLzIwMTQvMDMvdW5kZWZpbmVkLXZzLW51bGwuaHRtbA==">《undefined 与 null 的区别》 (opens new window)</span> 就是：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">null 表示“没有对象”，即该处不应该有值。这句话也意味着 Object.prototype 没有原型</span><br></pre></td></tr></table></figure>
-<p>我们最后更新一次关系图，蓝色线条就可以表示原型链这种关系。</p>
-<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTUucG5n?x-oss-process=image/format,png" alt="原型链示意图"></p>
-<h3 id="补充易错点"><a class="markdownIt-Anchor" href="#补充易错点">#</a> 补充，易错点</h3>
-<p><strong>1.constructor</strong> 首先是 constructor 属性，我们看个例子：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="built_in">console</span>.log(person.constructor === Person); <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
-<p>当获取 person.constructor 时，其实 person 中并没有 constructor 属性，当不能读取到 constructor 属性时，会从 person 的原型也就是 Person.prototype 中读取，正好原型中有该属性，所以：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">person.constructor === Person.prototype.constructor</span><br></pre></td></tr></table></figure>
-<p><strong>2. <code>__proto__</code> </strong></p>
-<p>其次是 <strong>proto</strong> ，绝大部分浏览器都支持这个非标准的方法访问原型，然而它并不存在于 Person.prototype 中，实际上，它是来自于 Object.prototype ，与其说是一个属性，不如说是一个 getter/setter，当使用 obj.<strong>proto</strong> 时，可以理解成返回了 Object.getPrototypeOf (obj)。</p>
-<p><strong>3. 真的是继承吗？</strong></p>
-<p>最后是关于继承，前面我们讲到 “每一个对象都会从原型‘继承’属性”，实际上，继承是一个十分具有迷惑性的说法，引用《你不知道的 JavaScript》中的话，就是：</p>
-<p>继承意味着复制操作，然而 JavaScript 默认并不会复制对象的属性，相反，JavaScript 只是在两个对象之间创建一个关联，这样，一个对象就可以通过委托访问另一个对象的属性和函数，所以与其叫继承，<strong>委托</strong>的说法反而更准确些。</p>
-<h2 id="六-总结"><a class="markdownIt-Anchor" href="#六-总结">#</a> 六、总结</h2>
-<ul>
-<li>使用<strong> new</strong> 生成实例的函数就是构造函数，直接调用的就是普通函数；</li>
-<li>每个对象都拥有一个原型对象；</li>
-<li>每个引用类型的隐式原型都指向它的构造函数的显式原型；</li>
-<li>Object.prototype 是所有对象的根对象；</li>
-<li>原型链存在终点，不会无限查找下去；</li>
-</ul>
-]]></content>
-      <categories>
-        <category>javascript</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>JavaScript基础（三）作用域</title>
     <url>/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89%E4%BD%9C%E7%94%A8%E5%9F%9F/</url>
     <content><![CDATA[<blockquote>
@@ -724,6 +618,112 @@ SSL 提供服务<br>
 <li>利用闭包隔离作用域的特性可以解决共享作用域的问题</li>
 </ul>
 <p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&amp;fm=26&amp;gp=0.jpeg" alt=""></p>
+]]></content>
+      <categories>
+        <category>javascript</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>JavaScript基础（二）从原型到原型链</title>
+    <url>/2021/03/21/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%E4%BB%8E%E5%8E%9F%E5%9E%8B%E5%88%B0%E5%8E%9F%E5%9E%8B%E9%93%BE/</url>
+    <content><![CDATA[<blockquote>
+<p>本文主要从构造函数 -&gt; 原型（隐式原型 + 显示原型）-&gt; 原型链的顺序，渐进式讲解，希望对你有所做帮助，共勉～</p>
+</blockquote>
+<h2 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h2>
+<p>又到了回忆过去的时候了，知识就是这样，原型和原型链在我之前的实习生涯中用到的很少 —— 几乎没有（噗！我菜我摊牌了），但是它和 this 指向问题一样，是初级、中级前端开发在面试时永远绕不开的话题。是不是大家每次看面经的时候都会去搜索原型相关的知识点？</p>
+<p>你看这知识，总是在考的时候，才能知道它的重要，就好像曾经有一段贼拉真挚的面试题摆在我面前… 话题拉回来，今天我们就收了这个<strong>孽障</strong>！</p>
+<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/src=http___img.wxcha.com_file_201711_22_e1655873d2.jpg&refer=http___img.wxcha.jpeg" style="zoom:50%;" />
+<span id="more"></span>
+<h2 id="一-构造函数"><a class="markdownIt-Anchor" href="#一-构造函数">#</a> 一、构造函数</h2>
+<h3 id="11-什么是构造函数"><a class="markdownIt-Anchor" href="#11-什么是构造函数">#</a> 1.1 什么是构造函数？</h3>
+<p>构造函数本身就是一个函数，与普通函数没有任何区别，不过<strong>为了规范一般将其首字母大写</strong>。构造函数和普通函数的区别在于，使用<strong> new</strong> 生成实例的函数就是构造函数，直接调用的就是普通函数。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="built_in">console</span>.log(person.name) <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+<p>在这个例子中，Person 就是一个构造函数。</p>
+<h3 id="12-constructor"><a class="markdownIt-Anchor" href="#12-constructor">#</a> 1.2 constructor？</h3>
+<p><code>constructor</code>  返回创建实例对象时构造函数的引用。此属性的值是对函数本身的引用，而不是一个包含函数名称的字符串。</p>
+<p><img data-src="https://img-blog.csdnimg.cn/20200604185358168.png" alt="被构造出来的person的"> 可以看到实例对象的 constructor 指向了它的构造函数，而它和原型的关系我们在之后会链接到一起。</p>
+<h3 id="13-都有哪些数据类型或者函数拥有constructor呢"><a class="markdownIt-Anchor" href="#13-都有哪些数据类型或者函数拥有constructor呢">#</a> 1.3 都有哪些数据类型或者函数拥有 <code>constructor</code>  呢？</h3>
+<p>在 JavaScript 中，每个具有<strong>原型</strong>的对象都会自动获得 constructor 属性。除了： <code>arguments</code> 、 <code>Enumerator</code> 、 <code>Error</code> 、 <code>Global</code> 、 <code>Math</code> 、 <code>RegExp</code>  等一些特殊对象之外，其他所有的 JavaScript 内置对象都具备 constructor 属性。例如： <code>Array</code> 、 <code>Boolean</code> 、 <code>Date</code> 、 <code>Function</code> 、 <code>Number</code> 、 <code>Object</code> 、 <code>String</code>  等。所有主流浏览器均支持该属性。打开控制台我们可以验证一下</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 字符串</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;str&#x27;</span>.constructor) <span class="comment">// ƒ String() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;str&#x27;</span>.constructor === <span class="built_in">String</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 数组</span></span><br><span class="line"><span class="built_in">console</span>.log([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].constructor) <span class="comment">// ƒ Array() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].constructor === <span class="built_in">Array</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 数字</span></span><br><span class="line"><span class="keyword">var</span> num = <span class="number">1</span></span><br><span class="line"><span class="built_in">console</span>.log(num.constructor) <span class="comment">// ƒ Number() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(num.constructor === <span class="built_in">Number</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Date</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">new</span> <span class="built_in">Date</span>().constructor) <span class="comment">// ƒ Date() &#123; [native code] &#125;</span></span><br><span class="line"><span class="comment">// 注意！！！不要混淆哦</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">new</span> <span class="built_in">Date</span>().getTime().constructor) <span class="comment">// ƒ Number() &#123; [native code] &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Boolean</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">true</span>.constructor) <span class="comment">// ƒ Boolean() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">true</span>.constructor === <span class="built_in">Boolean</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">console</span>.log(show.constructor) <span class="comment">// ƒ Function() &#123; [native code] &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义构造函数，无返回值</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = name;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> p = <span class="keyword">new</span> Person()</span><br><span class="line"><span class="built_in">console</span>.log(p.constructor) <span class="comment">// ƒ Person()</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 有返回值</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = name;</span><br><span class="line">	<span class="keyword">return</span> &#123;</span><br><span class="line">		<span class="attr">name</span>: <span class="string">&#x27;gaoyuan&#x27;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> p = Person()</span><br><span class="line"><span class="built_in">console</span>.log(p1.constructor) <span class="comment">// ƒ Object() &#123; [native code] &#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="14-模拟实现一个new"><a class="markdownIt-Anchor" href="#14-模拟实现一个new">#</a> 1.4 模拟实现一个 new</h3>
+<p>既然构造函数与普通函数的区别仅仅在于调用方式上，我们就应该了解 new。</p>
+<ul>
+<li>当调用 <code>new</code>  运算符时，该函数总会返回一个对象；</li>
+<li>通常情况下，构造器里的 this 就指向返回的这个对象；</li>
+</ul>
+<p>代码如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">通常情况下</span><br><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass();</span><br><span class="line">obj.name; <span class="comment">// gaoyuan</span></span><br><span class="line"></span><br><span class="line">特殊情况</span><br><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">	<span class="keyword">return</span> &#123;</span><br><span class="line">		<span class="attr">name</span>: <span class="string">&#x27;老王&#x27;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass();</span><br><span class="line">obj.name <span class="comment">// 老王</span></span><br></pre></td></tr></table></figure>
+<p>我们利用  <code>__proto__</code> （隐式原型，下文会提到）属性来模拟一下 new 调用构造函数的过程：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> objectNew = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="comment">// 从object.prototype上克隆一个空的对象</span></span><br><span class="line">    <span class="keyword">var</span> obj = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">    <span class="comment">// 取得外部传入的构造器，这里是Person</span></span><br><span class="line">    <span class="keyword">var</span> Constructor = [].shift.call( <span class="built_in">arguments</span> );</span><br><span class="line">    <span class="comment">// 更新，指向正确的原型</span></span><br><span class="line">    obj.__proto__ = Constructor.prototype; <span class="comment">//知识点，要考、要考、要考</span></span><br><span class="line">    <span class="comment">// 借用外部传入的构造器给obj设置属性</span></span><br><span class="line">    <span class="keyword">var</span> ret = Constructor.apply(obj, <span class="built_in">arguments</span>);</span><br><span class="line">    <span class="comment">// 确保构造器总是返回一个对象</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">typeof</span> ref === <span class="string">&#x27;object&#x27;</span> ? ret : obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&fm=26&gp=0.jpeg" style="zoom: 67%;" />
+<h2 id="二-原型"><a class="markdownIt-Anchor" href="#二-原型">#</a> 二、原型</h2>
+<h3 id="21-prototype显式原型"><a class="markdownIt-Anchor" href="#21-prototype显式原型">#</a> 2.1 prototype (显式原型)</h3>
+<p>JavaScript 是一种基于原型的语言 (prototype-based language)，在设计的时候模仿了 Java 的两套类型机制： <code>基本类型</code>  和  <code>对象类型</code> 。可见原型很重要！</p>
+<p>每个对象都拥有一个原型对象，类是以函数的形式来定义的。prototype 表示该函数的原型，也表示一个类的成员的集合。看下图： <img data-src="https://img-blog.csdnimg.cn/20200605140618427.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"> 可以发现 Person 函数自己的原型都有什么：</p>
+<ul>
+<li><code>constructor</code>  (Person.prototype.constructor =&gt; Person)</li>
+<li><code>__proto__</code>  （我们称它为隐式原型）</li>
+</ul>
+<p>此时我们得到了第一张表示构造函数和实例原型之间的关系图：</p>
+<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTEucG5n?x-oss-process=image/format,png" alt="构造函数和实例原型的关系图"></p>
+<p>那么我们该怎么表示实例与构造函数原型，也就是 person 和 Person.prototype 之间的关系呢，这时候我们就要讲到第二个属性：</p>
+<h3 id="22-proto隐式原型"><a class="markdownIt-Anchor" href="#22-proto隐式原型">#</a> 2.2 <strong>proto</strong> (隐式原型)</h3>
+<p>这是每一个 JavaScript 对象 (除了 null) 都具有的一个属性，叫 <code>__proto__</code> ，这是一个访问器属性（即 getter 函数和 setter 函数），通过它可以访问到对象的内部 <code>[[Prototype]]</code>  (一个对象或 null)。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="built_in">console</span>.log(person.__proto__ === Person.prototype); <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+<p>于是我们更新下关系图：</p>
+<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTIucG5n?x-oss-process=image/format,png" alt="实例与实例原型的关系图"></p>
+<p><strong>小结：</strong> 每个引用类型的隐式原型都指向它的构造函数的显式原型</p>
+<h3 id="23-constructor"><a class="markdownIt-Anchor" href="#23-constructor">#</a> 2.3 constructor</h3>
+<p>前文提到了 <code>constructor</code> ，它与原型的关系也可以添加到这张图里，更新下关系图：</p>
+<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTMucG5n?x-oss-process=image/format,png" alt="实例原型与构造函数的关系图"> 根据上图的关系，下面这段的结果，大家就一目了然了：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(person.__proto__ == Person.prototype) <span class="comment">// true</span></span><br><span class="line"><span class="built_in">console</span>.log(Person.prototype.constructor == Person) <span class="comment">// true</span></span><br><span class="line"><span class="comment">// 顺便学习一个ES5的方法,可以获得对象的原型</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">Object</span>.getPrototypeOf(person) === Person.prototype) <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+<p>接下来我们要继续思考实例和原型的关系：</p>
+<h2 id="三-实例与原型"><a class="markdownIt-Anchor" href="#三-实例与原型">#</a> 三、实例与原型</h2>
+<p>当读取实例的属性时，如果找不到，就会查找与对象关联的原型中的属性，如果还查不到，就去找原型的原型，一直找到最顶层为止。这样一个查找过程</p>
+<p>举个例子：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line">Person.prototype.name = <span class="string">&#x27;老王&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line">person.name = <span class="string">&#x27;余光&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(person.name) <span class="comment">// 余光</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span> person.name;</span><br><span class="line"><span class="built_in">console</span>.log(person.name) <span class="comment">// 老王</span></span><br></pre></td></tr></table></figure>
+<p>在这个例子中，我们给实例对象 person 添加了 name 属性，当我们打印 <span class="exturl" data-url="aHR0cDovL3BlcnNvbi5uYW1l">person.name</span> 的时候，结果自然为 余光（is me）。</p>
+<p><strong>描述：</strong></p>
+<p>但是当我们删除了 person 的 name 属性后，再次读取 <span class="exturl" data-url="aHR0cDovL3BlcnNvbi5uYW1l">person.name</span>，从 person 对象中找不到 name 属性就会从 person 的原型也就是 person.<strong>proto</strong> ，也就是 Person.prototype 中查找，幸运的是我们找到了 name 属性，结果为 老王（这…）</p>
+<p><strong>总结：</strong></p>
+<ul>
+<li>尝试遍历 <code>实例a</code>  中的所有属性，但没有找到目标属性；</li>
+<li>查找 <code>name</code>  属性的这个请求被委托给该 <code>实例a</code>  的构造器 ( <code>A</code> ) 的原型，它被 <code>a.__proto__</code>  记录着并且指向 A.prototype；</li>
+<li>A.prototype 存在目标属性，返回他的值；</li>
+</ul>
+<p>但是万一还没有找到呢？原型的原型又是什么呢？</p>
+<h2 id="四-原型的原型"><a class="markdownIt-Anchor" href="#四-原型的原型">#</a> 四、原型的原型</h2>
+<p>在前面，我们已经讲了原型也是一个对象，既然是对象，我们就可以用最原始的方式创建它，那就是：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">obj.name = <span class="string">&#x27;余光&#x27;</span></span><br><span class="line"><span class="built_in">console</span>.log(obj.name) <span class="comment">// 余光</span></span><br></pre></td></tr></table></figure>
+<p>其实原型对象就是通过 <code>Object</code>  构造函数生成的，结合之前所讲，实例的  <code>__proto__</code>  指向构造函数的  <code>prototype</code>  ，可以理解成， <code>Object.prototype()</code>  是所有对象的根对象，所以我们再次更新下关系图：</p>
+<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTQucG5n?x-oss-process=image/format,png" alt="原型的原型关系图"></p>
+<h2 id="五-原型链"><a class="markdownIt-Anchor" href="#五-原型链">#</a> 五、原型链</h2>
+<p>每个对象拥有一个原型对象，通过  <code>__proto__</code>  指针指向上一个原型 ，并从中继承方法和属性，同时原型对象也可能拥有原型，这样一层一层，最终指向  <code>null</code> 。<strong>这种关系被称为原型链</strong> (prototype chain)，通过原型链一个对象会拥有定义在其他对象中的属性和方法。</p>
+<p>这个链条存在着终点，是因为：Object.prototype 的原型是 ——null，引用阮一峰老师的 <span class="exturl" data-url="aHR0cDovL3d3dy5ydWFueWlmZW5nLmNvbS9ibG9nLzIwMTQvMDMvdW5kZWZpbmVkLXZzLW51bGwuaHRtbA==">《undefined 与 null 的区别》 (opens new window)</span> 就是：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">null 表示“没有对象”，即该处不应该有值。这句话也意味着 Object.prototype 没有原型</span><br></pre></td></tr></table></figure>
+<p>我们最后更新一次关系图，蓝色线条就可以表示原型链这种关系。</p>
+<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTUucG5n?x-oss-process=image/format,png" alt="原型链示意图"></p>
+<h3 id="补充易错点"><a class="markdownIt-Anchor" href="#补充易错点">#</a> 补充，易错点</h3>
+<p><strong>1.constructor</strong> 首先是 constructor 属性，我们看个例子：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="built_in">console</span>.log(person.constructor === Person); <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+<p>当获取 person.constructor 时，其实 person 中并没有 constructor 属性，当不能读取到 constructor 属性时，会从 person 的原型也就是 Person.prototype 中读取，正好原型中有该属性，所以：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">person.constructor === Person.prototype.constructor</span><br></pre></td></tr></table></figure>
+<p><strong>2. <code>__proto__</code> </strong></p>
+<p>其次是 <strong>proto</strong> ，绝大部分浏览器都支持这个非标准的方法访问原型，然而它并不存在于 Person.prototype 中，实际上，它是来自于 Object.prototype ，与其说是一个属性，不如说是一个 getter/setter，当使用 obj.<strong>proto</strong> 时，可以理解成返回了 Object.getPrototypeOf (obj)。</p>
+<p><strong>3. 真的是继承吗？</strong></p>
+<p>最后是关于继承，前面我们讲到 “每一个对象都会从原型‘继承’属性”，实际上，继承是一个十分具有迷惑性的说法，引用《你不知道的 JavaScript》中的话，就是：</p>
+<p>继承意味着复制操作，然而 JavaScript 默认并不会复制对象的属性，相反，JavaScript 只是在两个对象之间创建一个关联，这样，一个对象就可以通过委托访问另一个对象的属性和函数，所以与其叫继承，<strong>委托</strong>的说法反而更准确些。</p>
+<h2 id="六-总结"><a class="markdownIt-Anchor" href="#六-总结">#</a> 六、总结</h2>
+<ul>
+<li>使用<strong> new</strong> 生成实例的函数就是构造函数，直接调用的就是普通函数；</li>
+<li>每个对象都拥有一个原型对象；</li>
+<li>每个引用类型的隐式原型都指向它的构造函数的显式原型；</li>
+<li>Object.prototype 是所有对象的根对象；</li>
+<li>原型链存在终点，不会无限查找下去；</li>
+</ul>
 ]]></content>
       <categories>
         <category>javascript</category>
@@ -1228,6 +1228,75 @@ user_name  CHAR (8)：定长字符串，可能产生空间浪费，但读取速�
       </tags>
   </entry>
   <entry>
+    <title>vue里封装axios——利用promise无痛刷新token</title>
+    <url>/2021/03/29/vue%E9%87%8C%E5%B0%81%E8%A3%85axios%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8promise%E6%97%A0%E7%97%9B%E5%88%B7%E6%96%B0token/</url>
+    <content><![CDATA[<h2 id="需求"><a class="markdownIt-Anchor" href="#需求">#</a> 需求</h2>
+<p>最近遇到个需求：前端登录后，后端返回 <code>token</code>  和 <code>token有效时间</code> ，当 token 过期时要求用旧 token 去获取新的 token，前端需要做到无痛刷新 <code>token</code> ，即请求刷新 token 时要做到用户无感知。</p>
+<h2 id="需求解析"><a class="markdownIt-Anchor" href="#需求解析">#</a> 需求解析</h2>
+<p>当用户发起一个请求时，判断 token 是否已过期，若已过期则先调 <code>refreshToken</code>  接口，拿到新的 token 后再继续执行之前的请求。</p>
+<p>这个问题的难点在于：当同时发起多个请求，而刷新 token 的接口还没返回，此时其他请求该如何处理？接下来会循序渐进地分享一下整个过程。</p>
+<span id="more"></span>
+<h2 id="实现思路"><a class="markdownIt-Anchor" href="#实现思路">#</a> 实现思路</h2>
+<p>由于后端返回了 token 的有效时间，可以有两种方法：</p>
+<h3 id="方法一"><a class="markdownIt-Anchor" href="#方法一">#</a> 方法一：</h3>
+<p>在请求发起前拦截每个请求，判断 token 的有效时间是否已经过期，若已过期，则将请求挂起，先刷新 token 后再继续请求。</p>
+<h3 id="方法二"><a class="markdownIt-Anchor" href="#方法二">#</a> 方法二：</h3>
+<p>不在请求前拦截，而是拦截返回后的数据。先发起请求，接口返回过期后，先刷新 token，再进行一次重试。</p>
+<h3 id="两种方法对比"><a class="markdownIt-Anchor" href="#两种方法对比">#</a> 两种方法对比</h3>
+<p>方法一</p>
+<ul>
+<li>优点： 在请求前拦截，能节省请求，省流量。</li>
+<li>缺点： 需要后端额外提供一个 token 过期时间的字段；使用了本地时间判断，若本地时间被篡改，特别是本地时间比服务器时间慢时，拦截会失败。</li>
+</ul>
+<blockquote>
+<p>PS：token 有效时间建议是时间段，类似缓存的 MaxAge，而不要是绝对时间。当服务器和本地时间不一致时，绝对时间会有问题。</p>
+</blockquote>
+<p>方法二</p>
+<ul>
+<li>优点：不需额外的 token 过期字段，不需判断时间。</li>
+<li>缺点： 会消耗多一次请求，耗流量。</li>
+</ul>
+<p>综上，方法一和二优缺点是互补的，方法一有校验失败的风险（本地时间被篡改时，当然一般没有用户闲的蛋疼去改本地时间的啦），方法二更简单粗暴，等知道服务器已经过期了再重试一次，只是会耗多一个请求。</p>
+<p>在这里博主选择了 <em>方法二</em>。</p>
+<h2 id="实现"><a class="markdownIt-Anchor" href="#实现">#</a> 实现</h2>
+<p>这里会使用<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2F4aW9zL2F4aW9z"> axios</span> 来实现，方法一是请求前拦截，所以会使用 <code>axios.interceptors.request.use()</code>  这个方法；</p>
+<p>而方法二是请求后拦截，所以会使用 <code>axios.interceptors.response.use()</code>  方法。</p>
+<h3 id="封装axios基本骨架"><a class="markdownIt-Anchor" href="#封装axios基本骨架">#</a> 封装 axios 基本骨架</h3>
+<p>首先说明一下，项目中的 token 是存在 <code>localStorage</code>  中的。 <code>request.js</code>  基本骨架:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import axios from &#x27;axios&#x27;</span><br><span class="line"></span><br><span class="line">// 从localStorage中获取token</span><br><span class="line">function getLocalToken () &#123;</span><br><span class="line">    const token = window.localStorage.getItem(&#x27;token&#x27;)</span><br><span class="line">    return token</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 给实例添加一个setToken方法，用于登录后将最新token动态添加到header，同时将token保存在localStorage中</span><br><span class="line">instance.setToken = (token) =&gt; &#123;</span><br><span class="line">  instance.defaults.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">  window.localStorage.setItem(&#x27;token&#x27;, token)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 创建一个axios实例</span><br><span class="line">const instance = axios.create(&#123;</span><br><span class="line">  baseURL: &#x27;/api&#x27;,</span><br><span class="line">  timeout: 300000,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,</span><br><span class="line">    &#x27;X-Token&#x27;: getLocalToken() // headers塞token</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// 拦截返回的数据</span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  // 接下来会在这里进行token过期的逻辑处理</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">export default instance</span><br></pre></td></tr></table></figure>
+<p>这个是项目中一般的 axios 实例的封装，创建实例时，将本地已有的 token 放进 header，然后 export 出去供调用。接下来就是如何拦截返回的数据啦。</p>
+<h3 id="instanceinterceptorsresponseuse拦截实现"><a class="markdownIt-Anchor" href="#instanceinterceptorsresponseuse拦截实现">#</a> instance.interceptors.response.use 拦截实现</h3>
+<p>后端接口一般会有一个约定好的数据结构，如：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;code: 1234, message: &#x27;token过期&#x27;, data: &#123;&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>如我这里，后端约定当 <code>code === 1234</code>  时表示 token 过期了，此时就要求刷新 token。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    // 说明token过期了,刷新token</span><br><span class="line">    return refreshToken().then(res =&gt; &#123;</span><br><span class="line">      // 刷新token成功，将最新的token更新到header中，同时保存在localStorage中</span><br><span class="line">      const &#123; token &#125; = res.data</span><br><span class="line">      instance.setToken(token)</span><br><span class="line">      // 获取当前失败的请求</span><br><span class="line">      const config = response.config</span><br><span class="line">      // 重置一下配置</span><br><span class="line">      config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">      config.baseURL = &#x27;&#x27; // url已经带上了/api，避免出现/api/api的情况</span><br><span class="line">      // 重试当前请求并返回promise</span><br><span class="line">      return instance(config)</span><br><span class="line">    &#125;).catch(res =&gt; &#123;</span><br><span class="line">      console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">      //刷新token失败，神仙也救不了了，跳转到首页重新登录吧</span><br><span class="line">      window.location.href = &#x27;/&#x27;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">function refreshToken () &#123;</span><br><span class="line">    // instance是当前request.js中已创建的axios实例</span><br><span class="line">    return instance.post(&#x27;/refreshtoken&#x27;).then(res =&gt; res.data)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里需要额外注意的是， <code>response.config</code>  就是原请求的配置，但这个是已经处理过了的， <code>config.url</code>  已经带上了 <code>baseUrl</code> ，因此重试时需要去掉，同时 token 也是旧的，需要刷新下。</p>
+<p>以上就基本做到了无痛刷新 token，当 token 正常时，正常返回，当 token 已过期，则 axios 内部进行一次刷新 token 和重试。对调用者来说，axios 内部的刷新 token 是一个黑盒，是无感知的，因此需求已经做到了。</p>
+<h2 id="问题和优化"><a class="markdownIt-Anchor" href="#问题和优化">#</a> 问题和优化</h2>
+<p>上面的代码还是存在一些问题的，没有考虑到多次请求的问题，因此需要进一步优化。</p>
+<h3 id="如何防止多次刷新token"><a class="markdownIt-Anchor" href="#如何防止多次刷新token">#</a> 如何防止多次刷新 token</h3>
+<p>如果 refreshToken 接口还没返回，此时再有一个过期的请求进来，上面的代码就会再一次执行 refreshToken，这就会导致多次执行刷新 token 的接口，因此需要防止这个问题。我们可以在 <code>request.js</code>  中用一个 <code>flag</code>  来标记当前是否正在刷新 token 的状态，如果正在刷新则不再调用刷新 token 的接口。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        const config = response.config</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这样子就可以避免在刷新 token 时再进入方法了。但是这种做法是相当于把其他失败的接口给舍弃了，假如同时发起两个请求，且几乎同时返回，第一个请求肯定是进入了 refreshToken 后再重试，而第二个请求则被丢弃了，仍是返回失败，所以接下来还得解决其他接口的重试问题。</p>
+<h3 id="同时发起两个或以上的请求时其他接口如何重试"><a class="markdownIt-Anchor" href="#同时发起两个或以上的请求时其他接口如何重试">#</a> 同时发起两个或以上的请求时，其他接口如何重试</h3>
+<p>两个接口几乎同时发起和返回，第一个接口会进入刷新 token 后重试的流程，而第二个接口需要先存起来，然后等刷新 token 后再重试。同样，如果同时发起三个请求，此时需要缓存后两个接口，等刷新 token 后再重试。由于接口都是异步的，处理起来会有点麻烦。</p>
+<p>当第二个过期的请求进来，token 正在刷新，我们先将这个请求存到一个数组队列中，想办法让这个请求处于等待中，一直等到刷新 token 后再逐个重试清空请求队列。<br>
+那么如何做到让这个请求处于等待中呢？为了解决这个问题，我们得借助 <code>Promise</code> 。将请求存进队列中后，同时返回一个 <code>Promise</code> ，让这个 <code>Promise</code>  一直处于 <code>Pending</code>  状态（即不调用 resolve），此时这个请求就会一直等啊等，只要我们不执行 resolve，这个请求就会一直在等待。当刷新请求的接口返回来后，我们再调用 resolve，逐个重试。最终代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">// 重试队列，每一项将是一个待执行的函数形式</span><br><span class="line">let requests = []</span><br><span class="line"></span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    const config = response.config</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        // 已经刷新了token，将所有队列中的请求进行重试</span><br><span class="line">        requests.forEach(cb =&gt; cb(token))</span><br><span class="line">        // 重试完了别忘了清空这个队列（掘金评论区同学指点）</span><br><span class="line">        requests = []</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 正在刷新token，返回一个未执行resolve的promise</span><br><span class="line">      return new Promise((resolve) =&gt; &#123;</span><br><span class="line">        // 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行</span><br><span class="line">        requests.push((token) =&gt; &#123;</span><br><span class="line">          config.baseURL = &#x27;&#x27;</span><br><span class="line">          config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">          resolve(instance(config))</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这里可能比较难理解的是 <code>requests</code>  这个队列中保存的是一个函数，这是为了让 resolve 不执行，先存起来，等刷新 token 后更方便调用这个函数使得 resolve 执行。至此，问题应该都解决了。</p>
+<h2 id="最后完整代码"><a class="markdownIt-Anchor" href="#最后完整代码">#</a> 最后完整代码</h2>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import axios from &#x27;axios&#x27;</span><br><span class="line"></span><br><span class="line">// 从localStorage中获取token</span><br><span class="line">function getLocalToken () &#123;</span><br><span class="line">    const token = window.localStorage.getItem(&#x27;token&#x27;)</span><br><span class="line">    return token</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 给实例添加一个setToken方法，用于登录后将最新token动态添加到header，同时将token保存在localStorage中</span><br><span class="line">instance.setToken = (token) =&gt; &#123;</span><br><span class="line">  instance.defaults.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">  window.localStorage.setItem(&#x27;token&#x27;, token)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function refreshToken () &#123;</span><br><span class="line">    // instance是当前request.js中已创建的axios实例</span><br><span class="line">    return instance.post(&#x27;/refreshtoken&#x27;).then(res =&gt; res.data)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 创建一个axios实例</span><br><span class="line">const instance = axios.create(&#123;</span><br><span class="line">  baseURL: &#x27;/api&#x27;,</span><br><span class="line">  timeout: 300000,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,</span><br><span class="line">    &#x27;X-Token&#x27;: getLocalToken() // headers塞token</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">// 重试队列，每一项将是一个待执行的函数形式</span><br><span class="line">let requests = []</span><br><span class="line"></span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    const config = response.config</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        // 已经刷新了token，将所有队列中的请求进行重试</span><br><span class="line">        requests.forEach(cb =&gt; cb(token))</span><br><span class="line">        requests = []</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 正在刷新token，将返回一个未执行resolve的promise</span><br><span class="line">      return new Promise((resolve) =&gt; &#123;</span><br><span class="line">        // 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行</span><br><span class="line">        requests.push((token) =&gt; &#123;</span><br><span class="line">          config.baseURL = &#x27;&#x27;</span><br><span class="line">          config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">          resolve(instance(config))</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">export default instance</span><br></pre></td></tr></table></figure>
+<p>希望对大家有帮助。感谢看到最后<sup>_</sup>。</p>
+]]></content>
+      <categories>
+        <category>vue</category>
+      </categories>
+      <tags>
+        <tag>vue</tag>
+        <tag>axios</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>vue项目打包优化策略</title>
     <url>/2020/11/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</url>
     <content><![CDATA[<p>使用 vue-cli 部署生产包时，发现资源包很大，打包后的 <code>vendor.js</code>  达到了 1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？</p>
@@ -1406,48 +1475,6 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
       </tags>
   </entry>
   <entry>
-    <title>学习之AJAX</title>
-    <url>/2019/03/20/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
-    <content><![CDATA[<p>对于 AJAX 这个玩意儿，一开始学习的时候，根本不知道这是什么，我连 AJAX 有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙 B 的状态。那么在学习一段时间的 AJAX 之后，我总结了一些我自己对 AJAX 的理解，一起共勉。</p>
-<p>一、页面访问方式</p>
-<p>在学习 AJAX 之前，我们首先就需要了解页面的访问方式。页面的访问方式有如下两种同步访问和异步访问：</p>
-<p>①同步访问：在访问服务器时，只能等待服务器的响应，不能做其他事情。</p>
-<p>②异步访问：在向服务器发送请求时，不耽误用户在网页其他操作。相当于在同一时间，用户能做多个事情。</p>
-<span id="more"></span>
-<p>光从字面上理解同步和异步不算太难，下面我为用图打个比方有助于更加深层次的理解同步和异步：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730181503984" alt=""></p>
-<p>上图反之是同步访问的图解，异步访问我就不再作图了，反之，你想买煎饼和稀饭，你走到卖煎饼的铺子时候，老板说：好的，你的煎饼 5 分钟后好，你可以 5 分钟后过来拿。这个时候你就可以在这五分钟去买你要的稀饭，这就是异步访问。</p>
-<p>二、什么是 AJAX</p>
-<p>AJAX 的英文全名是：Asynchronous  Javascript  And  Xml</p>
-<p>异步的  JS     和    xml</p>
-<p>其中的本质：使用 JS 中 XMLHttpRequext (xhr) 对象异步的向服务器发送请求，服务器响应回来的部分数据而不是原完整的页面，并可以以 “无刷新” 的效果来更改页面中的局部内容。为了方便理解，作以下用户名验证的例子图助于理解：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730183958321" alt=""></p>
-<p>三、获取ＡＪＡＸ对象　——XMLHttpRequest</p>
-<p>在主流浏览器中：new　XMLHttpRequest ( );</p>
-<p>注意：在 IE8 以下的浏览器不支持 XMLHttpRequest</p>
-<p>在 IE8 以下的浏览器中：</p>
-<p>new  ActiveXObject(“Microsoft.XMLHttp”);</p>
-<p>tip: 如果想测试你使用的浏览器是否支持 XMLHttpRequest，可以进行如下操作：</p>
-<p>1. 打开你的浏览器，例如谷歌、360、火狐、欧朋…;</p>
-<p>2. 按 F12，使用开发者工具，在 console 一栏中输入：console.log (window.XMLHttpRequest);</p>
-<p>3. 如果浏览器不支持 XMLHttpRequest, 以上会打印 null。</p>
-<p>// 创建 ajax 对象</p>
-<p>var  xhr;</p>
-<p>if(window.XMLHttpRequest){</p>
-<p>xhr = new  XMLHttpRequest();</p>
-<p>}else{</p>
-<p>xhr = new ActiveXObject(“Microsoft.XMLHttp”);</p>
-<p>}</p>
-<p>tip：这段函在编写代码的时候使用的次数很多，通常我们将它封装成函数单独创建一个 JS 文件，命名为 common.js，要使用的时候调用者个 js 文件就可以了。</p>
-]]></content>
-      <categories>
-        <category>HTTP</category>
-      </categories>
-      <tags>
-        <tag>AJAX</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>函数防抖与节流</title>
     <url>/2021/03/19/%E5%87%BD%E6%95%B0%E9%98%B2%E6%8A%96%E4%B8%8E%E8%8A%82%E6%B5%81/</url>
     <content><![CDATA[<h2 id="函数防抖"><a class="markdownIt-Anchor" href="#函数防抖">#</a> 函数防抖</h2>
@@ -1606,6 +1633,82 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
       </tags>
   </entry>
   <entry>
+    <title>学习之AJAX</title>
+    <url>/2019/03/20/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
+    <content><![CDATA[<p>对于 AJAX 这个玩意儿，一开始学习的时候，根本不知道这是什么，我连 AJAX 有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙 B 的状态。那么在学习一段时间的 AJAX 之后，我总结了一些我自己对 AJAX 的理解，一起共勉。</p>
+<p>一、页面访问方式</p>
+<p>在学习 AJAX 之前，我们首先就需要了解页面的访问方式。页面的访问方式有如下两种同步访问和异步访问：</p>
+<p>①同步访问：在访问服务器时，只能等待服务器的响应，不能做其他事情。</p>
+<p>②异步访问：在向服务器发送请求时，不耽误用户在网页其他操作。相当于在同一时间，用户能做多个事情。</p>
+<span id="more"></span>
+<p>光从字面上理解同步和异步不算太难，下面我为用图打个比方有助于更加深层次的理解同步和异步：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730181503984" alt=""></p>
+<p>上图反之是同步访问的图解，异步访问我就不再作图了，反之，你想买煎饼和稀饭，你走到卖煎饼的铺子时候，老板说：好的，你的煎饼 5 分钟后好，你可以 5 分钟后过来拿。这个时候你就可以在这五分钟去买你要的稀饭，这就是异步访问。</p>
+<p>二、什么是 AJAX</p>
+<p>AJAX 的英文全名是：Asynchronous  Javascript  And  Xml</p>
+<p>异步的  JS     和    xml</p>
+<p>其中的本质：使用 JS 中 XMLHttpRequext (xhr) 对象异步的向服务器发送请求，服务器响应回来的部分数据而不是原完整的页面，并可以以 “无刷新” 的效果来更改页面中的局部内容。为了方便理解，作以下用户名验证的例子图助于理解：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730183958321" alt=""></p>
+<p>三、获取ＡＪＡＸ对象　——XMLHttpRequest</p>
+<p>在主流浏览器中：new　XMLHttpRequest ( );</p>
+<p>注意：在 IE8 以下的浏览器不支持 XMLHttpRequest</p>
+<p>在 IE8 以下的浏览器中：</p>
+<p>new  ActiveXObject(“Microsoft.XMLHttp”);</p>
+<p>tip: 如果想测试你使用的浏览器是否支持 XMLHttpRequest，可以进行如下操作：</p>
+<p>1. 打开你的浏览器，例如谷歌、360、火狐、欧朋…;</p>
+<p>2. 按 F12，使用开发者工具，在 console 一栏中输入：console.log (window.XMLHttpRequest);</p>
+<p>3. 如果浏览器不支持 XMLHttpRequest, 以上会打印 null。</p>
+<p>// 创建 ajax 对象</p>
+<p>var  xhr;</p>
+<p>if(window.XMLHttpRequest){</p>
+<p>xhr = new  XMLHttpRequest();</p>
+<p>}else{</p>
+<p>xhr = new ActiveXObject(“Microsoft.XMLHttp”);</p>
+<p>}</p>
+<p>tip：这段函在编写代码的时候使用的次数很多，通常我们将它封装成函数单独创建一个 JS 文件，命名为 common.js，要使用的时候调用者个 js 文件就可以了。</p>
+]]></content>
+      <categories>
+        <category>HTTP</category>
+      </categories>
+      <tags>
+        <tag>AJAX</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>实现滚动动画—渐入动画</title>
+    <url>/2021/04/13/%E5%AE%9E%E7%8E%B0%E6%BB%9A%E5%8A%A8%E5%8A%A8%E7%94%BB%E2%80%94%E6%B8%90%E5%85%A5%E5%8A%A8%E7%94%BB/</url>
+    <content><![CDATA[<h2 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h2>
+<p>Vue 和 React 版本其实区别不大，，，主要使用原生 js 就能实现，性能上就没考虑太多（可以在完成需求后，移除进入视区后的元素的类名，如：slide-item，lazy-img 等）</p>
+<h2 id="一-滚动动画vue-版本"><a class="markdownIt-Anchor" href="#一-滚动动画vue-版本">#</a> 一、滚动动画：Vue 版本</h2>
+<h3 id="给-html-元素添加-class"><a class="markdownIt-Anchor" href="#给-html-元素添加-class">#</a> 给 HTML 元素添加 class</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;div class=&quot;slide-item&quot;&gt;需要根据滚动条位置显示的元素&lt;/div&gt;</span><br><span class="line">&lt;div class=&quot;slide-item slide-delay&quot; data-delay=&quot;200&quot;&gt;有延迟的元素&lt;/div&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<h3 id="css-和动画"><a class="markdownIt-Anchor" href="#css-和动画">#</a> css 和动画</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.slide-item &#123; opacity: 0; &#125;</span><br><span class="line">.slide-up,</span><br><span class="line">.slide-up-200,</span><br><span class="line">.slide-up-400,</span><br><span class="line">.slide-up-600,</span><br><span class="line">.slide-up-800 &#123;</span><br><span class="line">    animation: slide-up .5s forwards;</span><br><span class="line">&#125;</span><br><span class="line">.slide-up-200 &#123; animation-delay: .2s; &#125;</span><br><span class="line">.slide-up-400 &#123; animation-delay: .4s;&#125;</span><br><span class="line">.slide-up-600 &#123; animation-delay: .6s;&#125;</span><br><span class="line">.slide-up-800 &#123; animation-delay: .8s; &#125;</span><br><span class="line"></span><br><span class="line">@keyframes slide-up &#123;</span><br><span class="line">    from &#123; opacity: 0; transform: translateY(50%); &#125;</span><br><span class="line">    to &#123; opacity: 1; transform: translateY(0); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="监听滚动"><a class="markdownIt-Anchor" href="#监听滚动">#</a> 监听滚动</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mounted() &#123;</span><br><span class="line">  window.addEventListener(&quot;scroll&quot;, this.onScroll);</span><br><span class="line">&#125;,</span><br><span class="line">beforeDestroy() &#123;</span><br><span class="line">  window.removeEventListener(&quot;scroll&quot;, this.onScroll);</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+<h3 id="滚动方法"><a class="markdownIt-Anchor" href="#滚动方法">#</a> 滚动方法</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 监听滚动</span><br><span class="line">onScroll() &#123;</span><br><span class="line">  const slideItems = document.querySelectorAll(&#x27;.slide-item&#x27;);</span><br><span class="line">  // 上滑</span><br><span class="line">  slideItems.forEach(item =&gt; &#123;</span><br><span class="line">    let itemBCR = item.getBoundingClientRect();</span><br><span class="line">    // 进入视区或在视区之上</span><br><span class="line">    if (itemBCR.top &lt;= window.innerHeight + 10) &#123;</span><br><span class="line">      if (Array.from(item.classList).includes(&#x27;slide-delay&#x27;)) &#123;</span><br><span class="line">        item.classList.add(`slide-up-$&#123;item.dataset.delay&#125;`);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.add(&#x27;slide-up&#x27;);</span><br><span class="line">      &#125;</span><br><span class="line">      // 可以在这里 remove 掉 slide-item 这个类名，优化性能</span><br><span class="line"></span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 这里主要用来多次显示效果的，上面 remove 掉 slide-item 后将不再起作用</span><br><span class="line">      if (Array.from(item.classList).includes(&#x27;slide-delay&#x27;)) &#123;</span><br><span class="line">        item.classList.remove(`slide-up-$&#123;item.dataset.delay&#125;`);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.remove(&#x27;slide-up&#x27;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+<h2 id="二-滚动动画react-版本"><a class="markdownIt-Anchor" href="#二-滚动动画react-版本">#</a> 二、滚动动画：React 版本</h2>
+<p>主要使用 hooks</p>
+<h3 id="给-html-元素添加-class-2"><a class="markdownIt-Anchor" href="#给-html-元素添加-class-2">#</a> 给 HTML 元素添加 class</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;span className=&#123;`slide-item`&#125;&gt;需要根据滚动条位置显示的元素&lt;/span&gt;</span><br><span class="line">&lt;span className=&#123;`slide-item slide-delay`&#125; data-delay=&quot;200&quot;&gt;有延迟的元素&lt;/span&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="css-和动画-2"><a class="markdownIt-Anchor" href="#css-和动画-2">#</a> css 和动画</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.slide-item &#123; opacity: 0; &#125;</span><br><span class="line">.slide-up,</span><br><span class="line">.slide-up-200,</span><br><span class="line">.slide-up-400,</span><br><span class="line">.slide-up-600,</span><br><span class="line">.slide-up-800 &#123;</span><br><span class="line">    animation: slide-up .5s forwards;</span><br><span class="line">&#125;</span><br><span class="line">.slide-up-200 &#123; animation-delay: .2s; &#125;</span><br><span class="line">.slide-up-400 &#123; animation-delay: .4s;&#125;</span><br><span class="line">.slide-up-600 &#123; animation-delay: .6s;&#125;</span><br><span class="line">.slide-up-800 &#123; animation-delay: .8s; &#125;</span><br><span class="line"></span><br><span class="line">@keyframes slide-up &#123;</span><br><span class="line">    from &#123; opacity: 0; transform: translateY(50%); &#125;</span><br><span class="line">    to &#123; opacity: 1; transform: translateY(0); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="监听滚动-2"><a class="markdownIt-Anchor" href="#监听滚动-2">#</a> 监听滚动</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">useEffect(() =&gt; &#123;</span><br><span class="line">  onScroll();</span><br><span class="line">  window.addEventListener(&#x27;scroll&#x27;, onScroll);</span><br><span class="line"></span><br><span class="line">  return () =&gt; &#123;</span><br><span class="line">    window.removeEventListener(&#x27;scroll&#x27;, onScroll);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;, []);</span><br></pre></td></tr></table></figure>
+<h3 id="滚动方法-2"><a class="markdownIt-Anchor" href="#滚动方法-2">#</a> 滚动方法</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 监听滚动</span><br><span class="line">function onScroll(): void &#123;</span><br><span class="line">  const slideItems = document.querySelectorAll(&#x27;.slide-item&#x27;);</span><br><span class="line"></span><br><span class="line">  slideItems.forEach((item: any) =&gt; &#123;</span><br><span class="line">    let slideBCR = item.getBoundingClientRect();</span><br><span class="line">    // 进入视区或在视区之上</span><br><span class="line">    if (slideBCR.top &lt;= window.innerHeight + 10) &#123;</span><br><span class="line">      if (Array.from(item.classList).includes(&#x27;slide-delay&#x27;)) &#123; // 延迟</span><br><span class="line">        item.classList.add(`slide-up-$&#123;item.dataset.delay&#125;`);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.add(&#x27;slide-up&#x27;);</span><br><span class="line">      &#125;</span><br><span class="line">      // 可以在这里 remove 掉 slide-item 这个类名，优化性能</span><br><span class="line"></span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 这里主要用来多次显示效果的，上面 remove 掉 slide-item 后将不再起作用</span><br><span class="line">      if (Array.from(item.classList).includes(&#x27;slide-delay&#x27;)) &#123; // 延迟</span><br><span class="line">        item.classList.remove(`slide-up-$&#123;item.dataset.delay&#125;`);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.remove(&#x27;slide-up&#x27;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>react</category>
+      </categories>
+      <tags>
+        <tag>vue</tag>
+        <tag>react</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>开发小技巧</title>
     <url>/2020/05/01/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
     <content><![CDATA[<h2 id="阻止单击事件冒泡"><a class="markdownIt-Anchor" href="#阻止单击事件冒泡">#</a> 阻止单击事件冒泡</h2>
@@ -1652,6 +1755,99 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">if ($request_filename ~* .*index\.html$) &#123;</span><br><span class="line">     add_header Cache-Control &quot;private, no-store, no-cache, must-revalidate, proxy-revalidate&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>个人笔记</category>
+      </categories>
+      <tags>
+        <tag>note</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>浏览器回流和重汇</title>
+    <url>/2021/04/16/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%9B%9E%E6%B5%81%E5%92%8C%E9%87%8D%E6%B1%87/</url>
+    <content><![CDATA[<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/640" alt=""></p>
+<span id="more"></span>
+<h2 id="一-是什么"><a class="markdownIt-Anchor" href="#一-是什么">#</a> 一、是什么</h2>
+<p>在 <code>HTML</code>  中，每个元素都可以理解成一个盒子，在浏览器解析过程中，会涉及到回流与重绘：</p>
+<ul>
+<li>回流：布局引擎会根据各种样式计算每个盒子在页面上的大小与位置</li>
+<li>重绘：当计算好盒模型的位置、大小及其他属性后，浏览器根据每个盒子特性进行绘制</li>
+</ul>
+<p>具体的浏览器解析渲染机制如下所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20210416102029.png" alt=""></p>
+<ul>
+<li>解析 HTML，生成 DOM 树，解析 CSS，生成 CSSOM 树</li>
+<li>将 DOM 树和 CSSOM 树结合，生成渲染树 (Render Tree)</li>
+<li>Layout (回流): 根据生成的渲染树，进行回流 (Layout)，得到节点的几何信息（位置，大小）</li>
+<li>Painting (重绘): 根据渲染树以及回流得到的几何信息，得到节点的绝对像素</li>
+<li>Display: 将像素发送给 GPU，展示在页面上</li>
+</ul>
+<p>在页面初始渲染阶段，回流不可避免的触发，可以理解成页面一开始是空白的元素，后面添加了新的元素使页面布局发生改变</p>
+<p>当我们对  <code>DOM</code>  的修改引发了  <code>DOM</code>  几何尺寸的变化（比如修改元素的宽、高或隐藏元素等）时，浏览器需要重新计算元素的几何属性，然后再将计算的结果绘制出来</p>
+<p>当我们对  <code>DOM</code>  的修改导致了样式的变化（ <code>color</code>  或 <code>background-color</code> ），却并未影响其几何属性时，浏览器不需重新计算元素的几何属性、直接为该元素绘制新的样式，这里就仅仅触发了重绘</p>
+<h2 id="二-如何触发"><a class="markdownIt-Anchor" href="#二-如何触发">#</a> 二、如何触发</h2>
+<p>要想减少回流和重绘的次数，首先要了解回流和重绘是如何触发的</p>
+<h3 id="回流触发时机"><a class="markdownIt-Anchor" href="#回流触发时机">#</a> 回流触发时机</h3>
+<p>回流这一阶段主要是计算节点的位置和几何信息，那么当页面布局和几何信息发生变化的时候，就需要回流，如下面情况：</p>
+<ul>
+<li>添加或删除可见的 DOM 元素</li>
+<li>元素的位置发生变化</li>
+<li>元素的尺寸发生变化（包括外边距、内边框、边框大小、高度和宽度等）</li>
+<li>内容发生变化，比如文本变化或图片被另一个不同尺寸的图片所替代</li>
+<li>页面一开始渲染的时候（这避免不了）</li>
+<li>浏览器的窗口尺寸变化（因为回流是根据视口的大小来计算元素的位置和大小的）</li>
+</ul>
+<p>还有一些容易被忽略的操作：获取一些特定属性的值</p>
+<blockquote>
+<p>❝</p>
+<p>offsetTop、offsetLeft、 offsetWidth、offsetHeight、scrollTop、scrollLeft、scrollWidth、scrollHeight、clientTop、clientLeft、clientWidth、clientHeight</p>
+<p>❞</p>
+</blockquote>
+<p>这些属性有一个共性，就是需要通过即时计算得到。因此浏览器为了获取这些值，也会进行回流</p>
+<p>除此还包括 <code>getComputedStyle</code>  方法，原理是一样的</p>
+<h3 id="重绘触发时机"><a class="markdownIt-Anchor" href="#重绘触发时机">#</a> 重绘触发时机</h3>
+<p>触发回流一定会触发重绘</p>
+<p>可以把页面理解为一个黑板，黑板上有一朵画好的小花。现在我们要把这朵从左边移到了右边，那我们要先确定好右边的具体位置，画好形状（回流），再画上它原有的颜色（重绘）</p>
+<p>除此之外还有一些其他引起重绘行为：</p>
+<ul>
+<li>颜色的修改</li>
+<li>文本方向的修改</li>
+<li>阴影的修改</li>
+</ul>
+<h3 id="浏览器优化机制"><a class="markdownIt-Anchor" href="#浏览器优化机制">#</a> 浏览器优化机制</h3>
+<p>由于每次重排都会造成额外的计算消耗，因此大多数浏览器都会通过队列化修改并批量执行来优化重排过程。浏览器会将修改操作放入到队列里，直到过了一段时间或者操作达到了一个阈值，才清空队列</p>
+<p>当你获取布局信息的操作的时候，会强制队列刷新，包括前面讲到的 <code>offsetTop</code>  等方法都会返回最新的数据</p>
+<p>因此浏览器不得不清空队列，触发回流重绘来返回正确的值</p>
+<h2 id="三-如何减少"><a class="markdownIt-Anchor" href="#三-如何减少">#</a> 三、如何减少</h2>
+<p>我们了解了如何触发回流和重绘的场景，下面给出避免回流的经验：</p>
+<ul>
+<li>如果想设定元素的样式，通过改变元素的  <code>class</code>  类名 (尽可能在 DOM 树的最里层)</li>
+<li>避免设置多项内联样式</li>
+<li>应用元素的动画，使用  <code>position</code>  属性的  <code>fixed</code>  值或  <code>absolute</code>  值 (如前文示例所提)</li>
+<li>避免使用  <code>table</code>  布局， <code>table</code>  中每个元素的大小以及内容的改动，都会导致整个  <code>table</code>  的重新计算</li>
+<li>对于那些复杂的动画，对其设置  <code>position: fixed/absolute</code> ，尽可能地使元素脱离文档流，从而减少对其他元素的影响</li>
+<li>使用 css3 硬件加速，可以让 <code>transform</code> 、 <code>opacity</code> 、 <code>filters</code>  这些动画不会引起回流重绘</li>
+<li>避免使用 CSS 的  <code>JavaScript</code>  表达式</li>
+</ul>
+<p>在使用  <code>JavaScript</code>  动态插入多个节点时，可以使用 <code>DocumentFragment</code> . 创建后一次插入。就能避免多次的渲染性能</p>
+<p>但有时候，我们会无可避免地进行回流或者重绘，我们可以更好使用它们</p>
+<p>例如，多次修改一个把元素布局的时候，我们很可能会如下操作</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const el = document.getElementById(&#x27;el&#x27;)</span><br><span class="line">for(let i=0;i&lt;10;i++) &#123;</span><br><span class="line">    el.style.top  = el.offsetTop  + 10 + &quot;px&quot;;</span><br><span class="line">    el.style.left = el.offsetLeft + 10 + &quot;px&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>每次循环都需要获取多次 <code>offset</code>  属性，比较糟糕，可以使用变量的形式缓存起来，待计算完毕再提交给浏览器发出重计算请求</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 缓存offsetLeft与offsetTop的值</span><br><span class="line">const el = document.getElementById(&#x27;el&#x27;)</span><br><span class="line">let offLeft = el.offsetLeft, offTop = el.offsetTop</span><br><span class="line"></span><br><span class="line">// 在JS层面进行计算</span><br><span class="line">for(let i=0;i&lt;10;i++) &#123;</span><br><span class="line">  offLeft += 10</span><br><span class="line">  offTop  += 10</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 一次性将计算结果应用到DOM上</span><br><span class="line">el.style.left = offLeft + &quot;px&quot;</span><br><span class="line">el.style.top = offTop  + &quot;px&quot;</span><br></pre></td></tr></table></figure>
+<p>我们还可避免改变样式，使用类名去合并样式</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const container = document.getElementById(&#x27;container&#x27;)</span><br><span class="line">container.style.width = &#x27;100px&#x27;</span><br><span class="line">container.style.height = &#x27;200px&#x27;</span><br><span class="line">container.style.border = &#x27;10px solid red&#x27;</span><br><span class="line">container.style.color = &#x27;red&#x27;</span><br></pre></td></tr></table></figure>
+<p>使用类名去合并样式</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;style&gt;</span><br><span class="line">    .basic_style &#123;</span><br><span class="line">        width: 100px;</span><br><span class="line">        height: 200px;</span><br><span class="line">        border: 10px solid red;</span><br><span class="line">        color: red;</span><br><span class="line">    &#125;</span><br><span class="line">&lt;/style&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">    const container = document.getElementById(&#x27;container&#x27;)</span><br><span class="line">    container.classList.add(&#x27;basic_style&#x27;)</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>前者每次单独操作，都去触发一次渲染树更改（新浏览器不会），</p>
+<p>都去触发一次渲染树更改，从而导致相应的回流与重绘过程</p>
+<p>合并之后，等于我们将所有的更改一次性发出</p>
+<p>我们还可以通过通过设置元素属性 <code>display: none</code> ，将其从页面上去掉，然后再进行后续操作，这些后续操作也不会触发回流与重绘，这个过程称为离线操作</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const container = document.getElementById(&#x27;container&#x27;)</span><br><span class="line">container.style.width = &#x27;100px&#x27;</span><br><span class="line">container.style.height = &#x27;200px&#x27;</span><br><span class="line">container.style.border = &#x27;10px solid red&#x27;</span><br><span class="line">container.style.color = &#x27;red&#x27;</span><br></pre></td></tr></table></figure>
+<p>离线操作后</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">let container = document.getElementById(&#x27;container&#x27;)</span><br><span class="line">container.style.display = &#x27;none&#x27;</span><br><span class="line">container.style.width = &#x27;100px&#x27;</span><br><span class="line">container.style.height = &#x27;200px&#x27;</span><br><span class="line">container.style.border = &#x27;10px solid red&#x27;</span><br><span class="line">container.style.color = &#x27;red&#x27;</span><br><span class="line">...（省略了许多类似的后续操作）</span><br><span class="line">container.style.display = &#x27;block&#x27;</span><br></pre></td></tr></table></figure>
+<h2 id=""><a class="markdownIt-Anchor" href="#">#</a> </h2>
+]]></content>
+      <categories>
+        <category>note</category>
       </categories>
       <tags>
         <tag>note</tag>
@@ -1837,109 +2033,6 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
       </tags>
   </entry>
   <entry>
-    <title>vue里封装axios——利用promise无痛刷新token</title>
-    <url>/2021/03/29/vue%E9%87%8C%E5%B0%81%E8%A3%85axios%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8promise%E6%97%A0%E7%97%9B%E5%88%B7%E6%96%B0token/</url>
-    <content><![CDATA[<h2 id="需求"><a class="markdownIt-Anchor" href="#需求">#</a> 需求</h2>
-<p>最近遇到个需求：前端登录后，后端返回 <code>token</code>  和 <code>token有效时间</code> ，当 token 过期时要求用旧 token 去获取新的 token，前端需要做到无痛刷新 <code>token</code> ，即请求刷新 token 时要做到用户无感知。</p>
-<h2 id="需求解析"><a class="markdownIt-Anchor" href="#需求解析">#</a> 需求解析</h2>
-<p>当用户发起一个请求时，判断 token 是否已过期，若已过期则先调 <code>refreshToken</code>  接口，拿到新的 token 后再继续执行之前的请求。</p>
-<p>这个问题的难点在于：当同时发起多个请求，而刷新 token 的接口还没返回，此时其他请求该如何处理？接下来会循序渐进地分享一下整个过程。</p>
-<span id="more"></span>
-<h2 id="实现思路"><a class="markdownIt-Anchor" href="#实现思路">#</a> 实现思路</h2>
-<p>由于后端返回了 token 的有效时间，可以有两种方法：</p>
-<h3 id="方法一"><a class="markdownIt-Anchor" href="#方法一">#</a> 方法一：</h3>
-<p>在请求发起前拦截每个请求，判断 token 的有效时间是否已经过期，若已过期，则将请求挂起，先刷新 token 后再继续请求。</p>
-<h3 id="方法二"><a class="markdownIt-Anchor" href="#方法二">#</a> 方法二：</h3>
-<p>不在请求前拦截，而是拦截返回后的数据。先发起请求，接口返回过期后，先刷新 token，再进行一次重试。</p>
-<h3 id="两种方法对比"><a class="markdownIt-Anchor" href="#两种方法对比">#</a> 两种方法对比</h3>
-<p>方法一</p>
-<ul>
-<li>优点： 在请求前拦截，能节省请求，省流量。</li>
-<li>缺点： 需要后端额外提供一个 token 过期时间的字段；使用了本地时间判断，若本地时间被篡改，特别是本地时间比服务器时间慢时，拦截会失败。</li>
-</ul>
-<blockquote>
-<p>PS：token 有效时间建议是时间段，类似缓存的 MaxAge，而不要是绝对时间。当服务器和本地时间不一致时，绝对时间会有问题。</p>
-</blockquote>
-<p>方法二</p>
-<ul>
-<li>优点：不需额外的 token 过期字段，不需判断时间。</li>
-<li>缺点： 会消耗多一次请求，耗流量。</li>
-</ul>
-<p>综上，方法一和二优缺点是互补的，方法一有校验失败的风险（本地时间被篡改时，当然一般没有用户闲的蛋疼去改本地时间的啦），方法二更简单粗暴，等知道服务器已经过期了再重试一次，只是会耗多一个请求。</p>
-<p>在这里博主选择了 <em>方法二</em>。</p>
-<h2 id="实现"><a class="markdownIt-Anchor" href="#实现">#</a> 实现</h2>
-<p>这里会使用<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2F4aW9zL2F4aW9z"> axios</span> 来实现，方法一是请求前拦截，所以会使用 <code>axios.interceptors.request.use()</code>  这个方法；</p>
-<p>而方法二是请求后拦截，所以会使用 <code>axios.interceptors.response.use()</code>  方法。</p>
-<h3 id="封装axios基本骨架"><a class="markdownIt-Anchor" href="#封装axios基本骨架">#</a> 封装 axios 基本骨架</h3>
-<p>首先说明一下，项目中的 token 是存在 <code>localStorage</code>  中的。 <code>request.js</code>  基本骨架:</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import axios from &#x27;axios&#x27;</span><br><span class="line"></span><br><span class="line">// 从localStorage中获取token</span><br><span class="line">function getLocalToken () &#123;</span><br><span class="line">    const token = window.localStorage.getItem(&#x27;token&#x27;)</span><br><span class="line">    return token</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 给实例添加一个setToken方法，用于登录后将最新token动态添加到header，同时将token保存在localStorage中</span><br><span class="line">instance.setToken = (token) =&gt; &#123;</span><br><span class="line">  instance.defaults.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">  window.localStorage.setItem(&#x27;token&#x27;, token)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 创建一个axios实例</span><br><span class="line">const instance = axios.create(&#123;</span><br><span class="line">  baseURL: &#x27;/api&#x27;,</span><br><span class="line">  timeout: 300000,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,</span><br><span class="line">    &#x27;X-Token&#x27;: getLocalToken() // headers塞token</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// 拦截返回的数据</span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  // 接下来会在这里进行token过期的逻辑处理</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">export default instance</span><br></pre></td></tr></table></figure>
-<p>这个是项目中一般的 axios 实例的封装，创建实例时，将本地已有的 token 放进 header，然后 export 出去供调用。接下来就是如何拦截返回的数据啦。</p>
-<h3 id="instanceinterceptorsresponseuse拦截实现"><a class="markdownIt-Anchor" href="#instanceinterceptorsresponseuse拦截实现">#</a> instance.interceptors.response.use 拦截实现</h3>
-<p>后端接口一般会有一个约定好的数据结构，如：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;code: 1234, message: &#x27;token过期&#x27;, data: &#123;&#125;&#125;</span><br></pre></td></tr></table></figure>
-<p>如我这里，后端约定当 <code>code === 1234</code>  时表示 token 过期了，此时就要求刷新 token。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    // 说明token过期了,刷新token</span><br><span class="line">    return refreshToken().then(res =&gt; &#123;</span><br><span class="line">      // 刷新token成功，将最新的token更新到header中，同时保存在localStorage中</span><br><span class="line">      const &#123; token &#125; = res.data</span><br><span class="line">      instance.setToken(token)</span><br><span class="line">      // 获取当前失败的请求</span><br><span class="line">      const config = response.config</span><br><span class="line">      // 重置一下配置</span><br><span class="line">      config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">      config.baseURL = &#x27;&#x27; // url已经带上了/api，避免出现/api/api的情况</span><br><span class="line">      // 重试当前请求并返回promise</span><br><span class="line">      return instance(config)</span><br><span class="line">    &#125;).catch(res =&gt; &#123;</span><br><span class="line">      console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">      //刷新token失败，神仙也救不了了，跳转到首页重新登录吧</span><br><span class="line">      window.location.href = &#x27;/&#x27;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">function refreshToken () &#123;</span><br><span class="line">    // instance是当前request.js中已创建的axios实例</span><br><span class="line">    return instance.post(&#x27;/refreshtoken&#x27;).then(res =&gt; res.data)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里需要额外注意的是， <code>response.config</code>  就是原请求的配置，但这个是已经处理过了的， <code>config.url</code>  已经带上了 <code>baseUrl</code> ，因此重试时需要去掉，同时 token 也是旧的，需要刷新下。</p>
-<p>以上就基本做到了无痛刷新 token，当 token 正常时，正常返回，当 token 已过期，则 axios 内部进行一次刷新 token 和重试。对调用者来说，axios 内部的刷新 token 是一个黑盒，是无感知的，因此需求已经做到了。</p>
-<h2 id="问题和优化"><a class="markdownIt-Anchor" href="#问题和优化">#</a> 问题和优化</h2>
-<p>上面的代码还是存在一些问题的，没有考虑到多次请求的问题，因此需要进一步优化。</p>
-<h3 id="如何防止多次刷新token"><a class="markdownIt-Anchor" href="#如何防止多次刷新token">#</a> 如何防止多次刷新 token</h3>
-<p>如果 refreshToken 接口还没返回，此时再有一个过期的请求进来，上面的代码就会再一次执行 refreshToken，这就会导致多次执行刷新 token 的接口，因此需要防止这个问题。我们可以在 <code>request.js</code>  中用一个 <code>flag</code>  来标记当前是否正在刷新 token 的状态，如果正在刷新则不再调用刷新 token 的接口。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        const config = response.config</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p>这样子就可以避免在刷新 token 时再进入方法了。但是这种做法是相当于把其他失败的接口给舍弃了，假如同时发起两个请求，且几乎同时返回，第一个请求肯定是进入了 refreshToken 后再重试，而第二个请求则被丢弃了，仍是返回失败，所以接下来还得解决其他接口的重试问题。</p>
-<h3 id="同时发起两个或以上的请求时其他接口如何重试"><a class="markdownIt-Anchor" href="#同时发起两个或以上的请求时其他接口如何重试">#</a> 同时发起两个或以上的请求时，其他接口如何重试</h3>
-<p>两个接口几乎同时发起和返回，第一个接口会进入刷新 token 后重试的流程，而第二个接口需要先存起来，然后等刷新 token 后再重试。同样，如果同时发起三个请求，此时需要缓存后两个接口，等刷新 token 后再重试。由于接口都是异步的，处理起来会有点麻烦。</p>
-<p>当第二个过期的请求进来，token 正在刷新，我们先将这个请求存到一个数组队列中，想办法让这个请求处于等待中，一直等到刷新 token 后再逐个重试清空请求队列。<br>
-那么如何做到让这个请求处于等待中呢？为了解决这个问题，我们得借助 <code>Promise</code> 。将请求存进队列中后，同时返回一个 <code>Promise</code> ，让这个 <code>Promise</code>  一直处于 <code>Pending</code>  状态（即不调用 resolve），此时这个请求就会一直等啊等，只要我们不执行 resolve，这个请求就会一直在等待。当刷新请求的接口返回来后，我们再调用 resolve，逐个重试。最终代码：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">// 重试队列，每一项将是一个待执行的函数形式</span><br><span class="line">let requests = []</span><br><span class="line"></span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    const config = response.config</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        // 已经刷新了token，将所有队列中的请求进行重试</span><br><span class="line">        requests.forEach(cb =&gt; cb(token))</span><br><span class="line">        // 重试完了别忘了清空这个队列（掘金评论区同学指点）</span><br><span class="line">        requests = []</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 正在刷新token，返回一个未执行resolve的promise</span><br><span class="line">      return new Promise((resolve) =&gt; &#123;</span><br><span class="line">        // 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行</span><br><span class="line">        requests.push((token) =&gt; &#123;</span><br><span class="line">          config.baseURL = &#x27;&#x27;</span><br><span class="line">          config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">          resolve(instance(config))</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p>这里可能比较难理解的是 <code>requests</code>  这个队列中保存的是一个函数，这是为了让 resolve 不执行，先存起来，等刷新 token 后更方便调用这个函数使得 resolve 执行。至此，问题应该都解决了。</p>
-<h2 id="最后完整代码"><a class="markdownIt-Anchor" href="#最后完整代码">#</a> 最后完整代码</h2>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import axios from &#x27;axios&#x27;</span><br><span class="line"></span><br><span class="line">// 从localStorage中获取token</span><br><span class="line">function getLocalToken () &#123;</span><br><span class="line">    const token = window.localStorage.getItem(&#x27;token&#x27;)</span><br><span class="line">    return token</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 给实例添加一个setToken方法，用于登录后将最新token动态添加到header，同时将token保存在localStorage中</span><br><span class="line">instance.setToken = (token) =&gt; &#123;</span><br><span class="line">  instance.defaults.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">  window.localStorage.setItem(&#x27;token&#x27;, token)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function refreshToken () &#123;</span><br><span class="line">    // instance是当前request.js中已创建的axios实例</span><br><span class="line">    return instance.post(&#x27;/refreshtoken&#x27;).then(res =&gt; res.data)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 创建一个axios实例</span><br><span class="line">const instance = axios.create(&#123;</span><br><span class="line">  baseURL: &#x27;/api&#x27;,</span><br><span class="line">  timeout: 300000,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,</span><br><span class="line">    &#x27;X-Token&#x27;: getLocalToken() // headers塞token</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">// 重试队列，每一项将是一个待执行的函数形式</span><br><span class="line">let requests = []</span><br><span class="line"></span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    const config = response.config</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        // 已经刷新了token，将所有队列中的请求进行重试</span><br><span class="line">        requests.forEach(cb =&gt; cb(token))</span><br><span class="line">        requests = []</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 正在刷新token，将返回一个未执行resolve的promise</span><br><span class="line">      return new Promise((resolve) =&gt; &#123;</span><br><span class="line">        // 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行</span><br><span class="line">        requests.push((token) =&gt; &#123;</span><br><span class="line">          config.baseURL = &#x27;&#x27;</span><br><span class="line">          config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">          resolve(instance(config))</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">export default instance</span><br></pre></td></tr></table></figure>
-<p>希望对大家有帮助。感谢看到最后<sup>_</sup>。</p>
-]]></content>
-      <categories>
-        <category>vue</category>
-      </categories>
-      <tags>
-        <tag>vue</tag>
-        <tag>axios</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>实现滚动动画—渐入动画</title>
-    <url>/2021/04/13/%E5%AE%9E%E7%8E%B0%E6%BB%9A%E5%8A%A8%E5%8A%A8%E7%94%BB%E2%80%94%E6%B8%90%E5%85%A5%E5%8A%A8%E7%94%BB/</url>
-    <content><![CDATA[<h2 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h2>
-<p>Vue 和 React 版本其实区别不大，，，主要使用原生 js 就能实现，性能上就没考虑太多（可以在完成需求后，移除进入视区后的元素的类名，如：slide-item，lazy-img 等）</p>
-<h2 id="一-滚动动画vue-版本"><a class="markdownIt-Anchor" href="#一-滚动动画vue-版本">#</a> 一、滚动动画：Vue 版本</h2>
-<h3 id="给-html-元素添加-class"><a class="markdownIt-Anchor" href="#给-html-元素添加-class">#</a> 给 HTML 元素添加 class</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;div class=&quot;slide-item&quot;&gt;需要根据滚动条位置显示的元素&lt;/div&gt;</span><br><span class="line">&lt;div class=&quot;slide-item slide-delay&quot; data-delay=&quot;200&quot;&gt;有延迟的元素&lt;/div&gt;</span><br></pre></td></tr></table></figure>
-<span id="more"></span>
-<h3 id="css-和动画"><a class="markdownIt-Anchor" href="#css-和动画">#</a> css 和动画</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.slide-item &#123; opacity: 0; &#125;</span><br><span class="line">.slide-up,</span><br><span class="line">.slide-up-200,</span><br><span class="line">.slide-up-400,</span><br><span class="line">.slide-up-600,</span><br><span class="line">.slide-up-800 &#123;</span><br><span class="line">    animation: slide-up .5s forwards;</span><br><span class="line">&#125;</span><br><span class="line">.slide-up-200 &#123; animation-delay: .2s; &#125;</span><br><span class="line">.slide-up-400 &#123; animation-delay: .4s;&#125;</span><br><span class="line">.slide-up-600 &#123; animation-delay: .6s;&#125;</span><br><span class="line">.slide-up-800 &#123; animation-delay: .8s; &#125;</span><br><span class="line"></span><br><span class="line">@keyframes slide-up &#123;</span><br><span class="line">    from &#123; opacity: 0; transform: translateY(50%); &#125;</span><br><span class="line">    to &#123; opacity: 1; transform: translateY(0); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="监听滚动"><a class="markdownIt-Anchor" href="#监听滚动">#</a> 监听滚动</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mounted() &#123;</span><br><span class="line">  window.addEventListener(&quot;scroll&quot;, this.onScroll);</span><br><span class="line">&#125;,</span><br><span class="line">beforeDestroy() &#123;</span><br><span class="line">  window.removeEventListener(&quot;scroll&quot;, this.onScroll);</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
-<h3 id="滚动方法"><a class="markdownIt-Anchor" href="#滚动方法">#</a> 滚动方法</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 监听滚动</span><br><span class="line">onScroll() &#123;</span><br><span class="line">  const slideItems = document.querySelectorAll(&#x27;.slide-item&#x27;);</span><br><span class="line">  // 上滑</span><br><span class="line">  slideItems.forEach(item =&gt; &#123;</span><br><span class="line">    let itemBCR = item.getBoundingClientRect();</span><br><span class="line">    // 进入视区或在视区之上</span><br><span class="line">    if (itemBCR.top &lt;= window.innerHeight + 10) &#123;</span><br><span class="line">      if (Array.from(item.classList).includes(&#x27;slide-delay&#x27;)) &#123;</span><br><span class="line">        item.classList.add(`slide-up-$&#123;item.dataset.delay&#125;`);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.add(&#x27;slide-up&#x27;);</span><br><span class="line">      &#125;</span><br><span class="line">      // 可以在这里 remove 掉 slide-item 这个类名，优化性能</span><br><span class="line"></span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 这里主要用来多次显示效果的，上面 remove 掉 slide-item 后将不再起作用</span><br><span class="line">      if (Array.from(item.classList).includes(&#x27;slide-delay&#x27;)) &#123;</span><br><span class="line">        item.classList.remove(`slide-up-$&#123;item.dataset.delay&#125;`);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.remove(&#x27;slide-up&#x27;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
-<h2 id="二-滚动动画react-版本"><a class="markdownIt-Anchor" href="#二-滚动动画react-版本">#</a> 二、滚动动画：React 版本</h2>
-<p>主要使用 hooks</p>
-<h3 id="给-html-元素添加-class-2"><a class="markdownIt-Anchor" href="#给-html-元素添加-class-2">#</a> 给 HTML 元素添加 class</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;span className=&#123;`slide-item`&#125;&gt;需要根据滚动条位置显示的元素&lt;/span&gt;</span><br><span class="line">&lt;span className=&#123;`slide-item slide-delay`&#125; data-delay=&quot;200&quot;&gt;有延迟的元素&lt;/span&gt;</span><br></pre></td></tr></table></figure>
-<h3 id="css-和动画-2"><a class="markdownIt-Anchor" href="#css-和动画-2">#</a> css 和动画</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.slide-item &#123; opacity: 0; &#125;</span><br><span class="line">.slide-up,</span><br><span class="line">.slide-up-200,</span><br><span class="line">.slide-up-400,</span><br><span class="line">.slide-up-600,</span><br><span class="line">.slide-up-800 &#123;</span><br><span class="line">    animation: slide-up .5s forwards;</span><br><span class="line">&#125;</span><br><span class="line">.slide-up-200 &#123; animation-delay: .2s; &#125;</span><br><span class="line">.slide-up-400 &#123; animation-delay: .4s;&#125;</span><br><span class="line">.slide-up-600 &#123; animation-delay: .6s;&#125;</span><br><span class="line">.slide-up-800 &#123; animation-delay: .8s; &#125;</span><br><span class="line"></span><br><span class="line">@keyframes slide-up &#123;</span><br><span class="line">    from &#123; opacity: 0; transform: translateY(50%); &#125;</span><br><span class="line">    to &#123; opacity: 1; transform: translateY(0); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="监听滚动-2"><a class="markdownIt-Anchor" href="#监听滚动-2">#</a> 监听滚动</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">useEffect(() =&gt; &#123;</span><br><span class="line">  onScroll();</span><br><span class="line">  window.addEventListener(&#x27;scroll&#x27;, onScroll);</span><br><span class="line"></span><br><span class="line">  return () =&gt; &#123;</span><br><span class="line">    window.removeEventListener(&#x27;scroll&#x27;, onScroll);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;, []);</span><br></pre></td></tr></table></figure>
-<h3 id="滚动方法-2"><a class="markdownIt-Anchor" href="#滚动方法-2">#</a> 滚动方法</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 监听滚动</span><br><span class="line">function onScroll(): void &#123;</span><br><span class="line">  const slideItems = document.querySelectorAll(&#x27;.slide-item&#x27;);</span><br><span class="line"></span><br><span class="line">  slideItems.forEach((item: any) =&gt; &#123;</span><br><span class="line">    let slideBCR = item.getBoundingClientRect();</span><br><span class="line">    // 进入视区或在视区之上</span><br><span class="line">    if (slideBCR.top &lt;= window.innerHeight + 10) &#123;</span><br><span class="line">      if (Array.from(item.classList).includes(&#x27;slide-delay&#x27;)) &#123; // 延迟</span><br><span class="line">        item.classList.add(`slide-up-$&#123;item.dataset.delay&#125;`);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.add(&#x27;slide-up&#x27;);</span><br><span class="line">      &#125;</span><br><span class="line">      // 可以在这里 remove 掉 slide-item 这个类名，优化性能</span><br><span class="line"></span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 这里主要用来多次显示效果的，上面 remove 掉 slide-item 后将不再起作用</span><br><span class="line">      if (Array.from(item.classList).includes(&#x27;slide-delay&#x27;)) &#123; // 延迟</span><br><span class="line">        item.classList.remove(`slide-up-$&#123;item.dataset.delay&#125;`);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        item.classList.remove(&#x27;slide-up&#x27;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>react</category>
-      </categories>
-      <tags>
-        <tag>vue</tag>
-        <tag>react</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>移动端自适应——手淘flexible</title>
     <url>/2021/04/25/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible/</url>
     <content><![CDATA[<h2 id="移动端自适应手淘flexible"><a class="markdownIt-Anchor" href="#移动端自适应手淘flexible">#</a> 移动端自适应 —— 手淘 flexible</h2>
@@ -1977,99 +2070,6 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
       </categories>
       <tags>
         <tag>移动端</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>浏览器回流和重汇</title>
-    <url>/2021/04/16/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%9B%9E%E6%B5%81%E5%92%8C%E9%87%8D%E6%B1%87/</url>
-    <content><![CDATA[<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/640" alt=""></p>
-<span id="more"></span>
-<h2 id="一-是什么"><a class="markdownIt-Anchor" href="#一-是什么">#</a> 一、是什么</h2>
-<p>在 <code>HTML</code>  中，每个元素都可以理解成一个盒子，在浏览器解析过程中，会涉及到回流与重绘：</p>
-<ul>
-<li>回流：布局引擎会根据各种样式计算每个盒子在页面上的大小与位置</li>
-<li>重绘：当计算好盒模型的位置、大小及其他属性后，浏览器根据每个盒子特性进行绘制</li>
-</ul>
-<p>具体的浏览器解析渲染机制如下所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20210416102029.png" alt=""></p>
-<ul>
-<li>解析 HTML，生成 DOM 树，解析 CSS，生成 CSSOM 树</li>
-<li>将 DOM 树和 CSSOM 树结合，生成渲染树 (Render Tree)</li>
-<li>Layout (回流): 根据生成的渲染树，进行回流 (Layout)，得到节点的几何信息（位置，大小）</li>
-<li>Painting (重绘): 根据渲染树以及回流得到的几何信息，得到节点的绝对像素</li>
-<li>Display: 将像素发送给 GPU，展示在页面上</li>
-</ul>
-<p>在页面初始渲染阶段，回流不可避免的触发，可以理解成页面一开始是空白的元素，后面添加了新的元素使页面布局发生改变</p>
-<p>当我们对  <code>DOM</code>  的修改引发了  <code>DOM</code>  几何尺寸的变化（比如修改元素的宽、高或隐藏元素等）时，浏览器需要重新计算元素的几何属性，然后再将计算的结果绘制出来</p>
-<p>当我们对  <code>DOM</code>  的修改导致了样式的变化（ <code>color</code>  或 <code>background-color</code> ），却并未影响其几何属性时，浏览器不需重新计算元素的几何属性、直接为该元素绘制新的样式，这里就仅仅触发了重绘</p>
-<h2 id="二-如何触发"><a class="markdownIt-Anchor" href="#二-如何触发">#</a> 二、如何触发</h2>
-<p>要想减少回流和重绘的次数，首先要了解回流和重绘是如何触发的</p>
-<h3 id="回流触发时机"><a class="markdownIt-Anchor" href="#回流触发时机">#</a> 回流触发时机</h3>
-<p>回流这一阶段主要是计算节点的位置和几何信息，那么当页面布局和几何信息发生变化的时候，就需要回流，如下面情况：</p>
-<ul>
-<li>添加或删除可见的 DOM 元素</li>
-<li>元素的位置发生变化</li>
-<li>元素的尺寸发生变化（包括外边距、内边框、边框大小、高度和宽度等）</li>
-<li>内容发生变化，比如文本变化或图片被另一个不同尺寸的图片所替代</li>
-<li>页面一开始渲染的时候（这避免不了）</li>
-<li>浏览器的窗口尺寸变化（因为回流是根据视口的大小来计算元素的位置和大小的）</li>
-</ul>
-<p>还有一些容易被忽略的操作：获取一些特定属性的值</p>
-<blockquote>
-<p>❝</p>
-<p>offsetTop、offsetLeft、 offsetWidth、offsetHeight、scrollTop、scrollLeft、scrollWidth、scrollHeight、clientTop、clientLeft、clientWidth、clientHeight</p>
-<p>❞</p>
-</blockquote>
-<p>这些属性有一个共性，就是需要通过即时计算得到。因此浏览器为了获取这些值，也会进行回流</p>
-<p>除此还包括 <code>getComputedStyle</code>  方法，原理是一样的</p>
-<h3 id="重绘触发时机"><a class="markdownIt-Anchor" href="#重绘触发时机">#</a> 重绘触发时机</h3>
-<p>触发回流一定会触发重绘</p>
-<p>可以把页面理解为一个黑板，黑板上有一朵画好的小花。现在我们要把这朵从左边移到了右边，那我们要先确定好右边的具体位置，画好形状（回流），再画上它原有的颜色（重绘）</p>
-<p>除此之外还有一些其他引起重绘行为：</p>
-<ul>
-<li>颜色的修改</li>
-<li>文本方向的修改</li>
-<li>阴影的修改</li>
-</ul>
-<h3 id="浏览器优化机制"><a class="markdownIt-Anchor" href="#浏览器优化机制">#</a> 浏览器优化机制</h3>
-<p>由于每次重排都会造成额外的计算消耗，因此大多数浏览器都会通过队列化修改并批量执行来优化重排过程。浏览器会将修改操作放入到队列里，直到过了一段时间或者操作达到了一个阈值，才清空队列</p>
-<p>当你获取布局信息的操作的时候，会强制队列刷新，包括前面讲到的 <code>offsetTop</code>  等方法都会返回最新的数据</p>
-<p>因此浏览器不得不清空队列，触发回流重绘来返回正确的值</p>
-<h2 id="三-如何减少"><a class="markdownIt-Anchor" href="#三-如何减少">#</a> 三、如何减少</h2>
-<p>我们了解了如何触发回流和重绘的场景，下面给出避免回流的经验：</p>
-<ul>
-<li>如果想设定元素的样式，通过改变元素的  <code>class</code>  类名 (尽可能在 DOM 树的最里层)</li>
-<li>避免设置多项内联样式</li>
-<li>应用元素的动画，使用  <code>position</code>  属性的  <code>fixed</code>  值或  <code>absolute</code>  值 (如前文示例所提)</li>
-<li>避免使用  <code>table</code>  布局， <code>table</code>  中每个元素的大小以及内容的改动，都会导致整个  <code>table</code>  的重新计算</li>
-<li>对于那些复杂的动画，对其设置  <code>position: fixed/absolute</code> ，尽可能地使元素脱离文档流，从而减少对其他元素的影响</li>
-<li>使用 css3 硬件加速，可以让 <code>transform</code> 、 <code>opacity</code> 、 <code>filters</code>  这些动画不会引起回流重绘</li>
-<li>避免使用 CSS 的  <code>JavaScript</code>  表达式</li>
-</ul>
-<p>在使用  <code>JavaScript</code>  动态插入多个节点时，可以使用 <code>DocumentFragment</code> . 创建后一次插入。就能避免多次的渲染性能</p>
-<p>但有时候，我们会无可避免地进行回流或者重绘，我们可以更好使用它们</p>
-<p>例如，多次修改一个把元素布局的时候，我们很可能会如下操作</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const el = document.getElementById(&#x27;el&#x27;)</span><br><span class="line">for(let i=0;i&lt;10;i++) &#123;</span><br><span class="line">    el.style.top  = el.offsetTop  + 10 + &quot;px&quot;;</span><br><span class="line">    el.style.left = el.offsetLeft + 10 + &quot;px&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>每次循环都需要获取多次 <code>offset</code>  属性，比较糟糕，可以使用变量的形式缓存起来，待计算完毕再提交给浏览器发出重计算请求</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 缓存offsetLeft与offsetTop的值</span><br><span class="line">const el = document.getElementById(&#x27;el&#x27;)</span><br><span class="line">let offLeft = el.offsetLeft, offTop = el.offsetTop</span><br><span class="line"></span><br><span class="line">// 在JS层面进行计算</span><br><span class="line">for(let i=0;i&lt;10;i++) &#123;</span><br><span class="line">  offLeft += 10</span><br><span class="line">  offTop  += 10</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 一次性将计算结果应用到DOM上</span><br><span class="line">el.style.left = offLeft + &quot;px&quot;</span><br><span class="line">el.style.top = offTop  + &quot;px&quot;</span><br></pre></td></tr></table></figure>
-<p>我们还可避免改变样式，使用类名去合并样式</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const container = document.getElementById(&#x27;container&#x27;)</span><br><span class="line">container.style.width = &#x27;100px&#x27;</span><br><span class="line">container.style.height = &#x27;200px&#x27;</span><br><span class="line">container.style.border = &#x27;10px solid red&#x27;</span><br><span class="line">container.style.color = &#x27;red&#x27;</span><br></pre></td></tr></table></figure>
-<p>使用类名去合并样式</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;style&gt;</span><br><span class="line">    .basic_style &#123;</span><br><span class="line">        width: 100px;</span><br><span class="line">        height: 200px;</span><br><span class="line">        border: 10px solid red;</span><br><span class="line">        color: red;</span><br><span class="line">    &#125;</span><br><span class="line">&lt;/style&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">    const container = document.getElementById(&#x27;container&#x27;)</span><br><span class="line">    container.classList.add(&#x27;basic_style&#x27;)</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<p>前者每次单独操作，都去触发一次渲染树更改（新浏览器不会），</p>
-<p>都去触发一次渲染树更改，从而导致相应的回流与重绘过程</p>
-<p>合并之后，等于我们将所有的更改一次性发出</p>
-<p>我们还可以通过通过设置元素属性 <code>display: none</code> ，将其从页面上去掉，然后再进行后续操作，这些后续操作也不会触发回流与重绘，这个过程称为离线操作</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const container = document.getElementById(&#x27;container&#x27;)</span><br><span class="line">container.style.width = &#x27;100px&#x27;</span><br><span class="line">container.style.height = &#x27;200px&#x27;</span><br><span class="line">container.style.border = &#x27;10px solid red&#x27;</span><br><span class="line">container.style.color = &#x27;red&#x27;</span><br></pre></td></tr></table></figure>
-<p>离线操作后</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">let container = document.getElementById(&#x27;container&#x27;)</span><br><span class="line">container.style.display = &#x27;none&#x27;</span><br><span class="line">container.style.width = &#x27;100px&#x27;</span><br><span class="line">container.style.height = &#x27;200px&#x27;</span><br><span class="line">container.style.border = &#x27;10px solid red&#x27;</span><br><span class="line">container.style.color = &#x27;red&#x27;</span><br><span class="line">...（省略了许多类似的后续操作）</span><br><span class="line">container.style.display = &#x27;block&#x27;</span><br></pre></td></tr></table></figure>
-<h2 id=""><a class="markdownIt-Anchor" href="#">#</a> </h2>
-]]></content>
-      <categories>
-        <category>note</category>
-      </categories>
-      <tags>
-        <tag>note</tag>
       </tags>
   </entry>
 </search>
