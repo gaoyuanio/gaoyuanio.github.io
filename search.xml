@@ -201,6 +201,93 @@ SSL 提供服务<br>
       </tags>
   </entry>
   <entry>
+    <title>JavaScript专题（一）变量与函数提升</title>
+    <url>/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/</url>
+    <content><![CDATA[<h2 id="一-有趣的现象"><a class="markdownIt-Anchor" href="#一-有趣的现象">#</a> 一、有趣的现象</h2>
+<p>按照大家的常识，JavaScript 代码在执行是一定是自上而下的，你需要输出一个字符串，当然需要提前声明一个 <code>保存string类型的变量</code> 。如果深奥的道理我都能懂，于是我阅读了下面的代码。</p>
+<h3 id="11-我以为的开局"><a class="markdownIt-Anchor" href="#11-我以为的开局">#</a> 1.1 我以为的开局</h3>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// 123</span></span><br></pre></td></tr></table></figure>
+<p>我们调换一下代码的位置在再看：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// undefined</span></span><br><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<p><strong>我好像找到规律了！！！</strong></p>
+<p>当我看完了前两段代码并且进行了 “深度思考” 后，我好像找到规律了，那就是：在当前代码块后函数中，在变量声明和初始化 <code>之前</code> 使用变量，会拿不到正确的值。</p>
+<h3 id="12-实际上是这样的"><a class="markdownIt-Anchor" href="#12-实际上是这样的">#</a> 1.2 实际上是这样的</h3>
+<p>带着上面的 “结论” 我来到了这里</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// 高原</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<p>果然如此！，在<strong>变量声明和初始化之后</strong>耶稣也阻挡不了我拿到 val 的值，我说的！！！</p>
+<p>当我看到下面一段代码时，我已经产生了动摇，此事必要蹊跷。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> val = <span class="string">&#x27;测试&#x27;</span>;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<p>这… 我怂了，是什么原因导致这样的现象发生的呢？Js 又是如果处理的呢？</p>
+<h2 id="二-js的预解析"><a class="markdownIt-Anchor" href="#二-js的预解析">#</a> 二、Js 的预解析</h2>
+<p>在当前的作用域内，无论在哪里变量声明，在幕后，都会进行一次看不见的移动。</p>
+<p>注意：<strong>仅声明被 “移动”</strong>。即声明和赋值在某些时候被动分开了。而这次看不见的移动实际上就是 <code>Js在编译阶段的解析</code> 。</p>
+<p>来看一段《你知不知道的 Js》中经典的例子：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 未添加关键字（未声明），name为全局变量，，即window.name = &#x27;高原&#x27;</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 再次声明name，此时name未进行初始化，它的值是undefined吗？</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
+<p>结果是成功打印 “高原”，这样<strong>看不见的移动</strong>就发生在 Js 预解析（编译）之中。</p>
+<h3 id="21-核心预解析"><a class="markdownIt-Anchor" href="#21-核心预解析">#</a> 2.1 核心：预解析</h3>
+<p>为了搞明白这个核心问题，我们需要回顾一下，引擎会在解释 JavaScript 代码之前首先对其进行编译。编译阶段中的一部分工作就是找到所有的声明，并用合适的作用域将它们关联起来。</p>
+<p>因此，发生这样的事情，包括 <code>变量</code> 和 <code>函数</code> 在内的所有声明都会在任何代码被执行前首先被处理。当你看到 <code>var a = 2</code> ；时，可能会认为这是一个声明。但 JavaScript 实际上会将其看成两个声明：var a；和 a = 2;。</p>
+<ul>
+<li>第一个定义声明是在编译阶段进行的。</li>
+<li>第二个赋值声明会被留在原地等待执行阶段。</li>
+</ul>
+<p>即代码是这样写的：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 我们看到的代码：</span></span><br><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<p>但 Js 会将它解析成：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 声明(Declaration)</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明但未初始化，所以分配 undefined</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化(Initialization)</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化（赋值）</span></span><br></pre></td></tr></table></figure>
+<p>所以本小结的一段代码应该这样分析：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明name提到作用域顶部，并被分配了一个undefined</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 进行初始化操作</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// &#x27;高原&#x27;</span></span><br></pre></td></tr></table></figure>
+<h3 id="22-注意只有声明被提升了"><a class="markdownIt-Anchor" href="#22-注意只有声明被提升了">#</a> 2.2 注意：只有声明被提升了</h3>
+<p><strong>只有声明会被提升，而赋值和其他代码逻辑会在执行到代码的位置时才会生效</strong>。所以会有下面的问题：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>函数被提升了，自然可以正常执行，但变量仅仅是声明被提升了。</p>
+<h3 id="23-每个作用域都会进行提升操作"><a class="markdownIt-Anchor" href="#23-每个作用域都会进行提升操作">#</a> 2.3 每个作用域都会进行提升操作</h3>
+<p>还是上面的代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实际它在编译时是这样的：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name; <span class="comment">// 声明</span></span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化</span></span><br><span class="line">&#125;</span><br><span class="line">foo(); <span class="comment">// 函数执行</span></span><br></pre></td></tr></table></figure>
+<p><img data-src="https://img-blog.csdnimg.cn/20200716134005198.jpg" alt="img"></p>
+<h2 id="三-提升之间的优先级"><a class="markdownIt-Anchor" href="#三-提升之间的优先级">#</a> 三、提升之间的优先级</h2>
+<p>既然我们知道了 <code>变量</code> 和 <code>函数</code> 会被提升，他们之间又是如何判断优先级的呢？</p>
+<h3 id="31-函数会被首先提升然后才是变量"><a class="markdownIt-Anchor" href="#31-函数会被首先提升然后才是变量">#</a> 3.1 函数会被首先提升，然后才是变量</h3>
+<p>我们分析下面的代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo; <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>本着函数优先提升的原则，他会被解析成这样：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">// 高原</span></span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意， <code>var foo</code>  因为是一个重复声明，且优先级 <code>低于函数声明</code> 所以它被忽略掉了。</p>
+<h3 id="32-函数字面量不会进行函数提升"><a class="markdownIt-Anchor" href="#32-函数字面量不会进行函数提升">#</a> 3.2 函数字面量不会进行函数提升</h3>
+<p>最直观的例子，就是在函数字面量前调用该函数：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// TypeError: foo is not a function</span></span><br></pre></td></tr></table></figure>
+<p>这段程序中：</p>
+<ol>
+<li>变量标识符 <code>foo()</code>  被提升并分配给所在作用域（在这里是全局作用域），因此 foo ()<strong> 不会导致 ReferenceError</strong>。</li>
+<li>然后就是执行 foo，foo 此时并没有赋值（注意变量被提升了）。由于对 undefined 值进行函数调用而导致非法操作，因此抛出 TypeError 异常。</li>
+</ol>
+<h2 id="四-es6和小结"><a class="markdownIt-Anchor" href="#四-es6和小结">#</a> 四、ES6 和小结</h2>
+<p>ES6 新增了两个命令 <code>let</code>  和 <code>const</code> ，用来声明变量，有关它们完整的概念我会在《ES6 基础系列》中总结，提起它们，是因为<strong>变量提升在它们身上不会存在</strong>。</p>
+<h3 id="41-变量提升是可以规避的"><a class="markdownIt-Anchor" href="#41-变量提升是可以规避的">#</a> 4.1 变量提升是可以规避的</h3>
+<p>let 命令改变了语法行为，它所声明的变量一定要在声明后使用，否则报错。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// var 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(foo); <span class="comment">// 输出undefined</span></span><br><span class="line"><span class="keyword">var</span> foo = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// let 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(bar); <span class="comment">// 报错ReferenceError</span></span><br><span class="line"><span class="keyword">let</span> bar = <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+<p>上面代码中，变量 foo 用 var 命令声明，会发生变量提升，即脚本开始运行时，变量 foo 已经存在了，但是没有值，所以会输出 undefined。变量 bar 用 let 命令声明，不会发生变量提升。这表示在声明它之前，变量 bar 是不存在的，这时如果用到它，就会抛出一个错误。</p>
+<p>在变量提升上，const 和 let 一样，只在声明所在的块级作用域内有效，也不会变量提升</p>
+<h3 id="42-小结"><a class="markdownIt-Anchor" href="#42-小结">#</a> 4.2 小结</h3>
+<ol>
+<li>变量提升：函数声明和变量声明总是会被解释器悄悄地被 &quot;提升&quot; 到方法体的最顶部，但变量的初始化不会提升；</li>
+<li>函数提升：函数声明可以被看作是函数的整体被提升到了代码的顶部，但函数字面量表达式并不会引发函数提升；</li>
+<li>函数提升优先与变量提升；</li>
+<li>let 和 const 可以有效的规避变量提升</li>
+</ol>
+<p>最后提炼一下《你不知道的 JS》中的一段话：<strong>JavaScript 引擎并不总是按照代码的顺序来进行解析。在编译阶段，无论作用域中的声明出现在什么地方，都将在代码本身被执行前首先进行处理，这个过程被称为提升。声明本身会被提升，而包括函数表达式的赋值在内的赋值操作并不会提升。</strong></p>
+]]></content>
+      <categories>
+        <category>javascript</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>JavaScript基础（一）this</title>
     <url>/2021/03/20/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89this/</url>
     <content><![CDATA[<h3 id="一-this的指向"><a class="markdownIt-Anchor" href="#一-this的指向">#</a> 一、this 的指向</h3>
@@ -329,93 +416,6 @@ SSL 提供服务<br>
 <p>我们用 Js 来模拟一个 bind 方法，以便加深我们的认识</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Function</span>.prototype.bind = <span class="function"><span class="keyword">function</span> (<span class="params">func</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> _this = <span class="built_in">this</span></span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> _this.apply(func, <span class="built_in">arguments</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    <span class="attr">name</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="attr">getName</span>: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.name)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> func = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.name)</span><br><span class="line">&#125;</span><br><span class="line">func.bind(obj)</span><br></pre></td></tr></table></figure>
 <p>这样看上去，bind 总会帮我们返回同样的 <code>this</code>  值，还是挺坚挺的哦～</p>
-]]></content>
-      <categories>
-        <category>javascript</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>JavaScript专题（一）变量与函数提升</title>
-    <url>/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/</url>
-    <content><![CDATA[<h2 id="一-有趣的现象"><a class="markdownIt-Anchor" href="#一-有趣的现象">#</a> 一、有趣的现象</h2>
-<p>按照大家的常识，JavaScript 代码在执行是一定是自上而下的，你需要输出一个字符串，当然需要提前声明一个 <code>保存string类型的变量</code> 。如果深奥的道理我都能懂，于是我阅读了下面的代码。</p>
-<h3 id="11-我以为的开局"><a class="markdownIt-Anchor" href="#11-我以为的开局">#</a> 1.1 我以为的开局</h3>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// 123</span></span><br></pre></td></tr></table></figure>
-<p>我们调换一下代码的位置在再看：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// undefined</span></span><br><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br></pre></td></tr></table></figure>
-<span id="more"></span>
-<p><strong>我好像找到规律了！！！</strong></p>
-<p>当我看完了前两段代码并且进行了 “深度思考” 后，我好像找到规律了，那就是：在当前代码块后函数中，在变量声明和初始化 <code>之前</code> 使用变量，会拿不到正确的值。</p>
-<h3 id="12-实际上是这样的"><a class="markdownIt-Anchor" href="#12-实际上是这样的">#</a> 1.2 实际上是这样的</h3>
-<p>带着上面的 “结论” 我来到了这里</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// 高原</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
-<p>果然如此！，在<strong>变量声明和初始化之后</strong>耶稣也阻挡不了我拿到 val 的值，我说的！！！</p>
-<p>当我看到下面一段代码时，我已经产生了动摇，此事必要蹊跷。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> val = <span class="string">&#x27;测试&#x27;</span>;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
-<p>这… 我怂了，是什么原因导致这样的现象发生的呢？Js 又是如果处理的呢？</p>
-<h2 id="二-js的预解析"><a class="markdownIt-Anchor" href="#二-js的预解析">#</a> 二、Js 的预解析</h2>
-<p>在当前的作用域内，无论在哪里变量声明，在幕后，都会进行一次看不见的移动。</p>
-<p>注意：<strong>仅声明被 “移动”</strong>。即声明和赋值在某些时候被动分开了。而这次看不见的移动实际上就是 <code>Js在编译阶段的解析</code> 。</p>
-<p>来看一段《你知不知道的 Js》中经典的例子：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 未添加关键字（未声明），name为全局变量，，即window.name = &#x27;高原&#x27;</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 再次声明name，此时name未进行初始化，它的值是undefined吗？</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
-<p>结果是成功打印 “高原”，这样<strong>看不见的移动</strong>就发生在 Js 预解析（编译）之中。</p>
-<h3 id="21-核心预解析"><a class="markdownIt-Anchor" href="#21-核心预解析">#</a> 2.1 核心：预解析</h3>
-<p>为了搞明白这个核心问题，我们需要回顾一下，引擎会在解释 JavaScript 代码之前首先对其进行编译。编译阶段中的一部分工作就是找到所有的声明，并用合适的作用域将它们关联起来。</p>
-<p>因此，发生这样的事情，包括 <code>变量</code> 和 <code>函数</code> 在内的所有声明都会在任何代码被执行前首先被处理。当你看到 <code>var a = 2</code> ；时，可能会认为这是一个声明。但 JavaScript 实际上会将其看成两个声明：var a；和 a = 2;。</p>
-<ul>
-<li>第一个定义声明是在编译阶段进行的。</li>
-<li>第二个赋值声明会被留在原地等待执行阶段。</li>
-</ul>
-<p>即代码是这样写的：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 我们看到的代码：</span></span><br><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br></pre></td></tr></table></figure>
-<p>但 Js 会将它解析成：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 声明(Declaration)</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明但未初始化，所以分配 undefined</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化(Initialization)</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化（赋值）</span></span><br></pre></td></tr></table></figure>
-<p>所以本小结的一段代码应该这样分析：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明name提到作用域顶部，并被分配了一个undefined</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 进行初始化操作</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// &#x27;高原&#x27;</span></span><br></pre></td></tr></table></figure>
-<h3 id="22-注意只有声明被提升了"><a class="markdownIt-Anchor" href="#22-注意只有声明被提升了">#</a> 2.2 注意：只有声明被提升了</h3>
-<p><strong>只有声明会被提升，而赋值和其他代码逻辑会在执行到代码的位置时才会生效</strong>。所以会有下面的问题：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>函数被提升了，自然可以正常执行，但变量仅仅是声明被提升了。</p>
-<h3 id="23-每个作用域都会进行提升操作"><a class="markdownIt-Anchor" href="#23-每个作用域都会进行提升操作">#</a> 2.3 每个作用域都会进行提升操作</h3>
-<p>还是上面的代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>实际它在编译时是这样的：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name; <span class="comment">// 声明</span></span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化</span></span><br><span class="line">&#125;</span><br><span class="line">foo(); <span class="comment">// 函数执行</span></span><br></pre></td></tr></table></figure>
-<p><img data-src="https://img-blog.csdnimg.cn/20200716134005198.jpg" alt="img"></p>
-<h2 id="三-提升之间的优先级"><a class="markdownIt-Anchor" href="#三-提升之间的优先级">#</a> 三、提升之间的优先级</h2>
-<p>既然我们知道了 <code>变量</code> 和 <code>函数</code> 会被提升，他们之间又是如何判断优先级的呢？</p>
-<h3 id="31-函数会被首先提升然后才是变量"><a class="markdownIt-Anchor" href="#31-函数会被首先提升然后才是变量">#</a> 3.1 函数会被首先提升，然后才是变量</h3>
-<p>我们分析下面的代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo; <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>本着函数优先提升的原则，他会被解析成这样：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">// 高原</span></span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>注意， <code>var foo</code>  因为是一个重复声明，且优先级 <code>低于函数声明</code> 所以它被忽略掉了。</p>
-<h3 id="32-函数字面量不会进行函数提升"><a class="markdownIt-Anchor" href="#32-函数字面量不会进行函数提升">#</a> 3.2 函数字面量不会进行函数提升</h3>
-<p>最直观的例子，就是在函数字面量前调用该函数：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// TypeError: foo is not a function</span></span><br></pre></td></tr></table></figure>
-<p>这段程序中：</p>
-<ol>
-<li>变量标识符 <code>foo()</code>  被提升并分配给所在作用域（在这里是全局作用域），因此 foo ()<strong> 不会导致 ReferenceError</strong>。</li>
-<li>然后就是执行 foo，foo 此时并没有赋值（注意变量被提升了）。由于对 undefined 值进行函数调用而导致非法操作，因此抛出 TypeError 异常。</li>
-</ol>
-<h2 id="四-es6和小结"><a class="markdownIt-Anchor" href="#四-es6和小结">#</a> 四、ES6 和小结</h2>
-<p>ES6 新增了两个命令 <code>let</code>  和 <code>const</code> ，用来声明变量，有关它们完整的概念我会在《ES6 基础系列》中总结，提起它们，是因为<strong>变量提升在它们身上不会存在</strong>。</p>
-<h3 id="41-变量提升是可以规避的"><a class="markdownIt-Anchor" href="#41-变量提升是可以规避的">#</a> 4.1 变量提升是可以规避的</h3>
-<p>let 命令改变了语法行为，它所声明的变量一定要在声明后使用，否则报错。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// var 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(foo); <span class="comment">// 输出undefined</span></span><br><span class="line"><span class="keyword">var</span> foo = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// let 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(bar); <span class="comment">// 报错ReferenceError</span></span><br><span class="line"><span class="keyword">let</span> bar = <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
-<p>上面代码中，变量 foo 用 var 命令声明，会发生变量提升，即脚本开始运行时，变量 foo 已经存在了，但是没有值，所以会输出 undefined。变量 bar 用 let 命令声明，不会发生变量提升。这表示在声明它之前，变量 bar 是不存在的，这时如果用到它，就会抛出一个错误。</p>
-<p>在变量提升上，const 和 let 一样，只在声明所在的块级作用域内有效，也不会变量提升</p>
-<h3 id="42-小结"><a class="markdownIt-Anchor" href="#42-小结">#</a> 4.2 小结</h3>
-<ol>
-<li>变量提升：函数声明和变量声明总是会被解释器悄悄地被 &quot;提升&quot; 到方法体的最顶部，但变量的初始化不会提升；</li>
-<li>函数提升：函数声明可以被看作是函数的整体被提升到了代码的顶部，但函数字面量表达式并不会引发函数提升；</li>
-<li>函数提升优先与变量提升；</li>
-<li>let 和 const 可以有效的规避变量提升</li>
-</ol>
-<p>最后提炼一下《你不知道的 JS》中的一段话：<strong>JavaScript 引擎并不总是按照代码的顺序来进行解析。在编译阶段，无论作用域中的声明出现在什么地方，都将在代码本身被执行前首先进行处理，这个过程被称为提升。声明本身会被提升，而包括函数表达式的赋值在内的赋值操作并不会提升。</strong></p>
 ]]></content>
       <categories>
         <category>javascript</category>
@@ -631,6 +631,108 @@ SSL 提供服务<br>
       </tags>
   </entry>
   <entry>
+    <title>JavaScript基础（五）闭包</title>
+    <url>/2021/03/25/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%94%EF%BC%89%E9%97%AD%E5%8C%85/</url>
+    <content><![CDATA[<h2 id="一-什么是闭包"><a class="markdownIt-Anchor" href="#一-什么是闭包">#</a> 一、什么是闭包</h2>
+<p>顾名思义，遇见问题先问为什么是我们一贯的思维方式，我们尝试回答一下：</p>
+<ol>
+<li>闭包就是函数内部的子函数 ——  <code>等于没说</code></li>
+<li>当函数可以记住并访问所在的词法作用域时，就产生了闭包，即使函数是在当前词法作用域之外执行。—— <code>靠谱</code></li>
+<li>闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁 —— <code>靠谱</code></li>
+<li>函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）—— <code>很靠谱</code></li>
+</ol>
+<p>我们试着用代码来描述一下上面的回答，看看你最<strong>中意</strong>哪一个～</p>
+<span id="more"></span>
+<h3 id="11-闭包是函数内部的子函数"><a class="markdownIt-Anchor" href="#11-闭包是函数内部的子函数">#</a> 1.1 闭包是函数内部的子函数</h3>
+<p>先看这段代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(a);</span><br><span class="line">    &#125;</span><br><span class="line">    bar()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+<p>基于词法作用域的查找规则， <code>bar函数</code> 可以成功的打印 <code>a</code>  变量，并且它也是 <code>foo</code>  的子函数，但严格来说它并没有清晰的表达出闭包这一概念，说它表达的是<strong>嵌套函数可以访问声明于大外部作用域的变量</strong>更准确一些。</p>
+<h3 id="12-闭包就是能够读取其他函数内部变量的函数在本质上是函数内部和函数外部链接的桥梁"><a class="markdownIt-Anchor" href="#12-闭包就是能够读取其他函数内部变量的函数在本质上是函数内部和函数外部链接的桥梁">#</a> 1.2 闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁</h3>
+<p>再来看下面的例子：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(a);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> bar;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> res = foo();</span><br><span class="line">res(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+<p>结果一致，这是因为此时 <code>res</code>  是执行 <code>foo</code>  函数时返回的 <code>bar</code>  引用，bar 函数得以保存了它饿词法环境。</p>
+<h3 id="13-函数和对其周围状态词法环境的引用捆绑在一起构成闭包closure"><a class="markdownIt-Anchor" href="#13-函数和对其周围状态词法环境的引用捆绑在一起构成闭包closure">#</a> 1.3 函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）</h3>
+<p>我们来看下面代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(name); <span class="comment">// gaoyuan</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">//gaoyuan</span></span><br></pre></td></tr></table></figure>
+<p>foo 的上下文被静态的保存了下来，而且是在该函数创建的时候就保存了。下面我们来验证一下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(name); <span class="comment">// gaoyuan</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params">func</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;老王&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    func()</span><br><span class="line">&#125;)(foo); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+<p>这里我们就可以理解 —— 函数被创建后就形成了闭包，他们保存了上层上下文的作用域链，并且保存在 <code>[[scope]]</code>  中，如果你对 <code>[[scope]]</code>  的概念已经模糊了，不妨花几分钟看看《JavaScript 中的执行上下文》这篇文章。</p>
+<h3 id="14-总结"><a class="markdownIt-Anchor" href="#14-总结">#</a> 1.4 总结</h3>
+<p><strong>注意：闭包是函数内部的返回的子函数这句话本身没错</strong>，但要看从什么角度出发：</p>
+<p>ECMAScript 中，闭包指的是：</p>
+<ol>
+<li>从理论角度：所有的函数。因为它们都在创建的时候就将上层上下文的数据保存起来了。哪怕是简单的全局变量也是如此，因为函数中访问全局变量就相当于是在访问自由变量，这个时候使用最外层的作用域。</li>
+<li>从实践角度：以下函数才算是闭包：
+<ul>
+<li>即使创建它的上下文已经销毁，它仍然存在（比如，内部函数从父函数中返回）</li>
+<li>在代码中引用了自由变量</li>
+</ul>
+</li>
+</ol>
+<p><strong>总结：</strong></p>
+<ul>
+<li>闭包代码块创建该代码块的上下文中数据的结合</li>
+<li>闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁</li>
+<li>不同的角度对闭包的解释不同的</li>
+</ul>
+<p>注意：这些并不是闭包的全部，就好像当你被问到 —— 闭包是什么的时候，你的上述回答并不能结束这个话题，往往会引申出更多的话题。</p>
+<h2 id="二-尝试分析闭包"><a class="markdownIt-Anchor" href="#二-尝试分析闭包">#</a> 二、尝试分析闭包</h2>
+<p>还是那段经典代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = checkscope();</span><br><span class="line">foo(); <span class="comment">// local scope</span></span><br></pre></td></tr></table></figure>
+<p>首先我们要分析一下这段代码中执行上下文栈和执行上下文的变化情况。</p>
+<ol>
+<li>进入全局代码，创建全局执行上下文，全局执行上下文压入执行上下文栈</li>
+<li>全局执行上下文初始化</li>
+<li>执行 checkscope 函数，创建 checkscope 函数执行上下文，checkscope 执行上下文被压入执行上下文栈</li>
+<li>checkscope 执行上下文初始化，创建变量对象、作用域链、this 等</li>
+<li>checkscope 函数执行完毕，checkscope 执行上下文从执行上下文栈中弹出</li>
+<li>执行 f 函数，创建 f 函数执行上下文，f 执行上下文被压入执行上下文栈</li>
+<li>f 执行上下文初始化，创建变量对象、作用域链、this 等</li>
+<li>f 函数执行完毕，f 函数上下文从执行上下文栈中弹出</li>
+</ol>
+<p><img data-src="https://img-blog.csdnimg.cn/20200628152924827.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>当  <code>f</code>  函数执行的时候， <code>checkscope</code>  函数上下文已经被销毁了啊 (即从执行上下文栈中被弹出)，怎么还会读取到  <code>checkscope</code>  作用域下的  <code>scope</code>  值呢？</p>
+<p>当我们了解了具体的执行过程后，我们知道 f 执行上下文维护了一个作用域链：</p>
+<p>因为这个作用域链：</p>
+<ul>
+<li><code>f 函数</code> 依然可以读取到  <code>checkscopeContext.AO</code>  的值；</li>
+<li>当  <code>f 函数</code> 引用了  <code>checkscopeContext.AO</code>  中的值的时候，即使  <code>checkscopeContext</code>  被销毁了，JavaScript 依然会让  <code>checkscopeContext.AO</code>  活在内存中；</li>
+<li><code>f 函数</code> 依然可以通过  <code>f 函数</code> 的作用域链找到它，正是因为 JavaScript 做到了这一点，从而实现了闭包这个概念。</li>
+</ul>
+<p>多么浪漫的思想 —— 只要你需要我，那我我本应该被销毁，你也能找到我～</p>
+<h2 id="三-经典问题"><a class="markdownIt-Anchor" href="#三-经典问题">#</a> 三、经典问题</h2>
+<h3 id="31-多个对象引用同一个scope你遇到过吗"><a class="markdownIt-Anchor" href="#31-多个对象引用同一个scope你遇到过吗">#</a> 3.1 多个对象引用同一个 [[Scope]]，你遇到过吗？</h3>
+<p>直接上代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> child1;</span><br><span class="line"><span class="keyword">var</span> child2;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">parent</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> x = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    child1 = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(++x)</span><br><span class="line">    &#125;;</span><br><span class="line">    child2 = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(--x)</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line">parent();</span><br><span class="line">child1(); <span class="comment">// 2</span></span><br><span class="line">child1(); <span class="comment">// 3</span></span><br><span class="line">child2(); <span class="comment">// 2</span></span><br></pre></td></tr></table></figure>
+<p>大家可能不理解， <code>child1</code>  和 <code>child</code>  他们两个函数在创建后都保存了上层上下文，万万没想到，<strong>同一个上下文创建的闭包是共用一个 <code>[[scope]]</code>  属性的</strong>，某个闭包对其中 [[Scope]] 的变量做修改会影响到其他闭包对其变量的读取。</p>
+<h3 id="32-闭包轻松解决的经典问题"><a class="markdownIt-Anchor" href="#32-闭包轻松解决的经典问题">#</a> 3.2 闭包轻松解决的经典问题</h3>
+<p>大家一定对下面这段代码很眼熟：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = []</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">    arr[i] = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(i)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">arr[<span class="number">0</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">1</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">2</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">3</span>](); <span class="comment">// 10</span></span><br></pre></td></tr></table></figure>
+<p>我们这么解释它：<strong>同一个上下文中创建的闭包是共用一个 [[Scope]] 属性的</strong>。</p>
+<p>因此上层上下文中的变量 <code>i</code>  是可以很容易就被改变的。</p>
+<p>arr [0],arr [1]…arr [9] 他们共用一个 [[scope]]，最终执行的时候结果当然一样。</p>
+<p><strong>如何利用闭包来解决这个问题呢？</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = []</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">    arr[i] = (<span class="function"><span class="keyword">function</span> (<span class="params">i</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)(i)</span><br><span class="line">&#125;</span><br><span class="line">arr[<span class="number">0</span>](); <span class="comment">// 0</span></span><br><span class="line">arr[<span class="number">1</span>](); <span class="comment">// 1</span></span><br><span class="line">arr[<span class="number">2</span>](); <span class="comment">// 2</span></span><br><span class="line">arr[<span class="number">3</span>](); <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+<p>我们通过立即执行匿名函数的方式隔离了作用域，当执行 arr [0] 函数的时候，arr [0] 函数的作用域链发生了改变：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">arr[<span class="number">0</span>]Context = &#123;</span><br><span class="line">    <span class="attr">Scope</span>: [AO, 匿名函数Context.AO globalContext.VO]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>匿名函数执行上下文的 AO 为：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">匿名函数Context = &#123;</span><br><span class="line">    <span class="attr">AO</span>: &#123;</span><br><span class="line">        <span class="attr">arguments</span>: &#123;</span><br><span class="line">            <span class="number">0</span>: <span class="number">0</span>,</span><br><span class="line">            <span class="attr">length</span>: <span class="number">1</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">i</span>: <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们看到，这时函数的 <code>[[Scope]]</code>  属性就有了真正想要的值了，为了达到这样的目的，我们不得不在 <code>[[Scope]]</code>  中创建额外的变量对象。要注意的是，在返回的函数中，如果要获取 <code>i</code>  的值，那么该值还是会是 10。</p>
+<h3 id="33-总结"><a class="markdownIt-Anchor" href="#33-总结">#</a> 3.3 总结</h3>
+<ul>
+<li>函数内的所有内部函数都共享一个父作用域，因此创建的闭包是共用的。</li>
+<li>利用闭包隔离作用域的特性可以解决共享作用域的问题</li>
+</ul>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&amp;fm=26&amp;gp=0.jpeg" alt=""></p>
+]]></content>
+      <categories>
+        <category>javascript</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>JavaScript基础（六）基本数据类型</title>
     <url>/2021/03/26/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E5%85%AD%EF%BC%89%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</url>
     <content><![CDATA[<h2 id="一-类型"><a class="markdownIt-Anchor" href="#一-类型">#</a> 一、类型</h2>
@@ -762,108 +864,6 @@ SSL 提供服务<br>
 <li>代表的含义不同</li>
 </ul>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typeof</span> <span class="literal">null</span>        <span class="comment">// &quot;object&quot; (因为一些以前的原因而不是&#x27;null&#x27;)</span></span><br><span class="line"><span class="keyword">typeof</span> <span class="literal">undefined</span>   <span class="comment">// &quot;undefined&quot;</span></span><br><span class="line"><span class="literal">null</span> === <span class="literal">undefined</span> <span class="comment">// false</span></span><br><span class="line"><span class="literal">null</span>  == <span class="literal">undefined</span> <span class="comment">// true</span></span><br><span class="line"><span class="literal">null</span> === <span class="literal">null</span> <span class="comment">// true</span></span><br><span class="line"><span class="literal">null</span> == <span class="literal">null</span> <span class="comment">// true</span></span><br><span class="line">!<span class="literal">null</span> <span class="comment">//true</span></span><br><span class="line"><span class="built_in">isNaN</span>(<span class="number">1</span> + <span class="literal">null</span>) <span class="comment">// false</span></span><br><span class="line"><span class="built_in">isNaN</span>(<span class="number">1</span> + <span class="literal">undefined</span>) <span class="comment">// true</span></span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>javascript</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>JavaScript基础（五）闭包</title>
-    <url>/2021/03/25/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%94%EF%BC%89%E9%97%AD%E5%8C%85/</url>
-    <content><![CDATA[<h2 id="一-什么是闭包"><a class="markdownIt-Anchor" href="#一-什么是闭包">#</a> 一、什么是闭包</h2>
-<p>顾名思义，遇见问题先问为什么是我们一贯的思维方式，我们尝试回答一下：</p>
-<ol>
-<li>闭包就是函数内部的子函数 ——  <code>等于没说</code></li>
-<li>当函数可以记住并访问所在的词法作用域时，就产生了闭包，即使函数是在当前词法作用域之外执行。—— <code>靠谱</code></li>
-<li>闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁 —— <code>靠谱</code></li>
-<li>函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）—— <code>很靠谱</code></li>
-</ol>
-<p>我们试着用代码来描述一下上面的回答，看看你最<strong>中意</strong>哪一个～</p>
-<span id="more"></span>
-<h3 id="11-闭包是函数内部的子函数"><a class="markdownIt-Anchor" href="#11-闭包是函数内部的子函数">#</a> 1.1 闭包是函数内部的子函数</h3>
-<p>先看这段代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(a);</span><br><span class="line">    &#125;</span><br><span class="line">    bar()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-<p>基于词法作用域的查找规则， <code>bar函数</code> 可以成功的打印 <code>a</code>  变量，并且它也是 <code>foo</code>  的子函数，但严格来说它并没有清晰的表达出闭包这一概念，说它表达的是<strong>嵌套函数可以访问声明于大外部作用域的变量</strong>更准确一些。</p>
-<h3 id="12-闭包就是能够读取其他函数内部变量的函数在本质上是函数内部和函数外部链接的桥梁"><a class="markdownIt-Anchor" href="#12-闭包就是能够读取其他函数内部变量的函数在本质上是函数内部和函数外部链接的桥梁">#</a> 1.2 闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁</h3>
-<p>再来看下面的例子：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(a);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> bar;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> res = foo();</span><br><span class="line">res(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-<p>结果一致，这是因为此时 <code>res</code>  是执行 <code>foo</code>  函数时返回的 <code>bar</code>  引用，bar 函数得以保存了它饿词法环境。</p>
-<h3 id="13-函数和对其周围状态词法环境的引用捆绑在一起构成闭包closure"><a class="markdownIt-Anchor" href="#13-函数和对其周围状态词法环境的引用捆绑在一起构成闭包closure">#</a> 1.3 函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）</h3>
-<p>我们来看下面代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(name); <span class="comment">// gaoyuan</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">//gaoyuan</span></span><br></pre></td></tr></table></figure>
-<p>foo 的上下文被静态的保存了下来，而且是在该函数创建的时候就保存了。下面我们来验证一下：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(name); <span class="comment">// gaoyuan</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params">func</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;老王&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    func()</span><br><span class="line">&#125;)(foo); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-<p>这里我们就可以理解 —— 函数被创建后就形成了闭包，他们保存了上层上下文的作用域链，并且保存在 <code>[[scope]]</code>  中，如果你对 <code>[[scope]]</code>  的概念已经模糊了，不妨花几分钟看看《JavaScript 中的执行上下文》这篇文章。</p>
-<h3 id="14-总结"><a class="markdownIt-Anchor" href="#14-总结">#</a> 1.4 总结</h3>
-<p><strong>注意：闭包是函数内部的返回的子函数这句话本身没错</strong>，但要看从什么角度出发：</p>
-<p>ECMAScript 中，闭包指的是：</p>
-<ol>
-<li>从理论角度：所有的函数。因为它们都在创建的时候就将上层上下文的数据保存起来了。哪怕是简单的全局变量也是如此，因为函数中访问全局变量就相当于是在访问自由变量，这个时候使用最外层的作用域。</li>
-<li>从实践角度：以下函数才算是闭包：
-<ul>
-<li>即使创建它的上下文已经销毁，它仍然存在（比如，内部函数从父函数中返回）</li>
-<li>在代码中引用了自由变量</li>
-</ul>
-</li>
-</ol>
-<p><strong>总结：</strong></p>
-<ul>
-<li>闭包代码块创建该代码块的上下文中数据的结合</li>
-<li>闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁</li>
-<li>不同的角度对闭包的解释不同的</li>
-</ul>
-<p>注意：这些并不是闭包的全部，就好像当你被问到 —— 闭包是什么的时候，你的上述回答并不能结束这个话题，往往会引申出更多的话题。</p>
-<h2 id="二-尝试分析闭包"><a class="markdownIt-Anchor" href="#二-尝试分析闭包">#</a> 二、尝试分析闭包</h2>
-<p>还是那段经典代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = checkscope();</span><br><span class="line">foo(); <span class="comment">// local scope</span></span><br></pre></td></tr></table></figure>
-<p>首先我们要分析一下这段代码中执行上下文栈和执行上下文的变化情况。</p>
-<ol>
-<li>进入全局代码，创建全局执行上下文，全局执行上下文压入执行上下文栈</li>
-<li>全局执行上下文初始化</li>
-<li>执行 checkscope 函数，创建 checkscope 函数执行上下文，checkscope 执行上下文被压入执行上下文栈</li>
-<li>checkscope 执行上下文初始化，创建变量对象、作用域链、this 等</li>
-<li>checkscope 函数执行完毕，checkscope 执行上下文从执行上下文栈中弹出</li>
-<li>执行 f 函数，创建 f 函数执行上下文，f 执行上下文被压入执行上下文栈</li>
-<li>f 执行上下文初始化，创建变量对象、作用域链、this 等</li>
-<li>f 函数执行完毕，f 函数上下文从执行上下文栈中弹出</li>
-</ol>
-<p><img data-src="https://img-blog.csdnimg.cn/20200628152924827.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<p>当  <code>f</code>  函数执行的时候， <code>checkscope</code>  函数上下文已经被销毁了啊 (即从执行上下文栈中被弹出)，怎么还会读取到  <code>checkscope</code>  作用域下的  <code>scope</code>  值呢？</p>
-<p>当我们了解了具体的执行过程后，我们知道 f 执行上下文维护了一个作用域链：</p>
-<p>因为这个作用域链：</p>
-<ul>
-<li><code>f 函数</code> 依然可以读取到  <code>checkscopeContext.AO</code>  的值；</li>
-<li>当  <code>f 函数</code> 引用了  <code>checkscopeContext.AO</code>  中的值的时候，即使  <code>checkscopeContext</code>  被销毁了，JavaScript 依然会让  <code>checkscopeContext.AO</code>  活在内存中；</li>
-<li><code>f 函数</code> 依然可以通过  <code>f 函数</code> 的作用域链找到它，正是因为 JavaScript 做到了这一点，从而实现了闭包这个概念。</li>
-</ul>
-<p>多么浪漫的思想 —— 只要你需要我，那我我本应该被销毁，你也能找到我～</p>
-<h2 id="三-经典问题"><a class="markdownIt-Anchor" href="#三-经典问题">#</a> 三、经典问题</h2>
-<h3 id="31-多个对象引用同一个scope你遇到过吗"><a class="markdownIt-Anchor" href="#31-多个对象引用同一个scope你遇到过吗">#</a> 3.1 多个对象引用同一个 [[Scope]]，你遇到过吗？</h3>
-<p>直接上代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> child1;</span><br><span class="line"><span class="keyword">var</span> child2;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">parent</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> x = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    child1 = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(++x)</span><br><span class="line">    &#125;;</span><br><span class="line">    child2 = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(--x)</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line">parent();</span><br><span class="line">child1(); <span class="comment">// 2</span></span><br><span class="line">child1(); <span class="comment">// 3</span></span><br><span class="line">child2(); <span class="comment">// 2</span></span><br></pre></td></tr></table></figure>
-<p>大家可能不理解， <code>child1</code>  和 <code>child</code>  他们两个函数在创建后都保存了上层上下文，万万没想到，<strong>同一个上下文创建的闭包是共用一个 <code>[[scope]]</code>  属性的</strong>，某个闭包对其中 [[Scope]] 的变量做修改会影响到其他闭包对其变量的读取。</p>
-<h3 id="32-闭包轻松解决的经典问题"><a class="markdownIt-Anchor" href="#32-闭包轻松解决的经典问题">#</a> 3.2 闭包轻松解决的经典问题</h3>
-<p>大家一定对下面这段代码很眼熟：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = []</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">    arr[i] = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(i)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">arr[<span class="number">0</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">1</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">2</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">3</span>](); <span class="comment">// 10</span></span><br></pre></td></tr></table></figure>
-<p>我们这么解释它：<strong>同一个上下文中创建的闭包是共用一个 [[Scope]] 属性的</strong>。</p>
-<p>因此上层上下文中的变量 <code>i</code>  是可以很容易就被改变的。</p>
-<p>arr [0],arr [1]…arr [9] 他们共用一个 [[scope]]，最终执行的时候结果当然一样。</p>
-<p><strong>如何利用闭包来解决这个问题呢？</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = []</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">    arr[i] = (<span class="function"><span class="keyword">function</span> (<span class="params">i</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)(i)</span><br><span class="line">&#125;</span><br><span class="line">arr[<span class="number">0</span>](); <span class="comment">// 0</span></span><br><span class="line">arr[<span class="number">1</span>](); <span class="comment">// 1</span></span><br><span class="line">arr[<span class="number">2</span>](); <span class="comment">// 2</span></span><br><span class="line">arr[<span class="number">3</span>](); <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
-<p>我们通过立即执行匿名函数的方式隔离了作用域，当执行 arr [0] 函数的时候，arr [0] 函数的作用域链发生了改变：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">arr[<span class="number">0</span>]Context = &#123;</span><br><span class="line">    <span class="attr">Scope</span>: [AO, 匿名函数Context.AO globalContext.VO]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>匿名函数执行上下文的 AO 为：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">匿名函数Context = &#123;</span><br><span class="line">    <span class="attr">AO</span>: &#123;</span><br><span class="line">        <span class="attr">arguments</span>: &#123;</span><br><span class="line">            <span class="number">0</span>: <span class="number">0</span>,</span><br><span class="line">            <span class="attr">length</span>: <span class="number">1</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">i</span>: <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们看到，这时函数的 <code>[[Scope]]</code>  属性就有了真正想要的值了，为了达到这样的目的，我们不得不在 <code>[[Scope]]</code>  中创建额外的变量对象。要注意的是，在返回的函数中，如果要获取 <code>i</code>  的值，那么该值还是会是 10。</p>
-<h3 id="33-总结"><a class="markdownIt-Anchor" href="#33-总结">#</a> 3.3 总结</h3>
-<ul>
-<li>函数内的所有内部函数都共享一个父作用域，因此创建的闭包是共用的。</li>
-<li>利用闭包隔离作用域的特性可以解决共享作用域的问题</li>
-</ul>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&amp;fm=26&amp;gp=0.jpeg" alt=""></p>
-]]></content>
       <categories>
         <category>javascript</category>
       </categories>
