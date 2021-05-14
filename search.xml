@@ -1126,142 +1126,6 @@ user_name  CHAR (8)：定长字符串，可能产生空间浪费，但读取速�
       </tags>
   </entry>
   <entry>
-    <title>vue项目打包优化策略</title>
-    <url>/2020/11/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</url>
-    <content><![CDATA[<p>使用 vue-cli 部署生产包时，发现资源包很大，打包后的 <code>vendor.js</code>  达到了 1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？</p>
-<h3 id="1组件按需加载"><a class="markdownIt-Anchor" href="#1组件按需加载">#</a> 1. 组件按需加载</h3>
-<p>这是首先可以优化的点。如果频繁使用了第三方组件 / UI 库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts 等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。</p>
-<p>示例如下：</p>
-<h4 id="11-element-ui"><a class="markdownIt-Anchor" href="#11-element-ui">#</a> 1.1 element-ui</h4>
-<p>首先，安装 babel-plugin-component：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
-<span id="more"></span>
-<p>然后，将.babelrc 修改为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// main.js</span><br><span class="line">import Vue from &#x27;vue&#x27;</span><br><span class="line">import &#123; Dialog, Loading &#125; from &#x27;element-ui&#x27;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading = Loading.service</span><br><span class="line">// 然后正常使用组件</span><br></pre></td></tr></table></figure>
-<h4 id="12-mint-ui"><a class="markdownIt-Anchor" href="#12-mint-ui">#</a> 1.2 mint-ui</h4>
-<p>由于 mint-ui 是 element-ui 的移动端组件，所以它的使用和引入几乎和 element-ui 一样。</p>
-<p>首先，安装 babel-plugin-component：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
-<p>然后，将.babelrc 修改为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;presets&quot;: [</span><br><span class="line">    [&quot;es2015&quot;, &#123; &quot;modules&quot;: false &#125;]</span><br><span class="line">  ],</span><br><span class="line">  &quot;plugins&quot;: [[&quot;component&quot;, [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;libraryName&quot;: &quot;mint-ui&quot;,</span><br><span class="line">      &quot;style&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">  ]]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后引入部分组件</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// main.js</span><br><span class="line">import Vue from &#x27;vue&#x27;</span><br><span class="line">import &#123; Toast, MessageBox &#125; from &#x27;element-ui&#x27;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading = Loading.service</span><br><span class="line">// 然后正常使用组件</span><br></pre></td></tr></table></figure>
-<p>注意，element-ui 和 mint-ui 不能同时在.babelrc 中进行插件设置，这种情况下，依然可以按需引入，但是不要在 <code>.babelrc</code>  中配置，在引入的地方同时引入 css 即可。</p>
-<h4 id="13-echarts"><a class="markdownIt-Anchor" href="#13-echarts">#</a> 1.3 echarts</h4>
-<p>首先安装 babel-plugin-equire</p>
-<p>npm i babel-plugin-equire -D</p>
-<p>然后，在 <code>.babelrc</code>  文件中添加该插件</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;plugins&quot;: [</span><br><span class="line">       // other plugins</span><br><span class="line">       ...</span><br><span class="line">       </span><br><span class="line">    &quot;equire&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>创建一个 js 文件</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// echarts.js</span><br><span class="line">// eslint-disable-next-line</span><br><span class="line">const echarts = equire([</span><br><span class="line">  &#x27;tooltip&#x27;,</span><br><span class="line">  &#x27;candlestick&#x27;,</span><br><span class="line">  &#x27;bar&#x27;,</span><br><span class="line">  &#x27;line&#x27;,</span><br><span class="line">  &#x27;axisPointer&#x27;,</span><br><span class="line">  &#x27;legend&#x27;,</span><br><span class="line">  &#x27;grid&#x27;</span><br><span class="line">])</span><br><span class="line">export default echarts</span><br><span class="line">// 业务组件，引入echarts</span><br><span class="line">import echarts from &#x27;@/assets/lib/echarts&#x27;</span><br><span class="line">// 使用与以前一样</span><br></pre></td></tr></table></figure>
-<p>按需加载 echarts</p>
-<p>解决 vue-cli 首屏加载慢的问题</p>
-<h3 id="2路由懒加载"><a class="markdownIt-Anchor" href="#2路由懒加载">#</a> 2. 路由懒加载</h3>
-<p>这里需要一个插件</p>
-<p>vue-router 官方推荐 syntax-dynamic-import 插件，不过它要求同时安装 @bable/core^7.0.0，如果你安装了 babel-core6，是会有版本冲突的。我的做法如下</p>
-<p>npm install babel-plugin-syntax-dynamic-import --save-dev(^6.18.0)</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// router.js</span><br><span class="line">const login = () =&gt; import(&#x27;@/components/login&#x27;)</span><br><span class="line">const router = new VueRouter(&#123;</span><br><span class="line">  routes: [</span><br><span class="line">    &#123; path: &#x27;/login&#x27;, component: login &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p>还有一种魔法注释用法</p>
-<p>有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack &gt; 2.4)。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const Foo = () =&gt; import(/* webpackChunkName: &quot;group-foo&quot; */ &#x27;./Foo.vue&#x27;)</span><br></pre></td></tr></table></figure>
-<h3 id="3异步组件"><a class="markdownIt-Anchor" href="#3异步组件">#</a> 3. 异步组件</h3>
-<p>如果组件在页面加载时不需要，只在调用时用到，这时可以使用异步组件的写法。仅仅是引入和组件注册写法不同</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// template</span><br><span class="line">&lt;test v-if=&quot;showTest&quot;&gt;&lt;/test&gt;</span><br><span class="line">// script</span><br><span class="line">  components: &#123;</span><br><span class="line">    test: () =&gt; import(&#x27;./test&#x27;) // 将组件异步引入，告诉webpack，将该部分代码分割打包</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">      clickTest () &#123;</span><br><span class="line">          this.showTest = !this.showTest</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<h3 id="4图片的压缩合并"><a class="markdownIt-Anchor" href="#4图片的压缩合并">#</a> 4. 图片的压缩合并</h3>
-<p>如有可能，将图片制作成精灵图</p>
-<h3 id="5cdn加速"><a class="markdownIt-Anchor" href="#5cdn加速">#</a> 5.CDN 加速</h3>
-<p>在 index.html 中引入 cdn 资源</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;div id=&quot;app&quot;&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">  &lt;!-- built files will be auto injected --&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue/2.5.2/vue.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue-router/3.0.1/vue-router.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vuex/3.0.1/vuex.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-<p>修改 build/webpack.base.conf.js</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">module.exports = &#123;</span><br><span class="line">  context: path.resolve(__dirname, &#x27;../&#x27;),</span><br><span class="line">  entry: &#123;</span><br><span class="line">    app: &#x27;./src/main.js&#x27;</span><br><span class="line">  &#125;,</span><br><span class="line">  externals:&#123;</span><br><span class="line">    &#x27;vue&#x27;: &#x27;Vue&#x27;,</span><br><span class="line">    &#x27;vue-router&#x27;: &#x27;VueRouter&#x27;,</span><br><span class="line">    &#x27;vuex&#x27;:&#x27;Vuex&#x27;,</span><br><span class="line">    &#x27;vue-resource&#x27;: &#x27;VueResource&#x27;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>修改 src/main.js src/router/index.js 注释掉 import 引入的 vue,vue-resource</p>
-<p>// import Vue from ‘vue’</p>
-<p>// import VueResource from ‘vue-resource’</p>
-<p>// Vue.use(VueResource)</p>
-<h3 id="6压缩代码"><a class="markdownIt-Anchor" href="#6压缩代码">#</a> 6. 压缩代码</h3>
-<p>vue-cli 已经使用 UglifyJsPlugin 插件来压缩代码，可以设置成如下配置：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">new webpack.optimize.UglifyJsPlugin(&#123;</span><br><span class="line">  compress: &#123;</span><br><span class="line">    warnings: false,</span><br><span class="line">    drop_console: true,</span><br><span class="line">    pure_funcs: [&#x27;console.log&#x27;]</span><br><span class="line">  &#125;,</span><br><span class="line">  sourceMap: false</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p>其中 sourceMap: false 是禁用除错功能。</p>
-<p>如果设为 true，在部署包中会生成.map 结尾的 js 文件。它用于在代码混淆压缩的情况下仍可进行调试。这个功能虽好，但会大大增加整体资源包的体积，所以将其禁用。</p>
-]]></content>
-      <categories>
-        <category>Vue专题</category>
-      </categories>
-      <tags>
-        <tag>vue</tag>
-        <tag>webpack</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>vue里封装axios——利用promise无痛刷新token</title>
-    <url>/2021/03/29/vue%E9%87%8C%E5%B0%81%E8%A3%85axios%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8promise%E6%97%A0%E7%97%9B%E5%88%B7%E6%96%B0token/</url>
-    <content><![CDATA[<h2 id="需求"><a class="markdownIt-Anchor" href="#需求">#</a> 需求</h2>
-<p>最近遇到个需求：前端登录后，后端返回 <code>token</code>  和 <code>token有效时间</code> ，当 token 过期时要求用旧 token 去获取新的 token，前端需要做到无痛刷新 <code>token</code> ，即请求刷新 token 时要做到用户无感知。</p>
-<h2 id="需求解析"><a class="markdownIt-Anchor" href="#需求解析">#</a> 需求解析</h2>
-<p>当用户发起一个请求时，判断 token 是否已过期，若已过期则先调 <code>refreshToken</code>  接口，拿到新的 token 后再继续执行之前的请求。</p>
-<p>这个问题的难点在于：当同时发起多个请求，而刷新 token 的接口还没返回，此时其他请求该如何处理？接下来会循序渐进地分享一下整个过程。</p>
-<span id="more"></span>
-<h2 id="实现思路"><a class="markdownIt-Anchor" href="#实现思路">#</a> 实现思路</h2>
-<p>由于后端返回了 token 的有效时间，可以有两种方法：</p>
-<h3 id="方法一"><a class="markdownIt-Anchor" href="#方法一">#</a> 方法一：</h3>
-<p>在请求发起前拦截每个请求，判断 token 的有效时间是否已经过期，若已过期，则将请求挂起，先刷新 token 后再继续请求。</p>
-<h3 id="方法二"><a class="markdownIt-Anchor" href="#方法二">#</a> 方法二：</h3>
-<p>不在请求前拦截，而是拦截返回后的数据。先发起请求，接口返回过期后，先刷新 token，再进行一次重试。</p>
-<h3 id="两种方法对比"><a class="markdownIt-Anchor" href="#两种方法对比">#</a> 两种方法对比</h3>
-<p>方法一</p>
-<ul>
-<li>优点： 在请求前拦截，能节省请求，省流量。</li>
-<li>缺点： 需要后端额外提供一个 token 过期时间的字段；使用了本地时间判断，若本地时间被篡改，特别是本地时间比服务器时间慢时，拦截会失败。</li>
-</ul>
-<blockquote>
-<p>PS：token 有效时间建议是时间段，类似缓存的 MaxAge，而不要是绝对时间。当服务器和本地时间不一致时，绝对时间会有问题。</p>
-</blockquote>
-<p>方法二</p>
-<ul>
-<li>优点：不需额外的 token 过期字段，不需判断时间。</li>
-<li>缺点： 会消耗多一次请求，耗流量。</li>
-</ul>
-<p>综上，方法一和二优缺点是互补的，方法一有校验失败的风险（本地时间被篡改时，当然一般没有用户闲的蛋疼去改本地时间的啦），方法二更简单粗暴，等知道服务器已经过期了再重试一次，只是会耗多一个请求。</p>
-<p>在这里博主选择了 <em>方法二</em>。</p>
-<h2 id="实现"><a class="markdownIt-Anchor" href="#实现">#</a> 实现</h2>
-<p>这里会使用<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2F4aW9zL2F4aW9z"> axios</span> 来实现，方法一是请求前拦截，所以会使用 <code>axios.interceptors.request.use()</code>  这个方法；</p>
-<p>而方法二是请求后拦截，所以会使用 <code>axios.interceptors.response.use()</code>  方法。</p>
-<h3 id="封装axios基本骨架"><a class="markdownIt-Anchor" href="#封装axios基本骨架">#</a> 封装 axios 基本骨架</h3>
-<p>首先说明一下，项目中的 token 是存在 <code>localStorage</code>  中的。 <code>request.js</code>  基本骨架:</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import axios from &#x27;axios&#x27;</span><br><span class="line"></span><br><span class="line">// 从localStorage中获取token</span><br><span class="line">function getLocalToken () &#123;</span><br><span class="line">    const token = window.localStorage.getItem(&#x27;token&#x27;)</span><br><span class="line">    return token</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 给实例添加一个setToken方法，用于登录后将最新token动态添加到header，同时将token保存在localStorage中</span><br><span class="line">instance.setToken = (token) =&gt; &#123;</span><br><span class="line">  instance.defaults.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">  window.localStorage.setItem(&#x27;token&#x27;, token)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 创建一个axios实例</span><br><span class="line">const instance = axios.create(&#123;</span><br><span class="line">  baseURL: &#x27;/api&#x27;,</span><br><span class="line">  timeout: 300000,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,</span><br><span class="line">    &#x27;X-Token&#x27;: getLocalToken() // headers塞token</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// 拦截返回的数据</span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  // 接下来会在这里进行token过期的逻辑处理</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">export default instance</span><br></pre></td></tr></table></figure>
-<p>这个是项目中一般的 axios 实例的封装，创建实例时，将本地已有的 token 放进 header，然后 export 出去供调用。接下来就是如何拦截返回的数据啦。</p>
-<h3 id="instanceinterceptorsresponseuse拦截实现"><a class="markdownIt-Anchor" href="#instanceinterceptorsresponseuse拦截实现">#</a> instance.interceptors.response.use 拦截实现</h3>
-<p>后端接口一般会有一个约定好的数据结构，如：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;code: 1234, message: &#x27;token过期&#x27;, data: &#123;&#125;&#125;</span><br></pre></td></tr></table></figure>
-<p>如我这里，后端约定当 <code>code === 1234</code>  时表示 token 过期了，此时就要求刷新 token。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    // 说明token过期了,刷新token</span><br><span class="line">    return refreshToken().then(res =&gt; &#123;</span><br><span class="line">      // 刷新token成功，将最新的token更新到header中，同时保存在localStorage中</span><br><span class="line">      const &#123; token &#125; = res.data</span><br><span class="line">      instance.setToken(token)</span><br><span class="line">      // 获取当前失败的请求</span><br><span class="line">      const config = response.config</span><br><span class="line">      // 重置一下配置</span><br><span class="line">      config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">      config.baseURL = &#x27;&#x27; // url已经带上了/api，避免出现/api/api的情况</span><br><span class="line">      // 重试当前请求并返回promise</span><br><span class="line">      return instance(config)</span><br><span class="line">    &#125;).catch(res =&gt; &#123;</span><br><span class="line">      console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">      //刷新token失败，神仙也救不了了，跳转到首页重新登录吧</span><br><span class="line">      window.location.href = &#x27;/&#x27;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">function refreshToken () &#123;</span><br><span class="line">    // instance是当前request.js中已创建的axios实例</span><br><span class="line">    return instance.post(&#x27;/refreshtoken&#x27;).then(res =&gt; res.data)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里需要额外注意的是， <code>response.config</code>  就是原请求的配置，但这个是已经处理过了的， <code>config.url</code>  已经带上了 <code>baseUrl</code> ，因此重试时需要去掉，同时 token 也是旧的，需要刷新下。</p>
-<p>以上就基本做到了无痛刷新 token，当 token 正常时，正常返回，当 token 已过期，则 axios 内部进行一次刷新 token 和重试。对调用者来说，axios 内部的刷新 token 是一个黑盒，是无感知的，因此需求已经做到了。</p>
-<h2 id="问题和优化"><a class="markdownIt-Anchor" href="#问题和优化">#</a> 问题和优化</h2>
-<p>上面的代码还是存在一些问题的，没有考虑到多次请求的问题，因此需要进一步优化。</p>
-<h3 id="如何防止多次刷新token"><a class="markdownIt-Anchor" href="#如何防止多次刷新token">#</a> 如何防止多次刷新 token</h3>
-<p>如果 refreshToken 接口还没返回，此时再有一个过期的请求进来，上面的代码就会再一次执行 refreshToken，这就会导致多次执行刷新 token 的接口，因此需要防止这个问题。我们可以在 <code>request.js</code>  中用一个 <code>flag</code>  来标记当前是否正在刷新 token 的状态，如果正在刷新则不再调用刷新 token 的接口。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        const config = response.config</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p>这样子就可以避免在刷新 token 时再进入方法了。但是这种做法是相当于把其他失败的接口给舍弃了，假如同时发起两个请求，且几乎同时返回，第一个请求肯定是进入了 refreshToken 后再重试，而第二个请求则被丢弃了，仍是返回失败，所以接下来还得解决其他接口的重试问题。</p>
-<h3 id="同时发起两个或以上的请求时其他接口如何重试"><a class="markdownIt-Anchor" href="#同时发起两个或以上的请求时其他接口如何重试">#</a> 同时发起两个或以上的请求时，其他接口如何重试</h3>
-<p>两个接口几乎同时发起和返回，第一个接口会进入刷新 token 后重试的流程，而第二个接口需要先存起来，然后等刷新 token 后再重试。同样，如果同时发起三个请求，此时需要缓存后两个接口，等刷新 token 后再重试。由于接口都是异步的，处理起来会有点麻烦。</p>
-<p>当第二个过期的请求进来，token 正在刷新，我们先将这个请求存到一个数组队列中，想办法让这个请求处于等待中，一直等到刷新 token 后再逐个重试清空请求队列。<br>
-那么如何做到让这个请求处于等待中呢？为了解决这个问题，我们得借助 <code>Promise</code> 。将请求存进队列中后，同时返回一个 <code>Promise</code> ，让这个 <code>Promise</code>  一直处于 <code>Pending</code>  状态（即不调用 resolve），此时这个请求就会一直等啊等，只要我们不执行 resolve，这个请求就会一直在等待。当刷新请求的接口返回来后，我们再调用 resolve，逐个重试。最终代码：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">// 重试队列，每一项将是一个待执行的函数形式</span><br><span class="line">let requests = []</span><br><span class="line"></span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    const config = response.config</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        // 已经刷新了token，将所有队列中的请求进行重试</span><br><span class="line">        requests.forEach(cb =&gt; cb(token))</span><br><span class="line">        // 重试完了别忘了清空这个队列（掘金评论区同学指点）</span><br><span class="line">        requests = []</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 正在刷新token，返回一个未执行resolve的promise</span><br><span class="line">      return new Promise((resolve) =&gt; &#123;</span><br><span class="line">        // 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行</span><br><span class="line">        requests.push((token) =&gt; &#123;</span><br><span class="line">          config.baseURL = &#x27;&#x27;</span><br><span class="line">          config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">          resolve(instance(config))</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p>这里可能比较难理解的是 <code>requests</code>  这个队列中保存的是一个函数，这是为了让 resolve 不执行，先存起来，等刷新 token 后更方便调用这个函数使得 resolve 执行。至此，问题应该都解决了。</p>
-<h2 id="最后完整代码"><a class="markdownIt-Anchor" href="#最后完整代码">#</a> 最后完整代码</h2>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import axios from &#x27;axios&#x27;</span><br><span class="line"></span><br><span class="line">// 从localStorage中获取token</span><br><span class="line">function getLocalToken () &#123;</span><br><span class="line">    const token = window.localStorage.getItem(&#x27;token&#x27;)</span><br><span class="line">    return token</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 给实例添加一个setToken方法，用于登录后将最新token动态添加到header，同时将token保存在localStorage中</span><br><span class="line">instance.setToken = (token) =&gt; &#123;</span><br><span class="line">  instance.defaults.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">  window.localStorage.setItem(&#x27;token&#x27;, token)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function refreshToken () &#123;</span><br><span class="line">    // instance是当前request.js中已创建的axios实例</span><br><span class="line">    return instance.post(&#x27;/refreshtoken&#x27;).then(res =&gt; res.data)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 创建一个axios实例</span><br><span class="line">const instance = axios.create(&#123;</span><br><span class="line">  baseURL: &#x27;/api&#x27;,</span><br><span class="line">  timeout: 300000,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,</span><br><span class="line">    &#x27;X-Token&#x27;: getLocalToken() // headers塞token</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">// 重试队列，每一项将是一个待执行的函数形式</span><br><span class="line">let requests = []</span><br><span class="line"></span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    const config = response.config</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        // 已经刷新了token，将所有队列中的请求进行重试</span><br><span class="line">        requests.forEach(cb =&gt; cb(token))</span><br><span class="line">        requests = []</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 正在刷新token，将返回一个未执行resolve的promise</span><br><span class="line">      return new Promise((resolve) =&gt; &#123;</span><br><span class="line">        // 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行</span><br><span class="line">        requests.push((token) =&gt; &#123;</span><br><span class="line">          config.baseURL = &#x27;&#x27;</span><br><span class="line">          config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">          resolve(instance(config))</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">export default instance</span><br></pre></td></tr></table></figure>
-<p>希望对大家有帮助。感谢看到最后<sup>_</sup>。</p>
-]]></content>
-      <categories>
-        <category>Vue专题</category>
-      </categories>
-      <tags>
-        <tag>vue</tag>
-        <tag>axios</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>vuex笔记</title>
     <url>/2020/12/26/vuex%E7%AC%94%E8%AE%B0/</url>
     <content><![CDATA[<h1 id="vuex笔记"><a class="markdownIt-Anchor" href="#vuex笔记">#</a> Vuex 笔记</h1>
@@ -1367,91 +1231,139 @@ user_name  CHAR (8)：定长字符串，可能产生空间浪费，但读取速�
       </tags>
   </entry>
   <entry>
-    <title>使用Hbuilder快速打包一个app</title>
-    <url>/2018/07/12/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/</url>
-    <content><![CDATA[<p>HBuilder 提供的打包有云端打包和本地打包两种，云端打包的特点是 DCloud 官方配置好了原生的打包环境，可以把 HTML 等文件编译为原生安装包。</p>
-<p>优点：速度快，所需要的环境少，加快了开发者速度，不会因为各种 JDK，java，Android 环境而无法打包生成 apk 或 ipa 头疼，大大减少了开发繁琐操作。</p>
-<p>方法步骤：</p>
+    <title>vue里封装axios——利用promise无痛刷新token</title>
+    <url>/2021/03/29/vue%E9%87%8C%E5%B0%81%E8%A3%85axios%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8promise%E6%97%A0%E7%97%9B%E5%88%B7%E6%96%B0token/</url>
+    <content><![CDATA[<h2 id="需求"><a class="markdownIt-Anchor" href="#需求">#</a> 需求</h2>
+<p>最近遇到个需求：前端登录后，后端返回 <code>token</code>  和 <code>token有效时间</code> ，当 token 过期时要求用旧 token 去获取新的 token，前端需要做到无痛刷新 <code>token</code> ，即请求刷新 token 时要做到用户无感知。</p>
+<h2 id="需求解析"><a class="markdownIt-Anchor" href="#需求解析">#</a> 需求解析</h2>
+<p>当用户发起一个请求时，判断 token 是否已过期，若已过期则先调 <code>refreshToken</code>  接口，拿到新的 token 后再继续执行之前的请求。</p>
+<p>这个问题的难点在于：当同时发起多个请求，而刷新 token 的接口还没返回，此时其他请求该如何处理？接下来会循序渐进地分享一下整个过程。</p>
 <span id="more"></span>
-<p>1. 下载 HBuilder，注册并登陆。首先打开 “文件”-“新建”-“移动 APP”，输入 “应用名称”，“位置” 可以根据需要自己选择即可，“选择模板” 建议选择空模板，如下图所示：</p>
-<p>​​<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712163802432" alt=""></p>
-<p>2. 新建完成后， 在项目管理器会显示新建的项目目录，其中 css，img，js 和 index.html 这几个文件可删可改可替换。<br>
-unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
-<p>manifest.json 文件是移动 App 的配置文件，用于指定应用的显示名称、图标、应用入口文件地址及需要使用的设备权限等信息，用户可通过 HBuilder 的可视化界面视图或者源码视图来配置移动 App 的信息，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164108624" alt=""></p>
-<p>3. 如果删除了 css，img，js 文件夹和 index.html 文件，就把其他自己打包好的的项目文件对应复制到文件夹中，注意 html 文件中的引用路径需要保持正确，如下图自己拷贝的项目（我的是项目打包后的 build 文件和 index.html 文件，其中 css/js/img 都在 build 文件夹下）：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164250660" alt=""></p>
-<p>4. 文件复制完成后，刷新更新下，双击打开 manifest.json 文件来配置 App。</p>
-<p>appid：点击云端获取。版本号：根据需要来编辑。页面入口：默认是 index.html，根据自己项目需要，更改 APP 的启动页面。应用描述：自己随便填。应用是否全屏显示：勾上就全屏显示，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164915305" alt=""></p>
-<p>5. 图标配置：点击页面下方的图标配置，配置 APP 显示图标。</p>
-<p>点击 &quot;+“号的正方形方框，选择图标素材的路径找到图标素材，再点击” 自动生成所有图标并替换&quot; 按钮，完成图标生成和替换，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165506582" alt=""></p>
-<p>生成的图标自动在 unpackage 文件夹下，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165618254" alt=""></p>
-<p>6. 在启动图片设置里点击 &quot;选择&quot;，找到刚放进来的启动图片，如下图所示：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165842174" alt=""></p>
-<p>7.SDK 配置：有需要就配置，没有就默认就行。</p>
-<p>模块权限配置：有需要就配置，没有就默认就行。</p>
-<p>8. 云端打包：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170045185" alt=""></p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170127683" alt=""></p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170219731" alt=""></p>
-<p>然后等待几分钟，刷新状态，就可以看到制作完成，是否下载？点击下载。然后将 apk 发送到手机上安装就可以正常运行了！</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712171021649" alt=""></p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2018071217113978" alt=""></p>
-<p>以下是 apk 安装后再模拟器上运行效果：</p>
-<p><img data-src="https://img-blog.csdn.net/20180712171240702?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt=""></p>
-<p><img data-src="https://img-blog.csdn.net/20180712171322289?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt=""></p>
-<p><img data-src="https://img-blog.csdn.net/20180712171518460?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt=""></p>
+<h2 id="实现思路"><a class="markdownIt-Anchor" href="#实现思路">#</a> 实现思路</h2>
+<p>由于后端返回了 token 的有效时间，可以有两种方法：</p>
+<h3 id="方法一"><a class="markdownIt-Anchor" href="#方法一">#</a> 方法一：</h3>
+<p>在请求发起前拦截每个请求，判断 token 的有效时间是否已经过期，若已过期，则将请求挂起，先刷新 token 后再继续请求。</p>
+<h3 id="方法二"><a class="markdownIt-Anchor" href="#方法二">#</a> 方法二：</h3>
+<p>不在请求前拦截，而是拦截返回后的数据。先发起请求，接口返回过期后，先刷新 token，再进行一次重试。</p>
+<h3 id="两种方法对比"><a class="markdownIt-Anchor" href="#两种方法对比">#</a> 两种方法对比</h3>
+<p>方法一</p>
+<ul>
+<li>优点： 在请求前拦截，能节省请求，省流量。</li>
+<li>缺点： 需要后端额外提供一个 token 过期时间的字段；使用了本地时间判断，若本地时间被篡改，特别是本地时间比服务器时间慢时，拦截会失败。</li>
+</ul>
+<blockquote>
+<p>PS：token 有效时间建议是时间段，类似缓存的 MaxAge，而不要是绝对时间。当服务器和本地时间不一致时，绝对时间会有问题。</p>
+</blockquote>
+<p>方法二</p>
+<ul>
+<li>优点：不需额外的 token 过期字段，不需判断时间。</li>
+<li>缺点： 会消耗多一次请求，耗流量。</li>
+</ul>
+<p>综上，方法一和二优缺点是互补的，方法一有校验失败的风险（本地时间被篡改时，当然一般没有用户闲的蛋疼去改本地时间的啦），方法二更简单粗暴，等知道服务器已经过期了再重试一次，只是会耗多一个请求。</p>
+<p>在这里博主选择了 <em>方法二</em>。</p>
+<h2 id="实现"><a class="markdownIt-Anchor" href="#实现">#</a> 实现</h2>
+<p>这里会使用<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2F4aW9zL2F4aW9z"> axios</span> 来实现，方法一是请求前拦截，所以会使用 <code>axios.interceptors.request.use()</code>  这个方法；</p>
+<p>而方法二是请求后拦截，所以会使用 <code>axios.interceptors.response.use()</code>  方法。</p>
+<h3 id="封装axios基本骨架"><a class="markdownIt-Anchor" href="#封装axios基本骨架">#</a> 封装 axios 基本骨架</h3>
+<p>首先说明一下，项目中的 token 是存在 <code>localStorage</code>  中的。 <code>request.js</code>  基本骨架:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import axios from &#x27;axios&#x27;</span><br><span class="line"></span><br><span class="line">// 从localStorage中获取token</span><br><span class="line">function getLocalToken () &#123;</span><br><span class="line">    const token = window.localStorage.getItem(&#x27;token&#x27;)</span><br><span class="line">    return token</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 给实例添加一个setToken方法，用于登录后将最新token动态添加到header，同时将token保存在localStorage中</span><br><span class="line">instance.setToken = (token) =&gt; &#123;</span><br><span class="line">  instance.defaults.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">  window.localStorage.setItem(&#x27;token&#x27;, token)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 创建一个axios实例</span><br><span class="line">const instance = axios.create(&#123;</span><br><span class="line">  baseURL: &#x27;/api&#x27;,</span><br><span class="line">  timeout: 300000,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,</span><br><span class="line">    &#x27;X-Token&#x27;: getLocalToken() // headers塞token</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// 拦截返回的数据</span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  // 接下来会在这里进行token过期的逻辑处理</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">export default instance</span><br></pre></td></tr></table></figure>
+<p>这个是项目中一般的 axios 实例的封装，创建实例时，将本地已有的 token 放进 header，然后 export 出去供调用。接下来就是如何拦截返回的数据啦。</p>
+<h3 id="instanceinterceptorsresponseuse拦截实现"><a class="markdownIt-Anchor" href="#instanceinterceptorsresponseuse拦截实现">#</a> instance.interceptors.response.use 拦截实现</h3>
+<p>后端接口一般会有一个约定好的数据结构，如：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;code: 1234, message: &#x27;token过期&#x27;, data: &#123;&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>如我这里，后端约定当 <code>code === 1234</code>  时表示 token 过期了，此时就要求刷新 token。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    // 说明token过期了,刷新token</span><br><span class="line">    return refreshToken().then(res =&gt; &#123;</span><br><span class="line">      // 刷新token成功，将最新的token更新到header中，同时保存在localStorage中</span><br><span class="line">      const &#123; token &#125; = res.data</span><br><span class="line">      instance.setToken(token)</span><br><span class="line">      // 获取当前失败的请求</span><br><span class="line">      const config = response.config</span><br><span class="line">      // 重置一下配置</span><br><span class="line">      config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">      config.baseURL = &#x27;&#x27; // url已经带上了/api，避免出现/api/api的情况</span><br><span class="line">      // 重试当前请求并返回promise</span><br><span class="line">      return instance(config)</span><br><span class="line">    &#125;).catch(res =&gt; &#123;</span><br><span class="line">      console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">      //刷新token失败，神仙也救不了了，跳转到首页重新登录吧</span><br><span class="line">      window.location.href = &#x27;/&#x27;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">function refreshToken () &#123;</span><br><span class="line">    // instance是当前request.js中已创建的axios实例</span><br><span class="line">    return instance.post(&#x27;/refreshtoken&#x27;).then(res =&gt; res.data)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里需要额外注意的是， <code>response.config</code>  就是原请求的配置，但这个是已经处理过了的， <code>config.url</code>  已经带上了 <code>baseUrl</code> ，因此重试时需要去掉，同时 token 也是旧的，需要刷新下。</p>
+<p>以上就基本做到了无痛刷新 token，当 token 正常时，正常返回，当 token 已过期，则 axios 内部进行一次刷新 token 和重试。对调用者来说，axios 内部的刷新 token 是一个黑盒，是无感知的，因此需求已经做到了。</p>
+<h2 id="问题和优化"><a class="markdownIt-Anchor" href="#问题和优化">#</a> 问题和优化</h2>
+<p>上面的代码还是存在一些问题的，没有考虑到多次请求的问题，因此需要进一步优化。</p>
+<h3 id="如何防止多次刷新token"><a class="markdownIt-Anchor" href="#如何防止多次刷新token">#</a> 如何防止多次刷新 token</h3>
+<p>如果 refreshToken 接口还没返回，此时再有一个过期的请求进来，上面的代码就会再一次执行 refreshToken，这就会导致多次执行刷新 token 的接口，因此需要防止这个问题。我们可以在 <code>request.js</code>  中用一个 <code>flag</code>  来标记当前是否正在刷新 token 的状态，如果正在刷新则不再调用刷新 token 的接口。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        const config = response.config</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这样子就可以避免在刷新 token 时再进入方法了。但是这种做法是相当于把其他失败的接口给舍弃了，假如同时发起两个请求，且几乎同时返回，第一个请求肯定是进入了 refreshToken 后再重试，而第二个请求则被丢弃了，仍是返回失败，所以接下来还得解决其他接口的重试问题。</p>
+<h3 id="同时发起两个或以上的请求时其他接口如何重试"><a class="markdownIt-Anchor" href="#同时发起两个或以上的请求时其他接口如何重试">#</a> 同时发起两个或以上的请求时，其他接口如何重试</h3>
+<p>两个接口几乎同时发起和返回，第一个接口会进入刷新 token 后重试的流程，而第二个接口需要先存起来，然后等刷新 token 后再重试。同样，如果同时发起三个请求，此时需要缓存后两个接口，等刷新 token 后再重试。由于接口都是异步的，处理起来会有点麻烦。</p>
+<p>当第二个过期的请求进来，token 正在刷新，我们先将这个请求存到一个数组队列中，想办法让这个请求处于等待中，一直等到刷新 token 后再逐个重试清空请求队列。<br>
+那么如何做到让这个请求处于等待中呢？为了解决这个问题，我们得借助 <code>Promise</code> 。将请求存进队列中后，同时返回一个 <code>Promise</code> ，让这个 <code>Promise</code>  一直处于 <code>Pending</code>  状态（即不调用 resolve），此时这个请求就会一直等啊等，只要我们不执行 resolve，这个请求就会一直在等待。当刷新请求的接口返回来后，我们再调用 resolve，逐个重试。最终代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">// 重试队列，每一项将是一个待执行的函数形式</span><br><span class="line">let requests = []</span><br><span class="line"></span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    const config = response.config</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        // 已经刷新了token，将所有队列中的请求进行重试</span><br><span class="line">        requests.forEach(cb =&gt; cb(token))</span><br><span class="line">        // 重试完了别忘了清空这个队列（掘金评论区同学指点）</span><br><span class="line">        requests = []</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 正在刷新token，返回一个未执行resolve的promise</span><br><span class="line">      return new Promise((resolve) =&gt; &#123;</span><br><span class="line">        // 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行</span><br><span class="line">        requests.push((token) =&gt; &#123;</span><br><span class="line">          config.baseURL = &#x27;&#x27;</span><br><span class="line">          config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">          resolve(instance(config))</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这里可能比较难理解的是 <code>requests</code>  这个队列中保存的是一个函数，这是为了让 resolve 不执行，先存起来，等刷新 token 后更方便调用这个函数使得 resolve 执行。至此，问题应该都解决了。</p>
+<h2 id="最后完整代码"><a class="markdownIt-Anchor" href="#最后完整代码">#</a> 最后完整代码</h2>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import axios from &#x27;axios&#x27;</span><br><span class="line"></span><br><span class="line">// 从localStorage中获取token</span><br><span class="line">function getLocalToken () &#123;</span><br><span class="line">    const token = window.localStorage.getItem(&#x27;token&#x27;)</span><br><span class="line">    return token</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 给实例添加一个setToken方法，用于登录后将最新token动态添加到header，同时将token保存在localStorage中</span><br><span class="line">instance.setToken = (token) =&gt; &#123;</span><br><span class="line">  instance.defaults.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">  window.localStorage.setItem(&#x27;token&#x27;, token)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function refreshToken () &#123;</span><br><span class="line">    // instance是当前request.js中已创建的axios实例</span><br><span class="line">    return instance.post(&#x27;/refreshtoken&#x27;).then(res =&gt; res.data)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 创建一个axios实例</span><br><span class="line">const instance = axios.create(&#123;</span><br><span class="line">  baseURL: &#x27;/api&#x27;,</span><br><span class="line">  timeout: 300000,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,</span><br><span class="line">    &#x27;X-Token&#x27;: getLocalToken() // headers塞token</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// 是否正在刷新的标记</span><br><span class="line">let isRefreshing = false</span><br><span class="line">// 重试队列，每一项将是一个待执行的函数形式</span><br><span class="line">let requests = []</span><br><span class="line"></span><br><span class="line">instance.interceptors.response.use(response =&gt; &#123;</span><br><span class="line">  const &#123; code &#125; = response.data</span><br><span class="line">  if (code === 1234) &#123;</span><br><span class="line">    const config = response.config</span><br><span class="line">    if (!isRefreshing) &#123;</span><br><span class="line">      isRefreshing = true</span><br><span class="line">      return refreshToken().then(res =&gt; &#123;</span><br><span class="line">        const &#123; token &#125; = res.data</span><br><span class="line">        instance.setToken(token)</span><br><span class="line">        config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">        config.baseURL = &#x27;&#x27;</span><br><span class="line">        // 已经刷新了token，将所有队列中的请求进行重试</span><br><span class="line">        requests.forEach(cb =&gt; cb(token))</span><br><span class="line">        requests = []</span><br><span class="line">        return instance(config)</span><br><span class="line">      &#125;).catch(res =&gt; &#123;</span><br><span class="line">        console.error(&#x27;refreshtoken error =&gt;&#x27;, res)</span><br><span class="line">        window.location.href = &#x27;/&#x27;</span><br><span class="line">      &#125;).finally(() =&gt; &#123;</span><br><span class="line">        isRefreshing = false</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // 正在刷新token，将返回一个未执行resolve的promise</span><br><span class="line">      return new Promise((resolve) =&gt; &#123;</span><br><span class="line">        // 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行</span><br><span class="line">        requests.push((token) =&gt; &#123;</span><br><span class="line">          config.baseURL = &#x27;&#x27;</span><br><span class="line">          config.headers[&#x27;X-Token&#x27;] = token</span><br><span class="line">          resolve(instance(config))</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return response</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  return Promise.reject(error)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">export default instance</span><br></pre></td></tr></table></figure>
+<p>希望对大家有帮助。感谢看到最后<sup>_</sup>。</p>
 ]]></content>
       <categories>
-        <category>Hbuilder</category>
+        <category>Vue专题</category>
       </categories>
       <tags>
-        <tag>Hbuilder</tag>
+        <tag>vue</tag>
+        <tag>axios</tag>
       </tags>
   </entry>
   <entry>
-    <title>学习之AJAX</title>
-    <url>/2019/03/20/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
-    <content><![CDATA[<p>对于 AJAX 这个玩意儿，一开始学习的时候，根本不知道这是什么，我连 AJAX 有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙 B 的状态。那么在学习一段时间的 AJAX 之后，我总结了一些我自己对 AJAX 的理解，一起共勉。</p>
-<p>一、页面访问方式</p>
-<p>在学习 AJAX 之前，我们首先就需要了解页面的访问方式。页面的访问方式有如下两种同步访问和异步访问：</p>
-<p>①同步访问：在访问服务器时，只能等待服务器的响应，不能做其他事情。</p>
-<p>②异步访问：在向服务器发送请求时，不耽误用户在网页其他操作。相当于在同一时间，用户能做多个事情。</p>
+    <title>vue项目打包优化策略</title>
+    <url>/2020/11/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</url>
+    <content><![CDATA[<p>使用 vue-cli 部署生产包时，发现资源包很大，打包后的 <code>vendor.js</code>  达到了 1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？</p>
+<h3 id="1组件按需加载"><a class="markdownIt-Anchor" href="#1组件按需加载">#</a> 1. 组件按需加载</h3>
+<p>这是首先可以优化的点。如果频繁使用了第三方组件 / UI 库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts 等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。</p>
+<p>示例如下：</p>
+<h4 id="11-element-ui"><a class="markdownIt-Anchor" href="#11-element-ui">#</a> 1.1 element-ui</h4>
+<p>首先，安装 babel-plugin-component：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
 <span id="more"></span>
-<p>光从字面上理解同步和异步不算太难，下面我为用图打个比方有助于更加深层次的理解同步和异步：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730181503984" alt=""></p>
-<p>上图反之是同步访问的图解，异步访问我就不再作图了，反之，你想买煎饼和稀饭，你走到卖煎饼的铺子时候，老板说：好的，你的煎饼 5 分钟后好，你可以 5 分钟后过来拿。这个时候你就可以在这五分钟去买你要的稀饭，这就是异步访问。</p>
-<p>二、什么是 AJAX</p>
-<p>AJAX 的英文全名是：Asynchronous  Javascript  And  Xml</p>
-<p>异步的  JS     和    xml</p>
-<p>其中的本质：使用 JS 中 XMLHttpRequext (xhr) 对象异步的向服务器发送请求，服务器响应回来的部分数据而不是原完整的页面，并可以以 “无刷新” 的效果来更改页面中的局部内容。为了方便理解，作以下用户名验证的例子图助于理解：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730183958321" alt=""></p>
-<p>三、获取ＡＪＡＸ对象　——XMLHttpRequest</p>
-<p>在主流浏览器中：new　XMLHttpRequest ( );</p>
-<p>注意：在 IE8 以下的浏览器不支持 XMLHttpRequest</p>
-<p>在 IE8 以下的浏览器中：</p>
-<p>new  ActiveXObject(“Microsoft.XMLHttp”);</p>
-<p>tip: 如果想测试你使用的浏览器是否支持 XMLHttpRequest，可以进行如下操作：</p>
-<p>1. 打开你的浏览器，例如谷歌、360、火狐、欧朋…;</p>
-<p>2. 按 F12，使用开发者工具，在 console 一栏中输入：console.log (window.XMLHttpRequest);</p>
-<p>3. 如果浏览器不支持 XMLHttpRequest, 以上会打印 null。</p>
-<p>// 创建 ajax 对象</p>
-<p>var  xhr;</p>
-<p>if(window.XMLHttpRequest){</p>
-<p>xhr = new  XMLHttpRequest();</p>
-<p>}else{</p>
-<p>xhr = new ActiveXObject(“Microsoft.XMLHttp”);</p>
-<p>}</p>
-<p>tip：这段函在编写代码的时候使用的次数很多，通常我们将它封装成函数单独创建一个 JS 文件，命名为 common.js，要使用的时候调用者个 js 文件就可以了。</p>
+<p>然后，将.babelrc 修改为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// main.js</span><br><span class="line">import Vue from &#x27;vue&#x27;</span><br><span class="line">import &#123; Dialog, Loading &#125; from &#x27;element-ui&#x27;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading = Loading.service</span><br><span class="line">// 然后正常使用组件</span><br></pre></td></tr></table></figure>
+<h4 id="12-mint-ui"><a class="markdownIt-Anchor" href="#12-mint-ui">#</a> 1.2 mint-ui</h4>
+<p>由于 mint-ui 是 element-ui 的移动端组件，所以它的使用和引入几乎和 element-ui 一样。</p>
+<p>首先，安装 babel-plugin-component：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
+<p>然后，将.babelrc 修改为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;presets&quot;: [</span><br><span class="line">    [&quot;es2015&quot;, &#123; &quot;modules&quot;: false &#125;]</span><br><span class="line">  ],</span><br><span class="line">  &quot;plugins&quot;: [[&quot;component&quot;, [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;libraryName&quot;: &quot;mint-ui&quot;,</span><br><span class="line">      &quot;style&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">  ]]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后引入部分组件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// main.js</span><br><span class="line">import Vue from &#x27;vue&#x27;</span><br><span class="line">import &#123; Toast, MessageBox &#125; from &#x27;element-ui&#x27;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading = Loading.service</span><br><span class="line">// 然后正常使用组件</span><br></pre></td></tr></table></figure>
+<p>注意，element-ui 和 mint-ui 不能同时在.babelrc 中进行插件设置，这种情况下，依然可以按需引入，但是不要在 <code>.babelrc</code>  中配置，在引入的地方同时引入 css 即可。</p>
+<h4 id="13-echarts"><a class="markdownIt-Anchor" href="#13-echarts">#</a> 1.3 echarts</h4>
+<p>首先安装 babel-plugin-equire</p>
+<p>npm i babel-plugin-equire -D</p>
+<p>然后，在 <code>.babelrc</code>  文件中添加该插件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;plugins&quot;: [</span><br><span class="line">       // other plugins</span><br><span class="line">       ...</span><br><span class="line">       </span><br><span class="line">    &quot;equire&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>创建一个 js 文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// echarts.js</span><br><span class="line">// eslint-disable-next-line</span><br><span class="line">const echarts = equire([</span><br><span class="line">  &#x27;tooltip&#x27;,</span><br><span class="line">  &#x27;candlestick&#x27;,</span><br><span class="line">  &#x27;bar&#x27;,</span><br><span class="line">  &#x27;line&#x27;,</span><br><span class="line">  &#x27;axisPointer&#x27;,</span><br><span class="line">  &#x27;legend&#x27;,</span><br><span class="line">  &#x27;grid&#x27;</span><br><span class="line">])</span><br><span class="line">export default echarts</span><br><span class="line">// 业务组件，引入echarts</span><br><span class="line">import echarts from &#x27;@/assets/lib/echarts&#x27;</span><br><span class="line">// 使用与以前一样</span><br></pre></td></tr></table></figure>
+<p>按需加载 echarts</p>
+<p>解决 vue-cli 首屏加载慢的问题</p>
+<h3 id="2路由懒加载"><a class="markdownIt-Anchor" href="#2路由懒加载">#</a> 2. 路由懒加载</h3>
+<p>这里需要一个插件</p>
+<p>vue-router 官方推荐 syntax-dynamic-import 插件，不过它要求同时安装 @bable/core^7.0.0，如果你安装了 babel-core6，是会有版本冲突的。我的做法如下</p>
+<p>npm install babel-plugin-syntax-dynamic-import --save-dev(^6.18.0)</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// router.js</span><br><span class="line">const login = () =&gt; import(&#x27;@/components/login&#x27;)</span><br><span class="line">const router = new VueRouter(&#123;</span><br><span class="line">  routes: [</span><br><span class="line">    &#123; path: &#x27;/login&#x27;, component: login &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>还有一种魔法注释用法</p>
+<p>有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack &gt; 2.4)。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const Foo = () =&gt; import(/* webpackChunkName: &quot;group-foo&quot; */ &#x27;./Foo.vue&#x27;)</span><br></pre></td></tr></table></figure>
+<h3 id="3异步组件"><a class="markdownIt-Anchor" href="#3异步组件">#</a> 3. 异步组件</h3>
+<p>如果组件在页面加载时不需要，只在调用时用到，这时可以使用异步组件的写法。仅仅是引入和组件注册写法不同</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// template</span><br><span class="line">&lt;test v-if=&quot;showTest&quot;&gt;&lt;/test&gt;</span><br><span class="line">// script</span><br><span class="line">  components: &#123;</span><br><span class="line">    test: () =&gt; import(&#x27;./test&#x27;) // 将组件异步引入，告诉webpack，将该部分代码分割打包</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">      clickTest () &#123;</span><br><span class="line">          this.showTest = !this.showTest</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4图片的压缩合并"><a class="markdownIt-Anchor" href="#4图片的压缩合并">#</a> 4. 图片的压缩合并</h3>
+<p>如有可能，将图片制作成精灵图</p>
+<h3 id="5cdn加速"><a class="markdownIt-Anchor" href="#5cdn加速">#</a> 5.CDN 加速</h3>
+<p>在 index.html 中引入 cdn 资源</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;div id=&quot;app&quot;&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">  &lt;!-- built files will be auto injected --&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue/2.5.2/vue.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue-router/3.0.1/vue-router.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vuex/3.0.1/vuex.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>修改 build/webpack.base.conf.js</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">module.exports = &#123;</span><br><span class="line">  context: path.resolve(__dirname, &#x27;../&#x27;),</span><br><span class="line">  entry: &#123;</span><br><span class="line">    app: &#x27;./src/main.js&#x27;</span><br><span class="line">  &#125;,</span><br><span class="line">  externals:&#123;</span><br><span class="line">    &#x27;vue&#x27;: &#x27;Vue&#x27;,</span><br><span class="line">    &#x27;vue-router&#x27;: &#x27;VueRouter&#x27;,</span><br><span class="line">    &#x27;vuex&#x27;:&#x27;Vuex&#x27;,</span><br><span class="line">    &#x27;vue-resource&#x27;: &#x27;VueResource&#x27;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>修改 src/main.js src/router/index.js 注释掉 import 引入的 vue,vue-resource</p>
+<p>// import Vue from ‘vue’</p>
+<p>// import VueResource from ‘vue-resource’</p>
+<p>// Vue.use(VueResource)</p>
+<h3 id="6压缩代码"><a class="markdownIt-Anchor" href="#6压缩代码">#</a> 6. 压缩代码</h3>
+<p>vue-cli 已经使用 UglifyJsPlugin 插件来压缩代码，可以设置成如下配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">new webpack.optimize.UglifyJsPlugin(&#123;</span><br><span class="line">  compress: &#123;</span><br><span class="line">    warnings: false,</span><br><span class="line">    drop_console: true,</span><br><span class="line">    pure_funcs: [&#x27;console.log&#x27;]</span><br><span class="line">  &#125;,</span><br><span class="line">  sourceMap: false</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>其中 sourceMap: false 是禁用除错功能。</p>
+<p>如果设为 true，在部署包中会生成.map 结尾的 js 文件。它用于在代码混淆压缩的情况下仍可进行调试。这个功能虽好，但会大大增加整体资源包的体积，所以将其禁用。</p>
 ]]></content>
       <categories>
-        <category>HTTP</category>
+        <category>Vue专题</category>
       </categories>
       <tags>
-        <tag>AJAX</tag>
+        <tag>vue</tag>
+        <tag>webpack</tag>
       </tags>
   </entry>
   <entry>
@@ -1517,6 +1429,52 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
       </categories>
       <tags>
         <tag>HTTP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Hbuilder快速打包一个app</title>
+    <url>/2018/07/12/%E4%BD%BF%E7%94%A8Hbuilder%E5%BF%AB%E9%80%9F%E6%89%93%E5%8C%85%E4%B8%80%E4%B8%AAapp/</url>
+    <content><![CDATA[<p>HBuilder 提供的打包有云端打包和本地打包两种，云端打包的特点是 DCloud 官方配置好了原生的打包环境，可以把 HTML 等文件编译为原生安装包。</p>
+<p>优点：速度快，所需要的环境少，加快了开发者速度，不会因为各种 JDK，java，Android 环境而无法打包生成 apk 或 ipa 头疼，大大减少了开发繁琐操作。</p>
+<p>方法步骤：</p>
+<span id="more"></span>
+<p>1. 下载 HBuilder，注册并登陆。首先打开 “文件”-“新建”-“移动 APP”，输入 “应用名称”，“位置” 可以根据需要自己选择即可，“选择模板” 建议选择空模板，如下图所示：</p>
+<p>​​<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712163802432" alt=""></p>
+<p>2. 新建完成后， 在项目管理器会显示新建的项目目录，其中 css，img，js 和 index.html 这几个文件可删可改可替换。<br>
+unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
+<p>manifest.json 文件是移动 App 的配置文件，用于指定应用的显示名称、图标、应用入口文件地址及需要使用的设备权限等信息，用户可通过 HBuilder 的可视化界面视图或者源码视图来配置移动 App 的信息，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164108624" alt=""></p>
+<p>3. 如果删除了 css，img，js 文件夹和 index.html 文件，就把其他自己打包好的的项目文件对应复制到文件夹中，注意 html 文件中的引用路径需要保持正确，如下图自己拷贝的项目（我的是项目打包后的 build 文件和 index.html 文件，其中 css/js/img 都在 build 文件夹下）：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164250660" alt=""></p>
+<p>4. 文件复制完成后，刷新更新下，双击打开 manifest.json 文件来配置 App。</p>
+<p>appid：点击云端获取。版本号：根据需要来编辑。页面入口：默认是 index.html，根据自己项目需要，更改 APP 的启动页面。应用描述：自己随便填。应用是否全屏显示：勾上就全屏显示，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712164915305" alt=""></p>
+<p>5. 图标配置：点击页面下方的图标配置，配置 APP 显示图标。</p>
+<p>点击 &quot;+“号的正方形方框，选择图标素材的路径找到图标素材，再点击” 自动生成所有图标并替换&quot; 按钮，完成图标生成和替换，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165506582" alt=""></p>
+<p>生成的图标自动在 unpackage 文件夹下，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165618254" alt=""></p>
+<p>6. 在启动图片设置里点击 &quot;选择&quot;，找到刚放进来的启动图片，如下图所示：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712165842174" alt=""></p>
+<p>7.SDK 配置：有需要就配置，没有就默认就行。</p>
+<p>模块权限配置：有需要就配置，没有就默认就行。</p>
+<p>8. 云端打包：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170045185" alt=""></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170127683" alt=""></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712170219731" alt=""></p>
+<p>然后等待几分钟，刷新状态，就可以看到制作完成，是否下载？点击下载。然后将 apk 发送到手机上安装就可以正常运行了！</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180712171021649" alt=""></p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/2018071217113978" alt=""></p>
+<p>以下是 apk 安装后再模拟器上运行效果：</p>
+<p><img data-src="https://img-blog.csdn.net/20180712171240702?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt=""></p>
+<p><img data-src="https://img-blog.csdn.net/20180712171322289?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt=""></p>
+<p><img data-src="https://img-blog.csdn.net/20180712171518460?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyNDE1NTQx/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt=""></p>
+]]></content>
+      <categories>
+        <category>Hbuilder</category>
+      </categories>
+      <tags>
+        <tag>Hbuilder</tag>
       </tags>
   </entry>
   <entry>
@@ -1675,6 +1633,48 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
       </categories>
       <tags>
         <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>学习之AJAX</title>
+    <url>/2019/03/20/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
+    <content><![CDATA[<p>对于 AJAX 这个玩意儿，一开始学习的时候，根本不知道这是什么，我连 AJAX 有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙 B 的状态。那么在学习一段时间的 AJAX 之后，我总结了一些我自己对 AJAX 的理解，一起共勉。</p>
+<p>一、页面访问方式</p>
+<p>在学习 AJAX 之前，我们首先就需要了解页面的访问方式。页面的访问方式有如下两种同步访问和异步访问：</p>
+<p>①同步访问：在访问服务器时，只能等待服务器的响应，不能做其他事情。</p>
+<p>②异步访问：在向服务器发送请求时，不耽误用户在网页其他操作。相当于在同一时间，用户能做多个事情。</p>
+<span id="more"></span>
+<p>光从字面上理解同步和异步不算太难，下面我为用图打个比方有助于更加深层次的理解同步和异步：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730181503984" alt=""></p>
+<p>上图反之是同步访问的图解，异步访问我就不再作图了，反之，你想买煎饼和稀饭，你走到卖煎饼的铺子时候，老板说：好的，你的煎饼 5 分钟后好，你可以 5 分钟后过来拿。这个时候你就可以在这五分钟去买你要的稀饭，这就是异步访问。</p>
+<p>二、什么是 AJAX</p>
+<p>AJAX 的英文全名是：Asynchronous  Javascript  And  Xml</p>
+<p>异步的  JS     和    xml</p>
+<p>其中的本质：使用 JS 中 XMLHttpRequext (xhr) 对象异步的向服务器发送请求，服务器响应回来的部分数据而不是原完整的页面，并可以以 “无刷新” 的效果来更改页面中的局部内容。为了方便理解，作以下用户名验证的例子图助于理解：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730183958321" alt=""></p>
+<p>三、获取ＡＪＡＸ对象　——XMLHttpRequest</p>
+<p>在主流浏览器中：new　XMLHttpRequest ( );</p>
+<p>注意：在 IE8 以下的浏览器不支持 XMLHttpRequest</p>
+<p>在 IE8 以下的浏览器中：</p>
+<p>new  ActiveXObject(“Microsoft.XMLHttp”);</p>
+<p>tip: 如果想测试你使用的浏览器是否支持 XMLHttpRequest，可以进行如下操作：</p>
+<p>1. 打开你的浏览器，例如谷歌、360、火狐、欧朋…;</p>
+<p>2. 按 F12，使用开发者工具，在 console 一栏中输入：console.log (window.XMLHttpRequest);</p>
+<p>3. 如果浏览器不支持 XMLHttpRequest, 以上会打印 null。</p>
+<p>// 创建 ajax 对象</p>
+<p>var  xhr;</p>
+<p>if(window.XMLHttpRequest){</p>
+<p>xhr = new  XMLHttpRequest();</p>
+<p>}else{</p>
+<p>xhr = new ActiveXObject(“Microsoft.XMLHttp”);</p>
+<p>}</p>
+<p>tip：这段函在编写代码的时候使用的次数很多，通常我们将它封装成函数单独创建一个 JS 文件，命名为 common.js，要使用的时候调用者个 js 文件就可以了。</p>
+]]></content>
+      <categories>
+        <category>HTTP</category>
+      </categories>
+      <tags>
+        <tag>AJAX</tag>
       </tags>
   </entry>
   <entry>

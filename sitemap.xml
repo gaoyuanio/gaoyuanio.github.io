@@ -242,7 +242,7 @@
   </url>
   
   <url>
-    <loc>http://example.com/tags/webpack/</loc>
+    <loc>http://example.com/tags/vuex/</loc>
     <lastmod>2021-05-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -256,7 +256,7 @@
   </url>
   
   <url>
-    <loc>http://example.com/tags/vuex/</loc>
+    <loc>http://example.com/tags/webpack/</loc>
     <lastmod>2021-05-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
