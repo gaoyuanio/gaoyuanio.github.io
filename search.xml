@@ -425,6 +425,106 @@ SSL 提供服务<br>
       </tags>
   </entry>
   <entry>
+    <title>JavaScript基础（三）作用域</title>
+    <url>/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89%E4%BD%9C%E7%94%A8%E5%9F%9F/</url>
+    <content><![CDATA[<blockquote>
+<p>作用域的篇幅不会太长，作为自己对 Js 总结的第三篇文章，主要是承上启下。 之后会涉及到执行上下文，闭包等相关专题，为了避免内容过多，作用域这一部分单独总结。</p>
+</blockquote>
+<h2 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h2>
+<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/%E4%B8%8B%E8%BD%BD.jpeg" style="zoom:67%;" />
+<span id="more"></span>
+<h2 id="一-作用域的定义"><a class="markdownIt-Anchor" href="#一-作用域的定义">#</a> 一、作用域的定义</h2>
+<p><strong>一张导图概括本节内容</strong> <img data-src="https://img-blog.csdnimg.cn/20200609102448438.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"> <strong>1.1 常见的解释</strong></p>
+<ol>
+<li>一段程序代码中所用到的<strong>名字</strong>并不总是有效，而限定它的可用性的范围就是这个名字的作用域；</li>
+<li>作用域规定了<strong>如何查找变量</strong>，也就是确定当前执行代码对变量的访问权限；</li>
+<li>通俗的讲作用域就是<strong>一套规则</strong>，用于确定在何处以及如何查找<strong>某个变量</strong>的规则</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(a); <span class="comment">// 100</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(a) <span class="comment">// a is not defined a变量并不是任何地方都可以被找到的</span></span><br></pre></td></tr></table></figure>
+<p><strong>1.2 JavaScript 中作用域工作模型</strong></p>
+<p>JavaScript 采用是词法作用域 (lexical scoping)，也就是静态作用域：</p>
+<ul>
+<li>函数的作用域在函数定义的时候就决定了</li>
+</ul>
+<p>与之对应的还有一个动态作用域：</p>
+<ul>
+<li>函数的作用域是在函数调用的时候才决定的；</li>
+</ul>
+<p><strong>1.3 全局变量和局部变量</strong></p>
+<p>根据定义变量的方式又可以分为：</p>
+<p>局部变量：只能在函数中访问，该函数外不可访问；</p>
+<ul>
+<li>定义在函数中的变量</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(name);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br><span class="line">fn(); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
+<p>全局：任何地方都能访问到的对象拥有全局作用域。</p>
+<ul>
+<li>函数外定义的变量</li>
+<li>所有末定义直接赋值的变量自动声明为拥有全局作用域</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a4-&#x27;</span>,a);</span><br></pre></td></tr></table></figure>
+<p>注意：在 ES6 之后又提出了块级作用域，它们之间的区别我们之后再来讨论。</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=2659298556,3987226078&amp;fm=26&amp;gp=0.jpeg" alt=""></p>
+<h2 id="二-理解作用域"><a class="markdownIt-Anchor" href="#二-理解作用域">#</a> 二、理解作用域</h2>
+<p>根据第一节的描述，我们一一验证一下</p>
+<p><strong>2.1 理解词法作用域</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> value = <span class="number">1</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> value = <span class="number">2</span>;</span><br><span class="line">    foo();</span><br><span class="line">&#125;</span><br><span class="line">bar();</span><br></pre></td></tr></table></figure>
+<p>我们结合定义去分析：</p>
+<ul>
+<li>执行 <code>bar</code>  函数，函数内部形成了局部作用域；</li>
+<li>声明 value 变量，并赋值 2</li>
+<li>执行 <code>foo</code>  函数，函数 foo 的作用域内没有 <code>value</code>  这个变量，它会向外查找</li>
+<li>根据词法作用域的规则，函数定义时， <code>foo</code>  的外部作用域为全局作用域</li>
+<li>打印<strong>结果是 1</strong></li>
+</ul>
+<p>如果是动态作用域的话：结果<strong>就是 2</strong>，不知道你是否想明白了？</p>
+<p><strong>2.2 全局变量</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;全局变量&#x27;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(str+<span class="number">1</span>);</span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		<span class="built_in">console</span>.log(str+<span class="number">2</span>);</span><br><span class="line">		<span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">			<span class="built_in">console</span>.log(str+<span class="number">3</span>);</span><br><span class="line">		&#125;;</span><br><span class="line">		fn();</span><br><span class="line">	&#125;;</span><br><span class="line">	childFn();</span><br><span class="line">&#125;</span><br><span class="line">func();</span><br><span class="line"><span class="comment">// 全局变量1</span></span><br><span class="line"><span class="comment">// 全局变量2</span></span><br><span class="line"><span class="comment">// 全局变量3</span></span><br></pre></td></tr></table></figure>
+<p>再来分析下面的代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line"><span class="comment">// a2- 100 // 在当前作用域下查找变量a =&gt; 100</span></span><br><span class="line"><span class="comment">// a1- 1000 // 函数执行时，全局变量a已经被重新赋值</span></span><br><span class="line"><span class="comment">// a3- 1000 // 全局变量a =&gt; 1000</span></span><br></pre></td></tr></table></figure>
+<p><strong>2.3 局部作用域</strong></p>
+<p>局部作用域一般只在固定的代码片段内可访问到，最常见的就是以函数为单位的：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name=<span class="string">&quot;高原&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(name);</span><br><span class="line">    &#125;</span><br><span class="line">    childFn(); <span class="comment">// 高原</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// name is not defined</span></span><br></pre></td></tr></table></figure>
+<h2 id="三-作用域链"><a class="markdownIt-Anchor" href="#三-作用域链">#</a> 三、作用域链</h2>
+<p><strong>3.1 当查找变量的时候都发生了什么？</strong></p>
+<ul>
+<li>会先从当前<strong>上下文的变量对象</strong>中查找；</li>
+<li>如果没有找到，就会从父级 (词法层面上的父级)<strong> 执行上下文</strong>的变量对象中查找；</li>
+<li>一直找到全局上下文的变量对象，也就是全局对象；</li>
+<li>作用域链的顶端就是全局对象；</li>
+</ul>
+<p>这样<strong>由多个执行上下文的变量对象构成的链表就叫做作用域链</strong>，从某种意义上很类似原型和原型链。</p>
+<p><strong>3.2 作用域链和原型继承查找时的区别：</strong></p>
+<ul>
+<li>查找一个普通对象的属性，但是在当前对象和其原型中都找不到时，会返回 <code>undefined</code></li>
+<li>查找的属性在作用域链中不存在的话就会抛出 <code>ReferenceError</code> 。</li>
+</ul>
+<p><strong>3.3 作用域嵌套</strong></p>
+<p>既然每一个函数就可以形成一个作用域（ <code>词法作用域</code>  ||  <code>块级作用域</code> ），那么当然也会存在多个作用域嵌套的情况，他们遵循这样的查询规则：</p>
+<ul>
+<li>内部作用域有权访问外部作用域；</li>
+<li>外部作用域无法访问内部作用域；（真是是这样吗？）</li>
+<li>兄弟作用域不可互相访问；</li>
+</ul>
+<p>在《你不知道的 Js》中，希望读者可以将作用域的嵌套和作用域链想象成这样：</p>
+<p><img data-src="https://img-blog.csdnimg.cn/2020060915193493.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="四-思考与总结"><a class="markdownIt-Anchor" href="#四-思考与总结">#</a> 四、思考与总结</h2>
+<p><strong>4.1 总结</strong></p>
+<p><img data-src="https://img-blog.csdnimg.cn/20200609160809565.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p><strong>4.2 思考</strong></p>
+<p>最后，让我们看一个《JavaScript 权威指南》中的两段代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f(); <span class="comment">// 注意</span></span><br><span class="line">&#125;</span><br><span class="line">checkscope1();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope2</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line">checkscope2()();</span><br></pre></td></tr></table></figure>
+<p>两段代码的结果都是 &quot;local scope&quot;，书中的回答是：JavaScript 函数的执行用到了作用域链，这个作用域链是在函数定义的时候创建的。嵌套的函数 f () 定义在这个作用域链里，其中的变量 scope 一定是局部变量，不管何时何地执行函数 f ()，这种绑定在执行 f () 时依然有效。</p>
+<p>但是它们内部经历的事情是一样的吗？</p>
+]]></content>
+      <categories>
+        <category>JavaScript专题</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>JavaScript基础（二）从原型到原型链</title>
     <url>/2021/03/21/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%E4%BB%8E%E5%8E%9F%E5%9E%8B%E5%88%B0%E5%8E%9F%E5%9E%8B%E9%93%BE/</url>
     <content><![CDATA[<blockquote>
@@ -522,106 +622,6 @@ SSL 提供服务<br>
 <li>Object.prototype 是所有对象的根对象；</li>
 <li>原型链存在终点，不会无限查找下去；</li>
 </ul>
-]]></content>
-      <categories>
-        <category>JavaScript专题</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>JavaScript基础（三）作用域</title>
-    <url>/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89%E4%BD%9C%E7%94%A8%E5%9F%9F/</url>
-    <content><![CDATA[<blockquote>
-<p>作用域的篇幅不会太长，作为自己对 Js 总结的第三篇文章，主要是承上启下。 之后会涉及到执行上下文，闭包等相关专题，为了避免内容过多，作用域这一部分单独总结。</p>
-</blockquote>
-<h2 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h2>
-<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/%E4%B8%8B%E8%BD%BD.jpeg" style="zoom:67%;" />
-<span id="more"></span>
-<h2 id="一-作用域的定义"><a class="markdownIt-Anchor" href="#一-作用域的定义">#</a> 一、作用域的定义</h2>
-<p><strong>一张导图概括本节内容</strong> <img data-src="https://img-blog.csdnimg.cn/20200609102448438.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"> <strong>1.1 常见的解释</strong></p>
-<ol>
-<li>一段程序代码中所用到的<strong>名字</strong>并不总是有效，而限定它的可用性的范围就是这个名字的作用域；</li>
-<li>作用域规定了<strong>如何查找变量</strong>，也就是确定当前执行代码对变量的访问权限；</li>
-<li>通俗的讲作用域就是<strong>一套规则</strong>，用于确定在何处以及如何查找<strong>某个变量</strong>的规则</li>
-</ol>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(a); <span class="comment">// 100</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(a) <span class="comment">// a is not defined a变量并不是任何地方都可以被找到的</span></span><br></pre></td></tr></table></figure>
-<p><strong>1.2 JavaScript 中作用域工作模型</strong></p>
-<p>JavaScript 采用是词法作用域 (lexical scoping)，也就是静态作用域：</p>
-<ul>
-<li>函数的作用域在函数定义的时候就决定了</li>
-</ul>
-<p>与之对应的还有一个动态作用域：</p>
-<ul>
-<li>函数的作用域是在函数调用的时候才决定的；</li>
-</ul>
-<p><strong>1.3 全局变量和局部变量</strong></p>
-<p>根据定义变量的方式又可以分为：</p>
-<p>局部变量：只能在函数中访问，该函数外不可访问；</p>
-<ul>
-<li>定义在函数中的变量</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(name);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br><span class="line">fn(); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
-<p>全局：任何地方都能访问到的对象拥有全局作用域。</p>
-<ul>
-<li>函数外定义的变量</li>
-<li>所有末定义直接赋值的变量自动声明为拥有全局作用域</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a4-&#x27;</span>,a);</span><br></pre></td></tr></table></figure>
-<p>注意：在 ES6 之后又提出了块级作用域，它们之间的区别我们之后再来讨论。</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=2659298556,3987226078&amp;fm=26&amp;gp=0.jpeg" alt=""></p>
-<h2 id="二-理解作用域"><a class="markdownIt-Anchor" href="#二-理解作用域">#</a> 二、理解作用域</h2>
-<p>根据第一节的描述，我们一一验证一下</p>
-<p><strong>2.1 理解词法作用域</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> value = <span class="number">1</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> value = <span class="number">2</span>;</span><br><span class="line">    foo();</span><br><span class="line">&#125;</span><br><span class="line">bar();</span><br></pre></td></tr></table></figure>
-<p>我们结合定义去分析：</p>
-<ul>
-<li>执行 <code>bar</code>  函数，函数内部形成了局部作用域；</li>
-<li>声明 value 变量，并赋值 2</li>
-<li>执行 <code>foo</code>  函数，函数 foo 的作用域内没有 <code>value</code>  这个变量，它会向外查找</li>
-<li>根据词法作用域的规则，函数定义时， <code>foo</code>  的外部作用域为全局作用域</li>
-<li>打印<strong>结果是 1</strong></li>
-</ul>
-<p>如果是动态作用域的话：结果<strong>就是 2</strong>，不知道你是否想明白了？</p>
-<p><strong>2.2 全局变量</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;全局变量&#x27;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(str+<span class="number">1</span>);</span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		<span class="built_in">console</span>.log(str+<span class="number">2</span>);</span><br><span class="line">		<span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">			<span class="built_in">console</span>.log(str+<span class="number">3</span>);</span><br><span class="line">		&#125;;</span><br><span class="line">		fn();</span><br><span class="line">	&#125;;</span><br><span class="line">	childFn();</span><br><span class="line">&#125;</span><br><span class="line">func();</span><br><span class="line"><span class="comment">// 全局变量1</span></span><br><span class="line"><span class="comment">// 全局变量2</span></span><br><span class="line"><span class="comment">// 全局变量3</span></span><br></pre></td></tr></table></figure>
-<p>再来分析下面的代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line"><span class="comment">// a2- 100 // 在当前作用域下查找变量a =&gt; 100</span></span><br><span class="line"><span class="comment">// a1- 1000 // 函数执行时，全局变量a已经被重新赋值</span></span><br><span class="line"><span class="comment">// a3- 1000 // 全局变量a =&gt; 1000</span></span><br></pre></td></tr></table></figure>
-<p><strong>2.3 局部作用域</strong></p>
-<p>局部作用域一般只在固定的代码片段内可访问到，最常见的就是以函数为单位的：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name=<span class="string">&quot;高原&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(name);</span><br><span class="line">    &#125;</span><br><span class="line">    childFn(); <span class="comment">// 高原</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// name is not defined</span></span><br></pre></td></tr></table></figure>
-<h2 id="三-作用域链"><a class="markdownIt-Anchor" href="#三-作用域链">#</a> 三、作用域链</h2>
-<p><strong>3.1 当查找变量的时候都发生了什么？</strong></p>
-<ul>
-<li>会先从当前<strong>上下文的变量对象</strong>中查找；</li>
-<li>如果没有找到，就会从父级 (词法层面上的父级)<strong> 执行上下文</strong>的变量对象中查找；</li>
-<li>一直找到全局上下文的变量对象，也就是全局对象；</li>
-<li>作用域链的顶端就是全局对象；</li>
-</ul>
-<p>这样<strong>由多个执行上下文的变量对象构成的链表就叫做作用域链</strong>，从某种意义上很类似原型和原型链。</p>
-<p><strong>3.2 作用域链和原型继承查找时的区别：</strong></p>
-<ul>
-<li>查找一个普通对象的属性，但是在当前对象和其原型中都找不到时，会返回 <code>undefined</code></li>
-<li>查找的属性在作用域链中不存在的话就会抛出 <code>ReferenceError</code> 。</li>
-</ul>
-<p><strong>3.3 作用域嵌套</strong></p>
-<p>既然每一个函数就可以形成一个作用域（ <code>词法作用域</code>  ||  <code>块级作用域</code> ），那么当然也会存在多个作用域嵌套的情况，他们遵循这样的查询规则：</p>
-<ul>
-<li>内部作用域有权访问外部作用域；</li>
-<li>外部作用域无法访问内部作用域；（真是是这样吗？）</li>
-<li>兄弟作用域不可互相访问；</li>
-</ul>
-<p>在《你不知道的 Js》中，希望读者可以将作用域的嵌套和作用域链想象成这样：</p>
-<p><img data-src="https://img-blog.csdnimg.cn/2020060915193493.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<h2 id="四-思考与总结"><a class="markdownIt-Anchor" href="#四-思考与总结">#</a> 四、思考与总结</h2>
-<p><strong>4.1 总结</strong></p>
-<p><img data-src="https://img-blog.csdnimg.cn/20200609160809565.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<p><strong>4.2 思考</strong></p>
-<p>最后，让我们看一个《JavaScript 权威指南》中的两段代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f(); <span class="comment">// 注意</span></span><br><span class="line">&#125;</span><br><span class="line">checkscope1();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope2</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line">checkscope2()();</span><br></pre></td></tr></table></figure>
-<p>两段代码的结果都是 &quot;local scope&quot;，书中的回答是：JavaScript 函数的执行用到了作用域链，这个作用域链是在函数定义的时候创建的。嵌套的函数 f () 定义在这个作用域链里，其中的变量 scope 一定是局部变量，不管何时何地执行函数 f ()，这种绑定在执行 f () 时依然有效。</p>
-<p>但是它们内部经历的事情是一样的吗？</p>
 ]]></content>
       <categories>
         <category>JavaScript专题</category>
@@ -940,6 +940,79 @@ SSL 提供服务<br>
       </tags>
   </entry>
   <entry>
+    <title>Javascript中哪一种循环最快呢？</title>
+    <url>/2021/05/12/Javascript%E4%B8%AD%E5%93%AA%E4%B8%80%E7%A7%8D%E5%BE%AA%E7%8E%AF%E6%9C%80%E5%BF%AB%E5%91%A2%EF%BC%9F/</url>
+    <content><![CDATA[<blockquote>
+<p>了解哪一种  <code>for</code>  循环或迭代器适合我们的需求，防止我们犯下一些影响应用性能的低级错误。</p>
+</blockquote>
+<p>JavaScript 是 Web 开发领域的 “常青树”。无论是 JavaScript 框架（如 Node.js、React、Angular、Vue 等），还是原生 JavaScript，都拥有非常庞大的粉丝基础。我们来谈谈现代 JavaScript 吧。循环一直是大多数编程语言的重要组成部分，而现代 JavaScript 为我们提供了许多迭代或循环值的方法。</p>
+<p>但问题在于，我们是否真的知道哪种循环或迭代最适合我们的需求。 <code>for</code>  循环有很多变形，例如  <code>for</code> 、 <code>for</code> （倒序）、 <code>for…of</code> 、 <code>forEach</code> 、 <code>for…in</code> 、 <code>for…await</code> 。本文将围绕这些展开讨论。</p>
+<span id="more"></span>
+<h2 id="究竟哪一种循环更快"><a class="markdownIt-Anchor" href="#究竟哪一种循环更快">#</a> 究竟哪一种循环更快？</h2>
+<p><strong>答案其实是：</strong>  <code>for</code> （倒序）</p>
+<p>最让我感到惊讶的事情是，当我在本地计算机上进行测试之后，我不得不接受  <code>for</code> （倒序）是所有  <code>for</code>  循环中最快的这一事实。下面我会举个对一个包含超过一百万项元素的数组执行一次循环遍历的例子。</p>
+<p><strong>声明</strong>： <code>console.time()</code>  结果的准确度在很大程度上取决于我们运行测试的系统配置。你可以在 https://johnresig.com/blog/accuracy-of-javascript-time/ 对准确度作进一步了解。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const million = 1000000; </span><br><span class="line">const arr = Array(million);</span><br><span class="line"></span><br><span class="line">// 注：这是稀疏数组，应该为其指定内容，否则不同方式的循环对其的处理方式会不同：</span><br><span class="line">// const arr = [...Array(million)]</span><br><span class="line"></span><br><span class="line">console.time(&#x27;⏳&#x27;);</span><br><span class="line">for (let i = arr.length; i &gt; 0; i--) &#123;&#125; // for(倒序)  :- 1.5ms</span><br><span class="line">for (let i = 0; i &lt; arr.length; i++) &#123;&#125; // for          :- 1.6ms</span><br><span class="line">arr.forEach(v =&gt; v)                     // foreach      :- 2.1ms</span><br><span class="line">for (const v of arr) &#123;&#125;                 // for...of     :- 11.7ms</span><br><span class="line">console.timeEnd(&#x27;⏳&#x27;);</span><br></pre></td></tr></table></figure>
+<p>造成这样结果的原因很简单，在代码中，正序和倒序的  <code>for</code>  循环几乎花费一样的时间，仅仅相差了 0.1 毫秒。原因是， <code>for</code> （倒序）只需要计算一次起始变量  <code>let i = arr.length</code> ，而在正序的  <code>for</code>  循环中，它在每次变量增加后都会检查条件  <code>i&lt;arr.length</code> 。这个细微的差别不是很重要，你可以忽略它。（译者注：在数据量小或对时间不敏感的代码上，我们大可忽略它，但是根据译者的测试，当数据量扩大，例如十亿，千亿等的数量级，差距就显著提升，我们就需要考虑时间对应用程序性能的影响了。）同理，如果知道了差异，正序循环也可以做优化，将 arr.length 存下来， <code>for(let i=0,j=arr.length;i&lt;j;i++)&#123;&#125;</code></p>
+<p>而  <code>forEach</code>  是  <code>Array</code>  原型的一个方法，与普通的  <code>for</code>  循环相比， <code>forEach</code>  和  <code>for…of</code>  需要花费更多的时间进行数组迭代。（译者注：但值得注意的是， <code>for…of</code>  和  <code>forEach</code>  都从对象中获取了数据，而原型并没有，因此没有可比性。）</p>
+<h2 id="循环的类型以及我们应该在何处使用它们"><a class="markdownIt-Anchor" href="#循环的类型以及我们应该在何处使用它们">#</a> 循环的类型，以及我们应该在何处使用它们</h2>
+<h3 id="1-for-循环正序和倒序"><a class="markdownIt-Anchor" href="#1-for-循环正序和倒序">#</a> <strong>1. For 循环（正序和倒序）</strong></h3>
+<p>我想，也许大家都应该对这个基础循环非常熟悉了。我们可以在任何我们需要的地方使用  <code>for</code>  循环，按照核定的次数运行一段代码。最基础的  <code>for</code>  循环运行最迅速的，那我们每一次都应该使用它，对吗？并不然，性能不仅仅只是唯一尺度，代码可读性往往更加重要，就让我们选择适合我们应用程序的变形即可。</p>
+<h3 id="2-foreach"><a class="markdownIt-Anchor" href="#2-foreach">#</a> <strong>2.  <code>forEach</code> </strong></h3>
+<p>这个方法需要接受一个回调函数作为输入参数，遍历数组的每一个元素，并执行我们的回调函数（以元素本身和它的索引（可选参数）作为参数赋予给回调函数）。 <code>forEach</code>  还允许在回调函数中使用一个可选参数  <code>this</code> 。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const things = [&#x27;have&#x27;, &#x27;fun&#x27;, &#x27;coding&#x27;];</span><br><span class="line">const callbackFun = (item, idex) =&gt; &#123;</span><br><span class="line">    console.log(`$&#123;item&#125; - $&#123;index&#125;`);</span><br><span class="line">&#125;</span><br><span class="line">things.foreach(callbackFun); </span><br><span class="line">/* 输出   have - 0</span><br><span class="line">        fun - 1</span><br><span class="line">        coding - 2 */</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，如果我们要使用  <code>forEach</code> ，我们不能使用 JavaScript 的短路运算符，即不能在每一次循环中跳过或结束循环。</p>
+<h3 id="3-forof"><a class="markdownIt-Anchor" href="#3-forof">#</a> <strong>3.  <code>for…of</code> </strong></h3>
+<p><code>for…of</code>  是在 ES6（ECMAScript 6）中实现标准化的。它会对一个可迭代的对象（例如  <code>array</code> 、 <code>map</code> 、 <code>set</code> 、 <code>string</code>  等）创建一个循环，并且有一个突出的优点，即优秀的可读性。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const arr = [3, 5, 7];</span><br><span class="line">const str = &#x27;hello&#x27;;</span><br><span class="line">for (let i of arr) &#123;</span><br><span class="line">   console.log(i); // 输出 3, 5, 7</span><br><span class="line">&#125;</span><br><span class="line">for (let i of str) &#123;</span><br><span class="line">   console.log(i); // 输出 &#x27;h&#x27;, &#x27;e&#x27;, &#x27;l&#x27;, &#x27;l&#x27;, &#x27;o&#x27;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，请不要在生成器中使用  <code>for……of</code> ，即便  <code>for……of</code>  循环提前终止。在退出循环后，生成器被关闭，并尝试再次迭代，不会产生任何进一步的结果。</p>
+<h3 id="4-for-in"><a class="markdownIt-Anchor" href="#4-for-in">#</a> <strong>4.  <code>for</code>   <code>in</code> </strong></h3>
+<p><code>for…in</code>  会在对象的所有可枚举属性上迭代指定的变量。对于每个不同的属性， <code>for…in</code>  语句除返回数字索引外，还将返回用户定义的属性的名称。因此，在遍历数组时最好使用带有数字索引的传统  <code>for</code>  循环。因为  <code>for…in</code>  语句还会迭代除数组元素之外的用户定义属性，就算我们修改了数组对象（例如添加自定义属性或方法），依然如此。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const details = &#123;firstName: &#x27;john&#x27;, lastName: &#x27;Doe&#x27;&#125;;</span><br><span class="line">let fullName = &#x27;&#x27;;</span><br><span class="line">for (let i in details) &#123;</span><br><span class="line">    fullName += details[i] + &#x27; &#x27;; // fullName: john doe</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="forof-和-forin"><a class="markdownIt-Anchor" href="#forof-和-forin">#</a>  <code>for…of</code>  和  <code>for…in</code></h2>
+<p><code>for…of</code>  和  <code>for…in</code>  之间的主要区别是它们迭代的内容。 <code>for…in</code>  循环遍历对象的属性，而  <code>for…of</code>  循环遍历可迭代对象的值。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">let arr= [4, 5, 6];</span><br><span class="line">for (let i in arr) &#123;</span><br><span class="line">   console.log(i); // &#x27;0&#x27;, &#x27;1&#x27;, &#x27;2&#x27;</span><br><span class="line">&#125;</span><br><span class="line">for (let i of arr) &#123;</span><br><span class="line">   console.log(i); // &#x27;4&#x27;, &#x27;5&#x27;, &#x27;6&#x27;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="1-遍历数组通常用for循环"><a class="markdownIt-Anchor" href="#1-遍历数组通常用for循环">#</a> 1. 遍历数组通常用 for 循环</h3>
+<p>ES5 的话也可以使用 forEach，ES5 具有遍历数组功能的还有 map、filter、some、every、reduce、reduceRight 等，只不过他们的返回结果不一样。但是使用 foreach 遍历数组的话，使用 break 不能中断循环，使用 return 也不能返回到外层函数。</p>
+<figure class="highlight jsx"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.method=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">　　<span class="built_in">console</span>.log(<span class="built_in">this</span>.length);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> myArray=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>]</span><br><span class="line">myArray.name=<span class="string">&quot;数组&quot;</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> index <span class="keyword">in</span> myArray) &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(myArray[index]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-for-in遍历数组的毛病"><a class="markdownIt-Anchor" href="#2-for-in遍历数组的毛病">#</a> 2. for in 遍历数组的毛病</h3>
+<p>1.index 索引为字符串型数字，不能直接进行几何运算<br>
+ 2. 遍历顺序有可能不是按照实际数组的内部顺序<br>
+ 3. 使用 for in 会遍历数组所有的可枚举属性，包括原型。例如上栗的原型方法 method 和 name 属性<br>
+所以 for in 更适合遍历对象，不要使用 for in 遍历数组。</p>
+<p>那么除了使用 for 循环，如何更简单的正确的遍历数组达到我们的期望呢（即不遍历 method 和 name），ES6 中的 for of 更胜一筹.</p>
+<figure class="highlight jsx"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.method=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">　　<span class="built_in">console</span>.log(<span class="built_in">this</span>.length);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> myArray=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>]</span><br><span class="line">myArray.name=<span class="string">&quot;数组&quot;</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> value <span class="keyword">of</span> myArray) &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><em>记住，for in 遍历的是数组的索引（即键名），而 for of 遍历的是数组元素值。</em></p>
+<p>for of 遍历的只是数组内的元素，而不包括数组的原型属性 method 和索引 name</p>
+<h3 id="3-遍历对象"><a class="markdownIt-Anchor" href="#3-遍历对象">#</a> 3. 遍历对象</h3>
+<p>遍历对象 通常用 for in 来遍历对象的键名</p>
+<figure class="highlight jsx"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Object</span>.prototype.method=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">　　<span class="built_in">console</span>.log(<span class="built_in">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> myObject=&#123;</span><br><span class="line">　　<span class="attr">a</span>:<span class="number">1</span>,</span><br><span class="line">　　<span class="attr">b</span>:<span class="number">2</span>,</span><br><span class="line">　　<span class="attr">c</span>:<span class="number">3</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> myObject) &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>for in 可以遍历到 myObject 的原型方法 method, 如果不想遍历原型方法和属性的话，可以在循环内部判断一下，hasOwnPropery 方法可以判断某属性是否是该对象的实例属性</p>
+<figure class="highlight jsx"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> myObject) &#123;</span><br><span class="line">　　<span class="keyword">if</span>（myObject.hasOwnProperty(key))&#123;</span><br><span class="line">　　　　<span class="built_in">console</span>.log(key);</span><br><span class="line">　　&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同样可以通过 ES5 的 Object.keys (myObject) 获取对象的实例属性组成的数组，不包括原型方法和属性</p>
+<figure class="highlight jsx"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Object</span>.prototype.method=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">　　<span class="built_in">console</span>.log(<span class="built_in">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> myObject=&#123;</span><br><span class="line">　　<span class="attr">a</span>:<span class="number">1</span>,</span><br><span class="line">　　<span class="attr">b</span>:<span class="number">2</span>,</span><br><span class="line">　　<span class="attr">c</span>:<span class="number">3</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="总结"><a class="markdownIt-Anchor" href="#总结">#</a> 总结</h3>
+<ul>
+<li>for…of 适用遍历数 / 数组对象 / 字符串 /map/set 等拥有迭代器对象的集合。但是不能遍历对象，因为没有迭代器对象。与 forEach () 不同的是，它可以正确响应 break、continue 和 return 语句</li>
+<li>for-of 循环不支持普通对象，但如果你想迭代一个对象的属性，你可以用 for-in 循环（这也是它的本职工作）或内建的 Object.keys () 方法：</li>
+</ul>
+<h2 id="结论"><a class="markdownIt-Anchor" href="#结论">#</a> 结论</h2>
+<ul>
+<li><code>for</code>  最快，但可读性比较差</li>
+<li><code>foreach</code>  比较快，能够控制内容</li>
+<li><code>for...of</code>  比较慢，但香</li>
+<li><code>for...in</code>  比较慢，没那么方便</li>
+</ul>
+<p>最后，给你一条明智的建议 —— 优先考虑可读性。尤其是当我们开发复杂的结构程序时，更需要这样做。当然，我们也应该专注于性能。尽量避免增添不必要的、多余的花哨代码，因为这有时可能对你的程序性能造成严重影响。祝你编码愉快。</p>
+]]></content>
+      <categories>
+        <category>javascript</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>MySQL列类型和列上约束</title>
     <url>/2017/08/06/MySQL%E5%88%97%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%88%97%E4%B8%8A%E7%BA%A6%E6%9D%9F/</url>
     <content><![CDATA[<h2 id="1常用sql命令"><a class="markdownIt-Anchor" href="#1常用sql命令">#</a> 1. 常用 SQL 命令</h2>
@@ -1015,79 +1088,6 @@ user_name  CHAR (8)：定长字符串，可能产生空间浪费，但读取速�
       </categories>
       <tags>
         <tag>MySQL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Javascript中哪一种循环最快呢？</title>
-    <url>/2021/05/12/Javascript%E4%B8%AD%E5%93%AA%E4%B8%80%E7%A7%8D%E5%BE%AA%E7%8E%AF%E6%9C%80%E5%BF%AB%E5%91%A2%EF%BC%9F/</url>
-    <content><![CDATA[<blockquote>
-<p>了解哪一种  <code>for</code>  循环或迭代器适合我们的需求，防止我们犯下一些影响应用性能的低级错误。</p>
-</blockquote>
-<p>JavaScript 是 Web 开发领域的 “常青树”。无论是 JavaScript 框架（如 Node.js、React、Angular、Vue 等），还是原生 JavaScript，都拥有非常庞大的粉丝基础。我们来谈谈现代 JavaScript 吧。循环一直是大多数编程语言的重要组成部分，而现代 JavaScript 为我们提供了许多迭代或循环值的方法。</p>
-<p>但问题在于，我们是否真的知道哪种循环或迭代最适合我们的需求。 <code>for</code>  循环有很多变形，例如  <code>for</code> 、 <code>for</code> （倒序）、 <code>for…of</code> 、 <code>forEach</code> 、 <code>for…in</code> 、 <code>for…await</code> 。本文将围绕这些展开讨论。</p>
-<span id="more"></span>
-<h2 id="究竟哪一种循环更快"><a class="markdownIt-Anchor" href="#究竟哪一种循环更快">#</a> 究竟哪一种循环更快？</h2>
-<p><strong>答案其实是：</strong>  <code>for</code> （倒序）</p>
-<p>最让我感到惊讶的事情是，当我在本地计算机上进行测试之后，我不得不接受  <code>for</code> （倒序）是所有  <code>for</code>  循环中最快的这一事实。下面我会举个对一个包含超过一百万项元素的数组执行一次循环遍历的例子。</p>
-<p><strong>声明</strong>： <code>console.time()</code>  结果的准确度在很大程度上取决于我们运行测试的系统配置。你可以在 https://johnresig.com/blog/accuracy-of-javascript-time/ 对准确度作进一步了解。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const million = 1000000; </span><br><span class="line">const arr = Array(million);</span><br><span class="line"></span><br><span class="line">// 注：这是稀疏数组，应该为其指定内容，否则不同方式的循环对其的处理方式会不同：</span><br><span class="line">// const arr = [...Array(million)]</span><br><span class="line"></span><br><span class="line">console.time(&#x27;⏳&#x27;);</span><br><span class="line">for (let i = arr.length; i &gt; 0; i--) &#123;&#125; // for(倒序)  :- 1.5ms</span><br><span class="line">for (let i = 0; i &lt; arr.length; i++) &#123;&#125; // for          :- 1.6ms</span><br><span class="line">arr.forEach(v =&gt; v)                     // foreach      :- 2.1ms</span><br><span class="line">for (const v of arr) &#123;&#125;                 // for...of     :- 11.7ms</span><br><span class="line">console.timeEnd(&#x27;⏳&#x27;);</span><br></pre></td></tr></table></figure>
-<p>造成这样结果的原因很简单，在代码中，正序和倒序的  <code>for</code>  循环几乎花费一样的时间，仅仅相差了 0.1 毫秒。原因是， <code>for</code> （倒序）只需要计算一次起始变量  <code>let i = arr.length</code> ，而在正序的  <code>for</code>  循环中，它在每次变量增加后都会检查条件  <code>i&lt;arr.length</code> 。这个细微的差别不是很重要，你可以忽略它。（译者注：在数据量小或对时间不敏感的代码上，我们大可忽略它，但是根据译者的测试，当数据量扩大，例如十亿，千亿等的数量级，差距就显著提升，我们就需要考虑时间对应用程序性能的影响了。）同理，如果知道了差异，正序循环也可以做优化，将 arr.length 存下来， <code>for(let i=0,j=arr.length;i&lt;j;i++)&#123;&#125;</code></p>
-<p>而  <code>forEach</code>  是  <code>Array</code>  原型的一个方法，与普通的  <code>for</code>  循环相比， <code>forEach</code>  和  <code>for…of</code>  需要花费更多的时间进行数组迭代。（译者注：但值得注意的是， <code>for…of</code>  和  <code>forEach</code>  都从对象中获取了数据，而原型并没有，因此没有可比性。）</p>
-<h2 id="循环的类型以及我们应该在何处使用它们"><a class="markdownIt-Anchor" href="#循环的类型以及我们应该在何处使用它们">#</a> 循环的类型，以及我们应该在何处使用它们</h2>
-<h3 id="1-for-循环正序和倒序"><a class="markdownIt-Anchor" href="#1-for-循环正序和倒序">#</a> <strong>1. For 循环（正序和倒序）</strong></h3>
-<p>我想，也许大家都应该对这个基础循环非常熟悉了。我们可以在任何我们需要的地方使用  <code>for</code>  循环，按照核定的次数运行一段代码。最基础的  <code>for</code>  循环运行最迅速的，那我们每一次都应该使用它，对吗？并不然，性能不仅仅只是唯一尺度，代码可读性往往更加重要，就让我们选择适合我们应用程序的变形即可。</p>
-<h3 id="2-foreach"><a class="markdownIt-Anchor" href="#2-foreach">#</a> <strong>2.  <code>forEach</code> </strong></h3>
-<p>这个方法需要接受一个回调函数作为输入参数，遍历数组的每一个元素，并执行我们的回调函数（以元素本身和它的索引（可选参数）作为参数赋予给回调函数）。 <code>forEach</code>  还允许在回调函数中使用一个可选参数  <code>this</code> 。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const things = [&#x27;have&#x27;, &#x27;fun&#x27;, &#x27;coding&#x27;];</span><br><span class="line">const callbackFun = (item, idex) =&gt; &#123;</span><br><span class="line">    console.log(`$&#123;item&#125; - $&#123;index&#125;`);</span><br><span class="line">&#125;</span><br><span class="line">things.foreach(callbackFun); </span><br><span class="line">/* 输出   have - 0</span><br><span class="line">        fun - 1</span><br><span class="line">        coding - 2 */</span><br></pre></td></tr></table></figure>
-<p>需要注意的是，如果我们要使用  <code>forEach</code> ，我们不能使用 JavaScript 的短路运算符，即不能在每一次循环中跳过或结束循环。</p>
-<h3 id="3-forof"><a class="markdownIt-Anchor" href="#3-forof">#</a> <strong>3.  <code>for…of</code> </strong></h3>
-<p><code>for…of</code>  是在 ES6（ECMAScript 6）中实现标准化的。它会对一个可迭代的对象（例如  <code>array</code> 、 <code>map</code> 、 <code>set</code> 、 <code>string</code>  等）创建一个循环，并且有一个突出的优点，即优秀的可读性。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const arr = [3, 5, 7];</span><br><span class="line">const str = &#x27;hello&#x27;;</span><br><span class="line">for (let i of arr) &#123;</span><br><span class="line">   console.log(i); // 输出 3, 5, 7</span><br><span class="line">&#125;</span><br><span class="line">for (let i of str) &#123;</span><br><span class="line">   console.log(i); // 输出 &#x27;h&#x27;, &#x27;e&#x27;, &#x27;l&#x27;, &#x27;l&#x27;, &#x27;o&#x27;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>需要注意的是，请不要在生成器中使用  <code>for……of</code> ，即便  <code>for……of</code>  循环提前终止。在退出循环后，生成器被关闭，并尝试再次迭代，不会产生任何进一步的结果。</p>
-<h3 id="4-for-in"><a class="markdownIt-Anchor" href="#4-for-in">#</a> <strong>4.  <code>for</code>   <code>in</code> </strong></h3>
-<p><code>for…in</code>  会在对象的所有可枚举属性上迭代指定的变量。对于每个不同的属性， <code>for…in</code>  语句除返回数字索引外，还将返回用户定义的属性的名称。因此，在遍历数组时最好使用带有数字索引的传统  <code>for</code>  循环。因为  <code>for…in</code>  语句还会迭代除数组元素之外的用户定义属性，就算我们修改了数组对象（例如添加自定义属性或方法），依然如此。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const details = &#123;firstName: &#x27;john&#x27;, lastName: &#x27;Doe&#x27;&#125;;</span><br><span class="line">let fullName = &#x27;&#x27;;</span><br><span class="line">for (let i in details) &#123;</span><br><span class="line">    fullName += details[i] + &#x27; &#x27;; // fullName: john doe</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="forof-和-forin"><a class="markdownIt-Anchor" href="#forof-和-forin">#</a>  <code>for…of</code>  和  <code>for…in</code></h2>
-<p><code>for…of</code>  和  <code>for…in</code>  之间的主要区别是它们迭代的内容。 <code>for…in</code>  循环遍历对象的属性，而  <code>for…of</code>  循环遍历可迭代对象的值。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">let arr= [4, 5, 6];</span><br><span class="line">for (let i in arr) &#123;</span><br><span class="line">   console.log(i); // &#x27;0&#x27;, &#x27;1&#x27;, &#x27;2&#x27;</span><br><span class="line">&#125;</span><br><span class="line">for (let i of arr) &#123;</span><br><span class="line">   console.log(i); // &#x27;4&#x27;, &#x27;5&#x27;, &#x27;6&#x27;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="1-遍历数组通常用for循环"><a class="markdownIt-Anchor" href="#1-遍历数组通常用for循环">#</a> 1. 遍历数组通常用 for 循环</h3>
-<p>ES5 的话也可以使用 forEach，ES5 具有遍历数组功能的还有 map、filter、some、every、reduce、reduceRight 等，只不过他们的返回结果不一样。但是使用 foreach 遍历数组的话，使用 break 不能中断循环，使用 return 也不能返回到外层函数。</p>
-<figure class="highlight jsx"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.method=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">　　<span class="built_in">console</span>.log(<span class="built_in">this</span>.length);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> myArray=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>]</span><br><span class="line">myArray.name=<span class="string">&quot;数组&quot;</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> index <span class="keyword">in</span> myArray) &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(myArray[index]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="2-for-in遍历数组的毛病"><a class="markdownIt-Anchor" href="#2-for-in遍历数组的毛病">#</a> 2. for in 遍历数组的毛病</h3>
-<p>1.index 索引为字符串型数字，不能直接进行几何运算<br>
- 2. 遍历顺序有可能不是按照实际数组的内部顺序<br>
- 3. 使用 for in 会遍历数组所有的可枚举属性，包括原型。例如上栗的原型方法 method 和 name 属性<br>
-所以 for in 更适合遍历对象，不要使用 for in 遍历数组。</p>
-<p>那么除了使用 for 循环，如何更简单的正确的遍历数组达到我们的期望呢（即不遍历 method 和 name），ES6 中的 for of 更胜一筹.</p>
-<figure class="highlight jsx"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.method=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">　　<span class="built_in">console</span>.log(<span class="built_in">this</span>.length);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> myArray=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>]</span><br><span class="line">myArray.name=<span class="string">&quot;数组&quot;</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> value <span class="keyword">of</span> myArray) &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><em>记住，for in 遍历的是数组的索引（即键名），而 for of 遍历的是数组元素值。</em></p>
-<p>for of 遍历的只是数组内的元素，而不包括数组的原型属性 method 和索引 name</p>
-<h3 id="3-遍历对象"><a class="markdownIt-Anchor" href="#3-遍历对象">#</a> 3. 遍历对象</h3>
-<p>遍历对象 通常用 for in 来遍历对象的键名</p>
-<figure class="highlight jsx"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Object</span>.prototype.method=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">　　<span class="built_in">console</span>.log(<span class="built_in">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> myObject=&#123;</span><br><span class="line">　　<span class="attr">a</span>:<span class="number">1</span>,</span><br><span class="line">　　<span class="attr">b</span>:<span class="number">2</span>,</span><br><span class="line">　　<span class="attr">c</span>:<span class="number">3</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> myObject) &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>for in 可以遍历到 myObject 的原型方法 method, 如果不想遍历原型方法和属性的话，可以在循环内部判断一下，hasOwnPropery 方法可以判断某属性是否是该对象的实例属性</p>
-<figure class="highlight jsx"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> myObject) &#123;</span><br><span class="line">　　<span class="keyword">if</span>（myObject.hasOwnProperty(key))&#123;</span><br><span class="line">　　　　<span class="built_in">console</span>.log(key);</span><br><span class="line">　　&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>同样可以通过 ES5 的 Object.keys (myObject) 获取对象的实例属性组成的数组，不包括原型方法和属性</p>
-<figure class="highlight jsx"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Object</span>.prototype.method=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">　　<span class="built_in">console</span>.log(<span class="built_in">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> myObject=&#123;</span><br><span class="line">　　<span class="attr">a</span>:<span class="number">1</span>,</span><br><span class="line">　　<span class="attr">b</span>:<span class="number">2</span>,</span><br><span class="line">　　<span class="attr">c</span>:<span class="number">3</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="总结"><a class="markdownIt-Anchor" href="#总结">#</a> 总结</h3>
-<ul>
-<li>for…of 适用遍历数 / 数组对象 / 字符串 /map/set 等拥有迭代器对象的集合。但是不能遍历对象，因为没有迭代器对象。与 forEach () 不同的是，它可以正确响应 break、continue 和 return 语句</li>
-<li>for-of 循环不支持普通对象，但如果你想迭代一个对象的属性，你可以用 for-in 循环（这也是它的本职工作）或内建的 Object.keys () 方法：</li>
-</ul>
-<h2 id="结论"><a class="markdownIt-Anchor" href="#结论">#</a> 结论</h2>
-<ul>
-<li><code>for</code>  最快，但可读性比较差</li>
-<li><code>foreach</code>  比较快，能够控制内容</li>
-<li><code>for...of</code>  比较慢，但香</li>
-<li><code>for...in</code>  比较慢，没那么方便</li>
-</ul>
-<p>最后，给你一条明智的建议 —— 优先考虑可读性。尤其是当我们开发复杂的结构程序时，更需要这样做。当然，我们也应该专注于性能。尽量避免增添不必要的、多余的花哨代码，因为这有时可能对你的程序性能造成严重影响。祝你编码愉快。</p>
-]]></content>
-      <categories>
-        <category>javascript</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
       </tags>
   </entry>
   <entry>
