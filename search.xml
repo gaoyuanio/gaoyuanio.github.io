@@ -1,103 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>HTTPS和HTTP原理和区别</title>
-    <url>/2020/12/16/HTTPS%E5%92%8CHTTP%E5%8E%9F%E7%90%86%E5%92%8C%E5%8C%BA%E5%88%AB/</url>
-    <content><![CDATA[<p>一、HTTP 和 HTTPS 的基本概念<br>
- HTTP：超文本传输协议（HTTP，HyperText Transfer Protocol）是互联网上应用最为广泛的一种网络协议。设计 HTTP 最初的目的是为了提供一种发布和接收 HTML 页面的方法。它可以使浏览器更加高效。HTTP 协议是以明文方式发送信息的，如果黑客截取了 Web 浏览器和服务器之间的传输报文，就可以直接获得其中的信息。</p>
-<p>HTTP 原理：</p>
-<p>①  客户端的浏览器首先要通过网络与服务器建立连接，该连接是通过 TCP 来完成的，一般 TCP 连接的端口号是 80。 建立连接后，客户机发送一个请求给服务器，请求方式的格式为：统一资源标识符（URL）、协议版本号，后边是 MIME 信息包括请求修饰符、客户机信息和许可内容。</p>
-<p>②  服务器接到请求后，给予相应的响应信息，其格式为一个状态行，包括信息的协议版本号、一个成功或错误的代码，后边是 MIME 信息包括服务器信息、实体信息和可能的内容。</p>
-<span id="more"></span>
-<p>HTTPS：是以安全为目标的 HTTP 通道，是 HTTP 的安全版。HTTPS 的安全基础是 SSL。SSL 协议位于 TCP/IP 协议与各种应用层协议之间，为数据通讯提供安全支持。SSL 协议可分为两层：SSL 记录协议（SSL Record Protocol），它建立在可靠的传输协议（如 TCP）之上，为高层协议提供数据封装、压缩、加密等基本功能的支持。SSL 握手协议（SSL Handshake Protocol），它建立在 SSL 记录协议之上，用于在实际的数据传输开始前，通讯双方进行身份认证、协商加密算法、交换加密密钥等。</p>
-<p>​​<img data-src="https://img-blog.csdnimg.cn/20200707084720409.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4Mjg5ODE1,size_16,color_FFFFFF,t_70" alt=""></p>
-<!-- more -->
-<p>HTTPS 设计目标：</p>
-<p>(1) 数据保密性：保证数据内容在传输的过程中不会被第三方查看。就像快递员传递包裹一样，都进行了封装，别人无法获知里面装了什么  。</p>
-<p>(2) 数据完整性：及时发现被第三方篡改的传输内容。就像快递员虽然不知道包裹里装了什么东西，但他有可能中途掉包，数据完整性就是指如果被掉包，我们能轻松发现并拒收 。</p>
-<p>(3) 身份校验安全性：保证数据到达用户期望的目的地。就像我们邮寄包裹时，虽然是一个封装好的未掉包的包裹，但必须确定这个包裹不会送错地方，通过身份校验来确保送对了地方  。</p>
-<p>二、HTTP 与 HTTPS  的区别<br>
- 1、HTTPS  协议需要到 CA （Certificate Authority，证书颁发机构）申请证书，一般免费证书较少，因而需要一定费用。(以前的网易官网是 http，而网易邮箱是 https 。)</p>
-<p>2、HTTP 是超文本传输协议，信息是明文传输，HTTPS 则是具有安全性的 SSL 加密传输协议。</p>
-<p>3、HTTP 和 HTTPS 使用的是完全不同的连接方式，用的端口也不一样，前者是 80，后者是 443。</p>
-<p>4、HTTP 的连接很简单，是无状态的。HTTPS 协议是由 SSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，比 HTTP 协议安全。(无状态的意思是其数据包的发送、传输和接收都是相互独立的。无连接的意思是指通信双方都不长久的维持对方的任何信息。)</p>
-<p>三、HTTPS 相对于 HTTP 的改进<br>
-双向的身份认证</p>
-<p>客户端和服务端在传输数据之前，会通过基于 X.509 证书对双方进行身份认证 。具体过程如下：</p>
-<p>客户端发起 SSL 握手消息给服务端要求连接。</p>
-<p>服务端将证书发送给客户端。</p>
-<p>客户端检查服务端证书，确认是否由自己信任的证书签发机构签发 (客户端内置了所有受信任 CA 的证书)。 如果不是，将是否继续通讯的决定权交给用户选择 ( 注意，这里将是一个安全缺陷 )。如果检查无误或者用户选择继续，则客户端认可服务端的身份。</p>
-<p>服务端要求客户端发送证书，并检查是否通过验证。失败则关闭连接，认证成功则从客户端证书中获得客户端的公钥，一般为 1024 位或者 2048 位。到此，服务器客户端双方的身份认证结束，双方确保身份都是真实可靠的。</p>
-<p>注意：</p>
-<p>(1) 采用 HTTPS 协议的服务器必须要有一套数字证书，可以自己制作，也可以向组织申请。区别就是自己颁发的证书需要客户端验证通过，才可以继续访问。这套证书其实就是一对公钥和私钥。</p>
-<p>(2) 互联网有太多的服务需要使用证书来验证身份，以至于客户端（操作系统或浏览器等）无法内置所有证书，需要通过服务端将证书发送给客户端。</p>
-<p>(3) 客户端内置的是 CA 的根证书 (Root Certificate)，HTTPS 协议中服务器会发送证书链（Certificate Chain）给客户端。</p>
-<p>数据传输的机密性</p>
-<p>客户端和服务端在开始传输数据之前，会协商传输过程需要使用的加密算法。 客户端发送协商请求给服务端，其中包含自己支持的非对成加密的密钥交换算法 (一般是 RSA)，数据签名摘要算法 ( 一般是 SHA 或者 MD5) ，加密传输数据的对称加密算法 ( 一般是 DES)，以及加密密钥的长度。 服务端接收到消息之后，选中安全性最高的算法，并将选中的算法发送给客户端，完成协商。客户端生成随机的字符串，通过协商好的非对称加密算法，使用服务端的公钥对该字符串进行加密，发送给服务端。 服务端接收到之后，使用自己的私钥解密得到该字符串。在随后的数据传输当中，使用这个字符串作为密钥进行对称加密。</p>
-<p>防止重放攻击</p>
-<p>SSL 使用序列号来保护通讯方免受报文重放攻击。这个序列号被加密后作为数据包的负载。在整个 SSL 握手中，都有一个唯一的随机数来标记 SSL 握手。 这样防止了攻击者嗅探整个登录过程，获取到加密的登录数据之后，不对数据进行解密，而直接重传登录数据包的攻击手法。</p>
-<p>可以看到，鉴于电子商务等安全上的需求，HTTPS 对比 HTTP 协议，在安全方面已经取得了极大的增强。总结来说，HTTPS 的改进点在于创造性的使用了非对称加密算法，在不安全的网路上，安全的传输了用来进行非对称加密的密钥，综合利用了非对称加密的安全性和对称加密的快速性。</p>
-<p>四、HTTPS 的优点<br>
- 1、使用 HTTPS 协议可认证用户和服务器，确保数据发送到正确的客户机和服务器。</p>
-<p>2、HTTPS 协议是由 SSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，要比 HTTP 协议安全，可防止数据在传输过程中不被窃取、修改，确保数据的完整性。</p>
-<p>3、HTTPS 是现行架构下最安全的解决方案，虽然不是绝对安全，但它大幅增加了中间人攻击的成本。</p>
-<p>五、HTTPS 的缺点（对比优点）<br>
-1、HTTPS 协议握手阶段比较费时，会使页面的加载时间延长近。</p>
-<p>2、HTTPS 连接缓存不如 HTTP 高效，会增加数据开销，甚至已有的安全措施也会因此而受到影响。</p>
-<p>3、HTTPS 协议的安全是有范围的，在黑客攻击、拒绝服务攻击和服务器劫持等方面几乎起不到什么作用。</p>
-<p>4、SSL 证书通常需要绑定 IP，不能在同一 IP 上绑定多个域名，IPv4 资源不可能支撑这个消耗。</p>
-<p>5、成本增加。部署 HTTPS 后，因为 HTTPS 协议的工作要增加额外的计算资源消耗，例如 SSL 协议加密算法和 SSL 交互次数将占用一定的计算资源和服务器成本。</p>
-<p>6、HTTPS 协议的加密范围也比较有限。最关键的，SSL 证书的信用链体系并不安全，特别是在某些国家可以控制 CA 根证书的情况下，中间人攻击一样可行。</p>
-<p>六、HTTPS 的连接过程</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180709141944471" alt=""></p>
-<p>图片中的过程是按 8 个步骤分的，但是网上有更详细的步骤，所以我把详细的过程和这个图片配在一起。</p>
-<p>① 客户端的浏览器向服务器发送请求，并传送客户端 SSL 协议的版本号，加密算法的种类，产生的随机数，以及其他服务器和客户端之间通讯所需要的各种信息。</p>
-<p>② 服务器向客户端传送 SSL 协议的版本号，加密算法的种类，随机数以及其他相关信息，同时服务器还将向客户端传送自己的证书。</p>
-<p>③ 客户端利用服务器传过来的信息验证服务器的合法性，服务器的合法性包括：证书是否过期，发行服务器证书的 CA 是否可靠，发行者证书的公钥能否正确解开服务器证书的 “发行者的数字签名”，服务器证书上的域名是否和服务器的实际域名相匹配。如果合法性验证没有通过，通讯将断开；如果合法性验证通过，将继续进行第四步。</p>
-<p>④ 用户端随机产生一个用于通讯的 “对称密码”，然后用服务器的公钥（服务器的公钥从步骤②中的服务器的证书中获得）对其加密，然后将加密后的 “预主密码” 传给服务器。</p>
-<p>⑤ 如果服务器要求客户的身份认证（在握手过程中为可选），用户可以建立一个随机数然后对其进行数据签名，将这个含有签名的随机数和客户自己的证书以及加密过的密钥一起传给服务器。</p>
-<p>⑥ 如果服务器要求客户的身份认证，服务器必须检验客户证书和签名随机数的合法性，具体的合法性验证过程包括：客户的证书使用日期是否有效，为客户提供证书的 CA  是否可靠，发行 CA 的公钥能否正确解开客户证书的发行 CA 的数字签名，检查客户的证书是否在证书废止列表（CRL）中。检验如果没有通过，通讯立刻中断；如果验证通过，服务器将用自己的私钥解开加密的私钥，然后执行一系列步骤来产生主通讯密码（客户端也将通过同样的方法产生相同的主通讯密码）。</p>
-<p>⑦ 服务器和客户端用相同的对称加密密钥，对称密钥用于 SSL 协议的安全数据通讯的加解密通讯。同时在 SSL 通讯过程中还要完成数据通讯的完整性，防止数据通讯中的任何变化。</p>
-<p>⑧ 客户端向服务器端发出信息，指明后面的数据通讯将使用的步骤 ⑦ 中的主密码为对称密钥，同时通知服务器客户端的握手过程结束。</p>
-<p>⑨ 服务器向客户端发出信息，指明后面的数据通讯将使用的步骤 ⑦ 中的主密码为对称密钥，同时通知客户端服务器端的握手过程结束。</p>
-<p>⑩ SSL 的握手部分结束，SSL 安全通道的数据通讯开始，客户和服务器开始使用相同的对称密钥进行数据通讯，同时进行通讯完整性的检验。</p>
-<p>上述的过程需要弄懂的核心思想<br>
-客户端解析证书</p>
-<p>这部分工作是由客户端的 TLS 来完成的，首先会验证公钥是否有效，比如颁发机构，过期时间等等，如果发现异常，则会弹出一个警告框，提示证书存在问题。如果证书没有问题，那么就生成一个对称加密密钥，然后用公钥对该密钥进行非对称加密。</p>
-<p>传送加密信息</p>
-<p>这部分传送的是用公钥加密后的对称加密密钥，目的就是让服务端得到这个密钥，以后客户端和服务端的通信就可以通过这个密钥来进行加密解密了。</p>
-<p>服务端解密信息</p>
-<p>服务端用非对称加密算法里的私钥解密后，得到了客户端传过来的对称加密算法的私钥，然后把之后传输的内容通过该值进行对称加密。</p>
-<p>为什么用非对称加密协商对称加密密钥</p>
-<p>对称加密的特点：对称密码体制中只有一种密钥，并且是非公开的。如果要解密就得让对方知道密钥，所以想要保证其安全性就要保证密钥的安全。</p>
-<p>非对称加密的特点：算法强度复杂、安全性依赖于算法与密钥但是由于其算法复杂，而使得加密解密速度没有对称加密解密的速度快。非对称密钥体制有两种密钥，其中一个是公开的，这样就可以不需要像对称密码那样传输对方的密钥了，这样安全性就大了很多。</p>
-<p>非对称加密公钥和私钥的使用方法：(1) 公钥加密私钥解密。(2) 私钥做数字签名，公钥验证。</p>
-<p>补充：<br>
-SSL 提供服务<br>
- (1) 认证用户和服务器，确保数据发送到正确的客户机和服务器；</p>
-<p>(2) 加密数据以防止数据中途被窃取；</p>
-<p>(3) 维护数据的完整性，确保数据在传输过程中不被改变。</p>
-<p>SSL 工作流程<br>
-服务器认证阶段：</p>
-<p>(1) 客户端向服务器发送一个开始信息 “Hello” 以便开始一个新的会话连接；</p>
-<p>(2) 服务器根据客户的信息确定是否需要生成新的主密钥，如需要则服务器在响应客户的 “Hello” 信息时将包含生成主密钥所需的信息；</p>
-<p>(3) 客户根据收到的服务器响应信息，产生一个主密钥，并用服务器的公开密钥加密后传给服务器；</p>
-<p>(4) 服务器回复该主密钥，并返回给客户一个用主密钥认证的信息，以此让客户认证服务器。</p>
-<p>用户认证阶段：在此之前，服务器已经通过了客户认证，这一阶段主要完成对客户的认证。经认证的服务器发送一个提问给客户，客户则返回（数字）签名后的提问和其公开密钥，从而向服务器提供认证。</p>
-<p>SSL 协议提供的安全通道有以下三个特性：</p>
-<p>机密性：SSL 协议使用密钥加密通信数据。</p>
-<p>可靠性：服务器和客户都会被认证，客户的认证是可选的。</p>
-<p>完整性：SSL 协议会对传送的数据进行完整性检查。</p>
-<p>服务器证书 (server certificates) 是 SSL 数字证书的一种形式，意指通过提交数字证书来证明您的身份或表明您有权访问在线服务。再者简单来说，通过使用服务器证书可为不同站点提供身份鉴定并保证该站点拥有高强度加密安全。是组成 Web 服务器的 SSL 安全功能的唯一的数字标识。通过相互信任的第三方组织获得，并为用户提供验证您 Web 站点身份的手段。服务器证书包含详细的身份验证信息，如服务器内容附属的组织、颁发证书的组织以及称为公开密钥的唯一的身份验证文件。</p>
-]]></content>
-      <categories>
-        <category>HTTP</category>
-      </categories>
-      <tags>
-        <tag>HTTP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>JS实现图片压缩</title>
     <url>/2021/02/11/JS%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9/</url>
     <content><![CDATA[<blockquote>
@@ -198,6 +101,103 @@ SSL 提供服务<br>
       </categories>
       <tags>
         <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>HTTPS和HTTP原理和区别</title>
+    <url>/2020/12/16/HTTPS%E5%92%8CHTTP%E5%8E%9F%E7%90%86%E5%92%8C%E5%8C%BA%E5%88%AB/</url>
+    <content><![CDATA[<p>一、HTTP 和 HTTPS 的基本概念<br>
+ HTTP：超文本传输协议（HTTP，HyperText Transfer Protocol）是互联网上应用最为广泛的一种网络协议。设计 HTTP 最初的目的是为了提供一种发布和接收 HTML 页面的方法。它可以使浏览器更加高效。HTTP 协议是以明文方式发送信息的，如果黑客截取了 Web 浏览器和服务器之间的传输报文，就可以直接获得其中的信息。</p>
+<p>HTTP 原理：</p>
+<p>①  客户端的浏览器首先要通过网络与服务器建立连接，该连接是通过 TCP 来完成的，一般 TCP 连接的端口号是 80。 建立连接后，客户机发送一个请求给服务器，请求方式的格式为：统一资源标识符（URL）、协议版本号，后边是 MIME 信息包括请求修饰符、客户机信息和许可内容。</p>
+<p>②  服务器接到请求后，给予相应的响应信息，其格式为一个状态行，包括信息的协议版本号、一个成功或错误的代码，后边是 MIME 信息包括服务器信息、实体信息和可能的内容。</p>
+<span id="more"></span>
+<p>HTTPS：是以安全为目标的 HTTP 通道，是 HTTP 的安全版。HTTPS 的安全基础是 SSL。SSL 协议位于 TCP/IP 协议与各种应用层协议之间，为数据通讯提供安全支持。SSL 协议可分为两层：SSL 记录协议（SSL Record Protocol），它建立在可靠的传输协议（如 TCP）之上，为高层协议提供数据封装、压缩、加密等基本功能的支持。SSL 握手协议（SSL Handshake Protocol），它建立在 SSL 记录协议之上，用于在实际的数据传输开始前，通讯双方进行身份认证、协商加密算法、交换加密密钥等。</p>
+<p>​​<img data-src="https://img-blog.csdnimg.cn/20200707084720409.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4Mjg5ODE1,size_16,color_FFFFFF,t_70" alt=""></p>
+<!-- more -->
+<p>HTTPS 设计目标：</p>
+<p>(1) 数据保密性：保证数据内容在传输的过程中不会被第三方查看。就像快递员传递包裹一样，都进行了封装，别人无法获知里面装了什么  。</p>
+<p>(2) 数据完整性：及时发现被第三方篡改的传输内容。就像快递员虽然不知道包裹里装了什么东西，但他有可能中途掉包，数据完整性就是指如果被掉包，我们能轻松发现并拒收 。</p>
+<p>(3) 身份校验安全性：保证数据到达用户期望的目的地。就像我们邮寄包裹时，虽然是一个封装好的未掉包的包裹，但必须确定这个包裹不会送错地方，通过身份校验来确保送对了地方  。</p>
+<p>二、HTTP 与 HTTPS  的区别<br>
+ 1、HTTPS  协议需要到 CA （Certificate Authority，证书颁发机构）申请证书，一般免费证书较少，因而需要一定费用。(以前的网易官网是 http，而网易邮箱是 https 。)</p>
+<p>2、HTTP 是超文本传输协议，信息是明文传输，HTTPS 则是具有安全性的 SSL 加密传输协议。</p>
+<p>3、HTTP 和 HTTPS 使用的是完全不同的连接方式，用的端口也不一样，前者是 80，后者是 443。</p>
+<p>4、HTTP 的连接很简单，是无状态的。HTTPS 协议是由 SSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，比 HTTP 协议安全。(无状态的意思是其数据包的发送、传输和接收都是相互独立的。无连接的意思是指通信双方都不长久的维持对方的任何信息。)</p>
+<p>三、HTTPS 相对于 HTTP 的改进<br>
+双向的身份认证</p>
+<p>客户端和服务端在传输数据之前，会通过基于 X.509 证书对双方进行身份认证 。具体过程如下：</p>
+<p>客户端发起 SSL 握手消息给服务端要求连接。</p>
+<p>服务端将证书发送给客户端。</p>
+<p>客户端检查服务端证书，确认是否由自己信任的证书签发机构签发 (客户端内置了所有受信任 CA 的证书)。 如果不是，将是否继续通讯的决定权交给用户选择 ( 注意，这里将是一个安全缺陷 )。如果检查无误或者用户选择继续，则客户端认可服务端的身份。</p>
+<p>服务端要求客户端发送证书，并检查是否通过验证。失败则关闭连接，认证成功则从客户端证书中获得客户端的公钥，一般为 1024 位或者 2048 位。到此，服务器客户端双方的身份认证结束，双方确保身份都是真实可靠的。</p>
+<p>注意：</p>
+<p>(1) 采用 HTTPS 协议的服务器必须要有一套数字证书，可以自己制作，也可以向组织申请。区别就是自己颁发的证书需要客户端验证通过，才可以继续访问。这套证书其实就是一对公钥和私钥。</p>
+<p>(2) 互联网有太多的服务需要使用证书来验证身份，以至于客户端（操作系统或浏览器等）无法内置所有证书，需要通过服务端将证书发送给客户端。</p>
+<p>(3) 客户端内置的是 CA 的根证书 (Root Certificate)，HTTPS 协议中服务器会发送证书链（Certificate Chain）给客户端。</p>
+<p>数据传输的机密性</p>
+<p>客户端和服务端在开始传输数据之前，会协商传输过程需要使用的加密算法。 客户端发送协商请求给服务端，其中包含自己支持的非对成加密的密钥交换算法 (一般是 RSA)，数据签名摘要算法 ( 一般是 SHA 或者 MD5) ，加密传输数据的对称加密算法 ( 一般是 DES)，以及加密密钥的长度。 服务端接收到消息之后，选中安全性最高的算法，并将选中的算法发送给客户端，完成协商。客户端生成随机的字符串，通过协商好的非对称加密算法，使用服务端的公钥对该字符串进行加密，发送给服务端。 服务端接收到之后，使用自己的私钥解密得到该字符串。在随后的数据传输当中，使用这个字符串作为密钥进行对称加密。</p>
+<p>防止重放攻击</p>
+<p>SSL 使用序列号来保护通讯方免受报文重放攻击。这个序列号被加密后作为数据包的负载。在整个 SSL 握手中，都有一个唯一的随机数来标记 SSL 握手。 这样防止了攻击者嗅探整个登录过程，获取到加密的登录数据之后，不对数据进行解密，而直接重传登录数据包的攻击手法。</p>
+<p>可以看到，鉴于电子商务等安全上的需求，HTTPS 对比 HTTP 协议，在安全方面已经取得了极大的增强。总结来说，HTTPS 的改进点在于创造性的使用了非对称加密算法，在不安全的网路上，安全的传输了用来进行非对称加密的密钥，综合利用了非对称加密的安全性和对称加密的快速性。</p>
+<p>四、HTTPS 的优点<br>
+ 1、使用 HTTPS 协议可认证用户和服务器，确保数据发送到正确的客户机和服务器。</p>
+<p>2、HTTPS 协议是由 SSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，要比 HTTP 协议安全，可防止数据在传输过程中不被窃取、修改，确保数据的完整性。</p>
+<p>3、HTTPS 是现行架构下最安全的解决方案，虽然不是绝对安全，但它大幅增加了中间人攻击的成本。</p>
+<p>五、HTTPS 的缺点（对比优点）<br>
+1、HTTPS 协议握手阶段比较费时，会使页面的加载时间延长近。</p>
+<p>2、HTTPS 连接缓存不如 HTTP 高效，会增加数据开销，甚至已有的安全措施也会因此而受到影响。</p>
+<p>3、HTTPS 协议的安全是有范围的，在黑客攻击、拒绝服务攻击和服务器劫持等方面几乎起不到什么作用。</p>
+<p>4、SSL 证书通常需要绑定 IP，不能在同一 IP 上绑定多个域名，IPv4 资源不可能支撑这个消耗。</p>
+<p>5、成本增加。部署 HTTPS 后，因为 HTTPS 协议的工作要增加额外的计算资源消耗，例如 SSL 协议加密算法和 SSL 交互次数将占用一定的计算资源和服务器成本。</p>
+<p>6、HTTPS 协议的加密范围也比较有限。最关键的，SSL 证书的信用链体系并不安全，特别是在某些国家可以控制 CA 根证书的情况下，中间人攻击一样可行。</p>
+<p>六、HTTPS 的连接过程</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180709141944471" alt=""></p>
+<p>图片中的过程是按 8 个步骤分的，但是网上有更详细的步骤，所以我把详细的过程和这个图片配在一起。</p>
+<p>① 客户端的浏览器向服务器发送请求，并传送客户端 SSL 协议的版本号，加密算法的种类，产生的随机数，以及其他服务器和客户端之间通讯所需要的各种信息。</p>
+<p>② 服务器向客户端传送 SSL 协议的版本号，加密算法的种类，随机数以及其他相关信息，同时服务器还将向客户端传送自己的证书。</p>
+<p>③ 客户端利用服务器传过来的信息验证服务器的合法性，服务器的合法性包括：证书是否过期，发行服务器证书的 CA 是否可靠，发行者证书的公钥能否正确解开服务器证书的 “发行者的数字签名”，服务器证书上的域名是否和服务器的实际域名相匹配。如果合法性验证没有通过，通讯将断开；如果合法性验证通过，将继续进行第四步。</p>
+<p>④ 用户端随机产生一个用于通讯的 “对称密码”，然后用服务器的公钥（服务器的公钥从步骤②中的服务器的证书中获得）对其加密，然后将加密后的 “预主密码” 传给服务器。</p>
+<p>⑤ 如果服务器要求客户的身份认证（在握手过程中为可选），用户可以建立一个随机数然后对其进行数据签名，将这个含有签名的随机数和客户自己的证书以及加密过的密钥一起传给服务器。</p>
+<p>⑥ 如果服务器要求客户的身份认证，服务器必须检验客户证书和签名随机数的合法性，具体的合法性验证过程包括：客户的证书使用日期是否有效，为客户提供证书的 CA  是否可靠，发行 CA 的公钥能否正确解开客户证书的发行 CA 的数字签名，检查客户的证书是否在证书废止列表（CRL）中。检验如果没有通过，通讯立刻中断；如果验证通过，服务器将用自己的私钥解开加密的私钥，然后执行一系列步骤来产生主通讯密码（客户端也将通过同样的方法产生相同的主通讯密码）。</p>
+<p>⑦ 服务器和客户端用相同的对称加密密钥，对称密钥用于 SSL 协议的安全数据通讯的加解密通讯。同时在 SSL 通讯过程中还要完成数据通讯的完整性，防止数据通讯中的任何变化。</p>
+<p>⑧ 客户端向服务器端发出信息，指明后面的数据通讯将使用的步骤 ⑦ 中的主密码为对称密钥，同时通知服务器客户端的握手过程结束。</p>
+<p>⑨ 服务器向客户端发出信息，指明后面的数据通讯将使用的步骤 ⑦ 中的主密码为对称密钥，同时通知客户端服务器端的握手过程结束。</p>
+<p>⑩ SSL 的握手部分结束，SSL 安全通道的数据通讯开始，客户和服务器开始使用相同的对称密钥进行数据通讯，同时进行通讯完整性的检验。</p>
+<p>上述的过程需要弄懂的核心思想<br>
+客户端解析证书</p>
+<p>这部分工作是由客户端的 TLS 来完成的，首先会验证公钥是否有效，比如颁发机构，过期时间等等，如果发现异常，则会弹出一个警告框，提示证书存在问题。如果证书没有问题，那么就生成一个对称加密密钥，然后用公钥对该密钥进行非对称加密。</p>
+<p>传送加密信息</p>
+<p>这部分传送的是用公钥加密后的对称加密密钥，目的就是让服务端得到这个密钥，以后客户端和服务端的通信就可以通过这个密钥来进行加密解密了。</p>
+<p>服务端解密信息</p>
+<p>服务端用非对称加密算法里的私钥解密后，得到了客户端传过来的对称加密算法的私钥，然后把之后传输的内容通过该值进行对称加密。</p>
+<p>为什么用非对称加密协商对称加密密钥</p>
+<p>对称加密的特点：对称密码体制中只有一种密钥，并且是非公开的。如果要解密就得让对方知道密钥，所以想要保证其安全性就要保证密钥的安全。</p>
+<p>非对称加密的特点：算法强度复杂、安全性依赖于算法与密钥但是由于其算法复杂，而使得加密解密速度没有对称加密解密的速度快。非对称密钥体制有两种密钥，其中一个是公开的，这样就可以不需要像对称密码那样传输对方的密钥了，这样安全性就大了很多。</p>
+<p>非对称加密公钥和私钥的使用方法：(1) 公钥加密私钥解密。(2) 私钥做数字签名，公钥验证。</p>
+<p>补充：<br>
+SSL 提供服务<br>
+ (1) 认证用户和服务器，确保数据发送到正确的客户机和服务器；</p>
+<p>(2) 加密数据以防止数据中途被窃取；</p>
+<p>(3) 维护数据的完整性，确保数据在传输过程中不被改变。</p>
+<p>SSL 工作流程<br>
+服务器认证阶段：</p>
+<p>(1) 客户端向服务器发送一个开始信息 “Hello” 以便开始一个新的会话连接；</p>
+<p>(2) 服务器根据客户的信息确定是否需要生成新的主密钥，如需要则服务器在响应客户的 “Hello” 信息时将包含生成主密钥所需的信息；</p>
+<p>(3) 客户根据收到的服务器响应信息，产生一个主密钥，并用服务器的公开密钥加密后传给服务器；</p>
+<p>(4) 服务器回复该主密钥，并返回给客户一个用主密钥认证的信息，以此让客户认证服务器。</p>
+<p>用户认证阶段：在此之前，服务器已经通过了客户认证，这一阶段主要完成对客户的认证。经认证的服务器发送一个提问给客户，客户则返回（数字）签名后的提问和其公开密钥，从而向服务器提供认证。</p>
+<p>SSL 协议提供的安全通道有以下三个特性：</p>
+<p>机密性：SSL 协议使用密钥加密通信数据。</p>
+<p>可靠性：服务器和客户都会被认证，客户的认证是可选的。</p>
+<p>完整性：SSL 协议会对传送的数据进行完整性检查。</p>
+<p>服务器证书 (server certificates) 是 SSL 数字证书的一种形式，意指通过提交数字证书来证明您的身份或表明您有权访问在线服务。再者简单来说，通过使用服务器证书可为不同站点提供身份鉴定并保证该站点拥有高强度加密安全。是组成 Web 服务器的 SSL 安全功能的唯一的数字标识。通过相互信任的第三方组织获得，并为用户提供验证您 Web 站点身份的手段。服务器证书包含详细的身份验证信息，如服务器内容附属的组织、颁发证书的组织以及称为公开密钥的唯一的身份验证文件。</p>
+]]></content>
+      <categories>
+        <category>HTTP</category>
+      </categories>
+      <tags>
+        <tag>HTTP</tag>
       </tags>
   </entry>
   <entry>
@@ -425,112 +425,6 @@ SSL 提供服务<br>
       </tags>
   </entry>
   <entry>
-    <title>JavaScript基础（二）从原型到原型链</title>
-    <url>/2021/03/21/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%E4%BB%8E%E5%8E%9F%E5%9E%8B%E5%88%B0%E5%8E%9F%E5%9E%8B%E9%93%BE/</url>
-    <content><![CDATA[<blockquote>
-<p>本文主要从构造函数 -&gt; 原型（隐式原型 + 显示原型）-&gt; 原型链的顺序，渐进式讲解，希望对你有所做帮助，共勉～</p>
-</blockquote>
-<h2 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h2>
-<p>又到了回忆过去的时候了，知识就是这样，原型和原型链在我之前的实习生涯中用到的很少 —— 几乎没有（噗！我菜我摊牌了），但是它和 this 指向问题一样，是初级、中级前端开发在面试时永远绕不开的话题。是不是大家每次看面经的时候都会去搜索原型相关的知识点？</p>
-<p>你看这知识，总是在考的时候，才能知道它的重要，就好像曾经有一段贼拉真挚的面试题摆在我面前… 话题拉回来，今天我们就收了这个<strong>孽障</strong>！</p>
-<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/src=http___img.wxcha.com_file_201711_22_e1655873d2.jpg&refer=http___img.wxcha.jpeg" style="zoom:50%;" />
-<span id="more"></span>
-<h2 id="一-构造函数"><a class="markdownIt-Anchor" href="#一-构造函数">#</a> 一、构造函数</h2>
-<h3 id="11-什么是构造函数"><a class="markdownIt-Anchor" href="#11-什么是构造函数">#</a> 1.1 什么是构造函数？</h3>
-<p>构造函数本身就是一个函数，与普通函数没有任何区别，不过<strong>为了规范一般将其首字母大写</strong>。构造函数和普通函数的区别在于，使用<strong> new</strong> 生成实例的函数就是构造函数，直接调用的就是普通函数。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="built_in">console</span>.log(person.name) <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-<p>在这个例子中，Person 就是一个构造函数。</p>
-<h3 id="12-constructor"><a class="markdownIt-Anchor" href="#12-constructor">#</a> 1.2 constructor？</h3>
-<p><code>constructor</code>  返回创建实例对象时构造函数的引用。此属性的值是对函数本身的引用，而不是一个包含函数名称的字符串。</p>
-<p><img data-src="https://img-blog.csdnimg.cn/20200604185358168.png" alt="被构造出来的person的"> 可以看到实例对象的 constructor 指向了它的构造函数，而它和原型的关系我们在之后会链接到一起。</p>
-<h3 id="13-都有哪些数据类型或者函数拥有constructor呢"><a class="markdownIt-Anchor" href="#13-都有哪些数据类型或者函数拥有constructor呢">#</a> 1.3 都有哪些数据类型或者函数拥有 <code>constructor</code>  呢？</h3>
-<p>在 JavaScript 中，每个具有<strong>原型</strong>的对象都会自动获得 constructor 属性。除了： <code>arguments</code> 、 <code>Enumerator</code> 、 <code>Error</code> 、 <code>Global</code> 、 <code>Math</code> 、 <code>RegExp</code>  等一些特殊对象之外，其他所有的 JavaScript 内置对象都具备 constructor 属性。例如： <code>Array</code> 、 <code>Boolean</code> 、 <code>Date</code> 、 <code>Function</code> 、 <code>Number</code> 、 <code>Object</code> 、 <code>String</code>  等。所有主流浏览器均支持该属性。打开控制台我们可以验证一下</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 字符串</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;str&#x27;</span>.constructor) <span class="comment">// ƒ String() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;str&#x27;</span>.constructor === <span class="built_in">String</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 数组</span></span><br><span class="line"><span class="built_in">console</span>.log([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].constructor) <span class="comment">// ƒ Array() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].constructor === <span class="built_in">Array</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 数字</span></span><br><span class="line"><span class="keyword">var</span> num = <span class="number">1</span></span><br><span class="line"><span class="built_in">console</span>.log(num.constructor) <span class="comment">// ƒ Number() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(num.constructor === <span class="built_in">Number</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Date</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">new</span> <span class="built_in">Date</span>().constructor) <span class="comment">// ƒ Date() &#123; [native code] &#125;</span></span><br><span class="line"><span class="comment">// 注意！！！不要混淆哦</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">new</span> <span class="built_in">Date</span>().getTime().constructor) <span class="comment">// ƒ Number() &#123; [native code] &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Boolean</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">true</span>.constructor) <span class="comment">// ƒ Boolean() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">true</span>.constructor === <span class="built_in">Boolean</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">console</span>.log(show.constructor) <span class="comment">// ƒ Function() &#123; [native code] &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义构造函数，无返回值</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = name;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> p = <span class="keyword">new</span> Person()</span><br><span class="line"><span class="built_in">console</span>.log(p.constructor) <span class="comment">// ƒ Person()</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 有返回值</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = name;</span><br><span class="line">	<span class="keyword">return</span> &#123;</span><br><span class="line">		<span class="attr">name</span>: <span class="string">&#x27;gaoyuan&#x27;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> p = Person()</span><br><span class="line"><span class="built_in">console</span>.log(p1.constructor) <span class="comment">// ƒ Object() &#123; [native code] &#125;</span></span><br></pre></td></tr></table></figure>
-<h3 id="14-模拟实现一个new"><a class="markdownIt-Anchor" href="#14-模拟实现一个new">#</a> 1.4 模拟实现一个 new</h3>
-<p>既然构造函数与普通函数的区别仅仅在于调用方式上，我们就应该了解 new。</p>
-<ul>
-<li>当调用 <code>new</code>  运算符时，该函数总会返回一个对象；</li>
-<li>通常情况下，构造器里的 this 就指向返回的这个对象；</li>
-</ul>
-<p>代码如下：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">通常情况下</span><br><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass();</span><br><span class="line">obj.name; <span class="comment">// gaoyuan</span></span><br><span class="line"></span><br><span class="line">特殊情况</span><br><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">	<span class="keyword">return</span> &#123;</span><br><span class="line">		<span class="attr">name</span>: <span class="string">&#x27;老王&#x27;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass();</span><br><span class="line">obj.name <span class="comment">// 老王</span></span><br></pre></td></tr></table></figure>
-<p>我们利用  <code>__proto__</code> （隐式原型，下文会提到）属性来模拟一下 new 调用构造函数的过程：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> objectNew = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="comment">// 从object.prototype上克隆一个空的对象</span></span><br><span class="line">    <span class="keyword">var</span> obj = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">    <span class="comment">// 取得外部传入的构造器，这里是Person</span></span><br><span class="line">    <span class="keyword">var</span> Constructor = [].shift.call( <span class="built_in">arguments</span> );</span><br><span class="line">    <span class="comment">// 更新，指向正确的原型</span></span><br><span class="line">    obj.__proto__ = Constructor.prototype; <span class="comment">//知识点，要考、要考、要考</span></span><br><span class="line">    <span class="comment">// 借用外部传入的构造器给obj设置属性</span></span><br><span class="line">    <span class="keyword">var</span> ret = Constructor.apply(obj, <span class="built_in">arguments</span>);</span><br><span class="line">    <span class="comment">// 确保构造器总是返回一个对象</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">typeof</span> ref === <span class="string">&#x27;object&#x27;</span> ? ret : obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&fm=26&gp=0.jpeg" style="zoom: 67%;" />
-<h2 id="二-原型"><a class="markdownIt-Anchor" href="#二-原型">#</a> 二、原型</h2>
-<h3 id="21-prototype显式原型"><a class="markdownIt-Anchor" href="#21-prototype显式原型">#</a> 2.1 prototype (显式原型)</h3>
-<p>JavaScript 是一种基于原型的语言 (prototype-based language)，在设计的时候模仿了 Java 的两套类型机制： <code>基本类型</code>  和  <code>对象类型</code> 。可见原型很重要！</p>
-<p>每个对象都拥有一个原型对象，类是以函数的形式来定义的。prototype 表示该函数的原型，也表示一个类的成员的集合。看下图： <img data-src="https://img-blog.csdnimg.cn/20200605140618427.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"> 可以发现 Person 函数自己的原型都有什么：</p>
-<ul>
-<li><code>constructor</code>  (Person.prototype.constructor =&gt; Person)</li>
-<li><code>__proto__</code>  （我们称它为隐式原型）</li>
-</ul>
-<p>此时我们得到了第一张表示构造函数和实例原型之间的关系图：</p>
-<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTEucG5n?x-oss-process=image/format,png" alt="构造函数和实例原型的关系图"></p>
-<p>那么我们该怎么表示实例与构造函数原型，也就是 person 和 Person.prototype 之间的关系呢，这时候我们就要讲到第二个属性：</p>
-<h3 id="22-proto隐式原型"><a class="markdownIt-Anchor" href="#22-proto隐式原型">#</a> 2.2 <strong>proto</strong> (隐式原型)</h3>
-<p>这是每一个 JavaScript 对象 (除了 null) 都具有的一个属性，叫 <code>__proto__</code> ，这是一个访问器属性（即 getter 函数和 setter 函数），通过它可以访问到对象的内部 <code>[[Prototype]]</code>  (一个对象或 null)。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="built_in">console</span>.log(person.__proto__ === Person.prototype); <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
-<p>于是我们更新下关系图：</p>
-<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTIucG5n?x-oss-process=image/format,png" alt="实例与实例原型的关系图"></p>
-<p><strong>小结：</strong> 每个引用类型的隐式原型都指向它的构造函数的显式原型</p>
-<h3 id="23-constructor"><a class="markdownIt-Anchor" href="#23-constructor">#</a> 2.3 constructor</h3>
-<p>前文提到了 <code>constructor</code> ，它与原型的关系也可以添加到这张图里，更新下关系图：</p>
-<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTMucG5n?x-oss-process=image/format,png" alt="实例原型与构造函数的关系图"> 根据上图的关系，下面这段的结果，大家就一目了然了：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(person.__proto__ == Person.prototype) <span class="comment">// true</span></span><br><span class="line"><span class="built_in">console</span>.log(Person.prototype.constructor == Person) <span class="comment">// true</span></span><br><span class="line"><span class="comment">// 顺便学习一个ES5的方法,可以获得对象的原型</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">Object</span>.getPrototypeOf(person) === Person.prototype) <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
-<p>接下来我们要继续思考实例和原型的关系：</p>
-<h2 id="三-实例与原型"><a class="markdownIt-Anchor" href="#三-实例与原型">#</a> 三、实例与原型</h2>
-<p>当读取实例的属性时，如果找不到，就会查找与对象关联的原型中的属性，如果还查不到，就去找原型的原型，一直找到最顶层为止。这样一个查找过程</p>
-<p>举个例子：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line">Person.prototype.name = <span class="string">&#x27;老王&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line">person.name = <span class="string">&#x27;余光&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(person.name) <span class="comment">// 余光</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span> person.name;</span><br><span class="line"><span class="built_in">console</span>.log(person.name) <span class="comment">// 老王</span></span><br></pre></td></tr></table></figure>
-<p>在这个例子中，我们给实例对象 person 添加了 name 属性，当我们打印 <span class="exturl" data-url="aHR0cDovL3BlcnNvbi5uYW1l">person.name</span> 的时候，结果自然为 余光（is me）。</p>
-<p><strong>描述：</strong></p>
-<p>但是当我们删除了 person 的 name 属性后，再次读取 <span class="exturl" data-url="aHR0cDovL3BlcnNvbi5uYW1l">person.name</span>，从 person 对象中找不到 name 属性就会从 person 的原型也就是 person.<strong>proto</strong> ，也就是 Person.prototype 中查找，幸运的是我们找到了 name 属性，结果为 老王（这…）</p>
-<p><strong>总结：</strong></p>
-<ul>
-<li>尝试遍历 <code>实例a</code>  中的所有属性，但没有找到目标属性；</li>
-<li>查找 <code>name</code>  属性的这个请求被委托给该 <code>实例a</code>  的构造器 ( <code>A</code> ) 的原型，它被 <code>a.__proto__</code>  记录着并且指向 A.prototype；</li>
-<li>A.prototype 存在目标属性，返回他的值；</li>
-</ul>
-<p>但是万一还没有找到呢？原型的原型又是什么呢？</p>
-<h2 id="四-原型的原型"><a class="markdownIt-Anchor" href="#四-原型的原型">#</a> 四、原型的原型</h2>
-<p>在前面，我们已经讲了原型也是一个对象，既然是对象，我们就可以用最原始的方式创建它，那就是：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">obj.name = <span class="string">&#x27;余光&#x27;</span></span><br><span class="line"><span class="built_in">console</span>.log(obj.name) <span class="comment">// 余光</span></span><br></pre></td></tr></table></figure>
-<p>其实原型对象就是通过 <code>Object</code>  构造函数生成的，结合之前所讲，实例的  <code>__proto__</code>  指向构造函数的  <code>prototype</code>  ，可以理解成， <code>Object.prototype()</code>  是所有对象的根对象，所以我们再次更新下关系图：</p>
-<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTQucG5n?x-oss-process=image/format,png" alt="原型的原型关系图"></p>
-<h2 id="五-原型链"><a class="markdownIt-Anchor" href="#五-原型链">#</a> 五、原型链</h2>
-<p>每个对象拥有一个原型对象，通过  <code>__proto__</code>  指针指向上一个原型 ，并从中继承方法和属性，同时原型对象也可能拥有原型，这样一层一层，最终指向  <code>null</code> 。<strong>这种关系被称为原型链</strong> (prototype chain)，通过原型链一个对象会拥有定义在其他对象中的属性和方法。</p>
-<p>这个链条存在着终点，是因为：Object.prototype 的原型是 ——null，引用阮一峰老师的 <span class="exturl" data-url="aHR0cDovL3d3dy5ydWFueWlmZW5nLmNvbS9ibG9nLzIwMTQvMDMvdW5kZWZpbmVkLXZzLW51bGwuaHRtbA==">《undefined 与 null 的区别》 (opens new window)</span> 就是：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">null 表示“没有对象”，即该处不应该有值。这句话也意味着 Object.prototype 没有原型</span><br></pre></td></tr></table></figure>
-<p>我们最后更新一次关系图，蓝色线条就可以表示原型链这种关系。</p>
-<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTUucG5n?x-oss-process=image/format,png" alt="原型链示意图"></p>
-<h3 id="补充易错点"><a class="markdownIt-Anchor" href="#补充易错点">#</a> 补充，易错点</h3>
-<p><strong>1.constructor</strong> 首先是 constructor 属性，我们看个例子：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="built_in">console</span>.log(person.constructor === Person); <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
-<p>当获取 person.constructor 时，其实 person 中并没有 constructor 属性，当不能读取到 constructor 属性时，会从 person 的原型也就是 Person.prototype 中读取，正好原型中有该属性，所以：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">person.constructor === Person.prototype.constructor</span><br></pre></td></tr></table></figure>
-<p><strong>2. <code>__proto__</code> </strong></p>
-<p>其次是 <strong>proto</strong> ，绝大部分浏览器都支持这个非标准的方法访问原型，然而它并不存在于 Person.prototype 中，实际上，它是来自于 Object.prototype ，与其说是一个属性，不如说是一个 getter/setter，当使用 obj.<strong>proto</strong> 时，可以理解成返回了 Object.getPrototypeOf (obj)。</p>
-<p><strong>3. 真的是继承吗？</strong></p>
-<p>最后是关于继承，前面我们讲到 “每一个对象都会从原型‘继承’属性”，实际上，继承是一个十分具有迷惑性的说法，引用《你不知道的 JavaScript》中的话，就是：</p>
-<p>继承意味着复制操作，然而 JavaScript 默认并不会复制对象的属性，相反，JavaScript 只是在两个对象之间创建一个关联，这样，一个对象就可以通过委托访问另一个对象的属性和函数，所以与其叫继承，<strong>委托</strong>的说法反而更准确些。</p>
-<h2 id="六-总结"><a class="markdownIt-Anchor" href="#六-总结">#</a> 六、总结</h2>
-<ul>
-<li>使用<strong> new</strong> 生成实例的函数就是构造函数，直接调用的就是普通函数；</li>
-<li>每个对象都拥有一个原型对象；</li>
-<li>每个引用类型的隐式原型都指向它的构造函数的显式原型；</li>
-<li>Object.prototype 是所有对象的根对象；</li>
-<li>原型链存在终点，不会无限查找下去；</li>
-</ul>
-]]></content>
-      <categories>
-        <category>JavaScript专题</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>JavaScript基础（三）作用域</title>
     <url>/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89%E4%BD%9C%E7%94%A8%E5%9F%9F/</url>
     <content><![CDATA[<blockquote>
@@ -724,6 +618,112 @@ SSL 提供服务<br>
 <li>利用闭包隔离作用域的特性可以解决共享作用域的问题</li>
 </ul>
 <p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&amp;fm=26&amp;gp=0.jpeg" alt=""></p>
+]]></content>
+      <categories>
+        <category>JavaScript专题</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>JavaScript基础（二）从原型到原型链</title>
+    <url>/2021/03/21/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%E4%BB%8E%E5%8E%9F%E5%9E%8B%E5%88%B0%E5%8E%9F%E5%9E%8B%E9%93%BE/</url>
+    <content><![CDATA[<blockquote>
+<p>本文主要从构造函数 -&gt; 原型（隐式原型 + 显示原型）-&gt; 原型链的顺序，渐进式讲解，希望对你有所做帮助，共勉～</p>
+</blockquote>
+<h2 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h2>
+<p>又到了回忆过去的时候了，知识就是这样，原型和原型链在我之前的实习生涯中用到的很少 —— 几乎没有（噗！我菜我摊牌了），但是它和 this 指向问题一样，是初级、中级前端开发在面试时永远绕不开的话题。是不是大家每次看面经的时候都会去搜索原型相关的知识点？</p>
+<p>你看这知识，总是在考的时候，才能知道它的重要，就好像曾经有一段贼拉真挚的面试题摆在我面前… 话题拉回来，今天我们就收了这个<strong>孽障</strong>！</p>
+<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/src=http___img.wxcha.com_file_201711_22_e1655873d2.jpg&refer=http___img.wxcha.jpeg" style="zoom:50%;" />
+<span id="more"></span>
+<h2 id="一-构造函数"><a class="markdownIt-Anchor" href="#一-构造函数">#</a> 一、构造函数</h2>
+<h3 id="11-什么是构造函数"><a class="markdownIt-Anchor" href="#11-什么是构造函数">#</a> 1.1 什么是构造函数？</h3>
+<p>构造函数本身就是一个函数，与普通函数没有任何区别，不过<strong>为了规范一般将其首字母大写</strong>。构造函数和普通函数的区别在于，使用<strong> new</strong> 生成实例的函数就是构造函数，直接调用的就是普通函数。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="built_in">console</span>.log(person.name) <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+<p>在这个例子中，Person 就是一个构造函数。</p>
+<h3 id="12-constructor"><a class="markdownIt-Anchor" href="#12-constructor">#</a> 1.2 constructor？</h3>
+<p><code>constructor</code>  返回创建实例对象时构造函数的引用。此属性的值是对函数本身的引用，而不是一个包含函数名称的字符串。</p>
+<p><img data-src="https://img-blog.csdnimg.cn/20200604185358168.png" alt="被构造出来的person的"> 可以看到实例对象的 constructor 指向了它的构造函数，而它和原型的关系我们在之后会链接到一起。</p>
+<h3 id="13-都有哪些数据类型或者函数拥有constructor呢"><a class="markdownIt-Anchor" href="#13-都有哪些数据类型或者函数拥有constructor呢">#</a> 1.3 都有哪些数据类型或者函数拥有 <code>constructor</code>  呢？</h3>
+<p>在 JavaScript 中，每个具有<strong>原型</strong>的对象都会自动获得 constructor 属性。除了： <code>arguments</code> 、 <code>Enumerator</code> 、 <code>Error</code> 、 <code>Global</code> 、 <code>Math</code> 、 <code>RegExp</code>  等一些特殊对象之外，其他所有的 JavaScript 内置对象都具备 constructor 属性。例如： <code>Array</code> 、 <code>Boolean</code> 、 <code>Date</code> 、 <code>Function</code> 、 <code>Number</code> 、 <code>Object</code> 、 <code>String</code>  等。所有主流浏览器均支持该属性。打开控制台我们可以验证一下</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 字符串</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;str&#x27;</span>.constructor) <span class="comment">// ƒ String() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;str&#x27;</span>.constructor === <span class="built_in">String</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 数组</span></span><br><span class="line"><span class="built_in">console</span>.log([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].constructor) <span class="comment">// ƒ Array() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].constructor === <span class="built_in">Array</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 数字</span></span><br><span class="line"><span class="keyword">var</span> num = <span class="number">1</span></span><br><span class="line"><span class="built_in">console</span>.log(num.constructor) <span class="comment">// ƒ Number() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(num.constructor === <span class="built_in">Number</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Date</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">new</span> <span class="built_in">Date</span>().constructor) <span class="comment">// ƒ Date() &#123; [native code] &#125;</span></span><br><span class="line"><span class="comment">// 注意！！！不要混淆哦</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">new</span> <span class="built_in">Date</span>().getTime().constructor) <span class="comment">// ƒ Number() &#123; [native code] &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Boolean</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">true</span>.constructor) <span class="comment">// ƒ Boolean() &#123; [native code] &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">true</span>.constructor === <span class="built_in">Boolean</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;gaoyuan&#x27;</span>);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">console</span>.log(show.constructor) <span class="comment">// ƒ Function() &#123; [native code] &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义构造函数，无返回值</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = name;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> p = <span class="keyword">new</span> Person()</span><br><span class="line"><span class="built_in">console</span>.log(p.constructor) <span class="comment">// ƒ Person()</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 有返回值</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = name;</span><br><span class="line">	<span class="keyword">return</span> &#123;</span><br><span class="line">		<span class="attr">name</span>: <span class="string">&#x27;gaoyuan&#x27;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> p = Person()</span><br><span class="line"><span class="built_in">console</span>.log(p1.constructor) <span class="comment">// ƒ Object() &#123; [native code] &#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="14-模拟实现一个new"><a class="markdownIt-Anchor" href="#14-模拟实现一个new">#</a> 1.4 模拟实现一个 new</h3>
+<p>既然构造函数与普通函数的区别仅仅在于调用方式上，我们就应该了解 new。</p>
+<ul>
+<li>当调用 <code>new</code>  运算符时，该函数总会返回一个对象；</li>
+<li>通常情况下，构造器里的 this 就指向返回的这个对象；</li>
+</ul>
+<p>代码如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">通常情况下</span><br><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass();</span><br><span class="line">obj.name; <span class="comment">// gaoyuan</span></span><br><span class="line"></span><br><span class="line">特殊情况</span><br><span class="line"><span class="keyword">var</span> MyClass = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line">	<span class="keyword">return</span> &#123;</span><br><span class="line">		<span class="attr">name</span>: <span class="string">&#x27;老王&#x27;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> MyClass();</span><br><span class="line">obj.name <span class="comment">// 老王</span></span><br></pre></td></tr></table></figure>
+<p>我们利用  <code>__proto__</code> （隐式原型，下文会提到）属性来模拟一下 new 调用构造函数的过程：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> objectNew = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="comment">// 从object.prototype上克隆一个空的对象</span></span><br><span class="line">    <span class="keyword">var</span> obj = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">    <span class="comment">// 取得外部传入的构造器，这里是Person</span></span><br><span class="line">    <span class="keyword">var</span> Constructor = [].shift.call( <span class="built_in">arguments</span> );</span><br><span class="line">    <span class="comment">// 更新，指向正确的原型</span></span><br><span class="line">    obj.__proto__ = Constructor.prototype; <span class="comment">//知识点，要考、要考、要考</span></span><br><span class="line">    <span class="comment">// 借用外部传入的构造器给obj设置属性</span></span><br><span class="line">    <span class="keyword">var</span> ret = Constructor.apply(obj, <span class="built_in">arguments</span>);</span><br><span class="line">    <span class="comment">// 确保构造器总是返回一个对象</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">typeof</span> ref === <span class="string">&#x27;object&#x27;</span> ? ret : obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&fm=26&gp=0.jpeg" style="zoom: 67%;" />
+<h2 id="二-原型"><a class="markdownIt-Anchor" href="#二-原型">#</a> 二、原型</h2>
+<h3 id="21-prototype显式原型"><a class="markdownIt-Anchor" href="#21-prototype显式原型">#</a> 2.1 prototype (显式原型)</h3>
+<p>JavaScript 是一种基于原型的语言 (prototype-based language)，在设计的时候模仿了 Java 的两套类型机制： <code>基本类型</code>  和  <code>对象类型</code> 。可见原型很重要！</p>
+<p>每个对象都拥有一个原型对象，类是以函数的形式来定义的。prototype 表示该函数的原型，也表示一个类的成员的集合。看下图： <img data-src="https://img-blog.csdnimg.cn/20200605140618427.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"> 可以发现 Person 函数自己的原型都有什么：</p>
+<ul>
+<li><code>constructor</code>  (Person.prototype.constructor =&gt; Person)</li>
+<li><code>__proto__</code>  （我们称它为隐式原型）</li>
+</ul>
+<p>此时我们得到了第一张表示构造函数和实例原型之间的关系图：</p>
+<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTEucG5n?x-oss-process=image/format,png" alt="构造函数和实例原型的关系图"></p>
+<p>那么我们该怎么表示实例与构造函数原型，也就是 person 和 Person.prototype 之间的关系呢，这时候我们就要讲到第二个属性：</p>
+<h3 id="22-proto隐式原型"><a class="markdownIt-Anchor" href="#22-proto隐式原型">#</a> 2.2 <strong>proto</strong> (隐式原型)</h3>
+<p>这是每一个 JavaScript 对象 (除了 null) 都具有的一个属性，叫 <code>__proto__</code> ，这是一个访问器属性（即 getter 函数和 setter 函数），通过它可以访问到对象的内部 <code>[[Prototype]]</code>  (一个对象或 null)。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="built_in">console</span>.log(person.__proto__ === Person.prototype); <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+<p>于是我们更新下关系图：</p>
+<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTIucG5n?x-oss-process=image/format,png" alt="实例与实例原型的关系图"></p>
+<p><strong>小结：</strong> 每个引用类型的隐式原型都指向它的构造函数的显式原型</p>
+<h3 id="23-constructor"><a class="markdownIt-Anchor" href="#23-constructor">#</a> 2.3 constructor</h3>
+<p>前文提到了 <code>constructor</code> ，它与原型的关系也可以添加到这张图里，更新下关系图：</p>
+<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTMucG5n?x-oss-process=image/format,png" alt="实例原型与构造函数的关系图"> 根据上图的关系，下面这段的结果，大家就一目了然了：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(person.__proto__ == Person.prototype) <span class="comment">// true</span></span><br><span class="line"><span class="built_in">console</span>.log(Person.prototype.constructor == Person) <span class="comment">// true</span></span><br><span class="line"><span class="comment">// 顺便学习一个ES5的方法,可以获得对象的原型</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">Object</span>.getPrototypeOf(person) === Person.prototype) <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+<p>接下来我们要继续思考实例和原型的关系：</p>
+<h2 id="三-实例与原型"><a class="markdownIt-Anchor" href="#三-实例与原型">#</a> 三、实例与原型</h2>
+<p>当读取实例的属性时，如果找不到，就会查找与对象关联的原型中的属性，如果还查不到，就去找原型的原型，一直找到最顶层为止。这样一个查找过程</p>
+<p>举个例子：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line">Person.prototype.name = <span class="string">&#x27;老王&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line">person.name = <span class="string">&#x27;余光&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(person.name) <span class="comment">// 余光</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span> person.name;</span><br><span class="line"><span class="built_in">console</span>.log(person.name) <span class="comment">// 老王</span></span><br></pre></td></tr></table></figure>
+<p>在这个例子中，我们给实例对象 person 添加了 name 属性，当我们打印 <span class="exturl" data-url="aHR0cDovL3BlcnNvbi5uYW1l">person.name</span> 的时候，结果自然为 余光（is me）。</p>
+<p><strong>描述：</strong></p>
+<p>但是当我们删除了 person 的 name 属性后，再次读取 <span class="exturl" data-url="aHR0cDovL3BlcnNvbi5uYW1l">person.name</span>，从 person 对象中找不到 name 属性就会从 person 的原型也就是 person.<strong>proto</strong> ，也就是 Person.prototype 中查找，幸运的是我们找到了 name 属性，结果为 老王（这…）</p>
+<p><strong>总结：</strong></p>
+<ul>
+<li>尝试遍历 <code>实例a</code>  中的所有属性，但没有找到目标属性；</li>
+<li>查找 <code>name</code>  属性的这个请求被委托给该 <code>实例a</code>  的构造器 ( <code>A</code> ) 的原型，它被 <code>a.__proto__</code>  记录着并且指向 A.prototype；</li>
+<li>A.prototype 存在目标属性，返回他的值；</li>
+</ul>
+<p>但是万一还没有找到呢？原型的原型又是什么呢？</p>
+<h2 id="四-原型的原型"><a class="markdownIt-Anchor" href="#四-原型的原型">#</a> 四、原型的原型</h2>
+<p>在前面，我们已经讲了原型也是一个对象，既然是对象，我们就可以用最原始的方式创建它，那就是：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">obj.name = <span class="string">&#x27;余光&#x27;</span></span><br><span class="line"><span class="built_in">console</span>.log(obj.name) <span class="comment">// 余光</span></span><br></pre></td></tr></table></figure>
+<p>其实原型对象就是通过 <code>Object</code>  构造函数生成的，结合之前所讲，实例的  <code>__proto__</code>  指向构造函数的  <code>prototype</code>  ，可以理解成， <code>Object.prototype()</code>  是所有对象的根对象，所以我们再次更新下关系图：</p>
+<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTQucG5n?x-oss-process=image/format,png" alt="原型的原型关系图"></p>
+<h2 id="五-原型链"><a class="markdownIt-Anchor" href="#五-原型链">#</a> 五、原型链</h2>
+<p>每个对象拥有一个原型对象，通过  <code>__proto__</code>  指针指向上一个原型 ，并从中继承方法和属性，同时原型对象也可能拥有原型，这样一层一层，最终指向  <code>null</code> 。<strong>这种关系被称为原型链</strong> (prototype chain)，通过原型链一个对象会拥有定义在其他对象中的属性和方法。</p>
+<p>这个链条存在着终点，是因为：Object.prototype 的原型是 ——null，引用阮一峰老师的 <span class="exturl" data-url="aHR0cDovL3d3dy5ydWFueWlmZW5nLmNvbS9ibG9nLzIwMTQvMDMvdW5kZWZpbmVkLXZzLW51bGwuaHRtbA==">《undefined 与 null 的区别》 (opens new window)</span> 就是：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">null 表示“没有对象”，即该处不应该有值。这句话也意味着 Object.prototype 没有原型</span><br></pre></td></tr></table></figure>
+<p>我们最后更新一次关系图，蓝色线条就可以表示原型链这种关系。</p>
+<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3dlYmJqOTcvc3VtbWFyeS9tYXN0ZXIvSW1hZ2VzL3Byb3RvdHlwZTUucG5n?x-oss-process=image/format,png" alt="原型链示意图"></p>
+<h3 id="补充易错点"><a class="markdownIt-Anchor" href="#补充易错点">#</a> 补充，易错点</h3>
+<p><strong>1.constructor</strong> 首先是 constructor 属性，我们看个例子：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> Person();</span><br><span class="line"><span class="built_in">console</span>.log(person.constructor === Person); <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+<p>当获取 person.constructor 时，其实 person 中并没有 constructor 属性，当不能读取到 constructor 属性时，会从 person 的原型也就是 Person.prototype 中读取，正好原型中有该属性，所以：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">person.constructor === Person.prototype.constructor</span><br></pre></td></tr></table></figure>
+<p><strong>2. <code>__proto__</code> </strong></p>
+<p>其次是 <strong>proto</strong> ，绝大部分浏览器都支持这个非标准的方法访问原型，然而它并不存在于 Person.prototype 中，实际上，它是来自于 Object.prototype ，与其说是一个属性，不如说是一个 getter/setter，当使用 obj.<strong>proto</strong> 时，可以理解成返回了 Object.getPrototypeOf (obj)。</p>
+<p><strong>3. 真的是继承吗？</strong></p>
+<p>最后是关于继承，前面我们讲到 “每一个对象都会从原型‘继承’属性”，实际上，继承是一个十分具有迷惑性的说法，引用《你不知道的 JavaScript》中的话，就是：</p>
+<p>继承意味着复制操作，然而 JavaScript 默认并不会复制对象的属性，相反，JavaScript 只是在两个对象之间创建一个关联，这样，一个对象就可以通过委托访问另一个对象的属性和函数，所以与其叫继承，<strong>委托</strong>的说法反而更准确些。</p>
+<h2 id="六-总结"><a class="markdownIt-Anchor" href="#六-总结">#</a> 六、总结</h2>
+<ul>
+<li>使用<strong> new</strong> 生成实例的函数就是构造函数，直接调用的就是普通函数；</li>
+<li>每个对象都拥有一个原型对象；</li>
+<li>每个引用类型的隐式原型都指向它的构造函数的显式原型；</li>
+<li>Object.prototype 是所有对象的根对象；</li>
+<li>原型链存在终点，不会无限查找下去；</li>
+</ul>
 ]]></content>
       <categories>
         <category>JavaScript专题</category>
@@ -1126,6 +1126,73 @@ user_name  CHAR (8)：定长字符串，可能产生空间浪费，但读取速�
       </tags>
   </entry>
   <entry>
+    <title>vue项目打包优化策略</title>
+    <url>/2020/11/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</url>
+    <content><![CDATA[<p>使用 vue-cli 部署生产包时，发现资源包很大，打包后的 <code>vendor.js</code>  达到了 1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？</p>
+<h3 id="1组件按需加载"><a class="markdownIt-Anchor" href="#1组件按需加载">#</a> 1. 组件按需加载</h3>
+<p>这是首先可以优化的点。如果频繁使用了第三方组件 / UI 库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts 等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。</p>
+<p>示例如下：</p>
+<h4 id="11-element-ui"><a class="markdownIt-Anchor" href="#11-element-ui">#</a> 1.1 element-ui</h4>
+<p>首先，安装 babel-plugin-component：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<p>然后，将.babelrc 修改为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// main.js</span><br><span class="line">import Vue from &#x27;vue&#x27;</span><br><span class="line">import &#123; Dialog, Loading &#125; from &#x27;element-ui&#x27;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading = Loading.service</span><br><span class="line">// 然后正常使用组件</span><br></pre></td></tr></table></figure>
+<h4 id="12-mint-ui"><a class="markdownIt-Anchor" href="#12-mint-ui">#</a> 1.2 mint-ui</h4>
+<p>由于 mint-ui 是 element-ui 的移动端组件，所以它的使用和引入几乎和 element-ui 一样。</p>
+<p>首先，安装 babel-plugin-component：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
+<p>然后，将.babelrc 修改为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;presets&quot;: [</span><br><span class="line">    [&quot;es2015&quot;, &#123; &quot;modules&quot;: false &#125;]</span><br><span class="line">  ],</span><br><span class="line">  &quot;plugins&quot;: [[&quot;component&quot;, [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;libraryName&quot;: &quot;mint-ui&quot;,</span><br><span class="line">      &quot;style&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">  ]]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后引入部分组件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// main.js</span><br><span class="line">import Vue from &#x27;vue&#x27;</span><br><span class="line">import &#123; Toast, MessageBox &#125; from &#x27;element-ui&#x27;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading = Loading.service</span><br><span class="line">// 然后正常使用组件</span><br></pre></td></tr></table></figure>
+<p>注意，element-ui 和 mint-ui 不能同时在.babelrc 中进行插件设置，这种情况下，依然可以按需引入，但是不要在 <code>.babelrc</code>  中配置，在引入的地方同时引入 css 即可。</p>
+<h4 id="13-echarts"><a class="markdownIt-Anchor" href="#13-echarts">#</a> 1.3 echarts</h4>
+<p>首先安装 babel-plugin-equire</p>
+<p>npm i babel-plugin-equire -D</p>
+<p>然后，在 <code>.babelrc</code>  文件中添加该插件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;plugins&quot;: [</span><br><span class="line">       // other plugins</span><br><span class="line">       ...</span><br><span class="line">       </span><br><span class="line">    &quot;equire&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>创建一个 js 文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// echarts.js</span><br><span class="line">// eslint-disable-next-line</span><br><span class="line">const echarts = equire([</span><br><span class="line">  &#x27;tooltip&#x27;,</span><br><span class="line">  &#x27;candlestick&#x27;,</span><br><span class="line">  &#x27;bar&#x27;,</span><br><span class="line">  &#x27;line&#x27;,</span><br><span class="line">  &#x27;axisPointer&#x27;,</span><br><span class="line">  &#x27;legend&#x27;,</span><br><span class="line">  &#x27;grid&#x27;</span><br><span class="line">])</span><br><span class="line">export default echarts</span><br><span class="line">// 业务组件，引入echarts</span><br><span class="line">import echarts from &#x27;@/assets/lib/echarts&#x27;</span><br><span class="line">// 使用与以前一样</span><br></pre></td></tr></table></figure>
+<p>按需加载 echarts</p>
+<p>解决 vue-cli 首屏加载慢的问题</p>
+<h3 id="2路由懒加载"><a class="markdownIt-Anchor" href="#2路由懒加载">#</a> 2. 路由懒加载</h3>
+<p>这里需要一个插件</p>
+<p>vue-router 官方推荐 syntax-dynamic-import 插件，不过它要求同时安装 @bable/core^7.0.0，如果你安装了 babel-core6，是会有版本冲突的。我的做法如下</p>
+<p>npm install babel-plugin-syntax-dynamic-import --save-dev(^6.18.0)</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// router.js</span><br><span class="line">const login = () =&gt; import(&#x27;@/components/login&#x27;)</span><br><span class="line">const router = new VueRouter(&#123;</span><br><span class="line">  routes: [</span><br><span class="line">    &#123; path: &#x27;/login&#x27;, component: login &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>还有一种魔法注释用法</p>
+<p>有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack &gt; 2.4)。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const Foo = () =&gt; import(/* webpackChunkName: &quot;group-foo&quot; */ &#x27;./Foo.vue&#x27;)</span><br></pre></td></tr></table></figure>
+<h3 id="3异步组件"><a class="markdownIt-Anchor" href="#3异步组件">#</a> 3. 异步组件</h3>
+<p>如果组件在页面加载时不需要，只在调用时用到，这时可以使用异步组件的写法。仅仅是引入和组件注册写法不同</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// template</span><br><span class="line">&lt;test v-if=&quot;showTest&quot;&gt;&lt;/test&gt;</span><br><span class="line">// script</span><br><span class="line">  components: &#123;</span><br><span class="line">    test: () =&gt; import(&#x27;./test&#x27;) // 将组件异步引入，告诉webpack，将该部分代码分割打包</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">      clickTest () &#123;</span><br><span class="line">          this.showTest = !this.showTest</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4图片的压缩合并"><a class="markdownIt-Anchor" href="#4图片的压缩合并">#</a> 4. 图片的压缩合并</h3>
+<p>如有可能，将图片制作成精灵图</p>
+<h3 id="5cdn加速"><a class="markdownIt-Anchor" href="#5cdn加速">#</a> 5.CDN 加速</h3>
+<p>在 index.html 中引入 cdn 资源</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;div id=&quot;app&quot;&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">  &lt;!-- built files will be auto injected --&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue/2.5.2/vue.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue-router/3.0.1/vue-router.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vuex/3.0.1/vuex.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>修改 build/webpack.base.conf.js</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">module.exports = &#123;</span><br><span class="line">  context: path.resolve(__dirname, &#x27;../&#x27;),</span><br><span class="line">  entry: &#123;</span><br><span class="line">    app: &#x27;./src/main.js&#x27;</span><br><span class="line">  &#125;,</span><br><span class="line">  externals:&#123;</span><br><span class="line">    &#x27;vue&#x27;: &#x27;Vue&#x27;,</span><br><span class="line">    &#x27;vue-router&#x27;: &#x27;VueRouter&#x27;,</span><br><span class="line">    &#x27;vuex&#x27;:&#x27;Vuex&#x27;,</span><br><span class="line">    &#x27;vue-resource&#x27;: &#x27;VueResource&#x27;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>修改 src/main.js src/router/index.js 注释掉 import 引入的 vue,vue-resource</p>
+<p>// import Vue from ‘vue’</p>
+<p>// import VueResource from ‘vue-resource’</p>
+<p>// Vue.use(VueResource)</p>
+<h3 id="6压缩代码"><a class="markdownIt-Anchor" href="#6压缩代码">#</a> 6. 压缩代码</h3>
+<p>vue-cli 已经使用 UglifyJsPlugin 插件来压缩代码，可以设置成如下配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">new webpack.optimize.UglifyJsPlugin(&#123;</span><br><span class="line">  compress: &#123;</span><br><span class="line">    warnings: false,</span><br><span class="line">    drop_console: true,</span><br><span class="line">    pure_funcs: [&#x27;console.log&#x27;]</span><br><span class="line">  &#125;,</span><br><span class="line">  sourceMap: false</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>其中 sourceMap: false 是禁用除错功能。</p>
+<p>如果设为 true，在部署包中会生成.map 结尾的 js 文件。它用于在代码混淆压缩的情况下仍可进行调试。这个功能虽好，但会大大增加整体资源包的体积，所以将其禁用。</p>
+]]></content>
+      <categories>
+        <category>Vue专题</category>
+      </categories>
+      <tags>
+        <tag>vue</tag>
+        <tag>webpack</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>vuex笔记</title>
     <url>/2020/12/26/vuex%E7%AC%94%E8%AE%B0/</url>
     <content><![CDATA[<h1 id="vuex笔记"><a class="markdownIt-Anchor" href="#vuex笔记">#</a> Vuex 笔记</h1>
@@ -1297,73 +1364,6 @@ user_name  CHAR (8)：定长字符串，可能产生空间浪费，但读取速�
       <tags>
         <tag>vue</tag>
         <tag>axios</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>vue项目打包优化策略</title>
-    <url>/2020/11/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</url>
-    <content><![CDATA[<p>使用 vue-cli 部署生产包时，发现资源包很大，打包后的 <code>vendor.js</code>  达到了 1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？</p>
-<h3 id="1组件按需加载"><a class="markdownIt-Anchor" href="#1组件按需加载">#</a> 1. 组件按需加载</h3>
-<p>这是首先可以优化的点。如果频繁使用了第三方组件 / UI 库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts 等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。</p>
-<p>示例如下：</p>
-<h4 id="11-element-ui"><a class="markdownIt-Anchor" href="#11-element-ui">#</a> 1.1 element-ui</h4>
-<p>首先，安装 babel-plugin-component：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
-<span id="more"></span>
-<p>然后，将.babelrc 修改为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// main.js</span><br><span class="line">import Vue from &#x27;vue&#x27;</span><br><span class="line">import &#123; Dialog, Loading &#125; from &#x27;element-ui&#x27;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading = Loading.service</span><br><span class="line">// 然后正常使用组件</span><br></pre></td></tr></table></figure>
-<h4 id="12-mint-ui"><a class="markdownIt-Anchor" href="#12-mint-ui">#</a> 1.2 mint-ui</h4>
-<p>由于 mint-ui 是 element-ui 的移动端组件，所以它的使用和引入几乎和 element-ui 一样。</p>
-<p>首先，安装 babel-plugin-component：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
-<p>然后，将.babelrc 修改为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;presets&quot;: [</span><br><span class="line">    [&quot;es2015&quot;, &#123; &quot;modules&quot;: false &#125;]</span><br><span class="line">  ],</span><br><span class="line">  &quot;plugins&quot;: [[&quot;component&quot;, [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;libraryName&quot;: &quot;mint-ui&quot;,</span><br><span class="line">      &quot;style&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">  ]]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后引入部分组件</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// main.js</span><br><span class="line">import Vue from &#x27;vue&#x27;</span><br><span class="line">import &#123; Toast, MessageBox &#125; from &#x27;element-ui&#x27;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading = Loading.service</span><br><span class="line">// 然后正常使用组件</span><br></pre></td></tr></table></figure>
-<p>注意，element-ui 和 mint-ui 不能同时在.babelrc 中进行插件设置，这种情况下，依然可以按需引入，但是不要在 <code>.babelrc</code>  中配置，在引入的地方同时引入 css 即可。</p>
-<h4 id="13-echarts"><a class="markdownIt-Anchor" href="#13-echarts">#</a> 1.3 echarts</h4>
-<p>首先安装 babel-plugin-equire</p>
-<p>npm i babel-plugin-equire -D</p>
-<p>然后，在 <code>.babelrc</code>  文件中添加该插件</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;plugins&quot;: [</span><br><span class="line">       // other plugins</span><br><span class="line">       ...</span><br><span class="line">       </span><br><span class="line">    &quot;equire&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>创建一个 js 文件</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// echarts.js</span><br><span class="line">// eslint-disable-next-line</span><br><span class="line">const echarts = equire([</span><br><span class="line">  &#x27;tooltip&#x27;,</span><br><span class="line">  &#x27;candlestick&#x27;,</span><br><span class="line">  &#x27;bar&#x27;,</span><br><span class="line">  &#x27;line&#x27;,</span><br><span class="line">  &#x27;axisPointer&#x27;,</span><br><span class="line">  &#x27;legend&#x27;,</span><br><span class="line">  &#x27;grid&#x27;</span><br><span class="line">])</span><br><span class="line">export default echarts</span><br><span class="line">// 业务组件，引入echarts</span><br><span class="line">import echarts from &#x27;@/assets/lib/echarts&#x27;</span><br><span class="line">// 使用与以前一样</span><br></pre></td></tr></table></figure>
-<p>按需加载 echarts</p>
-<p>解决 vue-cli 首屏加载慢的问题</p>
-<h3 id="2路由懒加载"><a class="markdownIt-Anchor" href="#2路由懒加载">#</a> 2. 路由懒加载</h3>
-<p>这里需要一个插件</p>
-<p>vue-router 官方推荐 syntax-dynamic-import 插件，不过它要求同时安装 @bable/core^7.0.0，如果你安装了 babel-core6，是会有版本冲突的。我的做法如下</p>
-<p>npm install babel-plugin-syntax-dynamic-import --save-dev(^6.18.0)</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// router.js</span><br><span class="line">const login = () =&gt; import(&#x27;@/components/login&#x27;)</span><br><span class="line">const router = new VueRouter(&#123;</span><br><span class="line">  routes: [</span><br><span class="line">    &#123; path: &#x27;/login&#x27;, component: login &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p>还有一种魔法注释用法</p>
-<p>有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack &gt; 2.4)。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const Foo = () =&gt; import(/* webpackChunkName: &quot;group-foo&quot; */ &#x27;./Foo.vue&#x27;)</span><br></pre></td></tr></table></figure>
-<h3 id="3异步组件"><a class="markdownIt-Anchor" href="#3异步组件">#</a> 3. 异步组件</h3>
-<p>如果组件在页面加载时不需要，只在调用时用到，这时可以使用异步组件的写法。仅仅是引入和组件注册写法不同</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// template</span><br><span class="line">&lt;test v-if=&quot;showTest&quot;&gt;&lt;/test&gt;</span><br><span class="line">// script</span><br><span class="line">  components: &#123;</span><br><span class="line">    test: () =&gt; import(&#x27;./test&#x27;) // 将组件异步引入，告诉webpack，将该部分代码分割打包</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">      clickTest () &#123;</span><br><span class="line">          this.showTest = !this.showTest</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<h3 id="4图片的压缩合并"><a class="markdownIt-Anchor" href="#4图片的压缩合并">#</a> 4. 图片的压缩合并</h3>
-<p>如有可能，将图片制作成精灵图</p>
-<h3 id="5cdn加速"><a class="markdownIt-Anchor" href="#5cdn加速">#</a> 5.CDN 加速</h3>
-<p>在 index.html 中引入 cdn 资源</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;div id=&quot;app&quot;&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">  &lt;!-- built files will be auto injected --&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue/2.5.2/vue.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue-router/3.0.1/vue-router.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vuex/3.0.1/vuex.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-<p>修改 build/webpack.base.conf.js</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">module.exports = &#123;</span><br><span class="line">  context: path.resolve(__dirname, &#x27;../&#x27;),</span><br><span class="line">  entry: &#123;</span><br><span class="line">    app: &#x27;./src/main.js&#x27;</span><br><span class="line">  &#125;,</span><br><span class="line">  externals:&#123;</span><br><span class="line">    &#x27;vue&#x27;: &#x27;Vue&#x27;,</span><br><span class="line">    &#x27;vue-router&#x27;: &#x27;VueRouter&#x27;,</span><br><span class="line">    &#x27;vuex&#x27;:&#x27;Vuex&#x27;,</span><br><span class="line">    &#x27;vue-resource&#x27;: &#x27;VueResource&#x27;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>修改 src/main.js src/router/index.js 注释掉 import 引入的 vue,vue-resource</p>
-<p>// import Vue from ‘vue’</p>
-<p>// import VueResource from ‘vue-resource’</p>
-<p>// Vue.use(VueResource)</p>
-<h3 id="6压缩代码"><a class="markdownIt-Anchor" href="#6压缩代码">#</a> 6. 压缩代码</h3>
-<p>vue-cli 已经使用 UglifyJsPlugin 插件来压缩代码，可以设置成如下配置：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">new webpack.optimize.UglifyJsPlugin(&#123;</span><br><span class="line">  compress: &#123;</span><br><span class="line">    warnings: false,</span><br><span class="line">    drop_console: true,</span><br><span class="line">    pure_funcs: [&#x27;console.log&#x27;]</span><br><span class="line">  &#125;,</span><br><span class="line">  sourceMap: false</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p>其中 sourceMap: false 是禁用除错功能。</p>
-<p>如果设为 true，在部署包中会生成.map 结尾的 js 文件。它用于在代码混淆压缩的情况下仍可进行调试。这个功能虽好，但会大大增加整体资源包的体积，所以将其禁用。</p>
-]]></content>
-      <categories>
-        <category>Vue专题</category>
-      </categories>
-      <tags>
-        <tag>vue</tag>
-        <tag>webpack</tag>
       </tags>
   </entry>
   <entry>
@@ -1857,6 +1857,46 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
       </tags>
   </entry>
   <entry>
+    <title>移动端自适应——手淘flexible</title>
+    <url>/2021/04/25/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible/</url>
+    <content><![CDATA[<h2 id="移动端自适应手淘flexible"><a class="markdownIt-Anchor" href="#移动端自适应手淘flexible">#</a> 移动端自适应 —— 手淘 flexible</h2>
+<p>熟悉移动端的自适应方案的朋友对 rem 适应方案，肯定不陌生，最出名的就是阿里的 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2FtZmUvbGliLWZsZXhpYmxl">lib-flexible</span> 方案。</p>
+<p>** 原理：**flexible 就是根据不同的屏幕算出 html 的 font-size，通过 js 来动态写 meta 标签。</p>
+<p>事实上他做了这几样事情：</p>
+<ul>
+<li>动态改写 <code>&lt;meta&gt;</code>  标签</li>
+<li>给 <code>&lt;html&gt;</code>  元素添加 <code>data-dpr</code>  属性，并且动态改写 <code>data-dpr</code>  的值</li>
+<li>给 <code>&lt;html&gt;</code>  元素添加 <code>font-size</code>  属性，并且动态改写 <code>font-size</code>  的值</li>
+</ul>
+<p>比如我们在做移动端的时候，经常拿到的设计稿是 640px 或者 750px。自己项目中就是 640px，以此为例，自己在项目中为了计算方便，所以给 html 根元素设置的字体大小是 100px，也就是在 640px 下面。这里注意，我们给 html 设置 100px，这个是字体哦，所以最好在 body 设置一下字体大小。</p>
+<span id="more"></span>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 设置html元素的字体大小为100px</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 所有的像素我们直接除以</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">640px  ——  6.4rem</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">64px —— 0.64rem</span><br></pre></td></tr></table></figure>
+<p>那么如果 64px，对应我们写 rem 就是 0.64rem，也不需要动用计算器去计算 rem，需要多强的大脑呀（虽然有很多插件帮我们）</p>
+<p>修改 flexible.js。640px 下面的 10 就变成 6.4</p>
+<p>![image-20210425112100315](/Users/gaoyuan/Library/Application Support/typora-user-images/image-20210425112100315.png)</p>
+<p>这样，我们页面直接把 px 换算成 rem，就可以实现自适应。（记住，自己这里以 640px 设计稿为基础，如果是 750px 就是除以 7.5）。</p>
+<p><strong>字号不使用 rem</strong></p>
+<p>我们都知道 chrome 的最小显示的字体是 12px，如果字体用 rem，计算出来小于 12px，那么就也会以 12px 显示，而且我们不希望出现 13px 或者 15px 这样的奇葩尺寸，所以字体最好是用 px 来表示，至于适应，我们可以写媒体查询。</p>
+<h2 id="vue中使用rem"><a class="markdownIt-Anchor" href="#vue中使用rem">#</a> vue 中使用 rem</h2>
+<p>vue 现在正是火的势头上，作者说明年估计 3.0 要出来了。那么在 vue 我们如果做移动端自适应怎么弄呢？</p>
+<p><strong>安装 flexible</strong></p>
+<p><em>在命令行中运行如下安装：</em></p>
+<blockquote>
+<p>npm i lib-flexible --save-dev</p>
+</blockquote>
+<p><strong>引入 flexible</strong></p>
+<p><em>在项目入口文件 main.js 里 引入 lib-flexible</em></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&#x27;lib-flexible&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>对于我们的 index.html，最好是不要 meta 标签，flexible 会自动添加上的，因为有一个判断。当然了，懒惰果然是最大的生产力，有的人觉得换算 rem 太麻烦，就出现了插件<span class="exturl" data-url="aHR0cHM6Ly93d3cubnBtanMuY29tL3BhY2thZ2UvcHgycmVtLWxvYWRlcg=="> px2rem-loader</span>，把 px 自动转化为对应的 rem。但是呢，麻烦的就是如果引入外部的 css 文件，那么也会把 px 转化为 rem。自己在项目中就是手动计算 rem，用上面的方法，直接除以 100，这个应该很简单吧，都是程序员，数学这个还是可以吧…</p>
+]]></content>
+      <categories>
+        <category>移动端</category>
+      </categories>
+      <tags>
+        <tag>移动端</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>用CSS3使你的网页动起来——transform属性</title>
     <url>/2017/08/11/%E7%94%A8CSS3%E4%BD%BF%E4%BD%A0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%8A%A8%E8%B5%B7%E6%9D%A5%E2%80%94%E2%80%94transform%E5%B1%9E%E6%80%A7/</url>
     <content><![CDATA[<p><strong>转换</strong></p>
@@ -2033,46 +2073,6 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
       </categories>
       <tags>
         <tag>CSS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>移动端自适应——手淘flexible</title>
-    <url>/2021/04/25/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible/</url>
-    <content><![CDATA[<h2 id="移动端自适应手淘flexible"><a class="markdownIt-Anchor" href="#移动端自适应手淘flexible">#</a> 移动端自适应 —— 手淘 flexible</h2>
-<p>熟悉移动端的自适应方案的朋友对 rem 适应方案，肯定不陌生，最出名的就是阿里的 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2FtZmUvbGliLWZsZXhpYmxl">lib-flexible</span> 方案。</p>
-<p>** 原理：**flexible 就是根据不同的屏幕算出 html 的 font-size，通过 js 来动态写 meta 标签。</p>
-<p>事实上他做了这几样事情：</p>
-<ul>
-<li>动态改写 <code>&lt;meta&gt;</code>  标签</li>
-<li>给 <code>&lt;html&gt;</code>  元素添加 <code>data-dpr</code>  属性，并且动态改写 <code>data-dpr</code>  的值</li>
-<li>给 <code>&lt;html&gt;</code>  元素添加 <code>font-size</code>  属性，并且动态改写 <code>font-size</code>  的值</li>
-</ul>
-<p>比如我们在做移动端的时候，经常拿到的设计稿是 640px 或者 750px。自己项目中就是 640px，以此为例，自己在项目中为了计算方便，所以给 html 根元素设置的字体大小是 100px，也就是在 640px 下面。这里注意，我们给 html 设置 100px，这个是字体哦，所以最好在 body 设置一下字体大小。</p>
-<span id="more"></span>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 设置html元素的字体大小为100px</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 所有的像素我们直接除以</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">640px  ——  6.4rem</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">64px —— 0.64rem</span><br></pre></td></tr></table></figure>
-<p>那么如果 64px，对应我们写 rem 就是 0.64rem，也不需要动用计算器去计算 rem，需要多强的大脑呀（虽然有很多插件帮我们）</p>
-<p>修改 flexible.js。640px 下面的 10 就变成 6.4</p>
-<p>![image-20210425112100315](/Users/gaoyuan/Library/Application Support/typora-user-images/image-20210425112100315.png)</p>
-<p>这样，我们页面直接把 px 换算成 rem，就可以实现自适应。（记住，自己这里以 640px 设计稿为基础，如果是 750px 就是除以 7.5）。</p>
-<p><strong>字号不使用 rem</strong></p>
-<p>我们都知道 chrome 的最小显示的字体是 12px，如果字体用 rem，计算出来小于 12px，那么就也会以 12px 显示，而且我们不希望出现 13px 或者 15px 这样的奇葩尺寸，所以字体最好是用 px 来表示，至于适应，我们可以写媒体查询。</p>
-<h2 id="vue中使用rem"><a class="markdownIt-Anchor" href="#vue中使用rem">#</a> vue 中使用 rem</h2>
-<p>vue 现在正是火的势头上，作者说明年估计 3.0 要出来了。那么在 vue 我们如果做移动端自适应怎么弄呢？</p>
-<p><strong>安装 flexible</strong></p>
-<p><em>在命令行中运行如下安装：</em></p>
-<blockquote>
-<p>npm i lib-flexible --save-dev</p>
-</blockquote>
-<p><strong>引入 flexible</strong></p>
-<p><em>在项目入口文件 main.js 里 引入 lib-flexible</em></p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&#x27;lib-flexible&#x27;</span></span><br></pre></td></tr></table></figure>
-<p>对于我们的 index.html，最好是不要 meta 标签，flexible 会自动添加上的，因为有一个判断。当然了，懒惰果然是最大的生产力，有的人觉得换算 rem 太麻烦，就出现了插件<span class="exturl" data-url="aHR0cHM6Ly93d3cubnBtanMuY29tL3BhY2thZ2UvcHgycmVtLWxvYWRlcg=="> px2rem-loader</span>，把 px 自动转化为对应的 rem。但是呢，麻烦的就是如果引入外部的 css 文件，那么也会把 px 转化为 rem。自己在项目中就是手动计算 rem，用上面的方法，直接除以 100，这个应该很简单吧，都是程序员，数学这个还是可以吧…</p>
-]]></content>
-      <categories>
-        <category>移动端</category>
-      </categories>
-      <tags>
-        <tag>移动端</tag>
       </tags>
   </entry>
 </search>
