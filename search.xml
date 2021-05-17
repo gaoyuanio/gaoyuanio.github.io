@@ -1,100 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>HTTPS和HTTP原理和区别</title>
-    <url>/2020/12/16/HTTPS%E5%92%8CHTTP%E5%8E%9F%E7%90%86%E5%92%8C%E5%8C%BA%E5%88%AB/</url>
-    <content><![CDATA[<p>一、HTTP 和 HTTPS 的基本概念<br>
- HTTP：超文本传输协议（HTTP，HyperText Transfer Protocol）是互联网上应用最为广泛的一种网络协议。设计 HTTP 最初的目的是为了提供一种发布和接收 HTML 页面的方法。它可以使浏览器更加高效。HTTP 协议是以明文方式发送信息的，如果黑客截取了 Web 浏览器和服务器之间的传输报文，就可以直接获得其中的信息。</p>
-<p>HTTP 原理：</p>
-<p>①  客户端的浏览器首先要通过网络与服务器建立连接，该连接是通过 TCP 来完成的，一般 TCP 连接的端口号是 80。 建立连接后，客户机发送一个请求给服务器，请求方式的格式为：统一资源标识符（URL）、协议版本号，后边是 MIME 信息包括请求修饰符、客户机信息和许可内容。</p>
-<p>②  服务器接到请求后，给予相应的响应信息，其格式为一个状态行，包括信息的协议版本号、一个成功或错误的代码，后边是 MIME 信息包括服务器信息、实体信息和可能的内容。</p>
+    <title>JavaScript专题（一）变量与函数提升</title>
+    <url>/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/</url>
+    <content><![CDATA[<h2 id="一-有趣的现象"><a class="markdownIt-Anchor" href="#一-有趣的现象">#</a> 一、有趣的现象</h2>
+<p>按照大家的常识，JavaScript 代码在执行是一定是自上而下的，你需要输出一个字符串，当然需要提前声明一个 <code>保存string类型的变量</code> 。如果深奥的道理我都能懂，于是我阅读了下面的代码。</p>
+<h3 id="11-我以为的开局"><a class="markdownIt-Anchor" href="#11-我以为的开局">#</a> 1.1 我以为的开局</h3>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// 123</span></span><br></pre></td></tr></table></figure>
+<p>我们调换一下代码的位置在再看：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// undefined</span></span><br><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br></pre></td></tr></table></figure>
 <span id="more"></span>
-<p>HTTPS：是以安全为目标的 HTTP 通道，是 HTTP 的安全版。HTTPS 的安全基础是 SSL。SSL 协议位于 TCP/IP 协议与各种应用层协议之间，为数据通讯提供安全支持。SSL 协议可分为两层：SSL 记录协议（SSL Record Protocol），它建立在可靠的传输协议（如 TCP）之上，为高层协议提供数据封装、压缩、加密等基本功能的支持。SSL 握手协议（SSL Handshake Protocol），它建立在 SSL 记录协议之上，用于在实际的数据传输开始前，通讯双方进行身份认证、协商加密算法、交换加密密钥等。</p>
-<p>​​<img data-src="https://img-blog.csdnimg.cn/20200707084720409.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4Mjg5ODE1,size_16,color_FFFFFF,t_70" alt=""></p>
-<!-- more -->
-<p>HTTPS 设计目标：</p>
-<p>(1) 数据保密性：保证数据内容在传输的过程中不会被第三方查看。就像快递员传递包裹一样，都进行了封装，别人无法获知里面装了什么  。</p>
-<p>(2) 数据完整性：及时发现被第三方篡改的传输内容。就像快递员虽然不知道包裹里装了什么东西，但他有可能中途掉包，数据完整性就是指如果被掉包，我们能轻松发现并拒收 。</p>
-<p>(3) 身份校验安全性：保证数据到达用户期望的目的地。就像我们邮寄包裹时，虽然是一个封装好的未掉包的包裹，但必须确定这个包裹不会送错地方，通过身份校验来确保送对了地方  。</p>
-<p>二、HTTP 与 HTTPS  的区别<br>
- 1、HTTPS  协议需要到 CA （Certificate Authority，证书颁发机构）申请证书，一般免费证书较少，因而需要一定费用。(以前的网易官网是 http，而网易邮箱是 https 。)</p>
-<p>2、HTTP 是超文本传输协议，信息是明文传输，HTTPS 则是具有安全性的 SSL 加密传输协议。</p>
-<p>3、HTTP 和 HTTPS 使用的是完全不同的连接方式，用的端口也不一样，前者是 80，后者是 443。</p>
-<p>4、HTTP 的连接很简单，是无状态的。HTTPS 协议是由 SSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，比 HTTP 协议安全。(无状态的意思是其数据包的发送、传输和接收都是相互独立的。无连接的意思是指通信双方都不长久的维持对方的任何信息。)</p>
-<p>三、HTTPS 相对于 HTTP 的改进<br>
-双向的身份认证</p>
-<p>客户端和服务端在传输数据之前，会通过基于 X.509 证书对双方进行身份认证 。具体过程如下：</p>
-<p>客户端发起 SSL 握手消息给服务端要求连接。</p>
-<p>服务端将证书发送给客户端。</p>
-<p>客户端检查服务端证书，确认是否由自己信任的证书签发机构签发 (客户端内置了所有受信任 CA 的证书)。 如果不是，将是否继续通讯的决定权交给用户选择 ( 注意，这里将是一个安全缺陷 )。如果检查无误或者用户选择继续，则客户端认可服务端的身份。</p>
-<p>服务端要求客户端发送证书，并检查是否通过验证。失败则关闭连接，认证成功则从客户端证书中获得客户端的公钥，一般为 1024 位或者 2048 位。到此，服务器客户端双方的身份认证结束，双方确保身份都是真实可靠的。</p>
-<p>注意：</p>
-<p>(1) 采用 HTTPS 协议的服务器必须要有一套数字证书，可以自己制作，也可以向组织申请。区别就是自己颁发的证书需要客户端验证通过，才可以继续访问。这套证书其实就是一对公钥和私钥。</p>
-<p>(2) 互联网有太多的服务需要使用证书来验证身份，以至于客户端（操作系统或浏览器等）无法内置所有证书，需要通过服务端将证书发送给客户端。</p>
-<p>(3) 客户端内置的是 CA 的根证书 (Root Certificate)，HTTPS 协议中服务器会发送证书链（Certificate Chain）给客户端。</p>
-<p>数据传输的机密性</p>
-<p>客户端和服务端在开始传输数据之前，会协商传输过程需要使用的加密算法。 客户端发送协商请求给服务端，其中包含自己支持的非对成加密的密钥交换算法 (一般是 RSA)，数据签名摘要算法 ( 一般是 SHA 或者 MD5) ，加密传输数据的对称加密算法 ( 一般是 DES)，以及加密密钥的长度。 服务端接收到消息之后，选中安全性最高的算法，并将选中的算法发送给客户端，完成协商。客户端生成随机的字符串，通过协商好的非对称加密算法，使用服务端的公钥对该字符串进行加密，发送给服务端。 服务端接收到之后，使用自己的私钥解密得到该字符串。在随后的数据传输当中，使用这个字符串作为密钥进行对称加密。</p>
-<p>防止重放攻击</p>
-<p>SSL 使用序列号来保护通讯方免受报文重放攻击。这个序列号被加密后作为数据包的负载。在整个 SSL 握手中，都有一个唯一的随机数来标记 SSL 握手。 这样防止了攻击者嗅探整个登录过程，获取到加密的登录数据之后，不对数据进行解密，而直接重传登录数据包的攻击手法。</p>
-<p>可以看到，鉴于电子商务等安全上的需求，HTTPS 对比 HTTP 协议，在安全方面已经取得了极大的增强。总结来说，HTTPS 的改进点在于创造性的使用了非对称加密算法，在不安全的网路上，安全的传输了用来进行非对称加密的密钥，综合利用了非对称加密的安全性和对称加密的快速性。</p>
-<p>四、HTTPS 的优点<br>
- 1、使用 HTTPS 协议可认证用户和服务器，确保数据发送到正确的客户机和服务器。</p>
-<p>2、HTTPS 协议是由 SSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，要比 HTTP 协议安全，可防止数据在传输过程中不被窃取、修改，确保数据的完整性。</p>
-<p>3、HTTPS 是现行架构下最安全的解决方案，虽然不是绝对安全，但它大幅增加了中间人攻击的成本。</p>
-<p>五、HTTPS 的缺点（对比优点）<br>
-1、HTTPS 协议握手阶段比较费时，会使页面的加载时间延长近。</p>
-<p>2、HTTPS 连接缓存不如 HTTP 高效，会增加数据开销，甚至已有的安全措施也会因此而受到影响。</p>
-<p>3、HTTPS 协议的安全是有范围的，在黑客攻击、拒绝服务攻击和服务器劫持等方面几乎起不到什么作用。</p>
-<p>4、SSL 证书通常需要绑定 IP，不能在同一 IP 上绑定多个域名，IPv4 资源不可能支撑这个消耗。</p>
-<p>5、成本增加。部署 HTTPS 后，因为 HTTPS 协议的工作要增加额外的计算资源消耗，例如 SSL 协议加密算法和 SSL 交互次数将占用一定的计算资源和服务器成本。</p>
-<p>6、HTTPS 协议的加密范围也比较有限。最关键的，SSL 证书的信用链体系并不安全，特别是在某些国家可以控制 CA 根证书的情况下，中间人攻击一样可行。</p>
-<p>六、HTTPS 的连接过程</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180709141944471" alt=""></p>
-<p>图片中的过程是按 8 个步骤分的，但是网上有更详细的步骤，所以我把详细的过程和这个图片配在一起。</p>
-<p>① 客户端的浏览器向服务器发送请求，并传送客户端 SSL 协议的版本号，加密算法的种类，产生的随机数，以及其他服务器和客户端之间通讯所需要的各种信息。</p>
-<p>② 服务器向客户端传送 SSL 协议的版本号，加密算法的种类，随机数以及其他相关信息，同时服务器还将向客户端传送自己的证书。</p>
-<p>③ 客户端利用服务器传过来的信息验证服务器的合法性，服务器的合法性包括：证书是否过期，发行服务器证书的 CA 是否可靠，发行者证书的公钥能否正确解开服务器证书的 “发行者的数字签名”，服务器证书上的域名是否和服务器的实际域名相匹配。如果合法性验证没有通过，通讯将断开；如果合法性验证通过，将继续进行第四步。</p>
-<p>④ 用户端随机产生一个用于通讯的 “对称密码”，然后用服务器的公钥（服务器的公钥从步骤②中的服务器的证书中获得）对其加密，然后将加密后的 “预主密码” 传给服务器。</p>
-<p>⑤ 如果服务器要求客户的身份认证（在握手过程中为可选），用户可以建立一个随机数然后对其进行数据签名，将这个含有签名的随机数和客户自己的证书以及加密过的密钥一起传给服务器。</p>
-<p>⑥ 如果服务器要求客户的身份认证，服务器必须检验客户证书和签名随机数的合法性，具体的合法性验证过程包括：客户的证书使用日期是否有效，为客户提供证书的 CA  是否可靠，发行 CA 的公钥能否正确解开客户证书的发行 CA 的数字签名，检查客户的证书是否在证书废止列表（CRL）中。检验如果没有通过，通讯立刻中断；如果验证通过，服务器将用自己的私钥解开加密的私钥，然后执行一系列步骤来产生主通讯密码（客户端也将通过同样的方法产生相同的主通讯密码）。</p>
-<p>⑦ 服务器和客户端用相同的对称加密密钥，对称密钥用于 SSL 协议的安全数据通讯的加解密通讯。同时在 SSL 通讯过程中还要完成数据通讯的完整性，防止数据通讯中的任何变化。</p>
-<p>⑧ 客户端向服务器端发出信息，指明后面的数据通讯将使用的步骤 ⑦ 中的主密码为对称密钥，同时通知服务器客户端的握手过程结束。</p>
-<p>⑨ 服务器向客户端发出信息，指明后面的数据通讯将使用的步骤 ⑦ 中的主密码为对称密钥，同时通知客户端服务器端的握手过程结束。</p>
-<p>⑩ SSL 的握手部分结束，SSL 安全通道的数据通讯开始，客户和服务器开始使用相同的对称密钥进行数据通讯，同时进行通讯完整性的检验。</p>
-<p>上述的过程需要弄懂的核心思想<br>
-客户端解析证书</p>
-<p>这部分工作是由客户端的 TLS 来完成的，首先会验证公钥是否有效，比如颁发机构，过期时间等等，如果发现异常，则会弹出一个警告框，提示证书存在问题。如果证书没有问题，那么就生成一个对称加密密钥，然后用公钥对该密钥进行非对称加密。</p>
-<p>传送加密信息</p>
-<p>这部分传送的是用公钥加密后的对称加密密钥，目的就是让服务端得到这个密钥，以后客户端和服务端的通信就可以通过这个密钥来进行加密解密了。</p>
-<p>服务端解密信息</p>
-<p>服务端用非对称加密算法里的私钥解密后，得到了客户端传过来的对称加密算法的私钥，然后把之后传输的内容通过该值进行对称加密。</p>
-<p>为什么用非对称加密协商对称加密密钥</p>
-<p>对称加密的特点：对称密码体制中只有一种密钥，并且是非公开的。如果要解密就得让对方知道密钥，所以想要保证其安全性就要保证密钥的安全。</p>
-<p>非对称加密的特点：算法强度复杂、安全性依赖于算法与密钥但是由于其算法复杂，而使得加密解密速度没有对称加密解密的速度快。非对称密钥体制有两种密钥，其中一个是公开的，这样就可以不需要像对称密码那样传输对方的密钥了，这样安全性就大了很多。</p>
-<p>非对称加密公钥和私钥的使用方法：(1) 公钥加密私钥解密。(2) 私钥做数字签名，公钥验证。</p>
-<p>补充：<br>
-SSL 提供服务<br>
- (1) 认证用户和服务器，确保数据发送到正确的客户机和服务器；</p>
-<p>(2) 加密数据以防止数据中途被窃取；</p>
-<p>(3) 维护数据的完整性，确保数据在传输过程中不被改变。</p>
-<p>SSL 工作流程<br>
-服务器认证阶段：</p>
-<p>(1) 客户端向服务器发送一个开始信息 “Hello” 以便开始一个新的会话连接；</p>
-<p>(2) 服务器根据客户的信息确定是否需要生成新的主密钥，如需要则服务器在响应客户的 “Hello” 信息时将包含生成主密钥所需的信息；</p>
-<p>(3) 客户根据收到的服务器响应信息，产生一个主密钥，并用服务器的公开密钥加密后传给服务器；</p>
-<p>(4) 服务器回复该主密钥，并返回给客户一个用主密钥认证的信息，以此让客户认证服务器。</p>
-<p>用户认证阶段：在此之前，服务器已经通过了客户认证，这一阶段主要完成对客户的认证。经认证的服务器发送一个提问给客户，客户则返回（数字）签名后的提问和其公开密钥，从而向服务器提供认证。</p>
-<p>SSL 协议提供的安全通道有以下三个特性：</p>
-<p>机密性：SSL 协议使用密钥加密通信数据。</p>
-<p>可靠性：服务器和客户都会被认证，客户的认证是可选的。</p>
-<p>完整性：SSL 协议会对传送的数据进行完整性检查。</p>
-<p>服务器证书 (server certificates) 是 SSL 数字证书的一种形式，意指通过提交数字证书来证明您的身份或表明您有权访问在线服务。再者简单来说，通过使用服务器证书可为不同站点提供身份鉴定并保证该站点拥有高强度加密安全。是组成 Web 服务器的 SSL 安全功能的唯一的数字标识。通过相互信任的第三方组织获得，并为用户提供验证您 Web 站点身份的手段。服务器证书包含详细的身份验证信息，如服务器内容附属的组织、颁发证书的组织以及称为公开密钥的唯一的身份验证文件。</p>
+<p><strong>我好像找到规律了！！！</strong></p>
+<p>当我看完了前两段代码并且进行了 “深度思考” 后，我好像找到规律了，那就是：在当前代码块后函数中，在变量声明和初始化 <code>之前</code> 使用变量，会拿不到正确的值。</p>
+<h3 id="12-实际上是这样的"><a class="markdownIt-Anchor" href="#12-实际上是这样的">#</a> 1.2 实际上是这样的</h3>
+<p>带着上面的 “结论” 我来到了这里</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// 高原</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<p>果然如此！，在<strong>变量声明和初始化之后</strong>耶稣也阻挡不了我拿到 val 的值，我说的！！！</p>
+<p>当我看到下面一段代码时，我已经产生了动摇，此事必要蹊跷。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> val = <span class="string">&#x27;测试&#x27;</span>;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<p>这… 我怂了，是什么原因导致这样的现象发生的呢？Js 又是如果处理的呢？</p>
+<h2 id="二-js的预解析"><a class="markdownIt-Anchor" href="#二-js的预解析">#</a> 二、Js 的预解析</h2>
+<p>在当前的作用域内，无论在哪里变量声明，在幕后，都会进行一次看不见的移动。</p>
+<p>注意：<strong>仅声明被 “移动”</strong>。即声明和赋值在某些时候被动分开了。而这次看不见的移动实际上就是 <code>Js在编译阶段的解析</code> 。</p>
+<p>来看一段《你知不知道的 Js》中经典的例子：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 未添加关键字（未声明），name为全局变量，，即window.name = &#x27;高原&#x27;</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 再次声明name，此时name未进行初始化，它的值是undefined吗？</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
+<p>结果是成功打印 “高原”，这样<strong>看不见的移动</strong>就发生在 Js 预解析（编译）之中。</p>
+<h3 id="21-核心预解析"><a class="markdownIt-Anchor" href="#21-核心预解析">#</a> 2.1 核心：预解析</h3>
+<p>为了搞明白这个核心问题，我们需要回顾一下，引擎会在解释 JavaScript 代码之前首先对其进行编译。编译阶段中的一部分工作就是找到所有的声明，并用合适的作用域将它们关联起来。</p>
+<p>因此，发生这样的事情，包括 <code>变量</code> 和 <code>函数</code> 在内的所有声明都会在任何代码被执行前首先被处理。当你看到 <code>var a = 2</code> ；时，可能会认为这是一个声明。但 JavaScript 实际上会将其看成两个声明：var a；和 a = 2;。</p>
+<ul>
+<li>第一个定义声明是在编译阶段进行的。</li>
+<li>第二个赋值声明会被留在原地等待执行阶段。</li>
+</ul>
+<p>即代码是这样写的：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 我们看到的代码：</span></span><br><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<p>但 Js 会将它解析成：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 声明(Declaration)</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明但未初始化，所以分配 undefined</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化(Initialization)</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化（赋值）</span></span><br></pre></td></tr></table></figure>
+<p>所以本小结的一段代码应该这样分析：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明name提到作用域顶部，并被分配了一个undefined</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 进行初始化操作</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// &#x27;高原&#x27;</span></span><br></pre></td></tr></table></figure>
+<h3 id="22-注意只有声明被提升了"><a class="markdownIt-Anchor" href="#22-注意只有声明被提升了">#</a> 2.2 注意：只有声明被提升了</h3>
+<p><strong>只有声明会被提升，而赋值和其他代码逻辑会在执行到代码的位置时才会生效</strong>。所以会有下面的问题：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>函数被提升了，自然可以正常执行，但变量仅仅是声明被提升了。</p>
+<h3 id="23-每个作用域都会进行提升操作"><a class="markdownIt-Anchor" href="#23-每个作用域都会进行提升操作">#</a> 2.3 每个作用域都会进行提升操作</h3>
+<p>还是上面的代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实际它在编译时是这样的：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name; <span class="comment">// 声明</span></span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化</span></span><br><span class="line">&#125;</span><br><span class="line">foo(); <span class="comment">// 函数执行</span></span><br></pre></td></tr></table></figure>
+<p><img data-src="https://img-blog.csdnimg.cn/20200716134005198.jpg" alt="img"></p>
+<h2 id="三-提升之间的优先级"><a class="markdownIt-Anchor" href="#三-提升之间的优先级">#</a> 三、提升之间的优先级</h2>
+<p>既然我们知道了 <code>变量</code> 和 <code>函数</code> 会被提升，他们之间又是如何判断优先级的呢？</p>
+<h3 id="31-函数会被首先提升然后才是变量"><a class="markdownIt-Anchor" href="#31-函数会被首先提升然后才是变量">#</a> 3.1 函数会被首先提升，然后才是变量</h3>
+<p>我们分析下面的代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo; <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>本着函数优先提升的原则，他会被解析成这样：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">// 高原</span></span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意， <code>var foo</code>  因为是一个重复声明，且优先级 <code>低于函数声明</code> 所以它被忽略掉了。</p>
+<h3 id="32-函数字面量不会进行函数提升"><a class="markdownIt-Anchor" href="#32-函数字面量不会进行函数提升">#</a> 3.2 函数字面量不会进行函数提升</h3>
+<p>最直观的例子，就是在函数字面量前调用该函数：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// TypeError: foo is not a function</span></span><br></pre></td></tr></table></figure>
+<p>这段程序中：</p>
+<ol>
+<li>变量标识符 <code>foo()</code>  被提升并分配给所在作用域（在这里是全局作用域），因此 foo ()<strong> 不会导致 ReferenceError</strong>。</li>
+<li>然后就是执行 foo，foo 此时并没有赋值（注意变量被提升了）。由于对 undefined 值进行函数调用而导致非法操作，因此抛出 TypeError 异常。</li>
+</ol>
+<h2 id="四-es6和小结"><a class="markdownIt-Anchor" href="#四-es6和小结">#</a> 四、ES6 和小结</h2>
+<p>ES6 新增了两个命令 <code>let</code>  和 <code>const</code> ，用来声明变量，有关它们完整的概念我会在《ES6 基础系列》中总结，提起它们，是因为<strong>变量提升在它们身上不会存在</strong>。</p>
+<h3 id="41-变量提升是可以规避的"><a class="markdownIt-Anchor" href="#41-变量提升是可以规避的">#</a> 4.1 变量提升是可以规避的</h3>
+<p>let 命令改变了语法行为，它所声明的变量一定要在声明后使用，否则报错。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// var 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(foo); <span class="comment">// 输出undefined</span></span><br><span class="line"><span class="keyword">var</span> foo = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// let 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(bar); <span class="comment">// 报错ReferenceError</span></span><br><span class="line"><span class="keyword">let</span> bar = <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+<p>上面代码中，变量 foo 用 var 命令声明，会发生变量提升，即脚本开始运行时，变量 foo 已经存在了，但是没有值，所以会输出 undefined。变量 bar 用 let 命令声明，不会发生变量提升。这表示在声明它之前，变量 bar 是不存在的，这时如果用到它，就会抛出一个错误。</p>
+<p>在变量提升上，const 和 let 一样，只在声明所在的块级作用域内有效，也不会变量提升</p>
+<h3 id="42-小结"><a class="markdownIt-Anchor" href="#42-小结">#</a> 4.2 小结</h3>
+<ol>
+<li>变量提升：函数声明和变量声明总是会被解释器悄悄地被 &quot;提升&quot; 到方法体的最顶部，但变量的初始化不会提升；</li>
+<li>函数提升：函数声明可以被看作是函数的整体被提升到了代码的顶部，但函数字面量表达式并不会引发函数提升；</li>
+<li>函数提升优先与变量提升；</li>
+<li>let 和 const 可以有效的规避变量提升</li>
+</ol>
+<p>最后提炼一下《你不知道的 JS》中的一段话：<strong>JavaScript 引擎并不总是按照代码的顺序来进行解析。在编译阶段，无论作用域中的声明出现在什么地方，都将在代码本身被执行前首先进行处理，这个过程被称为提升。声明本身会被提升，而包括函数表达式的赋值在内的赋值操作并不会提升。</strong></p>
 ]]></content>
       <categories>
-        <category>HTTP</category>
+        <category>JavaScript专题</category>
       </categories>
       <tags>
-        <tag>HTTP</tag>
+        <tag>javascript</tag>
       </tags>
   </entry>
   <entry>
@@ -201,90 +191,100 @@ SSL 提供服务<br>
       </tags>
   </entry>
   <entry>
-    <title>JavaScript专题（一）变量与函数提升</title>
-    <url>/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/</url>
-    <content><![CDATA[<h2 id="一-有趣的现象"><a class="markdownIt-Anchor" href="#一-有趣的现象">#</a> 一、有趣的现象</h2>
-<p>按照大家的常识，JavaScript 代码在执行是一定是自上而下的，你需要输出一个字符串，当然需要提前声明一个 <code>保存string类型的变量</code> 。如果深奥的道理我都能懂，于是我阅读了下面的代码。</p>
-<h3 id="11-我以为的开局"><a class="markdownIt-Anchor" href="#11-我以为的开局">#</a> 1.1 我以为的开局</h3>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// 123</span></span><br></pre></td></tr></table></figure>
-<p>我们调换一下代码的位置在再看：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// undefined</span></span><br><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br></pre></td></tr></table></figure>
+    <title>HTTPS和HTTP原理和区别</title>
+    <url>/2020/12/16/HTTPS%E5%92%8CHTTP%E5%8E%9F%E7%90%86%E5%92%8C%E5%8C%BA%E5%88%AB/</url>
+    <content><![CDATA[<p>一、HTTP 和 HTTPS 的基本概念<br>
+ HTTP：超文本传输协议（HTTP，HyperText Transfer Protocol）是互联网上应用最为广泛的一种网络协议。设计 HTTP 最初的目的是为了提供一种发布和接收 HTML 页面的方法。它可以使浏览器更加高效。HTTP 协议是以明文方式发送信息的，如果黑客截取了 Web 浏览器和服务器之间的传输报文，就可以直接获得其中的信息。</p>
+<p>HTTP 原理：</p>
+<p>①  客户端的浏览器首先要通过网络与服务器建立连接，该连接是通过 TCP 来完成的，一般 TCP 连接的端口号是 80。 建立连接后，客户机发送一个请求给服务器，请求方式的格式为：统一资源标识符（URL）、协议版本号，后边是 MIME 信息包括请求修饰符、客户机信息和许可内容。</p>
+<p>②  服务器接到请求后，给予相应的响应信息，其格式为一个状态行，包括信息的协议版本号、一个成功或错误的代码，后边是 MIME 信息包括服务器信息、实体信息和可能的内容。</p>
 <span id="more"></span>
-<p><strong>我好像找到规律了！！！</strong></p>
-<p>当我看完了前两段代码并且进行了 “深度思考” 后，我好像找到规律了，那就是：在当前代码块后函数中，在变量声明和初始化 <code>之前</code> 使用变量，会拿不到正确的值。</p>
-<h3 id="12-实际上是这样的"><a class="markdownIt-Anchor" href="#12-实际上是这样的">#</a> 1.2 实际上是这样的</h3>
-<p>带着上面的 “结论” 我来到了这里</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// 高原</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
-<p>果然如此！，在<strong>变量声明和初始化之后</strong>耶稣也阻挡不了我拿到 val 的值，我说的！！！</p>
-<p>当我看到下面一段代码时，我已经产生了动摇，此事必要蹊跷。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> val = <span class="string">&#x27;测试&#x27;</span>;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
-<p>这… 我怂了，是什么原因导致这样的现象发生的呢？Js 又是如果处理的呢？</p>
-<h2 id="二-js的预解析"><a class="markdownIt-Anchor" href="#二-js的预解析">#</a> 二、Js 的预解析</h2>
-<p>在当前的作用域内，无论在哪里变量声明，在幕后，都会进行一次看不见的移动。</p>
-<p>注意：<strong>仅声明被 “移动”</strong>。即声明和赋值在某些时候被动分开了。而这次看不见的移动实际上就是 <code>Js在编译阶段的解析</code> 。</p>
-<p>来看一段《你知不知道的 Js》中经典的例子：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 未添加关键字（未声明），name为全局变量，，即window.name = &#x27;高原&#x27;</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 再次声明name，此时name未进行初始化，它的值是undefined吗？</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
-<p>结果是成功打印 “高原”，这样<strong>看不见的移动</strong>就发生在 Js 预解析（编译）之中。</p>
-<h3 id="21-核心预解析"><a class="markdownIt-Anchor" href="#21-核心预解析">#</a> 2.1 核心：预解析</h3>
-<p>为了搞明白这个核心问题，我们需要回顾一下，引擎会在解释 JavaScript 代码之前首先对其进行编译。编译阶段中的一部分工作就是找到所有的声明，并用合适的作用域将它们关联起来。</p>
-<p>因此，发生这样的事情，包括 <code>变量</code> 和 <code>函数</code> 在内的所有声明都会在任何代码被执行前首先被处理。当你看到 <code>var a = 2</code> ；时，可能会认为这是一个声明。但 JavaScript 实际上会将其看成两个声明：var a；和 a = 2;。</p>
-<ul>
-<li>第一个定义声明是在编译阶段进行的。</li>
-<li>第二个赋值声明会被留在原地等待执行阶段。</li>
-</ul>
-<p>即代码是这样写的：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 我们看到的代码：</span></span><br><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br></pre></td></tr></table></figure>
-<p>但 Js 会将它解析成：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 声明(Declaration)</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明但未初始化，所以分配 undefined</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化(Initialization)</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化（赋值）</span></span><br></pre></td></tr></table></figure>
-<p>所以本小结的一段代码应该这样分析：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明name提到作用域顶部，并被分配了一个undefined</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 进行初始化操作</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// &#x27;高原&#x27;</span></span><br></pre></td></tr></table></figure>
-<h3 id="22-注意只有声明被提升了"><a class="markdownIt-Anchor" href="#22-注意只有声明被提升了">#</a> 2.2 注意：只有声明被提升了</h3>
-<p><strong>只有声明会被提升，而赋值和其他代码逻辑会在执行到代码的位置时才会生效</strong>。所以会有下面的问题：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>函数被提升了，自然可以正常执行，但变量仅仅是声明被提升了。</p>
-<h3 id="23-每个作用域都会进行提升操作"><a class="markdownIt-Anchor" href="#23-每个作用域都会进行提升操作">#</a> 2.3 每个作用域都会进行提升操作</h3>
-<p>还是上面的代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>实际它在编译时是这样的：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name; <span class="comment">// 声明</span></span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化</span></span><br><span class="line">&#125;</span><br><span class="line">foo(); <span class="comment">// 函数执行</span></span><br></pre></td></tr></table></figure>
-<p><img data-src="https://img-blog.csdnimg.cn/20200716134005198.jpg" alt="img"></p>
-<h2 id="三-提升之间的优先级"><a class="markdownIt-Anchor" href="#三-提升之间的优先级">#</a> 三、提升之间的优先级</h2>
-<p>既然我们知道了 <code>变量</code> 和 <code>函数</code> 会被提升，他们之间又是如何判断优先级的呢？</p>
-<h3 id="31-函数会被首先提升然后才是变量"><a class="markdownIt-Anchor" href="#31-函数会被首先提升然后才是变量">#</a> 3.1 函数会被首先提升，然后才是变量</h3>
-<p>我们分析下面的代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo; <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>本着函数优先提升的原则，他会被解析成这样：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">// 高原</span></span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>注意， <code>var foo</code>  因为是一个重复声明，且优先级 <code>低于函数声明</code> 所以它被忽略掉了。</p>
-<h3 id="32-函数字面量不会进行函数提升"><a class="markdownIt-Anchor" href="#32-函数字面量不会进行函数提升">#</a> 3.2 函数字面量不会进行函数提升</h3>
-<p>最直观的例子，就是在函数字面量前调用该函数：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// TypeError: foo is not a function</span></span><br></pre></td></tr></table></figure>
-<p>这段程序中：</p>
-<ol>
-<li>变量标识符 <code>foo()</code>  被提升并分配给所在作用域（在这里是全局作用域），因此 foo ()<strong> 不会导致 ReferenceError</strong>。</li>
-<li>然后就是执行 foo，foo 此时并没有赋值（注意变量被提升了）。由于对 undefined 值进行函数调用而导致非法操作，因此抛出 TypeError 异常。</li>
-</ol>
-<h2 id="四-es6和小结"><a class="markdownIt-Anchor" href="#四-es6和小结">#</a> 四、ES6 和小结</h2>
-<p>ES6 新增了两个命令 <code>let</code>  和 <code>const</code> ，用来声明变量，有关它们完整的概念我会在《ES6 基础系列》中总结，提起它们，是因为<strong>变量提升在它们身上不会存在</strong>。</p>
-<h3 id="41-变量提升是可以规避的"><a class="markdownIt-Anchor" href="#41-变量提升是可以规避的">#</a> 4.1 变量提升是可以规避的</h3>
-<p>let 命令改变了语法行为，它所声明的变量一定要在声明后使用，否则报错。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// var 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(foo); <span class="comment">// 输出undefined</span></span><br><span class="line"><span class="keyword">var</span> foo = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// let 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(bar); <span class="comment">// 报错ReferenceError</span></span><br><span class="line"><span class="keyword">let</span> bar = <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
-<p>上面代码中，变量 foo 用 var 命令声明，会发生变量提升，即脚本开始运行时，变量 foo 已经存在了，但是没有值，所以会输出 undefined。变量 bar 用 let 命令声明，不会发生变量提升。这表示在声明它之前，变量 bar 是不存在的，这时如果用到它，就会抛出一个错误。</p>
-<p>在变量提升上，const 和 let 一样，只在声明所在的块级作用域内有效，也不会变量提升</p>
-<h3 id="42-小结"><a class="markdownIt-Anchor" href="#42-小结">#</a> 4.2 小结</h3>
-<ol>
-<li>变量提升：函数声明和变量声明总是会被解释器悄悄地被 &quot;提升&quot; 到方法体的最顶部，但变量的初始化不会提升；</li>
-<li>函数提升：函数声明可以被看作是函数的整体被提升到了代码的顶部，但函数字面量表达式并不会引发函数提升；</li>
-<li>函数提升优先与变量提升；</li>
-<li>let 和 const 可以有效的规避变量提升</li>
-</ol>
-<p>最后提炼一下《你不知道的 JS》中的一段话：<strong>JavaScript 引擎并不总是按照代码的顺序来进行解析。在编译阶段，无论作用域中的声明出现在什么地方，都将在代码本身被执行前首先进行处理，这个过程被称为提升。声明本身会被提升，而包括函数表达式的赋值在内的赋值操作并不会提升。</strong></p>
+<p>HTTPS：是以安全为目标的 HTTP 通道，是 HTTP 的安全版。HTTPS 的安全基础是 SSL。SSL 协议位于 TCP/IP 协议与各种应用层协议之间，为数据通讯提供安全支持。SSL 协议可分为两层：SSL 记录协议（SSL Record Protocol），它建立在可靠的传输协议（如 TCP）之上，为高层协议提供数据封装、压缩、加密等基本功能的支持。SSL 握手协议（SSL Handshake Protocol），它建立在 SSL 记录协议之上，用于在实际的数据传输开始前，通讯双方进行身份认证、协商加密算法、交换加密密钥等。</p>
+<p>​​<img data-src="https://img-blog.csdnimg.cn/20200707084720409.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4Mjg5ODE1,size_16,color_FFFFFF,t_70" alt=""></p>
+<!-- more -->
+<p>HTTPS 设计目标：</p>
+<p>(1) 数据保密性：保证数据内容在传输的过程中不会被第三方查看。就像快递员传递包裹一样，都进行了封装，别人无法获知里面装了什么  。</p>
+<p>(2) 数据完整性：及时发现被第三方篡改的传输内容。就像快递员虽然不知道包裹里装了什么东西，但他有可能中途掉包，数据完整性就是指如果被掉包，我们能轻松发现并拒收 。</p>
+<p>(3) 身份校验安全性：保证数据到达用户期望的目的地。就像我们邮寄包裹时，虽然是一个封装好的未掉包的包裹，但必须确定这个包裹不会送错地方，通过身份校验来确保送对了地方  。</p>
+<p>二、HTTP 与 HTTPS  的区别<br>
+ 1、HTTPS  协议需要到 CA （Certificate Authority，证书颁发机构）申请证书，一般免费证书较少，因而需要一定费用。(以前的网易官网是 http，而网易邮箱是 https 。)</p>
+<p>2、HTTP 是超文本传输协议，信息是明文传输，HTTPS 则是具有安全性的 SSL 加密传输协议。</p>
+<p>3、HTTP 和 HTTPS 使用的是完全不同的连接方式，用的端口也不一样，前者是 80，后者是 443。</p>
+<p>4、HTTP 的连接很简单，是无状态的。HTTPS 协议是由 SSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，比 HTTP 协议安全。(无状态的意思是其数据包的发送、传输和接收都是相互独立的。无连接的意思是指通信双方都不长久的维持对方的任何信息。)</p>
+<p>三、HTTPS 相对于 HTTP 的改进<br>
+双向的身份认证</p>
+<p>客户端和服务端在传输数据之前，会通过基于 X.509 证书对双方进行身份认证 。具体过程如下：</p>
+<p>客户端发起 SSL 握手消息给服务端要求连接。</p>
+<p>服务端将证书发送给客户端。</p>
+<p>客户端检查服务端证书，确认是否由自己信任的证书签发机构签发 (客户端内置了所有受信任 CA 的证书)。 如果不是，将是否继续通讯的决定权交给用户选择 ( 注意，这里将是一个安全缺陷 )。如果检查无误或者用户选择继续，则客户端认可服务端的身份。</p>
+<p>服务端要求客户端发送证书，并检查是否通过验证。失败则关闭连接，认证成功则从客户端证书中获得客户端的公钥，一般为 1024 位或者 2048 位。到此，服务器客户端双方的身份认证结束，双方确保身份都是真实可靠的。</p>
+<p>注意：</p>
+<p>(1) 采用 HTTPS 协议的服务器必须要有一套数字证书，可以自己制作，也可以向组织申请。区别就是自己颁发的证书需要客户端验证通过，才可以继续访问。这套证书其实就是一对公钥和私钥。</p>
+<p>(2) 互联网有太多的服务需要使用证书来验证身份，以至于客户端（操作系统或浏览器等）无法内置所有证书，需要通过服务端将证书发送给客户端。</p>
+<p>(3) 客户端内置的是 CA 的根证书 (Root Certificate)，HTTPS 协议中服务器会发送证书链（Certificate Chain）给客户端。</p>
+<p>数据传输的机密性</p>
+<p>客户端和服务端在开始传输数据之前，会协商传输过程需要使用的加密算法。 客户端发送协商请求给服务端，其中包含自己支持的非对成加密的密钥交换算法 (一般是 RSA)，数据签名摘要算法 ( 一般是 SHA 或者 MD5) ，加密传输数据的对称加密算法 ( 一般是 DES)，以及加密密钥的长度。 服务端接收到消息之后，选中安全性最高的算法，并将选中的算法发送给客户端，完成协商。客户端生成随机的字符串，通过协商好的非对称加密算法，使用服务端的公钥对该字符串进行加密，发送给服务端。 服务端接收到之后，使用自己的私钥解密得到该字符串。在随后的数据传输当中，使用这个字符串作为密钥进行对称加密。</p>
+<p>防止重放攻击</p>
+<p>SSL 使用序列号来保护通讯方免受报文重放攻击。这个序列号被加密后作为数据包的负载。在整个 SSL 握手中，都有一个唯一的随机数来标记 SSL 握手。 这样防止了攻击者嗅探整个登录过程，获取到加密的登录数据之后，不对数据进行解密，而直接重传登录数据包的攻击手法。</p>
+<p>可以看到，鉴于电子商务等安全上的需求，HTTPS 对比 HTTP 协议，在安全方面已经取得了极大的增强。总结来说，HTTPS 的改进点在于创造性的使用了非对称加密算法，在不安全的网路上，安全的传输了用来进行非对称加密的密钥，综合利用了非对称加密的安全性和对称加密的快速性。</p>
+<p>四、HTTPS 的优点<br>
+ 1、使用 HTTPS 协议可认证用户和服务器，确保数据发送到正确的客户机和服务器。</p>
+<p>2、HTTPS 协议是由 SSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，要比 HTTP 协议安全，可防止数据在传输过程中不被窃取、修改，确保数据的完整性。</p>
+<p>3、HTTPS 是现行架构下最安全的解决方案，虽然不是绝对安全，但它大幅增加了中间人攻击的成本。</p>
+<p>五、HTTPS 的缺点（对比优点）<br>
+1、HTTPS 协议握手阶段比较费时，会使页面的加载时间延长近。</p>
+<p>2、HTTPS 连接缓存不如 HTTP 高效，会增加数据开销，甚至已有的安全措施也会因此而受到影响。</p>
+<p>3、HTTPS 协议的安全是有范围的，在黑客攻击、拒绝服务攻击和服务器劫持等方面几乎起不到什么作用。</p>
+<p>4、SSL 证书通常需要绑定 IP，不能在同一 IP 上绑定多个域名，IPv4 资源不可能支撑这个消耗。</p>
+<p>5、成本增加。部署 HTTPS 后，因为 HTTPS 协议的工作要增加额外的计算资源消耗，例如 SSL 协议加密算法和 SSL 交互次数将占用一定的计算资源和服务器成本。</p>
+<p>6、HTTPS 协议的加密范围也比较有限。最关键的，SSL 证书的信用链体系并不安全，特别是在某些国家可以控制 CA 根证书的情况下，中间人攻击一样可行。</p>
+<p>六、HTTPS 的连接过程</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20180709141944471" alt=""></p>
+<p>图片中的过程是按 8 个步骤分的，但是网上有更详细的步骤，所以我把详细的过程和这个图片配在一起。</p>
+<p>① 客户端的浏览器向服务器发送请求，并传送客户端 SSL 协议的版本号，加密算法的种类，产生的随机数，以及其他服务器和客户端之间通讯所需要的各种信息。</p>
+<p>② 服务器向客户端传送 SSL 协议的版本号，加密算法的种类，随机数以及其他相关信息，同时服务器还将向客户端传送自己的证书。</p>
+<p>③ 客户端利用服务器传过来的信息验证服务器的合法性，服务器的合法性包括：证书是否过期，发行服务器证书的 CA 是否可靠，发行者证书的公钥能否正确解开服务器证书的 “发行者的数字签名”，服务器证书上的域名是否和服务器的实际域名相匹配。如果合法性验证没有通过，通讯将断开；如果合法性验证通过，将继续进行第四步。</p>
+<p>④ 用户端随机产生一个用于通讯的 “对称密码”，然后用服务器的公钥（服务器的公钥从步骤②中的服务器的证书中获得）对其加密，然后将加密后的 “预主密码” 传给服务器。</p>
+<p>⑤ 如果服务器要求客户的身份认证（在握手过程中为可选），用户可以建立一个随机数然后对其进行数据签名，将这个含有签名的随机数和客户自己的证书以及加密过的密钥一起传给服务器。</p>
+<p>⑥ 如果服务器要求客户的身份认证，服务器必须检验客户证书和签名随机数的合法性，具体的合法性验证过程包括：客户的证书使用日期是否有效，为客户提供证书的 CA  是否可靠，发行 CA 的公钥能否正确解开客户证书的发行 CA 的数字签名，检查客户的证书是否在证书废止列表（CRL）中。检验如果没有通过，通讯立刻中断；如果验证通过，服务器将用自己的私钥解开加密的私钥，然后执行一系列步骤来产生主通讯密码（客户端也将通过同样的方法产生相同的主通讯密码）。</p>
+<p>⑦ 服务器和客户端用相同的对称加密密钥，对称密钥用于 SSL 协议的安全数据通讯的加解密通讯。同时在 SSL 通讯过程中还要完成数据通讯的完整性，防止数据通讯中的任何变化。</p>
+<p>⑧ 客户端向服务器端发出信息，指明后面的数据通讯将使用的步骤 ⑦ 中的主密码为对称密钥，同时通知服务器客户端的握手过程结束。</p>
+<p>⑨ 服务器向客户端发出信息，指明后面的数据通讯将使用的步骤 ⑦ 中的主密码为对称密钥，同时通知客户端服务器端的握手过程结束。</p>
+<p>⑩ SSL 的握手部分结束，SSL 安全通道的数据通讯开始，客户和服务器开始使用相同的对称密钥进行数据通讯，同时进行通讯完整性的检验。</p>
+<p>上述的过程需要弄懂的核心思想<br>
+客户端解析证书</p>
+<p>这部分工作是由客户端的 TLS 来完成的，首先会验证公钥是否有效，比如颁发机构，过期时间等等，如果发现异常，则会弹出一个警告框，提示证书存在问题。如果证书没有问题，那么就生成一个对称加密密钥，然后用公钥对该密钥进行非对称加密。</p>
+<p>传送加密信息</p>
+<p>这部分传送的是用公钥加密后的对称加密密钥，目的就是让服务端得到这个密钥，以后客户端和服务端的通信就可以通过这个密钥来进行加密解密了。</p>
+<p>服务端解密信息</p>
+<p>服务端用非对称加密算法里的私钥解密后，得到了客户端传过来的对称加密算法的私钥，然后把之后传输的内容通过该值进行对称加密。</p>
+<p>为什么用非对称加密协商对称加密密钥</p>
+<p>对称加密的特点：对称密码体制中只有一种密钥，并且是非公开的。如果要解密就得让对方知道密钥，所以想要保证其安全性就要保证密钥的安全。</p>
+<p>非对称加密的特点：算法强度复杂、安全性依赖于算法与密钥但是由于其算法复杂，而使得加密解密速度没有对称加密解密的速度快。非对称密钥体制有两种密钥，其中一个是公开的，这样就可以不需要像对称密码那样传输对方的密钥了，这样安全性就大了很多。</p>
+<p>非对称加密公钥和私钥的使用方法：(1) 公钥加密私钥解密。(2) 私钥做数字签名，公钥验证。</p>
+<p>补充：<br>
+SSL 提供服务<br>
+ (1) 认证用户和服务器，确保数据发送到正确的客户机和服务器；</p>
+<p>(2) 加密数据以防止数据中途被窃取；</p>
+<p>(3) 维护数据的完整性，确保数据在传输过程中不被改变。</p>
+<p>SSL 工作流程<br>
+服务器认证阶段：</p>
+<p>(1) 客户端向服务器发送一个开始信息 “Hello” 以便开始一个新的会话连接；</p>
+<p>(2) 服务器根据客户的信息确定是否需要生成新的主密钥，如需要则服务器在响应客户的 “Hello” 信息时将包含生成主密钥所需的信息；</p>
+<p>(3) 客户根据收到的服务器响应信息，产生一个主密钥，并用服务器的公开密钥加密后传给服务器；</p>
+<p>(4) 服务器回复该主密钥，并返回给客户一个用主密钥认证的信息，以此让客户认证服务器。</p>
+<p>用户认证阶段：在此之前，服务器已经通过了客户认证，这一阶段主要完成对客户的认证。经认证的服务器发送一个提问给客户，客户则返回（数字）签名后的提问和其公开密钥，从而向服务器提供认证。</p>
+<p>SSL 协议提供的安全通道有以下三个特性：</p>
+<p>机密性：SSL 协议使用密钥加密通信数据。</p>
+<p>可靠性：服务器和客户都会被认证，客户的认证是可选的。</p>
+<p>完整性：SSL 协议会对传送的数据进行完整性检查。</p>
+<p>服务器证书 (server certificates) 是 SSL 数字证书的一种形式，意指通过提交数字证书来证明您的身份或表明您有权访问在线服务。再者简单来说，通过使用服务器证书可为不同站点提供身份鉴定并保证该站点拥有高强度加密安全。是组成 Web 服务器的 SSL 安全功能的唯一的数字标识。通过相互信任的第三方组织获得，并为用户提供验证您 Web 站点身份的手段。服务器证书包含详细的身份验证信息，如服务器内容附属的组织、颁发证书的组织以及称为公开密钥的唯一的身份验证文件。</p>
 ]]></content>
       <categories>
-        <category>JavaScript专题</category>
+        <category>HTTP</category>
       </categories>
       <tags>
-        <tag>javascript</tag>
+        <tag>HTTP</tag>
       </tags>
   </entry>
   <entry>
@@ -1231,6 +1231,73 @@ user_name  CHAR (8)：定长字符串，可能产生空间浪费，但读取速�
       </tags>
   </entry>
   <entry>
+    <title>vue项目打包优化策略</title>
+    <url>/2020/11/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</url>
+    <content><![CDATA[<p>使用 vue-cli 部署生产包时，发现资源包很大，打包后的 <code>vendor.js</code>  达到了 1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？</p>
+<h3 id="1组件按需加载"><a class="markdownIt-Anchor" href="#1组件按需加载">#</a> 1. 组件按需加载</h3>
+<p>这是首先可以优化的点。如果频繁使用了第三方组件 / UI 库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts 等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。</p>
+<p>示例如下：</p>
+<h4 id="11-element-ui"><a class="markdownIt-Anchor" href="#11-element-ui">#</a> 1.1 element-ui</h4>
+<p>首先，安装 babel-plugin-component：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<p>然后，将.babelrc 修改为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// main.js</span><br><span class="line">import Vue from &#x27;vue&#x27;</span><br><span class="line">import &#123; Dialog, Loading &#125; from &#x27;element-ui&#x27;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading = Loading.service</span><br><span class="line">// 然后正常使用组件</span><br></pre></td></tr></table></figure>
+<h4 id="12-mint-ui"><a class="markdownIt-Anchor" href="#12-mint-ui">#</a> 1.2 mint-ui</h4>
+<p>由于 mint-ui 是 element-ui 的移动端组件，所以它的使用和引入几乎和 element-ui 一样。</p>
+<p>首先，安装 babel-plugin-component：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
+<p>然后，将.babelrc 修改为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;presets&quot;: [</span><br><span class="line">    [&quot;es2015&quot;, &#123; &quot;modules&quot;: false &#125;]</span><br><span class="line">  ],</span><br><span class="line">  &quot;plugins&quot;: [[&quot;component&quot;, [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;libraryName&quot;: &quot;mint-ui&quot;,</span><br><span class="line">      &quot;style&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">  ]]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后引入部分组件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// main.js</span><br><span class="line">import Vue from &#x27;vue&#x27;</span><br><span class="line">import &#123; Toast, MessageBox &#125; from &#x27;element-ui&#x27;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading = Loading.service</span><br><span class="line">// 然后正常使用组件</span><br></pre></td></tr></table></figure>
+<p>注意，element-ui 和 mint-ui 不能同时在.babelrc 中进行插件设置，这种情况下，依然可以按需引入，但是不要在 <code>.babelrc</code>  中配置，在引入的地方同时引入 css 即可。</p>
+<h4 id="13-echarts"><a class="markdownIt-Anchor" href="#13-echarts">#</a> 1.3 echarts</h4>
+<p>首先安装 babel-plugin-equire</p>
+<p>npm i babel-plugin-equire -D</p>
+<p>然后，在 <code>.babelrc</code>  文件中添加该插件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;plugins&quot;: [</span><br><span class="line">       // other plugins</span><br><span class="line">       ...</span><br><span class="line">       </span><br><span class="line">    &quot;equire&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>创建一个 js 文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// echarts.js</span><br><span class="line">// eslint-disable-next-line</span><br><span class="line">const echarts = equire([</span><br><span class="line">  &#x27;tooltip&#x27;,</span><br><span class="line">  &#x27;candlestick&#x27;,</span><br><span class="line">  &#x27;bar&#x27;,</span><br><span class="line">  &#x27;line&#x27;,</span><br><span class="line">  &#x27;axisPointer&#x27;,</span><br><span class="line">  &#x27;legend&#x27;,</span><br><span class="line">  &#x27;grid&#x27;</span><br><span class="line">])</span><br><span class="line">export default echarts</span><br><span class="line">// 业务组件，引入echarts</span><br><span class="line">import echarts from &#x27;@/assets/lib/echarts&#x27;</span><br><span class="line">// 使用与以前一样</span><br></pre></td></tr></table></figure>
+<p>按需加载 echarts</p>
+<p>解决 vue-cli 首屏加载慢的问题</p>
+<h3 id="2路由懒加载"><a class="markdownIt-Anchor" href="#2路由懒加载">#</a> 2. 路由懒加载</h3>
+<p>这里需要一个插件</p>
+<p>vue-router 官方推荐 syntax-dynamic-import 插件，不过它要求同时安装 @bable/core^7.0.0，如果你安装了 babel-core6，是会有版本冲突的。我的做法如下</p>
+<p>npm install babel-plugin-syntax-dynamic-import --save-dev(^6.18.0)</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// router.js</span><br><span class="line">const login = () =&gt; import(&#x27;@/components/login&#x27;)</span><br><span class="line">const router = new VueRouter(&#123;</span><br><span class="line">  routes: [</span><br><span class="line">    &#123; path: &#x27;/login&#x27;, component: login &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>还有一种魔法注释用法</p>
+<p>有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack &gt; 2.4)。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const Foo = () =&gt; import(/* webpackChunkName: &quot;group-foo&quot; */ &#x27;./Foo.vue&#x27;)</span><br></pre></td></tr></table></figure>
+<h3 id="3异步组件"><a class="markdownIt-Anchor" href="#3异步组件">#</a> 3. 异步组件</h3>
+<p>如果组件在页面加载时不需要，只在调用时用到，这时可以使用异步组件的写法。仅仅是引入和组件注册写法不同</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// template</span><br><span class="line">&lt;test v-if=&quot;showTest&quot;&gt;&lt;/test&gt;</span><br><span class="line">// script</span><br><span class="line">  components: &#123;</span><br><span class="line">    test: () =&gt; import(&#x27;./test&#x27;) // 将组件异步引入，告诉webpack，将该部分代码分割打包</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">      clickTest () &#123;</span><br><span class="line">          this.showTest = !this.showTest</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4图片的压缩合并"><a class="markdownIt-Anchor" href="#4图片的压缩合并">#</a> 4. 图片的压缩合并</h3>
+<p>如有可能，将图片制作成精灵图</p>
+<h3 id="5cdn加速"><a class="markdownIt-Anchor" href="#5cdn加速">#</a> 5.CDN 加速</h3>
+<p>在 index.html 中引入 cdn 资源</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;div id=&quot;app&quot;&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">  &lt;!-- built files will be auto injected --&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue/2.5.2/vue.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue-router/3.0.1/vue-router.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vuex/3.0.1/vuex.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>修改 build/webpack.base.conf.js</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">module.exports = &#123;</span><br><span class="line">  context: path.resolve(__dirname, &#x27;../&#x27;),</span><br><span class="line">  entry: &#123;</span><br><span class="line">    app: &#x27;./src/main.js&#x27;</span><br><span class="line">  &#125;,</span><br><span class="line">  externals:&#123;</span><br><span class="line">    &#x27;vue&#x27;: &#x27;Vue&#x27;,</span><br><span class="line">    &#x27;vue-router&#x27;: &#x27;VueRouter&#x27;,</span><br><span class="line">    &#x27;vuex&#x27;:&#x27;Vuex&#x27;,</span><br><span class="line">    &#x27;vue-resource&#x27;: &#x27;VueResource&#x27;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>修改 src/main.js src/router/index.js 注释掉 import 引入的 vue,vue-resource</p>
+<p>// import Vue from ‘vue’</p>
+<p>// import VueResource from ‘vue-resource’</p>
+<p>// Vue.use(VueResource)</p>
+<h3 id="6压缩代码"><a class="markdownIt-Anchor" href="#6压缩代码">#</a> 6. 压缩代码</h3>
+<p>vue-cli 已经使用 UglifyJsPlugin 插件来压缩代码，可以设置成如下配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">new webpack.optimize.UglifyJsPlugin(&#123;</span><br><span class="line">  compress: &#123;</span><br><span class="line">    warnings: false,</span><br><span class="line">    drop_console: true,</span><br><span class="line">    pure_funcs: [&#x27;console.log&#x27;]</span><br><span class="line">  &#125;,</span><br><span class="line">  sourceMap: false</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>其中 sourceMap: false 是禁用除错功能。</p>
+<p>如果设为 true，在部署包中会生成.map 结尾的 js 文件。它用于在代码混淆压缩的情况下仍可进行调试。这个功能虽好，但会大大增加整体资源包的体积，所以将其禁用。</p>
+]]></content>
+      <categories>
+        <category>Vue专题</category>
+      </categories>
+      <tags>
+        <tag>vue</tag>
+        <tag>webpack</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>vue里封装axios——利用promise无痛刷新token</title>
     <url>/2021/03/29/vue%E9%87%8C%E5%B0%81%E8%A3%85axios%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8promise%E6%97%A0%E7%97%9B%E5%88%B7%E6%96%B0token/</url>
     <content><![CDATA[<h2 id="需求"><a class="markdownIt-Anchor" href="#需求">#</a> 需求</h2>
@@ -1297,73 +1364,6 @@ user_name  CHAR (8)：定长字符串，可能产生空间浪费，但读取速�
       <tags>
         <tag>vue</tag>
         <tag>axios</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>vue项目打包优化策略</title>
-    <url>/2020/11/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</url>
-    <content><![CDATA[<p>使用 vue-cli 部署生产包时，发现资源包很大，打包后的 <code>vendor.js</code>  达到了 1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？</p>
-<h3 id="1组件按需加载"><a class="markdownIt-Anchor" href="#1组件按需加载">#</a> 1. 组件按需加载</h3>
-<p>这是首先可以优化的点。如果频繁使用了第三方组件 / UI 库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts 等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。</p>
-<p>示例如下：</p>
-<h4 id="11-element-ui"><a class="markdownIt-Anchor" href="#11-element-ui">#</a> 1.1 element-ui</h4>
-<p>首先，安装 babel-plugin-component：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
-<span id="more"></span>
-<p>然后，将.babelrc 修改为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// main.js</span><br><span class="line">import Vue from &#x27;vue&#x27;</span><br><span class="line">import &#123; Dialog, Loading &#125; from &#x27;element-ui&#x27;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading = Loading.service</span><br><span class="line">// 然后正常使用组件</span><br></pre></td></tr></table></figure>
-<h4 id="12-mint-ui"><a class="markdownIt-Anchor" href="#12-mint-ui">#</a> 1.2 mint-ui</h4>
-<p>由于 mint-ui 是 element-ui 的移动端组件，所以它的使用和引入几乎和 element-ui 一样。</p>
-<p>首先，安装 babel-plugin-component：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
-<p>然后，将.babelrc 修改为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;presets&quot;: [</span><br><span class="line">    [&quot;es2015&quot;, &#123; &quot;modules&quot;: false &#125;]</span><br><span class="line">  ],</span><br><span class="line">  &quot;plugins&quot;: [[&quot;component&quot;, [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;libraryName&quot;: &quot;mint-ui&quot;,</span><br><span class="line">      &quot;style&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">  ]]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后引入部分组件</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// main.js</span><br><span class="line">import Vue from &#x27;vue&#x27;</span><br><span class="line">import &#123; Toast, MessageBox &#125; from &#x27;element-ui&#x27;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading = Loading.service</span><br><span class="line">// 然后正常使用组件</span><br></pre></td></tr></table></figure>
-<p>注意，element-ui 和 mint-ui 不能同时在.babelrc 中进行插件设置，这种情况下，依然可以按需引入，但是不要在 <code>.babelrc</code>  中配置，在引入的地方同时引入 css 即可。</p>
-<h4 id="13-echarts"><a class="markdownIt-Anchor" href="#13-echarts">#</a> 1.3 echarts</h4>
-<p>首先安装 babel-plugin-equire</p>
-<p>npm i babel-plugin-equire -D</p>
-<p>然后，在 <code>.babelrc</code>  文件中添加该插件</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;plugins&quot;: [</span><br><span class="line">       // other plugins</span><br><span class="line">       ...</span><br><span class="line">       </span><br><span class="line">    &quot;equire&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>创建一个 js 文件</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// echarts.js</span><br><span class="line">// eslint-disable-next-line</span><br><span class="line">const echarts = equire([</span><br><span class="line">  &#x27;tooltip&#x27;,</span><br><span class="line">  &#x27;candlestick&#x27;,</span><br><span class="line">  &#x27;bar&#x27;,</span><br><span class="line">  &#x27;line&#x27;,</span><br><span class="line">  &#x27;axisPointer&#x27;,</span><br><span class="line">  &#x27;legend&#x27;,</span><br><span class="line">  &#x27;grid&#x27;</span><br><span class="line">])</span><br><span class="line">export default echarts</span><br><span class="line">// 业务组件，引入echarts</span><br><span class="line">import echarts from &#x27;@/assets/lib/echarts&#x27;</span><br><span class="line">// 使用与以前一样</span><br></pre></td></tr></table></figure>
-<p>按需加载 echarts</p>
-<p>解决 vue-cli 首屏加载慢的问题</p>
-<h3 id="2路由懒加载"><a class="markdownIt-Anchor" href="#2路由懒加载">#</a> 2. 路由懒加载</h3>
-<p>这里需要一个插件</p>
-<p>vue-router 官方推荐 syntax-dynamic-import 插件，不过它要求同时安装 @bable/core^7.0.0，如果你安装了 babel-core6，是会有版本冲突的。我的做法如下</p>
-<p>npm install babel-plugin-syntax-dynamic-import --save-dev(^6.18.0)</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// router.js</span><br><span class="line">const login = () =&gt; import(&#x27;@/components/login&#x27;)</span><br><span class="line">const router = new VueRouter(&#123;</span><br><span class="line">  routes: [</span><br><span class="line">    &#123; path: &#x27;/login&#x27;, component: login &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p>还有一种魔法注释用法</p>
-<p>有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack &gt; 2.4)。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const Foo = () =&gt; import(/* webpackChunkName: &quot;group-foo&quot; */ &#x27;./Foo.vue&#x27;)</span><br></pre></td></tr></table></figure>
-<h3 id="3异步组件"><a class="markdownIt-Anchor" href="#3异步组件">#</a> 3. 异步组件</h3>
-<p>如果组件在页面加载时不需要，只在调用时用到，这时可以使用异步组件的写法。仅仅是引入和组件注册写法不同</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// template</span><br><span class="line">&lt;test v-if=&quot;showTest&quot;&gt;&lt;/test&gt;</span><br><span class="line">// script</span><br><span class="line">  components: &#123;</span><br><span class="line">    test: () =&gt; import(&#x27;./test&#x27;) // 将组件异步引入，告诉webpack，将该部分代码分割打包</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">      clickTest () &#123;</span><br><span class="line">          this.showTest = !this.showTest</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<h3 id="4图片的压缩合并"><a class="markdownIt-Anchor" href="#4图片的压缩合并">#</a> 4. 图片的压缩合并</h3>
-<p>如有可能，将图片制作成精灵图</p>
-<h3 id="5cdn加速"><a class="markdownIt-Anchor" href="#5cdn加速">#</a> 5.CDN 加速</h3>
-<p>在 index.html 中引入 cdn 资源</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;div id=&quot;app&quot;&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">  &lt;!-- built files will be auto injected --&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue/2.5.2/vue.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue-router/3.0.1/vue-router.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vuex/3.0.1/vuex.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-<p>修改 build/webpack.base.conf.js</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">module.exports = &#123;</span><br><span class="line">  context: path.resolve(__dirname, &#x27;../&#x27;),</span><br><span class="line">  entry: &#123;</span><br><span class="line">    app: &#x27;./src/main.js&#x27;</span><br><span class="line">  &#125;,</span><br><span class="line">  externals:&#123;</span><br><span class="line">    &#x27;vue&#x27;: &#x27;Vue&#x27;,</span><br><span class="line">    &#x27;vue-router&#x27;: &#x27;VueRouter&#x27;,</span><br><span class="line">    &#x27;vuex&#x27;:&#x27;Vuex&#x27;,</span><br><span class="line">    &#x27;vue-resource&#x27;: &#x27;VueResource&#x27;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>修改 src/main.js src/router/index.js 注释掉 import 引入的 vue,vue-resource</p>
-<p>// import Vue from ‘vue’</p>
-<p>// import VueResource from ‘vue-resource’</p>
-<p>// Vue.use(VueResource)</p>
-<h3 id="6压缩代码"><a class="markdownIt-Anchor" href="#6压缩代码">#</a> 6. 压缩代码</h3>
-<p>vue-cli 已经使用 UglifyJsPlugin 插件来压缩代码，可以设置成如下配置：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">new webpack.optimize.UglifyJsPlugin(&#123;</span><br><span class="line">  compress: &#123;</span><br><span class="line">    warnings: false,</span><br><span class="line">    drop_console: true,</span><br><span class="line">    pure_funcs: [&#x27;console.log&#x27;]</span><br><span class="line">  &#125;,</span><br><span class="line">  sourceMap: false</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p>其中 sourceMap: false 是禁用除错功能。</p>
-<p>如果设为 true，在部署包中会生成.map 结尾的 js 文件。它用于在代码混淆压缩的情况下仍可进行调试。这个功能虽好，但会大大增加整体资源包的体积，所以将其禁用。</p>
-]]></content>
-      <categories>
-        <category>Vue专题</category>
-      </categories>
-      <tags>
-        <tag>vue</tag>
-        <tag>webpack</tag>
       </tags>
   </entry>
   <entry>
@@ -1475,48 +1475,6 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
       </categories>
       <tags>
         <tag>Hbuilder</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>学习之AJAX</title>
-    <url>/2019/03/20/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
-    <content><![CDATA[<p>对于 AJAX 这个玩意儿，一开始学习的时候，根本不知道这是什么，我连 AJAX 有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙 B 的状态。那么在学习一段时间的 AJAX 之后，我总结了一些我自己对 AJAX 的理解，一起共勉。</p>
-<p>一、页面访问方式</p>
-<p>在学习 AJAX 之前，我们首先就需要了解页面的访问方式。页面的访问方式有如下两种同步访问和异步访问：</p>
-<p>①同步访问：在访问服务器时，只能等待服务器的响应，不能做其他事情。</p>
-<p>②异步访问：在向服务器发送请求时，不耽误用户在网页其他操作。相当于在同一时间，用户能做多个事情。</p>
-<span id="more"></span>
-<p>光从字面上理解同步和异步不算太难，下面我为用图打个比方有助于更加深层次的理解同步和异步：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730181503984" alt=""></p>
-<p>上图反之是同步访问的图解，异步访问我就不再作图了，反之，你想买煎饼和稀饭，你走到卖煎饼的铺子时候，老板说：好的，你的煎饼 5 分钟后好，你可以 5 分钟后过来拿。这个时候你就可以在这五分钟去买你要的稀饭，这就是异步访问。</p>
-<p>二、什么是 AJAX</p>
-<p>AJAX 的英文全名是：Asynchronous  Javascript  And  Xml</p>
-<p>异步的  JS     和    xml</p>
-<p>其中的本质：使用 JS 中 XMLHttpRequext (xhr) 对象异步的向服务器发送请求，服务器响应回来的部分数据而不是原完整的页面，并可以以 “无刷新” 的效果来更改页面中的局部内容。为了方便理解，作以下用户名验证的例子图助于理解：</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730183958321" alt=""></p>
-<p>三、获取ＡＪＡＸ对象　——XMLHttpRequest</p>
-<p>在主流浏览器中：new　XMLHttpRequest ( );</p>
-<p>注意：在 IE8 以下的浏览器不支持 XMLHttpRequest</p>
-<p>在 IE8 以下的浏览器中：</p>
-<p>new  ActiveXObject(“Microsoft.XMLHttp”);</p>
-<p>tip: 如果想测试你使用的浏览器是否支持 XMLHttpRequest，可以进行如下操作：</p>
-<p>1. 打开你的浏览器，例如谷歌、360、火狐、欧朋…;</p>
-<p>2. 按 F12，使用开发者工具，在 console 一栏中输入：console.log (window.XMLHttpRequest);</p>
-<p>3. 如果浏览器不支持 XMLHttpRequest, 以上会打印 null。</p>
-<p>// 创建 ajax 对象</p>
-<p>var  xhr;</p>
-<p>if(window.XMLHttpRequest){</p>
-<p>xhr = new  XMLHttpRequest();</p>
-<p>}else{</p>
-<p>xhr = new ActiveXObject(“Microsoft.XMLHttp”);</p>
-<p>}</p>
-<p>tip：这段函在编写代码的时候使用的次数很多，通常我们将它封装成函数单独创建一个 JS 文件，命名为 common.js，要使用的时候调用者个 js 文件就可以了。</p>
-]]></content>
-      <categories>
-        <category>HTTP</category>
-      </categories>
-      <tags>
-        <tag>AJAX</tag>
       </tags>
   </entry>
   <entry>
@@ -1675,6 +1633,48 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
       </categories>
       <tags>
         <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>学习之AJAX</title>
+    <url>/2019/03/20/%E5%AD%A6%E4%B9%A0%E4%B9%8BAJAX/</url>
+    <content><![CDATA[<p>对于 AJAX 这个玩意儿，一开始学习的时候，根本不知道这是什么，我连 AJAX 有什么作用，是干什么的都不知道，所以在一开始学习这个的时候是非常蒙 B 的状态。那么在学习一段时间的 AJAX 之后，我总结了一些我自己对 AJAX 的理解，一起共勉。</p>
+<p>一、页面访问方式</p>
+<p>在学习 AJAX 之前，我们首先就需要了解页面的访问方式。页面的访问方式有如下两种同步访问和异步访问：</p>
+<p>①同步访问：在访问服务器时，只能等待服务器的响应，不能做其他事情。</p>
+<p>②异步访问：在向服务器发送请求时，不耽误用户在网页其他操作。相当于在同一时间，用户能做多个事情。</p>
+<span id="more"></span>
+<p>光从字面上理解同步和异步不算太难，下面我为用图打个比方有助于更加深层次的理解同步和异步：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730181503984" alt=""></p>
+<p>上图反之是同步访问的图解，异步访问我就不再作图了，反之，你想买煎饼和稀饭，你走到卖煎饼的铺子时候，老板说：好的，你的煎饼 5 分钟后好，你可以 5 分钟后过来拿。这个时候你就可以在这五分钟去买你要的稀饭，这就是异步访问。</p>
+<p>二、什么是 AJAX</p>
+<p>AJAX 的英文全名是：Asynchronous  Javascript  And  Xml</p>
+<p>异步的  JS     和    xml</p>
+<p>其中的本质：使用 JS 中 XMLHttpRequext (xhr) 对象异步的向服务器发送请求，服务器响应回来的部分数据而不是原完整的页面，并可以以 “无刷新” 的效果来更改页面中的局部内容。为了方便理解，作以下用户名验证的例子图助于理解：</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/20170730183958321" alt=""></p>
+<p>三、获取ＡＪＡＸ对象　——XMLHttpRequest</p>
+<p>在主流浏览器中：new　XMLHttpRequest ( );</p>
+<p>注意：在 IE8 以下的浏览器不支持 XMLHttpRequest</p>
+<p>在 IE8 以下的浏览器中：</p>
+<p>new  ActiveXObject(“Microsoft.XMLHttp”);</p>
+<p>tip: 如果想测试你使用的浏览器是否支持 XMLHttpRequest，可以进行如下操作：</p>
+<p>1. 打开你的浏览器，例如谷歌、360、火狐、欧朋…;</p>
+<p>2. 按 F12，使用开发者工具，在 console 一栏中输入：console.log (window.XMLHttpRequest);</p>
+<p>3. 如果浏览器不支持 XMLHttpRequest, 以上会打印 null。</p>
+<p>// 创建 ajax 对象</p>
+<p>var  xhr;</p>
+<p>if(window.XMLHttpRequest){</p>
+<p>xhr = new  XMLHttpRequest();</p>
+<p>}else{</p>
+<p>xhr = new ActiveXObject(“Microsoft.XMLHttp”);</p>
+<p>}</p>
+<p>tip：这段函在编写代码的时候使用的次数很多，通常我们将它封装成函数单独创建一个 JS 文件，命名为 common.js，要使用的时候调用者个 js 文件就可以了。</p>
+]]></content>
+      <categories>
+        <category>HTTP</category>
+      </categories>
+      <tags>
+        <tag>AJAX</tag>
       </tags>
   </entry>
   <entry>

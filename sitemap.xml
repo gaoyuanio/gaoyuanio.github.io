@@ -214,14 +214,14 @@
 
   
   <url>
-    <loc>http://example.com/tags/HTTP/</loc>
+    <loc>http://example.com/tags/javascript/</loc>
     <lastmod>2021-05-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://example.com/tags/javascript/</loc>
+    <loc>http://example.com/tags/HTTP/</loc>
     <lastmod>2021-05-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -249,14 +249,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/tags/axios/</loc>
+    <loc>http://example.com/tags/webpack/</loc>
     <lastmod>2021-05-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://example.com/tags/webpack/</loc>
+    <loc>http://example.com/tags/axios/</loc>
     <lastmod>2021-05-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -307,7 +307,7 @@
 
   
   <url>
-    <loc>http://example.com/categories/HTTP/</loc>
+    <loc>http://example.com/categories/script-topic/</loc>
     <lastmod>2021-05-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -321,7 +321,7 @@
   </url>
   
   <url>
-    <loc>http://example.com/categories/script-topic/</loc>
+    <loc>http://example.com/categories/HTTP/</loc>
     <lastmod>2021-05-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
