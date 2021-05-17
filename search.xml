@@ -1,109 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>JS实现图片压缩</title>
-    <url>/2021/02/11/JS%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9/</url>
-    <content><![CDATA[<blockquote>
-<p>说起图片压缩，大家想到的或者平时用到的很多工具都可以实现，例如，客户端类的有图片压缩工具 PPDuck3， JS 实现类的有插件 compression.js ，亦或是在线处理类的 OSS 上传，文件上传后，在访问文件时中也有图片的压缩配置选项，那能不能使用 JS 实现的图片压缩代码呢？当然可以，那我们先来理一下思路。</p>
-</blockquote>
-<h2 id="压缩思路"><a class="markdownIt-Anchor" href="#压缩思路">#</a> 压缩思路</h2>
-<p>涉及到 JS 的图片压缩，我的想法是需要用到 Canvas 的绘图能力，通过调整图片的分辨率或者绘图质量来达到图片压缩的效果，实现思路如下：</p>
-<ul>
-<li>获取上传 Input 中的图片对象 File</li>
-<li>将图片转换成 base64 格式</li>
-<li>base64 编码的图片通过 Canvas 转换压缩，这里会用到的 Canvas 的 drawImage 以及 toDataURL 这两个 Api，一个调节图片的分辨率的，一个是调节图片压缩质量并且输出的，后续会有详细介绍</li>
-<li>转换后的图片生成对应的新图片，然后输出</li>
-<li></li>
-</ul>
-<h2 id="优缺点介绍"><a class="markdownIt-Anchor" href="#优缺点介绍">#</a> 优缺点介绍</h2>
-<p>不过 Canvas 压缩的方式也有着自己的优缺点：</p>
-<ul>
-<li>优点：实现简单，参数可以配置化，自定义图片的尺寸，指定区域裁剪等等。</li>
-<li>缺点：只有 jpeg 、webp 支持原图尺寸下图片质量的调整来达到压缩图片的效果，其他图片格式，仅能通过调节尺寸来实现</li>
-</ul>
-<span id="more"></span>
-<h2 id="代码实现"><a class="markdownIt-Anchor" href="#代码实现">#</a> 代码实现</h2>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div class=&quot;container&quot;&gt;</span><br><span class="line">    &lt;input type=&quot;file&quot; id=&quot;input-img&quot; @change=&quot;compress&quot; /&gt;</span><br><span class="line">    &lt;a :download=&quot;fileName&quot; :href=&quot;compressImg&quot; &gt;普通下载&lt;/a&gt;</span><br><span class="line">    &lt;button @click=&quot;downloadImg&quot;&gt;兼容 IE 下载&lt;/button&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;img :src=&quot;compressImg&quot; /&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;export default &#123;</span><br><span class="line">  name: &#x27;compress&#x27;,</span><br><span class="line">  data: function() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      compressImg: null,</span><br><span class="line">      fileName: null,</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">  components: &#123;&#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    compress() &#123;</span><br><span class="line">      // 获取文件对象</span><br><span class="line">      const fileObj = document.querySelector(&#x27;#input-img&#x27;).files[0];</span><br><span class="line">      // 获取文件名称，后续下载重命名</span><br><span class="line">      this.fileName = `$&#123;new Date().getTime()&#125;-$&#123;fileObj.name&#125;`;</span><br><span class="line">      // 获取文件后缀名</span><br><span class="line">      const fileNames = fileObj.name.split(&#x27;.&#x27;);</span><br><span class="line">      const type = fileNames[fileNames.length-1];</span><br><span class="line">      // 压缩图片</span><br><span class="line">      this.handleCompressImage(fileObj, type);</span><br><span class="line">    &#125;,</span><br><span class="line">    handleCompressImage(img, type) &#123;</span><br><span class="line">      const vm = this;</span><br><span class="line">      let reader = new FileReader();</span><br><span class="line">      // 读取文件</span><br><span class="line">      reader.readAsDataURL(img);</span><br><span class="line">      reader.onload = function(e) &#123;</span><br><span class="line">        let image = new Image(); //新建一个img标签</span><br><span class="line">        image.src = e.target.result;</span><br><span class="line">        image.onload = function() &#123;</span><br><span class="line">          let canvas = document.createElement(&#x27;canvas&#x27;);</span><br><span class="line">          let context = canvas.getContext(&#x27;2d&#x27;);</span><br><span class="line">          // 定义 canvas 大小，也就是压缩后下载的图片大小</span><br><span class="line">          let imageWidth = image.width; //压缩后图片的大小</span><br><span class="line">          let imageHeight = image.height;</span><br><span class="line">          canvas.width = imageWidth;</span><br><span class="line">          canvas.height = imageHeight;</span><br><span class="line">          </span><br><span class="line">          // 图片不压缩，全部加载展示</span><br><span class="line">          context.drawImage(image, 0, 0);</span><br><span class="line">          // 图片按压缩尺寸载入</span><br><span class="line">          // let imageWidth = 500; //压缩后图片的大小</span><br><span class="line">          // let imageHeight = 200;</span><br><span class="line">          // context.drawImage(image, 0, 0, 500, 200);</span><br><span class="line">          // 图片去截取指定位置载入</span><br><span class="line">          // context.drawImage(image,100, 100, 100, 100, 0, 0, imageWidth, imageHeight);</span><br><span class="line">          vm.compressImg = canvas.toDataURL(`image/$&#123;type&#125;`);</span><br><span class="line">        &#125;;</span><br><span class="line">      &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">    // base64 图片转 blob 后下载</span><br><span class="line">    downloadImg() &#123;</span><br><span class="line">      let parts = this.compressImg.split(&#x27;;base64,&#x27;);</span><br><span class="line">      let contentType = parts[0].split(&#x27;:&#x27;)[1];</span><br><span class="line">      let raw = window.atob(parts[1]);</span><br><span class="line">      let rawLength = raw.length;</span><br><span class="line">      let uInt8Array = new Uint8Array(rawLength);</span><br><span class="line">      for(let i = 0; i &lt; rawLength; ++i) &#123;</span><br><span class="line">        uInt8Array[i] = raw.charCodeAt(i);</span><br><span class="line">      &#125;</span><br><span class="line">      const blob = new Blob([uInt8Array], &#123;type: contentType&#125;);</span><br><span class="line">      this.compressImg = URL.createObjectURL(blob);</span><br><span class="line">      if (window.navigator.msSaveOrOpenBlob) &#123;</span><br><span class="line">        // 兼容 ie 的下载方式</span><br><span class="line">        window.navigator.msSaveOrOpenBlob(blob, this.fileName);</span><br><span class="line">      &#125;else&#123;</span><br><span class="line">        const a = document.createElement(&#x27;a&#x27;);</span><br><span class="line">        a.href = this.compressImg;</span><br><span class="line">        a.setAttribute(&#x27;download&#x27;, this.fileName);</span><br><span class="line">        a.click();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<h2 id="实现步骤"><a class="markdownIt-Anchor" href="#实现步骤">#</a> 实现步骤</h2>
-<blockquote>
-<p>上面的代码是可以直接拿来看效果的，不喜欢用 Vue 的也可以把代码稍微调整一下，下面开始具体分解一下代码的实现思路</p>
-</blockquote>
-<h3 id="步骤一input-上传-file-处理"><a class="markdownIt-Anchor" href="#步骤一input-上传-file-处理">#</a> 步骤一：Input 上传 File 处理</h3>
-<p>将 File 对象通过  <code>FileReader</code>  的  <code>readAsDataURL</code>  方法转换为 URL 格式的字符串（base64 编码）</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const fileObj = document.querySelector(&#x27;#input-img&#x27;).files[0];</span><br><span class="line">let reader = new FileReader();</span><br><span class="line">// 读取文件</span><br><span class="line">reader.readAsDataURL(fileObj);</span><br></pre></td></tr></table></figure>
-<h2 id=""><a class="markdownIt-Anchor" href="#">#</a> </h2>
-<h3 id="步骤二canvas-处理-file-对象"><a class="markdownIt-Anchor" href="#步骤二canvas-处理-file-对象">#</a> 步骤二：Canvas 处理 File 对象</h3>
-<p>建立一个  <code>Image</code>  对象，一个  <code>canvas</code>  画布，设定自己想要下载的图片尺寸，调用  <code>drawImage</code>  方法在 canvas 中绘制上传的图片</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">let image = new Image(); //新建一个img标签</span><br><span class="line">image.src = e.target.result;</span><br><span class="line">let canvas = document.createElement(&#x27;canvas&#x27;);</span><br><span class="line">let context = canvas.getContext(&#x27;2d&#x27;);</span><br><span class="line">context.drawImage(image, 0, 0);</span><br></pre></td></tr></table></figure>
-<h3 id="步骤三api-解析drawimage"><a class="markdownIt-Anchor" href="#步骤三api-解析drawimage">#</a> 步骤三：Api 解析：drawImage</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">context.drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);</span><br></pre></td></tr></table></figure>
-<p>**img:** 就是图片对象，可以是页面上获取的 DOM 对象，也可以是虚拟 DOM 中的图片对象。</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1598786576273-20cc4996-634f-4a19-8fb8-68262d4313b0.webp" alt=""></p>
-<p><strong>（1）dx、dy、dWidth、dHeight：</strong></p>
-<p>表示在  <code>canvas</code>  画布上规划出一片区域用来放置图片， <code>dx, dy</code>  为绘图位置在 Canvas 元素的 X 轴、Y 轴坐标， <code>dWidth, dHeight</code>  指在 Canvas 元素上绘制图像的宽度和高度（如果不说明， 在绘制时图片的宽度和高度不会缩放）。</p>
-<p><strong>（2）sx、sy、swidth、sheight:</strong></p>
-<p>这 4 个参数是用来裁剪源图片的，表示图片在  <code>canvas</code>  画布上显示的大小和位置。 <code>sx, sy</code>  表示在源图片上裁剪位置的 X 轴、Y 轴坐标，然后以  <code>swidth, sheight</code>  尺寸来选择一个区域范围，裁剪出来的图片作为最终在 Canvas 上显示的图片内容（  <code>swidth, sheight</code>  不说明的情况下，整个矩形（裁剪）从坐标的  <code>sx</code>  和  <code>sy</code>  开始，到图片的右下角结束）。</p>
-<p>以下为图片绘制的实例：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">context.drawImage(image, 0, 0, 100, 100);</span><br><span class="line">context.drawImage(image, 300, 300, 200, 200);</span><br><span class="line">context.drawImage(image, 0, 100, 150, 150, 300, 0, 150, 150);</span><br></pre></td></tr></table></figure>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1598786576278-66f315b0-3c36-45b3-825d-c8f3171672e1.webp" alt=""></p>
-<p>Api 中奇怪之处在于，sx、sy、swidth、sheight 为选填参数，但位置在 dx、dy、dWidth、dHeight 之前。</p>
-<h3 id="步骤四canvas-输出图片"><a class="markdownIt-Anchor" href="#步骤四canvas-输出图片">#</a> 步骤四：Canvas 输出图片</h3>
-<p>调用  <code>canvas</code>  的  <code>toDataURL</code>  方法可以输出 base64 格式的图片。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">canvas.toDataURL(`image/$&#123;type&#125;`);</span><br></pre></td></tr></table></figure>
-<h3 id="步骤五api-解析todataurl"><a class="markdownIt-Anchor" href="#步骤五api-解析todataurl">#</a> 步骤五：Api 解析：toDataURL</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">canvas.toDataURL(type, encoderOptions);</span><br></pre></td></tr></table></figure>
-<p>**type （可选）：** 图片格式，默认为 image/png。</p>
-<p>**encoderOptions （可选）：** 在指定图片格式为 image/jpeg 或 image/webp 的情况下，可以从 0 到 1 的区间内选择图片的质量。如果超出取值范围，将会使用默认值 0.92。其他参数会被忽略。</p>
-<p><strong>a 标签的下载</strong>：调用  <code>&lt;a&gt;</code>  标签的  <code>download</code>  属性，即可完成图片的下载。</p>
-<h3 id="步骤六api-解析download"><a class="markdownIt-Anchor" href="#步骤六api-解析download">#</a> 步骤六：Api 解析：download</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// href 下载必填</span><br><span class="line">&lt;a download=&quot;filename&quot; href=&quot;href&quot;&gt; 下载 &lt;/a&gt;</span><br></pre></td></tr></table></figure>
-<p>**filename：** 选填，规定作为文件名来使用的文本。</p>
-<p>**href：** 文件的下载地址。</p>
-<h3 id="步骤七非主流浏览器下载处理"><a class="markdownIt-Anchor" href="#步骤七非主流浏览器下载处理">#</a> 步骤七：非主流浏览器下载处理</h3>
-<p>这一步可以解决 Chroma 、 Firefox 和 Safari（自测支持） 浏览器的下载功能，因为 IE 等浏览器不支持  <code>download</code>  属性，所以需要进行其他方式的下载，也就有了代码中的后续内容</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// base64 图片转 blob 后下载</span><br><span class="line">downloadImg() &#123;</span><br><span class="line">  let parts = this.compressImg.split(&#x27;;base64,&#x27;);</span><br><span class="line">  let contentType = parts[0].split(&#x27;:&#x27;)[1];</span><br><span class="line">  let raw = window.atob(parts[1]);</span><br><span class="line">  let rawLength = raw.length;</span><br><span class="line">  let uInt8Array = new Uint8Array(rawLength);</span><br><span class="line">  for(let i = 0; i &lt; rawLength; ++i) &#123;</span><br><span class="line">    uInt8Array[i] = raw.charCodeAt(i);</span><br><span class="line">  &#125;</span><br><span class="line">  const blob = new Blob([uInt8Array], &#123;type: contentType&#125;);</span><br><span class="line">  this.compressImg = URL.createObjectURL(blob);</span><br><span class="line">  if (window.navigator.msSaveOrOpenBlob) &#123;</span><br><span class="line">    // 兼容 ie 的下载方式</span><br><span class="line">    window.navigator.msSaveOrOpenBlob(blob, this.fileName);</span><br><span class="line">  &#125;else&#123;</span><br><span class="line">    const a = document.createElement(&#x27;a&#x27;);</span><br><span class="line">    a.href = this.compressImg;</span><br><span class="line">    a.setAttribute(&#x27;download&#x27;, this.fileName);</span><br><span class="line">    a.click();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>将之前  <code>canvas</code>  生成的 base64 数据拆分后，通过  <code>atob</code>  方法解码</li>
-<li>将解码后的数据转换成 Uint8Array 格式的无符号整形数组</li>
-<li>转换后的数组来生成一个 Blob 数据对象，通过  <code>URL.createObjectURL(blob)</code>  来生成一个临时的 DOM 对象</li>
-<li>之后 IE 类浏览器可以调用  <code>window.navigator.msSaveOrOpenBlob</code>  方法来执行下载，其他浏览器也可以继续通过  <code>&lt;a&gt;</code>  标签的  <code>download</code>  属性来进行下载</li>
-</ul>
-<h3 id="步骤八api-解析atob"><a class="markdownIt-Anchor" href="#步骤八api-解析atob">#</a> 步骤八：Api 解析：atob</h3>
-<p>base-64 解码使用方法是 atob ()。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">window.atob(encodedStr)</span><br></pre></td></tr></table></figure>
-<p>**encodedStr：** 必需，是一个通过 btoa () 方法编码的字符串，btoa () 是 base64 编码的使用方法。</p>
-<h3 id="步骤九api-解析uint8array"><a class="markdownIt-Anchor" href="#步骤九api-解析uint8array">#</a> 步骤九：Api 解析：Uint8Array</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">new Uint8Array(length)</span><br></pre></td></tr></table></figure>
-<p>**length：** 创建初始化为 0 的，包含 length 个元素的无符号整型数组。</p>
-<h3 id="步骤十api-解析blob"><a class="markdownIt-Anchor" href="#步骤十api-解析blob">#</a> 步骤十：Api 解析：Blob</h3>
-<p><code>Blob</code>  对象表示一个不可变、原始数据的类文件对象。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 构造函数允许通过其它对象创建 Blob 对象</span><br><span class="line">new Blob([obj],&#123;type:createType&#125;)</span><br></pre></td></tr></table></figure>
-<p>**obj：** 字符串内容</p>
-<p>**createType：** 要构造的类型，兼容性 IE 10 以上</p>
-<h3 id="步骤十一api-解析createobjecturl"><a class="markdownIt-Anchor" href="#步骤十一api-解析createobjecturl">#</a> 步骤十一：Api 解析：createObjectURL</h3>
-<p>静态方法会创建一个 DOMString。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">objectURL = URL.createObjectURL(object);</span><br></pre></td></tr></table></figure>
-<p>**object：** 用于创建 URL 的 File 对象、Blob 对象或者 MediaSource 对象。</p>
-<h3 id="步骤十二api-解析windownavigator"><a class="markdownIt-Anchor" href="#步骤十二api-解析windownavigator">#</a> 步骤十二：Api 解析：window.navigator</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 官方已不建议使用的文件下载方式，仅针对 ie 且兼容性 10 以上</span><br><span class="line">// msSaveBlob 仅提供下载</span><br><span class="line">// msSaveOrOpenBlob 支持下载和打开</span><br><span class="line">window.navigator.msSaveOrOpenBlob(blob, fileName);</span><br></pre></td></tr></table></figure>
-<p>**blob：** 要下载的 blob 对象</p>
-<p>**fileName：** 下载后命名的文件名称。</p>
-<h2 id="总结"><a class="markdownIt-Anchor" href="#总结">#</a> 总结</h2>
-<p>本方法仅针对图片压缩介绍了一些思路，简单的使用场景可能如下介绍，当然也会引申出来更多的使用场景，这些还有待大家一起挖掘。</p>
-<ul>
-<li>上传存储图片如果需要对文件大小格式有要求的，可以统一压缩处理图片</li>
-<li>前台页面想要编辑图片，可以在 Canvas 处理图片的时候，加一些其他逻辑，例如添加文字，剪裁，拼图等等操作</li>
-</ul>
-<p>tip：因部分接口有 IE 兼容性问题，IE 浏览器方面，仅能支持 IE 10 以上版本进行下载。</p>
-]]></content>
-      <categories>
-        <category>javascript</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>HTTPS和HTTP原理和区别</title>
     <url>/2020/12/16/HTTPS%E5%92%8CHTTP%E5%8E%9F%E7%90%86%E5%92%8C%E5%8C%BA%E5%88%AB/</url>
     <content><![CDATA[<p>一、HTTP 和 HTTPS 的基本概念<br>
@@ -525,102 +422,103 @@ SSL 提供服务<br>
       </tags>
   </entry>
   <entry>
-    <title>JavaScript基础（五）闭包</title>
-    <url>/2021/03/25/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%94%EF%BC%89%E9%97%AD%E5%8C%85/</url>
-    <content><![CDATA[<h2 id="一-什么是闭包"><a class="markdownIt-Anchor" href="#一-什么是闭包">#</a> 一、什么是闭包</h2>
-<p>顾名思义，遇见问题先问为什么是我们一贯的思维方式，我们尝试回答一下：</p>
-<ol>
-<li>闭包就是函数内部的子函数 ——  <code>等于没说</code></li>
-<li>当函数可以记住并访问所在的词法作用域时，就产生了闭包，即使函数是在当前词法作用域之外执行。—— <code>靠谱</code></li>
-<li>闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁 —— <code>靠谱</code></li>
-<li>函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）—— <code>很靠谱</code></li>
-</ol>
-<p>我们试着用代码来描述一下上面的回答，看看你最<strong>中意</strong>哪一个～</p>
+    <title>JS实现图片压缩</title>
+    <url>/2021/02/11/JS%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9/</url>
+    <content><![CDATA[<blockquote>
+<p>说起图片压缩，大家想到的或者平时用到的很多工具都可以实现，例如，客户端类的有图片压缩工具 PPDuck3， JS 实现类的有插件 compression.js ，亦或是在线处理类的 OSS 上传，文件上传后，在访问文件时中也有图片的压缩配置选项，那能不能使用 JS 实现的图片压缩代码呢？当然可以，那我们先来理一下思路。</p>
+</blockquote>
+<h2 id="压缩思路"><a class="markdownIt-Anchor" href="#压缩思路">#</a> 压缩思路</h2>
+<p>涉及到 JS 的图片压缩，我的想法是需要用到 Canvas 的绘图能力，通过调整图片的分辨率或者绘图质量来达到图片压缩的效果，实现思路如下：</p>
+<ul>
+<li>获取上传 Input 中的图片对象 File</li>
+<li>将图片转换成 base64 格式</li>
+<li>base64 编码的图片通过 Canvas 转换压缩，这里会用到的 Canvas 的 drawImage 以及 toDataURL 这两个 Api，一个调节图片的分辨率的，一个是调节图片压缩质量并且输出的，后续会有详细介绍</li>
+<li>转换后的图片生成对应的新图片，然后输出</li>
+<li></li>
+</ul>
+<h2 id="优缺点介绍"><a class="markdownIt-Anchor" href="#优缺点介绍">#</a> 优缺点介绍</h2>
+<p>不过 Canvas 压缩的方式也有着自己的优缺点：</p>
+<ul>
+<li>优点：实现简单，参数可以配置化，自定义图片的尺寸，指定区域裁剪等等。</li>
+<li>缺点：只有 jpeg 、webp 支持原图尺寸下图片质量的调整来达到压缩图片的效果，其他图片格式，仅能通过调节尺寸来实现</li>
+</ul>
 <span id="more"></span>
-<h3 id="11-闭包是函数内部的子函数"><a class="markdownIt-Anchor" href="#11-闭包是函数内部的子函数">#</a> 1.1 闭包是函数内部的子函数</h3>
-<p>先看这段代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(a);</span><br><span class="line">    &#125;</span><br><span class="line">    bar()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-<p>基于词法作用域的查找规则， <code>bar函数</code> 可以成功的打印 <code>a</code>  变量，并且它也是 <code>foo</code>  的子函数，但严格来说它并没有清晰的表达出闭包这一概念，说它表达的是<strong>嵌套函数可以访问声明于大外部作用域的变量</strong>更准确一些。</p>
-<h3 id="12-闭包就是能够读取其他函数内部变量的函数在本质上是函数内部和函数外部链接的桥梁"><a class="markdownIt-Anchor" href="#12-闭包就是能够读取其他函数内部变量的函数在本质上是函数内部和函数外部链接的桥梁">#</a> 1.2 闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁</h3>
-<p>再来看下面的例子：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(a);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> bar;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> res = foo();</span><br><span class="line">res(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-<p>结果一致，这是因为此时 <code>res</code>  是执行 <code>foo</code>  函数时返回的 <code>bar</code>  引用，bar 函数得以保存了它饿词法环境。</p>
-<h3 id="13-函数和对其周围状态词法环境的引用捆绑在一起构成闭包closure"><a class="markdownIt-Anchor" href="#13-函数和对其周围状态词法环境的引用捆绑在一起构成闭包closure">#</a> 1.3 函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）</h3>
-<p>我们来看下面代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(name); <span class="comment">// gaoyuan</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">//gaoyuan</span></span><br></pre></td></tr></table></figure>
-<p>foo 的上下文被静态的保存了下来，而且是在该函数创建的时候就保存了。下面我们来验证一下：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(name); <span class="comment">// gaoyuan</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params">func</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;老王&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    func()</span><br><span class="line">&#125;)(foo); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
-<p>这里我们就可以理解 —— 函数被创建后就形成了闭包，他们保存了上层上下文的作用域链，并且保存在 <code>[[scope]]</code>  中，如果你对 <code>[[scope]]</code>  的概念已经模糊了，不妨花几分钟看看《JavaScript 中的执行上下文》这篇文章。</p>
-<h3 id="14-总结"><a class="markdownIt-Anchor" href="#14-总结">#</a> 1.4 总结</h3>
-<p><strong>注意：闭包是函数内部的返回的子函数这句话本身没错</strong>，但要看从什么角度出发：</p>
-<p>ECMAScript 中，闭包指的是：</p>
-<ol>
-<li>从理论角度：所有的函数。因为它们都在创建的时候就将上层上下文的数据保存起来了。哪怕是简单的全局变量也是如此，因为函数中访问全局变量就相当于是在访问自由变量，这个时候使用最外层的作用域。</li>
-<li>从实践角度：以下函数才算是闭包：
+<h2 id="代码实现"><a class="markdownIt-Anchor" href="#代码实现">#</a> 代码实现</h2>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div class=&quot;container&quot;&gt;</span><br><span class="line">    &lt;input type=&quot;file&quot; id=&quot;input-img&quot; @change=&quot;compress&quot; /&gt;</span><br><span class="line">    &lt;a :download=&quot;fileName&quot; :href=&quot;compressImg&quot; &gt;普通下载&lt;/a&gt;</span><br><span class="line">    &lt;button @click=&quot;downloadImg&quot;&gt;兼容 IE 下载&lt;/button&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;img :src=&quot;compressImg&quot; /&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;export default &#123;</span><br><span class="line">  name: &#x27;compress&#x27;,</span><br><span class="line">  data: function() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      compressImg: null,</span><br><span class="line">      fileName: null,</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">  components: &#123;&#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    compress() &#123;</span><br><span class="line">      // 获取文件对象</span><br><span class="line">      const fileObj = document.querySelector(&#x27;#input-img&#x27;).files[0];</span><br><span class="line">      // 获取文件名称，后续下载重命名</span><br><span class="line">      this.fileName = `$&#123;new Date().getTime()&#125;-$&#123;fileObj.name&#125;`;</span><br><span class="line">      // 获取文件后缀名</span><br><span class="line">      const fileNames = fileObj.name.split(&#x27;.&#x27;);</span><br><span class="line">      const type = fileNames[fileNames.length-1];</span><br><span class="line">      // 压缩图片</span><br><span class="line">      this.handleCompressImage(fileObj, type);</span><br><span class="line">    &#125;,</span><br><span class="line">    handleCompressImage(img, type) &#123;</span><br><span class="line">      const vm = this;</span><br><span class="line">      let reader = new FileReader();</span><br><span class="line">      // 读取文件</span><br><span class="line">      reader.readAsDataURL(img);</span><br><span class="line">      reader.onload = function(e) &#123;</span><br><span class="line">        let image = new Image(); //新建一个img标签</span><br><span class="line">        image.src = e.target.result;</span><br><span class="line">        image.onload = function() &#123;</span><br><span class="line">          let canvas = document.createElement(&#x27;canvas&#x27;);</span><br><span class="line">          let context = canvas.getContext(&#x27;2d&#x27;);</span><br><span class="line">          // 定义 canvas 大小，也就是压缩后下载的图片大小</span><br><span class="line">          let imageWidth = image.width; //压缩后图片的大小</span><br><span class="line">          let imageHeight = image.height;</span><br><span class="line">          canvas.width = imageWidth;</span><br><span class="line">          canvas.height = imageHeight;</span><br><span class="line">          </span><br><span class="line">          // 图片不压缩，全部加载展示</span><br><span class="line">          context.drawImage(image, 0, 0);</span><br><span class="line">          // 图片按压缩尺寸载入</span><br><span class="line">          // let imageWidth = 500; //压缩后图片的大小</span><br><span class="line">          // let imageHeight = 200;</span><br><span class="line">          // context.drawImage(image, 0, 0, 500, 200);</span><br><span class="line">          // 图片去截取指定位置载入</span><br><span class="line">          // context.drawImage(image,100, 100, 100, 100, 0, 0, imageWidth, imageHeight);</span><br><span class="line">          vm.compressImg = canvas.toDataURL(`image/$&#123;type&#125;`);</span><br><span class="line">        &#125;;</span><br><span class="line">      &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">    // base64 图片转 blob 后下载</span><br><span class="line">    downloadImg() &#123;</span><br><span class="line">      let parts = this.compressImg.split(&#x27;;base64,&#x27;);</span><br><span class="line">      let contentType = parts[0].split(&#x27;:&#x27;)[1];</span><br><span class="line">      let raw = window.atob(parts[1]);</span><br><span class="line">      let rawLength = raw.length;</span><br><span class="line">      let uInt8Array = new Uint8Array(rawLength);</span><br><span class="line">      for(let i = 0; i &lt; rawLength; ++i) &#123;</span><br><span class="line">        uInt8Array[i] = raw.charCodeAt(i);</span><br><span class="line">      &#125;</span><br><span class="line">      const blob = new Blob([uInt8Array], &#123;type: contentType&#125;);</span><br><span class="line">      this.compressImg = URL.createObjectURL(blob);</span><br><span class="line">      if (window.navigator.msSaveOrOpenBlob) &#123;</span><br><span class="line">        // 兼容 ie 的下载方式</span><br><span class="line">        window.navigator.msSaveOrOpenBlob(blob, this.fileName);</span><br><span class="line">      &#125;else&#123;</span><br><span class="line">        const a = document.createElement(&#x27;a&#x27;);</span><br><span class="line">        a.href = this.compressImg;</span><br><span class="line">        a.setAttribute(&#x27;download&#x27;, this.fileName);</span><br><span class="line">        a.click();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="实现步骤"><a class="markdownIt-Anchor" href="#实现步骤">#</a> 实现步骤</h2>
+<blockquote>
+<p>上面的代码是可以直接拿来看效果的，不喜欢用 Vue 的也可以把代码稍微调整一下，下面开始具体分解一下代码的实现思路</p>
+</blockquote>
+<h3 id="步骤一input-上传-file-处理"><a class="markdownIt-Anchor" href="#步骤一input-上传-file-处理">#</a> 步骤一：Input 上传 File 处理</h3>
+<p>将 File 对象通过  <code>FileReader</code>  的  <code>readAsDataURL</code>  方法转换为 URL 格式的字符串（base64 编码）</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const fileObj = document.querySelector(&#x27;#input-img&#x27;).files[0];</span><br><span class="line">let reader = new FileReader();</span><br><span class="line">// 读取文件</span><br><span class="line">reader.readAsDataURL(fileObj);</span><br></pre></td></tr></table></figure>
+<h2 id=""><a class="markdownIt-Anchor" href="#">#</a> </h2>
+<h3 id="步骤二canvas-处理-file-对象"><a class="markdownIt-Anchor" href="#步骤二canvas-处理-file-对象">#</a> 步骤二：Canvas 处理 File 对象</h3>
+<p>建立一个  <code>Image</code>  对象，一个  <code>canvas</code>  画布，设定自己想要下载的图片尺寸，调用  <code>drawImage</code>  方法在 canvas 中绘制上传的图片</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">let image = new Image(); //新建一个img标签</span><br><span class="line">image.src = e.target.result;</span><br><span class="line">let canvas = document.createElement(&#x27;canvas&#x27;);</span><br><span class="line">let context = canvas.getContext(&#x27;2d&#x27;);</span><br><span class="line">context.drawImage(image, 0, 0);</span><br></pre></td></tr></table></figure>
+<h3 id="步骤三api-解析drawimage"><a class="markdownIt-Anchor" href="#步骤三api-解析drawimage">#</a> 步骤三：Api 解析：drawImage</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">context.drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);</span><br></pre></td></tr></table></figure>
+<p>**img:** 就是图片对象，可以是页面上获取的 DOM 对象，也可以是虚拟 DOM 中的图片对象。</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1598786576273-20cc4996-634f-4a19-8fb8-68262d4313b0.webp" alt=""></p>
+<p><strong>（1）dx、dy、dWidth、dHeight：</strong></p>
+<p>表示在  <code>canvas</code>  画布上规划出一片区域用来放置图片， <code>dx, dy</code>  为绘图位置在 Canvas 元素的 X 轴、Y 轴坐标， <code>dWidth, dHeight</code>  指在 Canvas 元素上绘制图像的宽度和高度（如果不说明， 在绘制时图片的宽度和高度不会缩放）。</p>
+<p><strong>（2）sx、sy、swidth、sheight:</strong></p>
+<p>这 4 个参数是用来裁剪源图片的，表示图片在  <code>canvas</code>  画布上显示的大小和位置。 <code>sx, sy</code>  表示在源图片上裁剪位置的 X 轴、Y 轴坐标，然后以  <code>swidth, sheight</code>  尺寸来选择一个区域范围，裁剪出来的图片作为最终在 Canvas 上显示的图片内容（  <code>swidth, sheight</code>  不说明的情况下，整个矩形（裁剪）从坐标的  <code>sx</code>  和  <code>sy</code>  开始，到图片的右下角结束）。</p>
+<p>以下为图片绘制的实例：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">context.drawImage(image, 0, 0, 100, 100);</span><br><span class="line">context.drawImage(image, 300, 300, 200, 200);</span><br><span class="line">context.drawImage(image, 0, 100, 150, 150, 300, 0, 150, 150);</span><br></pre></td></tr></table></figure>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/1598786576278-66f315b0-3c36-45b3-825d-c8f3171672e1.webp" alt=""></p>
+<p>Api 中奇怪之处在于，sx、sy、swidth、sheight 为选填参数，但位置在 dx、dy、dWidth、dHeight 之前。</p>
+<h3 id="步骤四canvas-输出图片"><a class="markdownIt-Anchor" href="#步骤四canvas-输出图片">#</a> 步骤四：Canvas 输出图片</h3>
+<p>调用  <code>canvas</code>  的  <code>toDataURL</code>  方法可以输出 base64 格式的图片。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">canvas.toDataURL(`image/$&#123;type&#125;`);</span><br></pre></td></tr></table></figure>
+<h3 id="步骤五api-解析todataurl"><a class="markdownIt-Anchor" href="#步骤五api-解析todataurl">#</a> 步骤五：Api 解析：toDataURL</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">canvas.toDataURL(type, encoderOptions);</span><br></pre></td></tr></table></figure>
+<p>**type （可选）：** 图片格式，默认为 image/png。</p>
+<p>**encoderOptions （可选）：** 在指定图片格式为 image/jpeg 或 image/webp 的情况下，可以从 0 到 1 的区间内选择图片的质量。如果超出取值范围，将会使用默认值 0.92。其他参数会被忽略。</p>
+<p><strong>a 标签的下载</strong>：调用  <code>&lt;a&gt;</code>  标签的  <code>download</code>  属性，即可完成图片的下载。</p>
+<h3 id="步骤六api-解析download"><a class="markdownIt-Anchor" href="#步骤六api-解析download">#</a> 步骤六：Api 解析：download</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// href 下载必填</span><br><span class="line">&lt;a download=&quot;filename&quot; href=&quot;href&quot;&gt; 下载 &lt;/a&gt;</span><br></pre></td></tr></table></figure>
+<p>**filename：** 选填，规定作为文件名来使用的文本。</p>
+<p>**href：** 文件的下载地址。</p>
+<h3 id="步骤七非主流浏览器下载处理"><a class="markdownIt-Anchor" href="#步骤七非主流浏览器下载处理">#</a> 步骤七：非主流浏览器下载处理</h3>
+<p>这一步可以解决 Chroma 、 Firefox 和 Safari（自测支持） 浏览器的下载功能，因为 IE 等浏览器不支持  <code>download</code>  属性，所以需要进行其他方式的下载，也就有了代码中的后续内容</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// base64 图片转 blob 后下载</span><br><span class="line">downloadImg() &#123;</span><br><span class="line">  let parts = this.compressImg.split(&#x27;;base64,&#x27;);</span><br><span class="line">  let contentType = parts[0].split(&#x27;:&#x27;)[1];</span><br><span class="line">  let raw = window.atob(parts[1]);</span><br><span class="line">  let rawLength = raw.length;</span><br><span class="line">  let uInt8Array = new Uint8Array(rawLength);</span><br><span class="line">  for(let i = 0; i &lt; rawLength; ++i) &#123;</span><br><span class="line">    uInt8Array[i] = raw.charCodeAt(i);</span><br><span class="line">  &#125;</span><br><span class="line">  const blob = new Blob([uInt8Array], &#123;type: contentType&#125;);</span><br><span class="line">  this.compressImg = URL.createObjectURL(blob);</span><br><span class="line">  if (window.navigator.msSaveOrOpenBlob) &#123;</span><br><span class="line">    // 兼容 ie 的下载方式</span><br><span class="line">    window.navigator.msSaveOrOpenBlob(blob, this.fileName);</span><br><span class="line">  &#125;else&#123;</span><br><span class="line">    const a = document.createElement(&#x27;a&#x27;);</span><br><span class="line">    a.href = this.compressImg;</span><br><span class="line">    a.setAttribute(&#x27;download&#x27;, this.fileName);</span><br><span class="line">    a.click();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <ul>
-<li>即使创建它的上下文已经销毁，它仍然存在（比如，内部函数从父函数中返回）</li>
-<li>在代码中引用了自由变量</li>
+<li>将之前  <code>canvas</code>  生成的 base64 数据拆分后，通过  <code>atob</code>  方法解码</li>
+<li>将解码后的数据转换成 Uint8Array 格式的无符号整形数组</li>
+<li>转换后的数组来生成一个 Blob 数据对象，通过  <code>URL.createObjectURL(blob)</code>  来生成一个临时的 DOM 对象</li>
+<li>之后 IE 类浏览器可以调用  <code>window.navigator.msSaveOrOpenBlob</code>  方法来执行下载，其他浏览器也可以继续通过  <code>&lt;a&gt;</code>  标签的  <code>download</code>  属性来进行下载</li>
 </ul>
-</li>
-</ol>
-<p><strong>总结：</strong></p>
+<h3 id="步骤八api-解析atob"><a class="markdownIt-Anchor" href="#步骤八api-解析atob">#</a> 步骤八：Api 解析：atob</h3>
+<p>base-64 解码使用方法是 atob ()。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">window.atob(encodedStr)</span><br></pre></td></tr></table></figure>
+<p>**encodedStr：** 必需，是一个通过 btoa () 方法编码的字符串，btoa () 是 base64 编码的使用方法。</p>
+<h3 id="步骤九api-解析uint8array"><a class="markdownIt-Anchor" href="#步骤九api-解析uint8array">#</a> 步骤九：Api 解析：Uint8Array</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">new Uint8Array(length)</span><br></pre></td></tr></table></figure>
+<p>**length：** 创建初始化为 0 的，包含 length 个元素的无符号整型数组。</p>
+<h3 id="步骤十api-解析blob"><a class="markdownIt-Anchor" href="#步骤十api-解析blob">#</a> 步骤十：Api 解析：Blob</h3>
+<p><code>Blob</code>  对象表示一个不可变、原始数据的类文件对象。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 构造函数允许通过其它对象创建 Blob 对象</span><br><span class="line">new Blob([obj],&#123;type:createType&#125;)</span><br></pre></td></tr></table></figure>
+<p>**obj：** 字符串内容</p>
+<p>**createType：** 要构造的类型，兼容性 IE 10 以上</p>
+<h3 id="步骤十一api-解析createobjecturl"><a class="markdownIt-Anchor" href="#步骤十一api-解析createobjecturl">#</a> 步骤十一：Api 解析：createObjectURL</h3>
+<p>静态方法会创建一个 DOMString。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">objectURL = URL.createObjectURL(object);</span><br></pre></td></tr></table></figure>
+<p>**object：** 用于创建 URL 的 File 对象、Blob 对象或者 MediaSource 对象。</p>
+<h3 id="步骤十二api-解析windownavigator"><a class="markdownIt-Anchor" href="#步骤十二api-解析windownavigator">#</a> 步骤十二：Api 解析：window.navigator</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 官方已不建议使用的文件下载方式，仅针对 ie 且兼容性 10 以上</span><br><span class="line">// msSaveBlob 仅提供下载</span><br><span class="line">// msSaveOrOpenBlob 支持下载和打开</span><br><span class="line">window.navigator.msSaveOrOpenBlob(blob, fileName);</span><br></pre></td></tr></table></figure>
+<p>**blob：** 要下载的 blob 对象</p>
+<p>**fileName：** 下载后命名的文件名称。</p>
+<h2 id="总结"><a class="markdownIt-Anchor" href="#总结">#</a> 总结</h2>
+<p>本方法仅针对图片压缩介绍了一些思路，简单的使用场景可能如下介绍，当然也会引申出来更多的使用场景，这些还有待大家一起挖掘。</p>
 <ul>
-<li>闭包代码块创建该代码块的上下文中数据的结合</li>
-<li>闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁</li>
-<li>不同的角度对闭包的解释不同的</li>
+<li>上传存储图片如果需要对文件大小格式有要求的，可以统一压缩处理图片</li>
+<li>前台页面想要编辑图片，可以在 Canvas 处理图片的时候，加一些其他逻辑，例如添加文字，剪裁，拼图等等操作</li>
 </ul>
-<p>注意：这些并不是闭包的全部，就好像当你被问到 —— 闭包是什么的时候，你的上述回答并不能结束这个话题，往往会引申出更多的话题。</p>
-<h2 id="二-尝试分析闭包"><a class="markdownIt-Anchor" href="#二-尝试分析闭包">#</a> 二、尝试分析闭包</h2>
-<p>还是那段经典代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = checkscope();</span><br><span class="line">foo(); <span class="comment">// local scope</span></span><br></pre></td></tr></table></figure>
-<p>首先我们要分析一下这段代码中执行上下文栈和执行上下文的变化情况。</p>
-<ol>
-<li>进入全局代码，创建全局执行上下文，全局执行上下文压入执行上下文栈</li>
-<li>全局执行上下文初始化</li>
-<li>执行 checkscope 函数，创建 checkscope 函数执行上下文，checkscope 执行上下文被压入执行上下文栈</li>
-<li>checkscope 执行上下文初始化，创建变量对象、作用域链、this 等</li>
-<li>checkscope 函数执行完毕，checkscope 执行上下文从执行上下文栈中弹出</li>
-<li>执行 f 函数，创建 f 函数执行上下文，f 执行上下文被压入执行上下文栈</li>
-<li>f 执行上下文初始化，创建变量对象、作用域链、this 等</li>
-<li>f 函数执行完毕，f 函数上下文从执行上下文栈中弹出</li>
-</ol>
-<p><img data-src="https://img-blog.csdnimg.cn/20200628152924827.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<p>当  <code>f</code>  函数执行的时候， <code>checkscope</code>  函数上下文已经被销毁了啊 (即从执行上下文栈中被弹出)，怎么还会读取到  <code>checkscope</code>  作用域下的  <code>scope</code>  值呢？</p>
-<p>当我们了解了具体的执行过程后，我们知道 f 执行上下文维护了一个作用域链：</p>
-<p>因为这个作用域链：</p>
-<ul>
-<li><code>f 函数</code> 依然可以读取到  <code>checkscopeContext.AO</code>  的值；</li>
-<li>当  <code>f 函数</code> 引用了  <code>checkscopeContext.AO</code>  中的值的时候，即使  <code>checkscopeContext</code>  被销毁了，JavaScript 依然会让  <code>checkscopeContext.AO</code>  活在内存中；</li>
-<li><code>f 函数</code> 依然可以通过  <code>f 函数</code> 的作用域链找到它，正是因为 JavaScript 做到了这一点，从而实现了闭包这个概念。</li>
-</ul>
-<p>多么浪漫的思想 —— 只要你需要我，那我我本应该被销毁，你也能找到我～</p>
-<h2 id="三-经典问题"><a class="markdownIt-Anchor" href="#三-经典问题">#</a> 三、经典问题</h2>
-<h3 id="31-多个对象引用同一个scope你遇到过吗"><a class="markdownIt-Anchor" href="#31-多个对象引用同一个scope你遇到过吗">#</a> 3.1 多个对象引用同一个 [[Scope]]，你遇到过吗？</h3>
-<p>直接上代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> child1;</span><br><span class="line"><span class="keyword">var</span> child2;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">parent</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> x = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    child1 = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(++x)</span><br><span class="line">    &#125;;</span><br><span class="line">    child2 = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(--x)</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line">parent();</span><br><span class="line">child1(); <span class="comment">// 2</span></span><br><span class="line">child1(); <span class="comment">// 3</span></span><br><span class="line">child2(); <span class="comment">// 2</span></span><br></pre></td></tr></table></figure>
-<p>大家可能不理解， <code>child1</code>  和 <code>child</code>  他们两个函数在创建后都保存了上层上下文，万万没想到，<strong>同一个上下文创建的闭包是共用一个 <code>[[scope]]</code>  属性的</strong>，某个闭包对其中 [[Scope]] 的变量做修改会影响到其他闭包对其变量的读取。</p>
-<h3 id="32-闭包轻松解决的经典问题"><a class="markdownIt-Anchor" href="#32-闭包轻松解决的经典问题">#</a> 3.2 闭包轻松解决的经典问题</h3>
-<p>大家一定对下面这段代码很眼熟：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = []</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">    arr[i] = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(i)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">arr[<span class="number">0</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">1</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">2</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">3</span>](); <span class="comment">// 10</span></span><br></pre></td></tr></table></figure>
-<p>我们这么解释它：<strong>同一个上下文中创建的闭包是共用一个 [[Scope]] 属性的</strong>。</p>
-<p>因此上层上下文中的变量 <code>i</code>  是可以很容易就被改变的。</p>
-<p>arr [0],arr [1]…arr [9] 他们共用一个 [[scope]]，最终执行的时候结果当然一样。</p>
-<p><strong>如何利用闭包来解决这个问题呢？</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = []</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">    arr[i] = (<span class="function"><span class="keyword">function</span> (<span class="params">i</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)(i)</span><br><span class="line">&#125;</span><br><span class="line">arr[<span class="number">0</span>](); <span class="comment">// 0</span></span><br><span class="line">arr[<span class="number">1</span>](); <span class="comment">// 1</span></span><br><span class="line">arr[<span class="number">2</span>](); <span class="comment">// 2</span></span><br><span class="line">arr[<span class="number">3</span>](); <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
-<p>我们通过立即执行匿名函数的方式隔离了作用域，当执行 arr [0] 函数的时候，arr [0] 函数的作用域链发生了改变：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">arr[<span class="number">0</span>]Context = &#123;</span><br><span class="line">    <span class="attr">Scope</span>: [AO, 匿名函数Context.AO globalContext.VO]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>匿名函数执行上下文的 AO 为：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">匿名函数Context = &#123;</span><br><span class="line">    <span class="attr">AO</span>: &#123;</span><br><span class="line">        <span class="attr">arguments</span>: &#123;</span><br><span class="line">            <span class="number">0</span>: <span class="number">0</span>,</span><br><span class="line">            <span class="attr">length</span>: <span class="number">1</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">i</span>: <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们看到，这时函数的 <code>[[Scope]]</code>  属性就有了真正想要的值了，为了达到这样的目的，我们不得不在 <code>[[Scope]]</code>  中创建额外的变量对象。要注意的是，在返回的函数中，如果要获取 <code>i</code>  的值，那么该值还是会是 10。</p>
-<h3 id="33-总结"><a class="markdownIt-Anchor" href="#33-总结">#</a> 3.3 总结</h3>
-<ul>
-<li>函数内的所有内部函数都共享一个父作用域，因此创建的闭包是共用的。</li>
-<li>利用闭包隔离作用域的特性可以解决共享作用域的问题</li>
-</ul>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&amp;fm=26&amp;gp=0.jpeg" alt=""></p>
+<p>tip：因部分接口有 IE 兼容性问题，IE 浏览器方面，仅能支持 IE 10 以上版本进行下载。</p>
 ]]></content>
       <categories>
-        <category>JavaScript专题</category>
+        <category>javascript</category>
       </categories>
       <tags>
         <tag>javascript</tag>
@@ -724,6 +622,108 @@ SSL 提供服务<br>
 <li>Object.prototype 是所有对象的根对象；</li>
 <li>原型链存在终点，不会无限查找下去；</li>
 </ul>
+]]></content>
+      <categories>
+        <category>JavaScript专题</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>JavaScript基础（五）闭包</title>
+    <url>/2021/03/25/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%94%EF%BC%89%E9%97%AD%E5%8C%85/</url>
+    <content><![CDATA[<h2 id="一-什么是闭包"><a class="markdownIt-Anchor" href="#一-什么是闭包">#</a> 一、什么是闭包</h2>
+<p>顾名思义，遇见问题先问为什么是我们一贯的思维方式，我们尝试回答一下：</p>
+<ol>
+<li>闭包就是函数内部的子函数 ——  <code>等于没说</code></li>
+<li>当函数可以记住并访问所在的词法作用域时，就产生了闭包，即使函数是在当前词法作用域之外执行。—— <code>靠谱</code></li>
+<li>闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁 —— <code>靠谱</code></li>
+<li>函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）—— <code>很靠谱</code></li>
+</ol>
+<p>我们试着用代码来描述一下上面的回答，看看你最<strong>中意</strong>哪一个～</p>
+<span id="more"></span>
+<h3 id="11-闭包是函数内部的子函数"><a class="markdownIt-Anchor" href="#11-闭包是函数内部的子函数">#</a> 1.1 闭包是函数内部的子函数</h3>
+<p>先看这段代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(a);</span><br><span class="line">    &#125;</span><br><span class="line">    bar()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+<p>基于词法作用域的查找规则， <code>bar函数</code> 可以成功的打印 <code>a</code>  变量，并且它也是 <code>foo</code>  的子函数，但严格来说它并没有清晰的表达出闭包这一概念，说它表达的是<strong>嵌套函数可以访问声明于大外部作用域的变量</strong>更准确一些。</p>
+<h3 id="12-闭包就是能够读取其他函数内部变量的函数在本质上是函数内部和函数外部链接的桥梁"><a class="markdownIt-Anchor" href="#12-闭包就是能够读取其他函数内部变量的函数在本质上是函数内部和函数外部链接的桥梁">#</a> 1.2 闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁</h3>
+<p>再来看下面的例子：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(a);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> bar;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> res = foo();</span><br><span class="line">res(); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+<p>结果一致，这是因为此时 <code>res</code>  是执行 <code>foo</code>  函数时返回的 <code>bar</code>  引用，bar 函数得以保存了它饿词法环境。</p>
+<h3 id="13-函数和对其周围状态词法环境的引用捆绑在一起构成闭包closure"><a class="markdownIt-Anchor" href="#13-函数和对其周围状态词法环境的引用捆绑在一起构成闭包closure">#</a> 1.3 函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包（closure）</h3>
+<p>我们来看下面代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(name); <span class="comment">// gaoyuan</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">//gaoyuan</span></span><br></pre></td></tr></table></figure>
+<p>foo 的上下文被静态的保存了下来，而且是在该函数创建的时候就保存了。下面我们来验证一下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;gaoyuan&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(name); <span class="comment">// gaoyuan</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params">func</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;老王&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    func()</span><br><span class="line">&#125;)(foo); <span class="comment">// gaoyuan</span></span><br></pre></td></tr></table></figure>
+<p>这里我们就可以理解 —— 函数被创建后就形成了闭包，他们保存了上层上下文的作用域链，并且保存在 <code>[[scope]]</code>  中，如果你对 <code>[[scope]]</code>  的概念已经模糊了，不妨花几分钟看看《JavaScript 中的执行上下文》这篇文章。</p>
+<h3 id="14-总结"><a class="markdownIt-Anchor" href="#14-总结">#</a> 1.4 总结</h3>
+<p><strong>注意：闭包是函数内部的返回的子函数这句话本身没错</strong>，但要看从什么角度出发：</p>
+<p>ECMAScript 中，闭包指的是：</p>
+<ol>
+<li>从理论角度：所有的函数。因为它们都在创建的时候就将上层上下文的数据保存起来了。哪怕是简单的全局变量也是如此，因为函数中访问全局变量就相当于是在访问自由变量，这个时候使用最外层的作用域。</li>
+<li>从实践角度：以下函数才算是闭包：
+<ul>
+<li>即使创建它的上下文已经销毁，它仍然存在（比如，内部函数从父函数中返回）</li>
+<li>在代码中引用了自由变量</li>
+</ul>
+</li>
+</ol>
+<p><strong>总结：</strong></p>
+<ul>
+<li>闭包代码块创建该代码块的上下文中数据的结合</li>
+<li>闭包就是能够读取其他函数内部变量的函数，在本质上是函数内部和函数外部链接的桥梁</li>
+<li>不同的角度对闭包的解释不同的</li>
+</ul>
+<p>注意：这些并不是闭包的全部，就好像当你被问到 —— 闭包是什么的时候，你的上述回答并不能结束这个话题，往往会引申出更多的话题。</p>
+<h2 id="二-尝试分析闭包"><a class="markdownIt-Anchor" href="#二-尝试分析闭包">#</a> 二、尝试分析闭包</h2>
+<p>还是那段经典代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = checkscope();</span><br><span class="line">foo(); <span class="comment">// local scope</span></span><br></pre></td></tr></table></figure>
+<p>首先我们要分析一下这段代码中执行上下文栈和执行上下文的变化情况。</p>
+<ol>
+<li>进入全局代码，创建全局执行上下文，全局执行上下文压入执行上下文栈</li>
+<li>全局执行上下文初始化</li>
+<li>执行 checkscope 函数，创建 checkscope 函数执行上下文，checkscope 执行上下文被压入执行上下文栈</li>
+<li>checkscope 执行上下文初始化，创建变量对象、作用域链、this 等</li>
+<li>checkscope 函数执行完毕，checkscope 执行上下文从执行上下文栈中弹出</li>
+<li>执行 f 函数，创建 f 函数执行上下文，f 执行上下文被压入执行上下文栈</li>
+<li>f 执行上下文初始化，创建变量对象、作用域链、this 等</li>
+<li>f 函数执行完毕，f 函数上下文从执行上下文栈中弹出</li>
+</ol>
+<p><img data-src="https://img-blog.csdnimg.cn/20200628152924827.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>当  <code>f</code>  函数执行的时候， <code>checkscope</code>  函数上下文已经被销毁了啊 (即从执行上下文栈中被弹出)，怎么还会读取到  <code>checkscope</code>  作用域下的  <code>scope</code>  值呢？</p>
+<p>当我们了解了具体的执行过程后，我们知道 f 执行上下文维护了一个作用域链：</p>
+<p>因为这个作用域链：</p>
+<ul>
+<li><code>f 函数</code> 依然可以读取到  <code>checkscopeContext.AO</code>  的值；</li>
+<li>当  <code>f 函数</code> 引用了  <code>checkscopeContext.AO</code>  中的值的时候，即使  <code>checkscopeContext</code>  被销毁了，JavaScript 依然会让  <code>checkscopeContext.AO</code>  活在内存中；</li>
+<li><code>f 函数</code> 依然可以通过  <code>f 函数</code> 的作用域链找到它，正是因为 JavaScript 做到了这一点，从而实现了闭包这个概念。</li>
+</ul>
+<p>多么浪漫的思想 —— 只要你需要我，那我我本应该被销毁，你也能找到我～</p>
+<h2 id="三-经典问题"><a class="markdownIt-Anchor" href="#三-经典问题">#</a> 三、经典问题</h2>
+<h3 id="31-多个对象引用同一个scope你遇到过吗"><a class="markdownIt-Anchor" href="#31-多个对象引用同一个scope你遇到过吗">#</a> 3.1 多个对象引用同一个 [[Scope]]，你遇到过吗？</h3>
+<p>直接上代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> child1;</span><br><span class="line"><span class="keyword">var</span> child2;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">parent</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> x = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    child1 = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(++x)</span><br><span class="line">    &#125;;</span><br><span class="line">    child2 = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(--x)</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line">parent();</span><br><span class="line">child1(); <span class="comment">// 2</span></span><br><span class="line">child1(); <span class="comment">// 3</span></span><br><span class="line">child2(); <span class="comment">// 2</span></span><br></pre></td></tr></table></figure>
+<p>大家可能不理解， <code>child1</code>  和 <code>child</code>  他们两个函数在创建后都保存了上层上下文，万万没想到，<strong>同一个上下文创建的闭包是共用一个 <code>[[scope]]</code>  属性的</strong>，某个闭包对其中 [[Scope]] 的变量做修改会影响到其他闭包对其变量的读取。</p>
+<h3 id="32-闭包轻松解决的经典问题"><a class="markdownIt-Anchor" href="#32-闭包轻松解决的经典问题">#</a> 3.2 闭包轻松解决的经典问题</h3>
+<p>大家一定对下面这段代码很眼熟：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = []</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">    arr[i] = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(i)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">arr[<span class="number">0</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">1</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">2</span>](); <span class="comment">// 10</span></span><br><span class="line">arr[<span class="number">3</span>](); <span class="comment">// 10</span></span><br></pre></td></tr></table></figure>
+<p>我们这么解释它：<strong>同一个上下文中创建的闭包是共用一个 [[Scope]] 属性的</strong>。</p>
+<p>因此上层上下文中的变量 <code>i</code>  是可以很容易就被改变的。</p>
+<p>arr [0],arr [1]…arr [9] 他们共用一个 [[scope]]，最终执行的时候结果当然一样。</p>
+<p><strong>如何利用闭包来解决这个问题呢？</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = []</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)&#123;</span><br><span class="line">    arr[i] = (<span class="function"><span class="keyword">function</span> (<span class="params">i</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)(i)</span><br><span class="line">&#125;</span><br><span class="line">arr[<span class="number">0</span>](); <span class="comment">// 0</span></span><br><span class="line">arr[<span class="number">1</span>](); <span class="comment">// 1</span></span><br><span class="line">arr[<span class="number">2</span>](); <span class="comment">// 2</span></span><br><span class="line">arr[<span class="number">3</span>](); <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+<p>我们通过立即执行匿名函数的方式隔离了作用域，当执行 arr [0] 函数的时候，arr [0] 函数的作用域链发生了改变：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">arr[<span class="number">0</span>]Context = &#123;</span><br><span class="line">    <span class="attr">Scope</span>: [AO, 匿名函数Context.AO globalContext.VO]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>匿名函数执行上下文的 AO 为：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">匿名函数Context = &#123;</span><br><span class="line">    <span class="attr">AO</span>: &#123;</span><br><span class="line">        <span class="attr">arguments</span>: &#123;</span><br><span class="line">            <span class="number">0</span>: <span class="number">0</span>,</span><br><span class="line">            <span class="attr">length</span>: <span class="number">1</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">i</span>: <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们看到，这时函数的 <code>[[Scope]]</code>  属性就有了真正想要的值了，为了达到这样的目的，我们不得不在 <code>[[Scope]]</code>  中创建额外的变量对象。要注意的是，在返回的函数中，如果要获取 <code>i</code>  的值，那么该值还是会是 10。</p>
+<h3 id="33-总结"><a class="markdownIt-Anchor" href="#33-总结">#</a> 3.3 总结</h3>
+<ul>
+<li>函数内的所有内部函数都共享一个父作用域，因此创建的闭包是共用的。</li>
+<li>利用闭包隔离作用域的特性可以解决共享作用域的问题</li>
+</ul>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=1200653736,2067630829&amp;fm=26&amp;gp=0.jpeg" alt=""></p>
 ]]></content>
       <categories>
         <category>JavaScript专题</category>
@@ -1126,73 +1126,6 @@ user_name  CHAR (8)：定长字符串，可能产生空间浪费，但读取速�
       </tags>
   </entry>
   <entry>
-    <title>vue项目打包优化策略</title>
-    <url>/2020/11/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</url>
-    <content><![CDATA[<p>使用 vue-cli 部署生产包时，发现资源包很大，打包后的 <code>vendor.js</code>  达到了 1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？</p>
-<h3 id="1组件按需加载"><a class="markdownIt-Anchor" href="#1组件按需加载">#</a> 1. 组件按需加载</h3>
-<p>这是首先可以优化的点。如果频繁使用了第三方组件 / UI 库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts 等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。</p>
-<p>示例如下：</p>
-<h4 id="11-element-ui"><a class="markdownIt-Anchor" href="#11-element-ui">#</a> 1.1 element-ui</h4>
-<p>首先，安装 babel-plugin-component：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
-<span id="more"></span>
-<p>然后，将.babelrc 修改为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// main.js</span><br><span class="line">import Vue from &#x27;vue&#x27;</span><br><span class="line">import &#123; Dialog, Loading &#125; from &#x27;element-ui&#x27;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading = Loading.service</span><br><span class="line">// 然后正常使用组件</span><br></pre></td></tr></table></figure>
-<h4 id="12-mint-ui"><a class="markdownIt-Anchor" href="#12-mint-ui">#</a> 1.2 mint-ui</h4>
-<p>由于 mint-ui 是 element-ui 的移动端组件，所以它的使用和引入几乎和 element-ui 一样。</p>
-<p>首先，安装 babel-plugin-component：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
-<p>然后，将.babelrc 修改为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;presets&quot;: [</span><br><span class="line">    [&quot;es2015&quot;, &#123; &quot;modules&quot;: false &#125;]</span><br><span class="line">  ],</span><br><span class="line">  &quot;plugins&quot;: [[&quot;component&quot;, [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;libraryName&quot;: &quot;mint-ui&quot;,</span><br><span class="line">      &quot;style&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">  ]]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后引入部分组件</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// main.js</span><br><span class="line">import Vue from &#x27;vue&#x27;</span><br><span class="line">import &#123; Toast, MessageBox &#125; from &#x27;element-ui&#x27;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading = Loading.service</span><br><span class="line">// 然后正常使用组件</span><br></pre></td></tr></table></figure>
-<p>注意，element-ui 和 mint-ui 不能同时在.babelrc 中进行插件设置，这种情况下，依然可以按需引入，但是不要在 <code>.babelrc</code>  中配置，在引入的地方同时引入 css 即可。</p>
-<h4 id="13-echarts"><a class="markdownIt-Anchor" href="#13-echarts">#</a> 1.3 echarts</h4>
-<p>首先安装 babel-plugin-equire</p>
-<p>npm i babel-plugin-equire -D</p>
-<p>然后，在 <code>.babelrc</code>  文件中添加该插件</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;plugins&quot;: [</span><br><span class="line">       // other plugins</span><br><span class="line">       ...</span><br><span class="line">       </span><br><span class="line">    &quot;equire&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>创建一个 js 文件</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// echarts.js</span><br><span class="line">// eslint-disable-next-line</span><br><span class="line">const echarts = equire([</span><br><span class="line">  &#x27;tooltip&#x27;,</span><br><span class="line">  &#x27;candlestick&#x27;,</span><br><span class="line">  &#x27;bar&#x27;,</span><br><span class="line">  &#x27;line&#x27;,</span><br><span class="line">  &#x27;axisPointer&#x27;,</span><br><span class="line">  &#x27;legend&#x27;,</span><br><span class="line">  &#x27;grid&#x27;</span><br><span class="line">])</span><br><span class="line">export default echarts</span><br><span class="line">// 业务组件，引入echarts</span><br><span class="line">import echarts from &#x27;@/assets/lib/echarts&#x27;</span><br><span class="line">// 使用与以前一样</span><br></pre></td></tr></table></figure>
-<p>按需加载 echarts</p>
-<p>解决 vue-cli 首屏加载慢的问题</p>
-<h3 id="2路由懒加载"><a class="markdownIt-Anchor" href="#2路由懒加载">#</a> 2. 路由懒加载</h3>
-<p>这里需要一个插件</p>
-<p>vue-router 官方推荐 syntax-dynamic-import 插件，不过它要求同时安装 @bable/core^7.0.0，如果你安装了 babel-core6，是会有版本冲突的。我的做法如下</p>
-<p>npm install babel-plugin-syntax-dynamic-import --save-dev(^6.18.0)</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// router.js</span><br><span class="line">const login = () =&gt; import(&#x27;@/components/login&#x27;)</span><br><span class="line">const router = new VueRouter(&#123;</span><br><span class="line">  routes: [</span><br><span class="line">    &#123; path: &#x27;/login&#x27;, component: login &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p>还有一种魔法注释用法</p>
-<p>有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack &gt; 2.4)。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const Foo = () =&gt; import(/* webpackChunkName: &quot;group-foo&quot; */ &#x27;./Foo.vue&#x27;)</span><br></pre></td></tr></table></figure>
-<h3 id="3异步组件"><a class="markdownIt-Anchor" href="#3异步组件">#</a> 3. 异步组件</h3>
-<p>如果组件在页面加载时不需要，只在调用时用到，这时可以使用异步组件的写法。仅仅是引入和组件注册写法不同</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// template</span><br><span class="line">&lt;test v-if=&quot;showTest&quot;&gt;&lt;/test&gt;</span><br><span class="line">// script</span><br><span class="line">  components: &#123;</span><br><span class="line">    test: () =&gt; import(&#x27;./test&#x27;) // 将组件异步引入，告诉webpack，将该部分代码分割打包</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">      clickTest () &#123;</span><br><span class="line">          this.showTest = !this.showTest</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<h3 id="4图片的压缩合并"><a class="markdownIt-Anchor" href="#4图片的压缩合并">#</a> 4. 图片的压缩合并</h3>
-<p>如有可能，将图片制作成精灵图</p>
-<h3 id="5cdn加速"><a class="markdownIt-Anchor" href="#5cdn加速">#</a> 5.CDN 加速</h3>
-<p>在 index.html 中引入 cdn 资源</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;div id=&quot;app&quot;&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">  &lt;!-- built files will be auto injected --&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue/2.5.2/vue.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue-router/3.0.1/vue-router.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vuex/3.0.1/vuex.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-<p>修改 build/webpack.base.conf.js</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">module.exports = &#123;</span><br><span class="line">  context: path.resolve(__dirname, &#x27;../&#x27;),</span><br><span class="line">  entry: &#123;</span><br><span class="line">    app: &#x27;./src/main.js&#x27;</span><br><span class="line">  &#125;,</span><br><span class="line">  externals:&#123;</span><br><span class="line">    &#x27;vue&#x27;: &#x27;Vue&#x27;,</span><br><span class="line">    &#x27;vue-router&#x27;: &#x27;VueRouter&#x27;,</span><br><span class="line">    &#x27;vuex&#x27;:&#x27;Vuex&#x27;,</span><br><span class="line">    &#x27;vue-resource&#x27;: &#x27;VueResource&#x27;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>修改 src/main.js src/router/index.js 注释掉 import 引入的 vue,vue-resource</p>
-<p>// import Vue from ‘vue’</p>
-<p>// import VueResource from ‘vue-resource’</p>
-<p>// Vue.use(VueResource)</p>
-<h3 id="6压缩代码"><a class="markdownIt-Anchor" href="#6压缩代码">#</a> 6. 压缩代码</h3>
-<p>vue-cli 已经使用 UglifyJsPlugin 插件来压缩代码，可以设置成如下配置：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">new webpack.optimize.UglifyJsPlugin(&#123;</span><br><span class="line">  compress: &#123;</span><br><span class="line">    warnings: false,</span><br><span class="line">    drop_console: true,</span><br><span class="line">    pure_funcs: [&#x27;console.log&#x27;]</span><br><span class="line">  &#125;,</span><br><span class="line">  sourceMap: false</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p>其中 sourceMap: false 是禁用除错功能。</p>
-<p>如果设为 true，在部署包中会生成.map 结尾的 js 文件。它用于在代码混淆压缩的情况下仍可进行调试。这个功能虽好，但会大大增加整体资源包的体积，所以将其禁用。</p>
-]]></content>
-      <categories>
-        <category>Vue专题</category>
-      </categories>
-      <tags>
-        <tag>vue</tag>
-        <tag>webpack</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>vuex笔记</title>
     <url>/2020/12/26/vuex%E7%AC%94%E8%AE%B0/</url>
     <content><![CDATA[<h1 id="vuex笔记"><a class="markdownIt-Anchor" href="#vuex笔记">#</a> Vuex 笔记</h1>
@@ -1364,6 +1297,73 @@ user_name  CHAR (8)：定长字符串，可能产生空间浪费，但读取速�
       <tags>
         <tag>vue</tag>
         <tag>axios</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>vue项目打包优化策略</title>
+    <url>/2020/11/18/vue%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/</url>
+    <content><![CDATA[<p>使用 vue-cli 部署生产包时，发现资源包很大，打包后的 <code>vendor.js</code>  达到了 1.4M，这已经很大了，而且会影响到首屏加载。那么，怎么优化呢？</p>
+<h3 id="1组件按需加载"><a class="markdownIt-Anchor" href="#1组件按需加载">#</a> 1. 组件按需加载</h3>
+<p>这是首先可以优化的点。如果频繁使用了第三方组件 / UI 库，如我的项目中经常同时使用了 element-ui, mint-ui,echarts 等组件库，如果全部引入，项目体积非常大，这时可以按需引入组件。</p>
+<p>示例如下：</p>
+<h4 id="11-element-ui"><a class="markdownIt-Anchor" href="#11-element-ui">#</a> 1.1 element-ui</h4>
+<p>首先，安装 babel-plugin-component：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<p>然后，将.babelrc 修改为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// main.js</span><br><span class="line">import Vue from &#x27;vue&#x27;</span><br><span class="line">import &#123; Dialog, Loading &#125; from &#x27;element-ui&#x27;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading = Loading.service</span><br><span class="line">// 然后正常使用组件</span><br></pre></td></tr></table></figure>
+<h4 id="12-mint-ui"><a class="markdownIt-Anchor" href="#12-mint-ui">#</a> 1.2 mint-ui</h4>
+<p>由于 mint-ui 是 element-ui 的移动端组件，所以它的使用和引入几乎和 element-ui 一样。</p>
+<p>首先，安装 babel-plugin-component：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install babel-plugin-component -D</span><br></pre></td></tr></table></figure>
+<p>然后，将.babelrc 修改为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;presets&quot;: [</span><br><span class="line">    [&quot;es2015&quot;, &#123; &quot;modules&quot;: false &#125;]</span><br><span class="line">  ],</span><br><span class="line">  &quot;plugins&quot;: [[&quot;component&quot;, [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;libraryName&quot;: &quot;mint-ui&quot;,</span><br><span class="line">      &quot;style&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">  ]]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后引入部分组件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// main.js</span><br><span class="line">import Vue from &#x27;vue&#x27;</span><br><span class="line">import &#123; Toast, MessageBox &#125; from &#x27;element-ui&#x27;</span><br><span class="line">Vue.use(Dialog)</span><br><span class="line">Vue.use(Loading.directive)</span><br><span class="line">Vue.prototype.$loading = Loading.service</span><br><span class="line">// 然后正常使用组件</span><br></pre></td></tr></table></figure>
+<p>注意，element-ui 和 mint-ui 不能同时在.babelrc 中进行插件设置，这种情况下，依然可以按需引入，但是不要在 <code>.babelrc</code>  中配置，在引入的地方同时引入 css 即可。</p>
+<h4 id="13-echarts"><a class="markdownIt-Anchor" href="#13-echarts">#</a> 1.3 echarts</h4>
+<p>首先安装 babel-plugin-equire</p>
+<p>npm i babel-plugin-equire -D</p>
+<p>然后，在 <code>.babelrc</code>  文件中添加该插件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;plugins&quot;: [</span><br><span class="line">       // other plugins</span><br><span class="line">       ...</span><br><span class="line">       </span><br><span class="line">    &quot;equire&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>创建一个 js 文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// echarts.js</span><br><span class="line">// eslint-disable-next-line</span><br><span class="line">const echarts = equire([</span><br><span class="line">  &#x27;tooltip&#x27;,</span><br><span class="line">  &#x27;candlestick&#x27;,</span><br><span class="line">  &#x27;bar&#x27;,</span><br><span class="line">  &#x27;line&#x27;,</span><br><span class="line">  &#x27;axisPointer&#x27;,</span><br><span class="line">  &#x27;legend&#x27;,</span><br><span class="line">  &#x27;grid&#x27;</span><br><span class="line">])</span><br><span class="line">export default echarts</span><br><span class="line">// 业务组件，引入echarts</span><br><span class="line">import echarts from &#x27;@/assets/lib/echarts&#x27;</span><br><span class="line">// 使用与以前一样</span><br></pre></td></tr></table></figure>
+<p>按需加载 echarts</p>
+<p>解决 vue-cli 首屏加载慢的问题</p>
+<h3 id="2路由懒加载"><a class="markdownIt-Anchor" href="#2路由懒加载">#</a> 2. 路由懒加载</h3>
+<p>这里需要一个插件</p>
+<p>vue-router 官方推荐 syntax-dynamic-import 插件，不过它要求同时安装 @bable/core^7.0.0，如果你安装了 babel-core6，是会有版本冲突的。我的做法如下</p>
+<p>npm install babel-plugin-syntax-dynamic-import --save-dev(^6.18.0)</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// router.js</span><br><span class="line">const login = () =&gt; import(&#x27;@/components/login&#x27;)</span><br><span class="line">const router = new VueRouter(&#123;</span><br><span class="line">  routes: [</span><br><span class="line">    &#123; path: &#x27;/login&#x27;, component: login &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>还有一种魔法注释用法</p>
+<p>有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack &gt; 2.4)。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const Foo = () =&gt; import(/* webpackChunkName: &quot;group-foo&quot; */ &#x27;./Foo.vue&#x27;)</span><br></pre></td></tr></table></figure>
+<h3 id="3异步组件"><a class="markdownIt-Anchor" href="#3异步组件">#</a> 3. 异步组件</h3>
+<p>如果组件在页面加载时不需要，只在调用时用到，这时可以使用异步组件的写法。仅仅是引入和组件注册写法不同</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// template</span><br><span class="line">&lt;test v-if=&quot;showTest&quot;&gt;&lt;/test&gt;</span><br><span class="line">// script</span><br><span class="line">  components: &#123;</span><br><span class="line">    test: () =&gt; import(&#x27;./test&#x27;) // 将组件异步引入，告诉webpack，将该部分代码分割打包</span><br><span class="line">  &#125;,</span><br><span class="line">  methods:&#123;</span><br><span class="line">      clickTest () &#123;</span><br><span class="line">          this.showTest = !this.showTest</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4图片的压缩合并"><a class="markdownIt-Anchor" href="#4图片的压缩合并">#</a> 4. 图片的压缩合并</h3>
+<p>如有可能，将图片制作成精灵图</p>
+<h3 id="5cdn加速"><a class="markdownIt-Anchor" href="#5cdn加速">#</a> 5.CDN 加速</h3>
+<p>在 index.html 中引入 cdn 资源</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;div id=&quot;app&quot;&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">  &lt;!-- built files will be auto injected --&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue/2.5.2/vue.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue-router/3.0.1/vue-router.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vuex/3.0.1/vuex.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>修改 build/webpack.base.conf.js</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">module.exports = &#123;</span><br><span class="line">  context: path.resolve(__dirname, &#x27;../&#x27;),</span><br><span class="line">  entry: &#123;</span><br><span class="line">    app: &#x27;./src/main.js&#x27;</span><br><span class="line">  &#125;,</span><br><span class="line">  externals:&#123;</span><br><span class="line">    &#x27;vue&#x27;: &#x27;Vue&#x27;,</span><br><span class="line">    &#x27;vue-router&#x27;: &#x27;VueRouter&#x27;,</span><br><span class="line">    &#x27;vuex&#x27;:&#x27;Vuex&#x27;,</span><br><span class="line">    &#x27;vue-resource&#x27;: &#x27;VueResource&#x27;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>修改 src/main.js src/router/index.js 注释掉 import 引入的 vue,vue-resource</p>
+<p>// import Vue from ‘vue’</p>
+<p>// import VueResource from ‘vue-resource’</p>
+<p>// Vue.use(VueResource)</p>
+<h3 id="6压缩代码"><a class="markdownIt-Anchor" href="#6压缩代码">#</a> 6. 压缩代码</h3>
+<p>vue-cli 已经使用 UglifyJsPlugin 插件来压缩代码，可以设置成如下配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">new webpack.optimize.UglifyJsPlugin(&#123;</span><br><span class="line">  compress: &#123;</span><br><span class="line">    warnings: false,</span><br><span class="line">    drop_console: true,</span><br><span class="line">    pure_funcs: [&#x27;console.log&#x27;]</span><br><span class="line">  &#125;,</span><br><span class="line">  sourceMap: false</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>其中 sourceMap: false 是禁用除错功能。</p>
+<p>如果设为 true，在部署包中会生成.map 结尾的 js 文件。它用于在代码混淆压缩的情况下仍可进行调试。这个功能虽好，但会大大增加整体资源包的体积，所以将其禁用。</p>
+]]></content>
+      <categories>
+        <category>Vue专题</category>
+      </categories>
+      <tags>
+        <tag>vue</tag>
+        <tag>webpack</tag>
       </tags>
   </entry>
   <entry>
@@ -1857,46 +1857,6 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
       </tags>
   </entry>
   <entry>
-    <title>移动端自适应——手淘flexible</title>
-    <url>/2021/04/25/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible/</url>
-    <content><![CDATA[<h2 id="移动端自适应手淘flexible"><a class="markdownIt-Anchor" href="#移动端自适应手淘flexible">#</a> 移动端自适应 —— 手淘 flexible</h2>
-<p>熟悉移动端的自适应方案的朋友对 rem 适应方案，肯定不陌生，最出名的就是阿里的 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2FtZmUvbGliLWZsZXhpYmxl">lib-flexible</span> 方案。</p>
-<p>** 原理：**flexible 就是根据不同的屏幕算出 html 的 font-size，通过 js 来动态写 meta 标签。</p>
-<p>事实上他做了这几样事情：</p>
-<ul>
-<li>动态改写 <code>&lt;meta&gt;</code>  标签</li>
-<li>给 <code>&lt;html&gt;</code>  元素添加 <code>data-dpr</code>  属性，并且动态改写 <code>data-dpr</code>  的值</li>
-<li>给 <code>&lt;html&gt;</code>  元素添加 <code>font-size</code>  属性，并且动态改写 <code>font-size</code>  的值</li>
-</ul>
-<p>比如我们在做移动端的时候，经常拿到的设计稿是 640px 或者 750px。自己项目中就是 640px，以此为例，自己在项目中为了计算方便，所以给 html 根元素设置的字体大小是 100px，也就是在 640px 下面。这里注意，我们给 html 设置 100px，这个是字体哦，所以最好在 body 设置一下字体大小。</p>
-<span id="more"></span>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 设置html元素的字体大小为100px</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 所有的像素我们直接除以</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">640px  ——  6.4rem</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">64px —— 0.64rem</span><br></pre></td></tr></table></figure>
-<p>那么如果 64px，对应我们写 rem 就是 0.64rem，也不需要动用计算器去计算 rem，需要多强的大脑呀（虽然有很多插件帮我们）</p>
-<p>修改 flexible.js。640px 下面的 10 就变成 6.4</p>
-<p>![image-20210425112100315](/Users/gaoyuan/Library/Application Support/typora-user-images/image-20210425112100315.png)</p>
-<p>这样，我们页面直接把 px 换算成 rem，就可以实现自适应。（记住，自己这里以 640px 设计稿为基础，如果是 750px 就是除以 7.5）。</p>
-<p><strong>字号不使用 rem</strong></p>
-<p>我们都知道 chrome 的最小显示的字体是 12px，如果字体用 rem，计算出来小于 12px，那么就也会以 12px 显示，而且我们不希望出现 13px 或者 15px 这样的奇葩尺寸，所以字体最好是用 px 来表示，至于适应，我们可以写媒体查询。</p>
-<h2 id="vue中使用rem"><a class="markdownIt-Anchor" href="#vue中使用rem">#</a> vue 中使用 rem</h2>
-<p>vue 现在正是火的势头上，作者说明年估计 3.0 要出来了。那么在 vue 我们如果做移动端自适应怎么弄呢？</p>
-<p><strong>安装 flexible</strong></p>
-<p><em>在命令行中运行如下安装：</em></p>
-<blockquote>
-<p>npm i lib-flexible --save-dev</p>
-</blockquote>
-<p><strong>引入 flexible</strong></p>
-<p><em>在项目入口文件 main.js 里 引入 lib-flexible</em></p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&#x27;lib-flexible&#x27;</span></span><br></pre></td></tr></table></figure>
-<p>对于我们的 index.html，最好是不要 meta 标签，flexible 会自动添加上的，因为有一个判断。当然了，懒惰果然是最大的生产力，有的人觉得换算 rem 太麻烦，就出现了插件<span class="exturl" data-url="aHR0cHM6Ly93d3cubnBtanMuY29tL3BhY2thZ2UvcHgycmVtLWxvYWRlcg=="> px2rem-loader</span>，把 px 自动转化为对应的 rem。但是呢，麻烦的就是如果引入外部的 css 文件，那么也会把 px 转化为 rem。自己在项目中就是手动计算 rem，用上面的方法，直接除以 100，这个应该很简单吧，都是程序员，数学这个还是可以吧…</p>
-]]></content>
-      <categories>
-        <category>移动端</category>
-      </categories>
-      <tags>
-        <tag>移动端</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>用CSS3使你的网页动起来——transform属性</title>
     <url>/2017/08/11/%E7%94%A8CSS3%E4%BD%BF%E4%BD%A0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%8A%A8%E8%B5%B7%E6%9D%A5%E2%80%94%E2%80%94transform%E5%B1%9E%E6%80%A7/</url>
     <content><![CDATA[<p><strong>转换</strong></p>
@@ -2073,6 +2033,46 @@ unpackage 文件夹是放置 app 图标和启动界面的图片。</p>
       </categories>
       <tags>
         <tag>CSS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>移动端自适应——手淘flexible</title>
+    <url>/2021/04/25/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94%E2%80%94%E2%80%94%E6%89%8B%E6%B7%98flexible/</url>
+    <content><![CDATA[<h2 id="移动端自适应手淘flexible"><a class="markdownIt-Anchor" href="#移动端自适应手淘flexible">#</a> 移动端自适应 —— 手淘 flexible</h2>
+<p>熟悉移动端的自适应方案的朋友对 rem 适应方案，肯定不陌生，最出名的就是阿里的 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2FtZmUvbGliLWZsZXhpYmxl">lib-flexible</span> 方案。</p>
+<p>** 原理：**flexible 就是根据不同的屏幕算出 html 的 font-size，通过 js 来动态写 meta 标签。</p>
+<p>事实上他做了这几样事情：</p>
+<ul>
+<li>动态改写 <code>&lt;meta&gt;</code>  标签</li>
+<li>给 <code>&lt;html&gt;</code>  元素添加 <code>data-dpr</code>  属性，并且动态改写 <code>data-dpr</code>  的值</li>
+<li>给 <code>&lt;html&gt;</code>  元素添加 <code>font-size</code>  属性，并且动态改写 <code>font-size</code>  的值</li>
+</ul>
+<p>比如我们在做移动端的时候，经常拿到的设计稿是 640px 或者 750px。自己项目中就是 640px，以此为例，自己在项目中为了计算方便，所以给 html 根元素设置的字体大小是 100px，也就是在 640px 下面。这里注意，我们给 html 设置 100px，这个是字体哦，所以最好在 body 设置一下字体大小。</p>
+<span id="more"></span>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 设置html元素的字体大小为100px</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 所有的像素我们直接除以</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">640px  ——  6.4rem</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">64px —— 0.64rem</span><br></pre></td></tr></table></figure>
+<p>那么如果 64px，对应我们写 rem 就是 0.64rem，也不需要动用计算器去计算 rem，需要多强的大脑呀（虽然有很多插件帮我们）</p>
+<p>修改 flexible.js。640px 下面的 10 就变成 6.4</p>
+<p>![image-20210425112100315](/Users/gaoyuan/Library/Application Support/typora-user-images/image-20210425112100315.png)</p>
+<p>这样，我们页面直接把 px 换算成 rem，就可以实现自适应。（记住，自己这里以 640px 设计稿为基础，如果是 750px 就是除以 7.5）。</p>
+<p><strong>字号不使用 rem</strong></p>
+<p>我们都知道 chrome 的最小显示的字体是 12px，如果字体用 rem，计算出来小于 12px，那么就也会以 12px 显示，而且我们不希望出现 13px 或者 15px 这样的奇葩尺寸，所以字体最好是用 px 来表示，至于适应，我们可以写媒体查询。</p>
+<h2 id="vue中使用rem"><a class="markdownIt-Anchor" href="#vue中使用rem">#</a> vue 中使用 rem</h2>
+<p>vue 现在正是火的势头上，作者说明年估计 3.0 要出来了。那么在 vue 我们如果做移动端自适应怎么弄呢？</p>
+<p><strong>安装 flexible</strong></p>
+<p><em>在命令行中运行如下安装：</em></p>
+<blockquote>
+<p>npm i lib-flexible --save-dev</p>
+</blockquote>
+<p><strong>引入 flexible</strong></p>
+<p><em>在项目入口文件 main.js 里 引入 lib-flexible</em></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&#x27;lib-flexible&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>对于我们的 index.html，最好是不要 meta 标签，flexible 会自动添加上的，因为有一个判断。当然了，懒惰果然是最大的生产力，有的人觉得换算 rem 太麻烦，就出现了插件<span class="exturl" data-url="aHR0cHM6Ly93d3cubnBtanMuY29tL3BhY2thZ2UvcHgycmVtLWxvYWRlcg=="> px2rem-loader</span>，把 px 自动转化为对应的 rem。但是呢，麻烦的就是如果引入外部的 css 文件，那么也会把 px 转化为 rem。自己在项目中就是手动计算 rem，用上面的方法，直接除以 100，这个应该很简单吧，都是程序员，数学这个还是可以吧…</p>
+]]></content>
+      <categories>
+        <category>移动端</category>
+      </categories>
+      <tags>
+        <tag>移动端</tag>
       </tags>
   </entry>
 </search>
