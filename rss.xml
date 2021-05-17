@@ -17,8 +17,8 @@
             <guid isPermalink="true">http://example.com/2021/05/12/Javascript%E4%B8%AD%E5%93%AA%E4%B8%80%E7%A7%8D%E5%BE%AA%E7%8E%AF%E6%9C%80%E5%BF%AB%E5%91%A2%EF%BC%9F/</guid>
             <title>Javascript中哪一种循环最快呢？</title>
             <link>http://example.com/2021/05/12/Javascript%E4%B8%AD%E5%93%AA%E4%B8%80%E7%A7%8D%E5%BE%AA%E7%8E%AF%E6%9C%80%E5%BF%AB%E5%91%A2%EF%BC%9F/</link>
-            <category term="javascript" scheme="http://example.com/categories/javascript/" />
-            <category term="javascript" scheme="http://example.com/tags/javascript/" />
+            <category term="JavaScript专题" scheme="http://example.com/categories/script-topic/" />
+            <category term="JavaScript专题" scheme="http://example.com/tags/JavaScript%E4%B8%93%E9%A2%98/" />
             <pubDate>Wed, 12 May 2021 11:31:26 +0800</pubDate>
             <description><![CDATA[ &lt;blockquote&gt;
 &lt;p&gt;了解哪一种  &lt;code&gt;for&lt;/code&gt;  循环或迭代器适合我们的需求，防止我们犯下一些影响应用性能的低级错误。&lt;/p&gt;
@@ -126,7 +126,7 @@
             <guid isPermalink="true">http://example.com/2021/04/16/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%9B%9E%E6%B5%81%E5%92%8C%E9%87%8D%E6%B1%87/</guid>
             <title>浏览器回流和重汇</title>
             <link>http://example.com/2021/04/16/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%9B%9E%E6%B5%81%E5%92%8C%E9%87%8D%E6%B1%87/</link>
-            <category term="note" scheme="http://example.com/categories/note/" />
+            <category term="个人笔记" scheme="http://example.com/categories/note/" />
             <category term="note" scheme="http://example.com/tags/note/" />
             <pubDate>Fri, 16 Apr 2021 09:20:34 +0800</pubDate>
             <description><![CDATA[ &lt;p&gt;&lt;img data-src=&#34;https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/640&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
@@ -802,7 +802,7 @@
             <guid isPermalink="true">http://example.com/2021/03/21/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%E4%BB%8E%E5%8E%9F%E5%9E%8B%E5%88%B0%E5%8E%9F%E5%9E%8B%E9%93%BE/</guid>
             <title>JavaScript基础（二）从原型到原型链</title>
             <link>http://example.com/2021/03/21/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%E4%BB%8E%E5%8E%9F%E5%9E%8B%E5%88%B0%E5%8E%9F%E5%9E%8B%E9%93%BE/</link>
-            <category term="JavaScript专题" scheme="http://example.com/categories/script-topic/" />
+            <category term="c" scheme="http://example.com/categories/c/" />
             <category term="javascript" scheme="http://example.com/tags/javascript/" />
             <pubDate>Sun, 21 Mar 2021 10:09:04 +0800</pubDate>
             <description><![CDATA[ &lt;blockquote&gt;
@@ -1041,7 +1041,7 @@
             <guid isPermalink="true">http://example.com/2021/03/19/%E5%87%BD%E6%95%B0%E9%98%B2%E6%8A%96%E4%B8%8E%E8%8A%82%E6%B5%81/</guid>
             <title>函数防抖与节流</title>
             <link>http://example.com/2021/03/19/%E5%87%BD%E6%95%B0%E9%98%B2%E6%8A%96%E4%B8%8E%E8%8A%82%E6%B5%81/</link>
-            <category term="javascript" scheme="http://example.com/categories/javascript/" />
+            <category term="JavaScript专题" scheme="http://example.com/categories/script-topic/" />
             <category term="javascript" scheme="http://example.com/tags/javascript/" />
             <pubDate>Fri, 19 Mar 2021 09:43:56 +0800</pubDate>
             <description><![CDATA[ &lt;h2 id=&#34;函数防抖&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#函数防抖&#34;&gt;#&lt;/a&gt; 函数防抖&lt;/h2&gt;
@@ -1293,7 +1293,7 @@
             <guid isPermalink="true">http://example.com/2021/02/11/JS%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9/</guid>
             <title>JS实现图片压缩</title>
             <link>http://example.com/2021/02/11/JS%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9/</link>
-            <category term="javascript" scheme="http://example.com/categories/javascript/" />
+            <category term="JavaScript专题" scheme="http://example.com/categories/script-topic/" />
             <category term="javascript" scheme="http://example.com/tags/javascript/" />
             <pubDate>Thu, 11 Feb 2021 09:19:04 +0800</pubDate>
             <description><![CDATA[ &lt;blockquote&gt;
