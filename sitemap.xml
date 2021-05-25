@@ -214,14 +214,14 @@
 
   
   <url>
-    <loc>https://gaoyuan.ink/tags/HTTP/</loc>
+    <loc>https://gaoyuan.ink/tags/javascript/</loc>
     <lastmod>2021-05-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://gaoyuan.ink/tags/javascript/</loc>
+    <loc>https://gaoyuan.ink/tags/HTTP/</loc>
     <lastmod>2021-05-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -242,6 +242,13 @@
   </url>
   
   <url>
+    <loc>https://gaoyuan.ink/tags/vuex/</loc>
+    <lastmod>2021-05-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://gaoyuan.ink/tags/vue/</loc>
     <lastmod>2021-05-25</lastmod>
     <changefreq>daily</changefreq>
@@ -250,13 +257,6 @@
   
   <url>
     <loc>https://gaoyuan.ink/tags/axios/</loc>
-    <lastmod>2021-05-25</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://gaoyuan.ink/tags/vuex/</loc>
     <lastmod>2021-05-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -284,14 +284,14 @@
   </url>
   
   <url>
-    <loc>https://gaoyuan.ink/tags/react/</loc>
+    <loc>https://gaoyuan.ink/tags/note/</loc>
     <lastmod>2021-05-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://gaoyuan.ink/tags/note/</loc>
+    <loc>https://gaoyuan.ink/tags/react/</loc>
     <lastmod>2021-05-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -314,14 +314,14 @@
 
   
   <url>
-    <loc>https://gaoyuan.ink/categories/HTTP/</loc>
+    <loc>https://gaoyuan.ink/categories/script-topic/</loc>
     <lastmod>2021-05-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://gaoyuan.ink/categories/script-topic/</loc>
+    <loc>https://gaoyuan.ink/categories/HTTP/</loc>
     <lastmod>2021-05-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -356,14 +356,14 @@
   </url>
   
   <url>
-    <loc>https://gaoyuan.ink/categories/react/</loc>
+    <loc>https://gaoyuan.ink/categories/note/</loc>
     <lastmod>2021-05-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://gaoyuan.ink/categories/note/</loc>
+    <loc>https://gaoyuan.ink/categories/react/</loc>
     <lastmod>2021-05-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
