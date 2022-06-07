@@ -98,93 +98,6 @@ SSL 提供服务<br>
       </tags>
   </entry>
   <entry>
-    <title>JavaScript专题（一）变量与函数提升</title>
-    <url>/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/</url>
-    <content><![CDATA[<h2 id="一-有趣的现象"><a class="markdownIt-Anchor" href="#一-有趣的现象">#</a> 一、有趣的现象</h2>
-<p>按照大家的常识，JavaScript 代码在执行是一定是自上而下的，你需要输出一个字符串，当然需要提前声明一个 <code>保存string类型的变量</code> 。如果深奥的道理我都能懂，于是我阅读了下面的代码。</p>
-<h3 id="11-我以为的开局"><a class="markdownIt-Anchor" href="#11-我以为的开局">#</a> 1.1 我以为的开局</h3>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// 123</span></span><br></pre></td></tr></table></figure>
-<p>我们调换一下代码的位置在再看：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// undefined</span></span><br><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br></pre></td></tr></table></figure>
-<span id="more"></span>
-<p><strong>我好像找到规律了！！！</strong></p>
-<p>当我看完了前两段代码并且进行了 “深度思考” 后，我好像找到规律了，那就是：在当前代码块后函数中，在变量声明和初始化 <code>之前</code> 使用变量，会拿不到正确的值。</p>
-<h3 id="12-实际上是这样的"><a class="markdownIt-Anchor" href="#12-实际上是这样的">#</a> 1.2 实际上是这样的</h3>
-<p>带着上面的 “结论” 我来到了这里</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// 高原</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
-<p>果然如此！，在<strong>变量声明和初始化之后</strong>耶稣也阻挡不了我拿到 val 的值，我说的！！！</p>
-<p>当我看到下面一段代码时，我已经产生了动摇，此事必要蹊跷。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> val = <span class="string">&#x27;测试&#x27;</span>;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
-<p>这… 我怂了，是什么原因导致这样的现象发生的呢？Js 又是如果处理的呢？</p>
-<h2 id="二-js的预解析"><a class="markdownIt-Anchor" href="#二-js的预解析">#</a> 二、Js 的预解析</h2>
-<p>在当前的作用域内，无论在哪里变量声明，在幕后，都会进行一次看不见的移动。</p>
-<p>注意：<strong>仅声明被 “移动”</strong>。即声明和赋值在某些时候被动分开了。而这次看不见的移动实际上就是 <code>Js在编译阶段的解析</code> 。</p>
-<p>来看一段《你知不知道的 Js》中经典的例子：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 未添加关键字（未声明），name为全局变量，，即window.name = &#x27;高原&#x27;</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 再次声明name，此时name未进行初始化，它的值是undefined吗？</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
-<p>结果是成功打印 “高原”，这样<strong>看不见的移动</strong>就发生在 Js 预解析（编译）之中。</p>
-<h3 id="21-核心预解析"><a class="markdownIt-Anchor" href="#21-核心预解析">#</a> 2.1 核心：预解析</h3>
-<p>为了搞明白这个核心问题，我们需要回顾一下，引擎会在解释 JavaScript 代码之前首先对其进行编译。编译阶段中的一部分工作就是找到所有的声明，并用合适的作用域将它们关联起来。</p>
-<p>因此，发生这样的事情，包括 <code>变量</code> 和 <code>函数</code> 在内的所有声明都会在任何代码被执行前首先被处理。当你看到 <code>var a = 2</code> ；时，可能会认为这是一个声明。但 JavaScript 实际上会将其看成两个声明：var a；和 a = 2;。</p>
-<ul>
-<li>第一个定义声明是在编译阶段进行的。</li>
-<li>第二个赋值声明会被留在原地等待执行阶段。</li>
-</ul>
-<p>即代码是这样写的：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 我们看到的代码：</span></span><br><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br></pre></td></tr></table></figure>
-<p>但 Js 会将它解析成：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 声明(Declaration)</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明但未初始化，所以分配 undefined</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化(Initialization)</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化（赋值）</span></span><br></pre></td></tr></table></figure>
-<p>所以本小结的一段代码应该这样分析：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明name提到作用域顶部，并被分配了一个undefined</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 进行初始化操作</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// &#x27;高原&#x27;</span></span><br></pre></td></tr></table></figure>
-<h3 id="22-注意只有声明被提升了"><a class="markdownIt-Anchor" href="#22-注意只有声明被提升了">#</a> 2.2 注意：只有声明被提升了</h3>
-<p><strong>只有声明会被提升，而赋值和其他代码逻辑会在执行到代码的位置时才会生效</strong>。所以会有下面的问题：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>函数被提升了，自然可以正常执行，但变量仅仅是声明被提升了。</p>
-<h3 id="23-每个作用域都会进行提升操作"><a class="markdownIt-Anchor" href="#23-每个作用域都会进行提升操作">#</a> 2.3 每个作用域都会进行提升操作</h3>
-<p>还是上面的代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>实际它在编译时是这样的：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name; <span class="comment">// 声明</span></span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化</span></span><br><span class="line">&#125;</span><br><span class="line">foo(); <span class="comment">// 函数执行</span></span><br></pre></td></tr></table></figure>
-<p><img data-src="https://img-blog.csdnimg.cn/20200716134005198.jpg" alt="img"></p>
-<h2 id="三-提升之间的优先级"><a class="markdownIt-Anchor" href="#三-提升之间的优先级">#</a> 三、提升之间的优先级</h2>
-<p>既然我们知道了 <code>变量</code> 和 <code>函数</code> 会被提升，他们之间又是如何判断优先级的呢？</p>
-<h3 id="31-函数会被首先提升然后才是变量"><a class="markdownIt-Anchor" href="#31-函数会被首先提升然后才是变量">#</a> 3.1 函数会被首先提升，然后才是变量</h3>
-<p>我们分析下面的代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo; <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>本着函数优先提升的原则，他会被解析成这样：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">// 高原</span></span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>注意， <code>var foo</code>  因为是一个重复声明，且优先级 <code>低于函数声明</code> 所以它被忽略掉了。</p>
-<h3 id="32-函数字面量不会进行函数提升"><a class="markdownIt-Anchor" href="#32-函数字面量不会进行函数提升">#</a> 3.2 函数字面量不会进行函数提升</h3>
-<p>最直观的例子，就是在函数字面量前调用该函数：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// TypeError: foo is not a function</span></span><br></pre></td></tr></table></figure>
-<p>这段程序中：</p>
-<ol>
-<li>变量标识符 <code>foo()</code>  被提升并分配给所在作用域（在这里是全局作用域），因此 foo ()<strong> 不会导致 ReferenceError</strong>。</li>
-<li>然后就是执行 foo，foo 此时并没有赋值（注意变量被提升了）。由于对 undefined 值进行函数调用而导致非法操作，因此抛出 TypeError 异常。</li>
-</ol>
-<h2 id="四-es6和小结"><a class="markdownIt-Anchor" href="#四-es6和小结">#</a> 四、ES6 和小结</h2>
-<p>ES6 新增了两个命令 <code>let</code>  和 <code>const</code> ，用来声明变量，有关它们完整的概念我会在《ES6 基础系列》中总结，提起它们，是因为<strong>变量提升在它们身上不会存在</strong>。</p>
-<h3 id="41-变量提升是可以规避的"><a class="markdownIt-Anchor" href="#41-变量提升是可以规避的">#</a> 4.1 变量提升是可以规避的</h3>
-<p>let 命令改变了语法行为，它所声明的变量一定要在声明后使用，否则报错。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// var 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(foo); <span class="comment">// 输出undefined</span></span><br><span class="line"><span class="keyword">var</span> foo = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// let 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(bar); <span class="comment">// 报错ReferenceError</span></span><br><span class="line"><span class="keyword">let</span> bar = <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
-<p>上面代码中，变量 foo 用 var 命令声明，会发生变量提升，即脚本开始运行时，变量 foo 已经存在了，但是没有值，所以会输出 undefined。变量 bar 用 let 命令声明，不会发生变量提升。这表示在声明它之前，变量 bar 是不存在的，这时如果用到它，就会抛出一个错误。</p>
-<p>在变量提升上，const 和 let 一样，只在声明所在的块级作用域内有效，也不会变量提升</p>
-<h3 id="42-小结"><a class="markdownIt-Anchor" href="#42-小结">#</a> 4.2 小结</h3>
-<ol>
-<li>变量提升：函数声明和变量声明总是会被解释器悄悄地被 &quot;提升&quot; 到方法体的最顶部，但变量的初始化不会提升；</li>
-<li>函数提升：函数声明可以被看作是函数的整体被提升到了代码的顶部，但函数字面量表达式并不会引发函数提升；</li>
-<li>函数提升优先与变量提升；</li>
-<li>let 和 const 可以有效的规避变量提升</li>
-</ol>
-<p>最后提炼一下《你不知道的 JS》中的一段话：<strong>JavaScript 引擎并不总是按照代码的顺序来进行解析。在编译阶段，无论作用域中的声明出现在什么地方，都将在代码本身被执行前首先进行处理，这个过程被称为提升。声明本身会被提升，而包括函数表达式的赋值在内的赋值操作并不会提升。</strong></p>
-]]></content>
-      <categories>
-        <category>JavaScript专题</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>JS实现图片压缩</title>
     <url>/2021/02/11/JS%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9/</url>
     <content><![CDATA[<blockquote>
@@ -279,6 +192,93 @@ SSL 提供服务<br>
 <li>前台页面想要编辑图片，可以在 Canvas 处理图片的时候，加一些其他逻辑，例如添加文字，剪裁，拼图等等操作</li>
 </ul>
 <p>tip：因部分接口有 IE 兼容性问题，IE 浏览器方面，仅能支持 IE 10 以上版本进行下载。</p>
+]]></content>
+      <categories>
+        <category>JavaScript专题</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>JavaScript专题（一）变量与函数提升</title>
+    <url>/2021/03/31/JavaScript%E4%B8%93%E9%A2%98%EF%BC%88%E4%B8%80%EF%BC%89%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E6%8F%90%E5%8D%87/</url>
+    <content><![CDATA[<h2 id="一-有趣的现象"><a class="markdownIt-Anchor" href="#一-有趣的现象">#</a> 一、有趣的现象</h2>
+<p>按照大家的常识，JavaScript 代码在执行是一定是自上而下的，你需要输出一个字符串，当然需要提前声明一个 <code>保存string类型的变量</code> 。如果深奥的道理我都能懂，于是我阅读了下面的代码。</p>
+<h3 id="11-我以为的开局"><a class="markdownIt-Anchor" href="#11-我以为的开局">#</a> 1.1 我以为的开局</h3>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// 123</span></span><br></pre></td></tr></table></figure>
+<p>我们调换一下代码的位置在再看：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(str); <span class="comment">// undefined</span></span><br><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;123&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<p><strong>我好像找到规律了！！！</strong></p>
+<p>当我看完了前两段代码并且进行了 “深度思考” 后，我好像找到规律了，那就是：在当前代码块后函数中，在变量声明和初始化 <code>之前</code> 使用变量，会拿不到正确的值。</p>
+<h3 id="12-实际上是这样的"><a class="markdownIt-Anchor" href="#12-实际上是这样的">#</a> 1.2 实际上是这样的</h3>
+<p>带着上面的 “结论” 我来到了这里</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// 高原</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<p>果然如此！，在<strong>变量声明和初始化之后</strong>耶稣也阻挡不了我拿到 val 的值，我说的！！！</p>
+<p>当我看到下面一段代码时，我已经产生了动摇，此事必要蹊跷。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> val = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(val); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> val = <span class="string">&#x27;测试&#x27;</span>;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<p>这… 我怂了，是什么原因导致这样的现象发生的呢？Js 又是如果处理的呢？</p>
+<h2 id="二-js的预解析"><a class="markdownIt-Anchor" href="#二-js的预解析">#</a> 二、Js 的预解析</h2>
+<p>在当前的作用域内，无论在哪里变量声明，在幕后，都会进行一次看不见的移动。</p>
+<p>注意：<strong>仅声明被 “移动”</strong>。即声明和赋值在某些时候被动分开了。而这次看不见的移动实际上就是 <code>Js在编译阶段的解析</code> 。</p>
+<p>来看一段《你知不知道的 Js》中经典的例子：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 未添加关键字（未声明），name为全局变量，，即window.name = &#x27;高原&#x27;</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 再次声明name，此时name未进行初始化，它的值是undefined吗？</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
+<p>结果是成功打印 “高原”，这样<strong>看不见的移动</strong>就发生在 Js 预解析（编译）之中。</p>
+<h3 id="21-核心预解析"><a class="markdownIt-Anchor" href="#21-核心预解析">#</a> 2.1 核心：预解析</h3>
+<p>为了搞明白这个核心问题，我们需要回顾一下，引擎会在解释 JavaScript 代码之前首先对其进行编译。编译阶段中的一部分工作就是找到所有的声明，并用合适的作用域将它们关联起来。</p>
+<p>因此，发生这样的事情，包括 <code>变量</code> 和 <code>函数</code> 在内的所有声明都会在任何代码被执行前首先被处理。当你看到 <code>var a = 2</code> ；时，可能会认为这是一个声明。但 JavaScript 实际上会将其看成两个声明：var a；和 a = 2;。</p>
+<ul>
+<li>第一个定义声明是在编译阶段进行的。</li>
+<li>第二个赋值声明会被留在原地等待执行阶段。</li>
+</ul>
+<p>即代码是这样写的：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 我们看到的代码：</span></span><br><span class="line"><span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<p>但 Js 会将它解析成：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 声明(Declaration)</span></span><br><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明但未初始化，所以分配 undefined</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化(Initialization)</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化（赋值）</span></span><br></pre></td></tr></table></figure>
+<p>所以本小结的一段代码应该这样分析：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name; <span class="comment">// 声明name提到作用域顶部，并被分配了一个undefined</span></span><br><span class="line">name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 进行初始化操作</span></span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// &#x27;高原&#x27;</span></span><br></pre></td></tr></table></figure>
+<h3 id="22-注意只有声明被提升了"><a class="markdownIt-Anchor" href="#22-注意只有声明被提升了">#</a> 2.2 注意：只有声明被提升了</h3>
+<p><strong>只有声明会被提升，而赋值和其他代码逻辑会在执行到代码的位置时才会生效</strong>。所以会有下面的问题：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>函数被提升了，自然可以正常执行，但变量仅仅是声明被提升了。</p>
+<h3 id="23-每个作用域都会进行提升操作"><a class="markdownIt-Anchor" href="#23-每个作用域都会进行提升操作">#</a> 2.3 每个作用域都会进行提升操作</h3>
+<p>还是上面的代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实际它在编译时是这样的：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name; <span class="comment">// 声明</span></span><br><span class="line">    <span class="built_in">console</span>.log(name); <span class="comment">// undefined</span></span><br><span class="line">    name = <span class="string">&#x27;高原&#x27;</span>; <span class="comment">// 初始化</span></span><br><span class="line">&#125;</span><br><span class="line">foo(); <span class="comment">// 函数执行</span></span><br></pre></td></tr></table></figure>
+<p><img data-src="https://img-blog.csdnimg.cn/20200716134005198.jpg" alt="img"></p>
+<h2 id="三-提升之间的优先级"><a class="markdownIt-Anchor" href="#三-提升之间的优先级">#</a> 三、提升之间的优先级</h2>
+<p>既然我们知道了 <code>变量</code> 和 <code>函数</code> 会被提升，他们之间又是如何判断优先级的呢？</p>
+<h3 id="31-函数会被首先提升然后才是变量"><a class="markdownIt-Anchor" href="#31-函数会被首先提升然后才是变量">#</a> 3.1 函数会被首先提升，然后才是变量</h3>
+<p>我们分析下面的代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo; <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>本着函数优先提升的原则，他会被解析成这样：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;高原&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo(); <span class="comment">// 高原</span></span><br><span class="line"></span><br><span class="line">foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;小李&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意， <code>var foo</code>  因为是一个重复声明，且优先级 <code>低于函数声明</code> 所以它被忽略掉了。</p>
+<h3 id="32-函数字面量不会进行函数提升"><a class="markdownIt-Anchor" href="#32-函数字面量不会进行函数提升">#</a> 3.2 函数字面量不会进行函数提升</h3>
+<p>最直观的例子，就是在函数字面量前调用该函数：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">foo();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// TypeError: foo is not a function</span></span><br></pre></td></tr></table></figure>
+<p>这段程序中：</p>
+<ol>
+<li>变量标识符 <code>foo()</code>  被提升并分配给所在作用域（在这里是全局作用域），因此 foo ()<strong> 不会导致 ReferenceError</strong>。</li>
+<li>然后就是执行 foo，foo 此时并没有赋值（注意变量被提升了）。由于对 undefined 值进行函数调用而导致非法操作，因此抛出 TypeError 异常。</li>
+</ol>
+<h2 id="四-es6和小结"><a class="markdownIt-Anchor" href="#四-es6和小结">#</a> 四、ES6 和小结</h2>
+<p>ES6 新增了两个命令 <code>let</code>  和 <code>const</code> ，用来声明变量，有关它们完整的概念我会在《ES6 基础系列》中总结，提起它们，是因为<strong>变量提升在它们身上不会存在</strong>。</p>
+<h3 id="41-变量提升是可以规避的"><a class="markdownIt-Anchor" href="#41-变量提升是可以规避的">#</a> 4.1 变量提升是可以规避的</h3>
+<p>let 命令改变了语法行为，它所声明的变量一定要在声明后使用，否则报错。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// var 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(foo); <span class="comment">// 输出undefined</span></span><br><span class="line"><span class="keyword">var</span> foo = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// let 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(bar); <span class="comment">// 报错ReferenceError</span></span><br><span class="line"><span class="keyword">let</span> bar = <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+<p>上面代码中，变量 foo 用 var 命令声明，会发生变量提升，即脚本开始运行时，变量 foo 已经存在了，但是没有值，所以会输出 undefined。变量 bar 用 let 命令声明，不会发生变量提升。这表示在声明它之前，变量 bar 是不存在的，这时如果用到它，就会抛出一个错误。</p>
+<p>在变量提升上，const 和 let 一样，只在声明所在的块级作用域内有效，也不会变量提升</p>
+<h3 id="42-小结"><a class="markdownIt-Anchor" href="#42-小结">#</a> 4.2 小结</h3>
+<ol>
+<li>变量提升：函数声明和变量声明总是会被解释器悄悄地被 &quot;提升&quot; 到方法体的最顶部，但变量的初始化不会提升；</li>
+<li>函数提升：函数声明可以被看作是函数的整体被提升到了代码的顶部，但函数字面量表达式并不会引发函数提升；</li>
+<li>函数提升优先与变量提升；</li>
+<li>let 和 const 可以有效的规避变量提升</li>
+</ol>
+<p>最后提炼一下《你不知道的 JS》中的一段话：<strong>JavaScript 引擎并不总是按照代码的顺序来进行解析。在编译阶段，无论作用域中的声明出现在什么地方，都将在代码本身被执行前首先进行处理，这个过程被称为提升。声明本身会被提升，而包括函数表达式的赋值在内的赋值操作并不会提升。</strong></p>
 ]]></content>
       <categories>
         <category>JavaScript专题</category>
@@ -425,106 +425,6 @@ SSL 提供服务<br>
       </tags>
   </entry>
   <entry>
-    <title>JavaScript基础（三）作用域</title>
-    <url>/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89%E4%BD%9C%E7%94%A8%E5%9F%9F/</url>
-    <content><![CDATA[<blockquote>
-<p>作用域的篇幅不会太长，作为自己对 Js 总结的第三篇文章，主要是承上启下。 之后会涉及到执行上下文，闭包等相关专题，为了避免内容过多，作用域这一部分单独总结。</p>
-</blockquote>
-<h2 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h2>
-<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/%E4%B8%8B%E8%BD%BD.jpeg" style="zoom:67%;" />
-<span id="more"></span>
-<h2 id="一-作用域的定义"><a class="markdownIt-Anchor" href="#一-作用域的定义">#</a> 一、作用域的定义</h2>
-<p><strong>一张导图概括本节内容</strong> <img data-src="https://img-blog.csdnimg.cn/20200609102448438.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"> <strong>1.1 常见的解释</strong></p>
-<ol>
-<li>一段程序代码中所用到的<strong>名字</strong>并不总是有效，而限定它的可用性的范围就是这个名字的作用域；</li>
-<li>作用域规定了<strong>如何查找变量</strong>，也就是确定当前执行代码对变量的访问权限；</li>
-<li>通俗的讲作用域就是<strong>一套规则</strong>，用于确定在何处以及如何查找<strong>某个变量</strong>的规则</li>
-</ol>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(a); <span class="comment">// 100</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(a) <span class="comment">// a is not defined a变量并不是任何地方都可以被找到的</span></span><br></pre></td></tr></table></figure>
-<p><strong>1.2 JavaScript 中作用域工作模型</strong></p>
-<p>JavaScript 采用是词法作用域 (lexical scoping)，也就是静态作用域：</p>
-<ul>
-<li>函数的作用域在函数定义的时候就决定了</li>
-</ul>
-<p>与之对应的还有一个动态作用域：</p>
-<ul>
-<li>函数的作用域是在函数调用的时候才决定的；</li>
-</ul>
-<p><strong>1.3 全局变量和局部变量</strong></p>
-<p>根据定义变量的方式又可以分为：</p>
-<p>局部变量：只能在函数中访问，该函数外不可访问；</p>
-<ul>
-<li>定义在函数中的变量</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(name);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br><span class="line">fn(); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
-<p>全局：任何地方都能访问到的对象拥有全局作用域。</p>
-<ul>
-<li>函数外定义的变量</li>
-<li>所有末定义直接赋值的变量自动声明为拥有全局作用域</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a4-&#x27;</span>,a);</span><br></pre></td></tr></table></figure>
-<p>注意：在 ES6 之后又提出了块级作用域，它们之间的区别我们之后再来讨论。</p>
-<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=2659298556,3987226078&amp;fm=26&amp;gp=0.jpeg" alt=""></p>
-<h2 id="二-理解作用域"><a class="markdownIt-Anchor" href="#二-理解作用域">#</a> 二、理解作用域</h2>
-<p>根据第一节的描述，我们一一验证一下</p>
-<p><strong>2.1 理解词法作用域</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> value = <span class="number">1</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> value = <span class="number">2</span>;</span><br><span class="line">    foo();</span><br><span class="line">&#125;</span><br><span class="line">bar();</span><br></pre></td></tr></table></figure>
-<p>我们结合定义去分析：</p>
-<ul>
-<li>执行 <code>bar</code>  函数，函数内部形成了局部作用域；</li>
-<li>声明 value 变量，并赋值 2</li>
-<li>执行 <code>foo</code>  函数，函数 foo 的作用域内没有 <code>value</code>  这个变量，它会向外查找</li>
-<li>根据词法作用域的规则，函数定义时， <code>foo</code>  的外部作用域为全局作用域</li>
-<li>打印<strong>结果是 1</strong></li>
-</ul>
-<p>如果是动态作用域的话：结果<strong>就是 2</strong>，不知道你是否想明白了？</p>
-<p><strong>2.2 全局变量</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;全局变量&#x27;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(str+<span class="number">1</span>);</span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		<span class="built_in">console</span>.log(str+<span class="number">2</span>);</span><br><span class="line">		<span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">			<span class="built_in">console</span>.log(str+<span class="number">3</span>);</span><br><span class="line">		&#125;;</span><br><span class="line">		fn();</span><br><span class="line">	&#125;;</span><br><span class="line">	childFn();</span><br><span class="line">&#125;</span><br><span class="line">func();</span><br><span class="line"><span class="comment">// 全局变量1</span></span><br><span class="line"><span class="comment">// 全局变量2</span></span><br><span class="line"><span class="comment">// 全局变量3</span></span><br></pre></td></tr></table></figure>
-<p>再来分析下面的代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line"><span class="comment">// a2- 100 // 在当前作用域下查找变量a =&gt; 100</span></span><br><span class="line"><span class="comment">// a1- 1000 // 函数执行时，全局变量a已经被重新赋值</span></span><br><span class="line"><span class="comment">// a3- 1000 // 全局变量a =&gt; 1000</span></span><br></pre></td></tr></table></figure>
-<p><strong>2.3 局部作用域</strong></p>
-<p>局部作用域一般只在固定的代码片段内可访问到，最常见的就是以函数为单位的：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name=<span class="string">&quot;高原&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(name);</span><br><span class="line">    &#125;</span><br><span class="line">    childFn(); <span class="comment">// 高原</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// name is not defined</span></span><br></pre></td></tr></table></figure>
-<h2 id="三-作用域链"><a class="markdownIt-Anchor" href="#三-作用域链">#</a> 三、作用域链</h2>
-<p><strong>3.1 当查找变量的时候都发生了什么？</strong></p>
-<ul>
-<li>会先从当前<strong>上下文的变量对象</strong>中查找；</li>
-<li>如果没有找到，就会从父级 (词法层面上的父级)<strong> 执行上下文</strong>的变量对象中查找；</li>
-<li>一直找到全局上下文的变量对象，也就是全局对象；</li>
-<li>作用域链的顶端就是全局对象；</li>
-</ul>
-<p>这样<strong>由多个执行上下文的变量对象构成的链表就叫做作用域链</strong>，从某种意义上很类似原型和原型链。</p>
-<p><strong>3.2 作用域链和原型继承查找时的区别：</strong></p>
-<ul>
-<li>查找一个普通对象的属性，但是在当前对象和其原型中都找不到时，会返回 <code>undefined</code></li>
-<li>查找的属性在作用域链中不存在的话就会抛出 <code>ReferenceError</code> 。</li>
-</ul>
-<p><strong>3.3 作用域嵌套</strong></p>
-<p>既然每一个函数就可以形成一个作用域（ <code>词法作用域</code>  ||  <code>块级作用域</code> ），那么当然也会存在多个作用域嵌套的情况，他们遵循这样的查询规则：</p>
-<ul>
-<li>内部作用域有权访问外部作用域；</li>
-<li>外部作用域无法访问内部作用域；（真是是这样吗？）</li>
-<li>兄弟作用域不可互相访问；</li>
-</ul>
-<p>在《你不知道的 Js》中，希望读者可以将作用域的嵌套和作用域链想象成这样：</p>
-<p><img data-src="https://img-blog.csdnimg.cn/2020060915193493.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<h2 id="四-思考与总结"><a class="markdownIt-Anchor" href="#四-思考与总结">#</a> 四、思考与总结</h2>
-<p><strong>4.1 总结</strong></p>
-<p><img data-src="https://img-blog.csdnimg.cn/20200609160809565.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<p><strong>4.2 思考</strong></p>
-<p>最后，让我们看一个《JavaScript 权威指南》中的两段代码：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f(); <span class="comment">// 注意</span></span><br><span class="line">&#125;</span><br><span class="line">checkscope1();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope2</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line">checkscope2()();</span><br></pre></td></tr></table></figure>
-<p>两段代码的结果都是 &quot;local scope&quot;，书中的回答是：JavaScript 函数的执行用到了作用域链，这个作用域链是在函数定义的时候创建的。嵌套的函数 f () 定义在这个作用域链里，其中的变量 scope 一定是局部变量，不管何时何地执行函数 f ()，这种绑定在执行 f () 时依然有效。</p>
-<p>但是它们内部经历的事情是一样的吗？</p>
-]]></content>
-      <categories>
-        <category>JavaScript专题</category>
-      </categories>
-      <tags>
-        <tag>javascript</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>JavaScript基础（二）从原型到原型链</title>
     <url>/2021/03/21/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%E4%BB%8E%E5%8E%9F%E5%9E%8B%E5%88%B0%E5%8E%9F%E5%9E%8B%E9%93%BE/</url>
     <content><![CDATA[<blockquote>
@@ -625,6 +525,106 @@ SSL 提供服务<br>
 ]]></content>
       <categories>
         <category>c</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>JavaScript基础（三）作用域</title>
+    <url>/2021/03/23/JavaScript%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89%E4%BD%9C%E7%94%A8%E5%9F%9F/</url>
+    <content><![CDATA[<blockquote>
+<p>作用域的篇幅不会太长，作为自己对 Js 总结的第三篇文章，主要是承上启下。 之后会涉及到执行上下文，闭包等相关专题，为了避免内容过多，作用域这一部分单独总结。</p>
+</blockquote>
+<h2 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h2>
+<img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/%E4%B8%8B%E8%BD%BD.jpeg" style="zoom:67%;" />
+<span id="more"></span>
+<h2 id="一-作用域的定义"><a class="markdownIt-Anchor" href="#一-作用域的定义">#</a> 一、作用域的定义</h2>
+<p><strong>一张导图概括本节内容</strong> <img data-src="https://img-blog.csdnimg.cn/20200609102448438.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"> <strong>1.1 常见的解释</strong></p>
+<ol>
+<li>一段程序代码中所用到的<strong>名字</strong>并不总是有效，而限定它的可用性的范围就是这个名字的作用域；</li>
+<li>作用域规定了<strong>如何查找变量</strong>，也就是确定当前执行代码对变量的访问权限；</li>
+<li>通俗的讲作用域就是<strong>一套规则</strong>，用于确定在何处以及如何查找<strong>某个变量</strong>的规则</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(a); <span class="comment">// 100</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(a) <span class="comment">// a is not defined a变量并不是任何地方都可以被找到的</span></span><br></pre></td></tr></table></figure>
+<p><strong>1.2 JavaScript 中作用域工作模型</strong></p>
+<p>JavaScript 采用是词法作用域 (lexical scoping)，也就是静态作用域：</p>
+<ul>
+<li>函数的作用域在函数定义的时候就决定了</li>
+</ul>
+<p>与之对应的还有一个动态作用域：</p>
+<ul>
+<li>函数的作用域是在函数调用的时候才决定的；</li>
+</ul>
+<p><strong>1.3 全局变量和局部变量</strong></p>
+<p>根据定义变量的方式又可以分为：</p>
+<p>局部变量：只能在函数中访问，该函数外不可访问；</p>
+<ul>
+<li>定义在函数中的变量</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> name = <span class="string">&#x27;高原&#x27;</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(name);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// ？</span></span><br><span class="line">fn(); <span class="comment">// ？</span></span><br></pre></td></tr></table></figure>
+<p>全局：任何地方都能访问到的对象拥有全局作用域。</p>
+<ul>
+<li>函数外定义的变量</li>
+<li>所有末定义直接赋值的变量自动声明为拥有全局作用域</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a4-&#x27;</span>,a);</span><br></pre></td></tr></table></figure>
+<p>注意：在 ES6 之后又提出了块级作用域，它们之间的区别我们之后再来讨论。</p>
+<p><img data-src="https://cdn.jsdelivr.net/gh/gaoyuanio/imgs/img/u=2659298556,3987226078&amp;fm=26&amp;gp=0.jpeg" alt=""></p>
+<h2 id="二-理解作用域"><a class="markdownIt-Anchor" href="#二-理解作用域">#</a> 二、理解作用域</h2>
+<p>根据第一节的描述，我们一一验证一下</p>
+<p><strong>2.1 理解词法作用域</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> value = <span class="number">1</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> value = <span class="number">2</span>;</span><br><span class="line">    foo();</span><br><span class="line">&#125;</span><br><span class="line">bar();</span><br></pre></td></tr></table></figure>
+<p>我们结合定义去分析：</p>
+<ul>
+<li>执行 <code>bar</code>  函数，函数内部形成了局部作用域；</li>
+<li>声明 value 变量，并赋值 2</li>
+<li>执行 <code>foo</code>  函数，函数 foo 的作用域内没有 <code>value</code>  这个变量，它会向外查找</li>
+<li>根据词法作用域的规则，函数定义时， <code>foo</code>  的外部作用域为全局作用域</li>
+<li>打印<strong>结果是 1</strong></li>
+</ul>
+<p>如果是动态作用域的话：结果<strong>就是 2</strong>，不知道你是否想明白了？</p>
+<p><strong>2.2 全局变量</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">&#x27;全局变量&#x27;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(str+<span class="number">1</span>);</span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		<span class="built_in">console</span>.log(str+<span class="number">2</span>);</span><br><span class="line">		<span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">			<span class="built_in">console</span>.log(str+<span class="number">3</span>);</span><br><span class="line">		&#125;;</span><br><span class="line">		fn();</span><br><span class="line">	&#125;;</span><br><span class="line">	childFn();</span><br><span class="line">&#125;</span><br><span class="line">func();</span><br><span class="line"><span class="comment">// 全局变量1</span></span><br><span class="line"><span class="comment">// 全局变量2</span></span><br><span class="line"><span class="comment">// 全局变量3</span></span><br></pre></td></tr></table></figure>
+<p>再来分析下面的代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	a = <span class="number">1000</span>;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">&#x27;a1-&#x27;</span>,a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a2-&#x27;</span>,a);</span><br><span class="line">fn();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&#x27;a3-&#x27;</span>,a);</span><br><span class="line"><span class="comment">// a2- 100 // 在当前作用域下查找变量a =&gt; 100</span></span><br><span class="line"><span class="comment">// a1- 1000 // 函数执行时，全局变量a已经被重新赋值</span></span><br><span class="line"><span class="comment">// a3- 1000 // 全局变量a =&gt; 1000</span></span><br></pre></td></tr></table></figure>
+<p><strong>2.3 局部作用域</strong></p>
+<p>局部作用域一般只在固定的代码片段内可访问到，最常见的就是以函数为单位的：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name=<span class="string">&quot;高原&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">childFn</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(name);</span><br><span class="line">    &#125;</span><br><span class="line">    childFn(); <span class="comment">// 高原</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(name); <span class="comment">// name is not defined</span></span><br></pre></td></tr></table></figure>
+<h2 id="三-作用域链"><a class="markdownIt-Anchor" href="#三-作用域链">#</a> 三、作用域链</h2>
+<p><strong>3.1 当查找变量的时候都发生了什么？</strong></p>
+<ul>
+<li>会先从当前<strong>上下文的变量对象</strong>中查找；</li>
+<li>如果没有找到，就会从父级 (词法层面上的父级)<strong> 执行上下文</strong>的变量对象中查找；</li>
+<li>一直找到全局上下文的变量对象，也就是全局对象；</li>
+<li>作用域链的顶端就是全局对象；</li>
+</ul>
+<p>这样<strong>由多个执行上下文的变量对象构成的链表就叫做作用域链</strong>，从某种意义上很类似原型和原型链。</p>
+<p><strong>3.2 作用域链和原型继承查找时的区别：</strong></p>
+<ul>
+<li>查找一个普通对象的属性，但是在当前对象和其原型中都找不到时，会返回 <code>undefined</code></li>
+<li>查找的属性在作用域链中不存在的话就会抛出 <code>ReferenceError</code> 。</li>
+</ul>
+<p><strong>3.3 作用域嵌套</strong></p>
+<p>既然每一个函数就可以形成一个作用域（ <code>词法作用域</code>  ||  <code>块级作用域</code> ），那么当然也会存在多个作用域嵌套的情况，他们遵循这样的查询规则：</p>
+<ul>
+<li>内部作用域有权访问外部作用域；</li>
+<li>外部作用域无法访问内部作用域；（真是是这样吗？）</li>
+<li>兄弟作用域不可互相访问；</li>
+</ul>
+<p>在《你不知道的 Js》中，希望读者可以将作用域的嵌套和作用域链想象成这样：</p>
+<p><img data-src="https://img-blog.csdnimg.cn/2020060915193493.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="四-思考与总结"><a class="markdownIt-Anchor" href="#四-思考与总结">#</a> 四、思考与总结</h2>
+<p><strong>4.1 总结</strong></p>
+<p><img data-src="https://img-blog.csdnimg.cn/20200609160809565.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2piajY1Njg4Mzl6,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p><strong>4.2 思考</strong></p>
+<p>最后，让我们看一个《JavaScript 权威指南》中的两段代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f(); <span class="comment">// 注意</span></span><br><span class="line">&#125;</span><br><span class="line">checkscope1();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> scope = <span class="string">&quot;global scope&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkscope2</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> scope = <span class="string">&quot;local scope&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scope;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line">checkscope2()();</span><br></pre></td></tr></table></figure>
+<p>两段代码的结果都是 &quot;local scope&quot;，书中的回答是：JavaScript 函数的执行用到了作用域链，这个作用域链是在函数定义的时候创建的。嵌套的函数 f () 定义在这个作用域链里，其中的变量 scope 一定是局部变量，不管何时何地执行函数 f ()，这种绑定在执行 f () 时依然有效。</p>
+<p>但是它们内部经历的事情是一样的吗？</p>
+]]></content>
+      <categories>
+        <category>JavaScript专题</category>
       </categories>
       <tags>
         <tag>javascript</tag>
